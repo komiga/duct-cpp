@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "duct", "duct.vcproj", "{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		debug-static|Win32 = debug-static|Win32
+		release|Win32 = release|Win32
+		release-static|Win32 = release-static|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.Debug|Win32.ActiveCfg = debug|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.Debug|Win32.Build.0 = debug|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.debug-static|Win32.ActiveCfg = debug-static|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.debug-static|Win32.Build.0 = debug-static|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.release|Win32.ActiveCfg = release|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.release|Win32.Build.0 = release|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.release-static|Win32.ActiveCfg = releast-static|Win32
+		{ACEA1D5F-8494-4EA2-AB13-D27E251985B5}.release-static|Win32.Build.0 = releast-static|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

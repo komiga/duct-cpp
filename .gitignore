@@ -1,0 +1,12 @@
+# Builds
+*.exe
+*.dll
+*.so
+*.idb
+*.pdb
+*.obj
+*.o
+*.a
+# Generated documentation
+docs/latex/
+docs/html/

@@ -1,0 +1,58 @@
+// String
+attr value1 /* boo! */ "value two! // lalala {}"
+
+namednode { // Comment after opening node
+	data.zip\\sounds\intro.ogg 0 1 1 2 3 5 8 13 // Comment
+}//Comment
+
+
+{//Comment
+	namelessnode foobar// No space comment
+	echoes "a + b / 0.1392"
+}/* Comment */
+
+test.some.struff la(foo)
+"White-spaced identifier names" "Booyah!"
+
+SingleNode {First "single line test"}
+{ Second "single line test" .003 2.0 }
+
+"Node names can also be quoted!" {
+	Indeed // Identifiers don't require values
+}
+
+"And multiline
+as well" {
+	Named {Alloc 22}
+	Named2 {"Make cookies"}
+	{notnamed 84.002}
+}
+
+foobar "Multiline
+string!" "more stuff" 1241235
+
+bools true false /* This comment should not
+terminate an identifier */ true true
+
+stringsafety "1234" "1234.4567" "false" "true"		// Quoted on output (with safe format options)
+stringsafety ".1234" "" "FALSe" "TruE"				// Quoted on output (with safe format options)
+stringsafety "1234a" "1234.4567." "FALSee" "tTruE"	// Should be non-quoted on output
+
+// Values
+foobar=1234// abcdef
+boofar = 4321
+str="bork" another="abc" // You can do fun things like this
+
+node {value=1234 foo=bar}
+edon {value=4321/* */identifier "foo bar"}
+
+fine=enif
+
+// Non-strings as identifiers or value names
+.42 42.0
+34 10024
+3.14 pi
+true = foobar
+1234 = 4321
+0.2 = 0.4
+

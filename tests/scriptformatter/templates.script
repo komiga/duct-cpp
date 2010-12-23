@@ -1,0 +1,58 @@
+
+// Template testing script
+
+// Pass
+TeSt01 100 "pass" 12.95432
+TeStAlT01 100 "pass" 12.95432
+
+// Fail
+test01 "ab" "fail" 12.95432
+teSTAlt01 "ab" "fail" 12.95432
+
+// Pass
+Test02 pass
+TestAlt02 pass
+
+// Fail
+test02 "fail"
+tEstALT02 "fail"
+
+// Pass
+test03 "pass" blab 12 352 423.8240 "abc"
+
+// Fail
+test03 123123 "fail" blab "abc" 1451 0.002
+
+// Pass
+test04 "pass" 1 2 3
+
+// Fail
+TESt04 424 "fail" 2 3
+
+// Pass
+test05 false 1 "pass" somethingwashere 1200 0.004
+
+// Fail
+TeST05 "false" 34 "fail" "xyz" "abcd"
+
+// Pass
+test06 101.112233 "pass." 101 99.99999
+
+// Fail
+TeSt06 242 "fail"
+
+// Pass (07)
+CreamFilling 12345 "pass"
+
+// Pass (07)
+TimeWillTell 123141 "pass"
+
+// Fail (07)
+NameIsGood 1010001.0 13411 "fail"
+
+// Pass
+bools true false true false
+
+// Fail
+bools "true" "fail" true false
+
