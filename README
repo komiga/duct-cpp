@@ -1,0 +1,2 @@
+duct++ is a duct port to C++.
+Currently it only works in Linux, and it is highly experimental.
