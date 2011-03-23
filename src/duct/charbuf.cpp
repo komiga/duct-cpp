@@ -22,10 +22,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-@section DESCRIPTION
-
-duct++ CharBuf class implementation.
 */
 
 #include <duct/debug.hpp>
@@ -34,6 +30,8 @@ duct++ CharBuf class implementation.
 #include <stdlib.h>
 
 namespace duct {
+
+// class CharBuf implementation
 
 CharBuf::CharBuf() : _buffer(NULL), _bufsize(0), _buflength(0), _cached(false) {
 }
