@@ -25,18 +25,30 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ CharacterSet class.
+Implements component parts:
+<ul>
+	<li>ductParser</li>
+	<ul>
+		<li>class CharacterRange</li>
+		<li>class CharacterSet</li>
+	</ul>
+</ul>
 */
 
 #ifndef _DUCT_CHARACTERSET_HPP
 #define _DUCT_CHARACTERSET_HPP
 
-#include <duct/config.hpp>
-#include <unicode/unistr.h>
 #include <vector>
+#include <unicode/unistr.h>
+#include <duct/config.hpp>
 
 namespace duct {
 
+/**
+	A range of characters.
+	Used to match characters within a range.
+	Implements component class ductParser.CharacterRange.
+*/
 class DUCT_API CharacterRange {
 public:
 	/**
@@ -50,7 +62,6 @@ public:
 		@param range The range to copy from.
 	*/
 	CharacterRange(const CharacterRange& range);
-	
 	/**
 		Set the start of the range.
 		@returns Nothing.
@@ -62,7 +73,6 @@ public:
 		@returns The start of the range.
 	*/
 	UChar32 start() const;
-	
 	/**
 		Set the end of the range.
 		@returns Nothing.
@@ -74,14 +84,12 @@ public:
 		@returns The end of the range.
 	*/
 	UChar32 end() const;
-	
 	/**
 		Check if the range contains the given character.
 		@returns true if the character was in the range, or false if it was not.
 		@param c The character to test.
 	*/
 	bool contains(UChar32 c) const;
-	
 	/**
 		Find the first matching character in the given string.
 		@returns The index of the first matching character in the string, or -1 if either <i>from</i> was greater than or equal to the string's length or there were no matching characters in the string.
@@ -96,7 +104,6 @@ public:
 		@param from Optional start index. If -1, the last index will be used. Iteration is backwards.
 	*/
 	int findLastInString(const UnicodeString& str, int from=-1) const;
-	
 	/**
 		Compare the given range with this range.
 		@returns -1 if the given range is greater than this, 1 if this range is greater than the given, or 0 if they are the same.
@@ -120,6 +127,11 @@ protected:
 */
 typedef std::vector<CharacterRange> RangeVec;
 
+/**
+	A set of CharacterRanges.
+	Used to match non-intersecting ranges against characters or strings.
+	Implements component class ductParser.CharacterSet.
+*/
 class DUCT_API CharacterSet {
 public:
 	/**
@@ -138,7 +150,6 @@ public:
 		Copy constructor.
 	*/
 	CharacterSet(const CharacterSet& set);
-	
 	/**
 		Begin range iterator.
 		@returns The beginning iterator for the set's ranges.
@@ -149,7 +160,6 @@ public:
 		@returns The end iterator for the set's ranges.
 	*/
 	RangeVec::iterator end();
-	
 	/**
 		const begin range iterator.
 		@returns The beginning iterator for the set's ranges.
@@ -160,21 +170,18 @@ public:
 		@returns The end iterator for the set's ranges.
 	*/
 	RangeVec::const_iterator end() const;
-	
 	/**
 		Check if the set contains the given character.
 		@returns true if the character was in the set's ranges, or false if it was not.
 		@param c The character to test.
 	*/
 	bool contains(UChar32 c) const;
-	
 	/**
 		Check if the set contains the given range.
 		@returns true if the character was in the set's ranges, or false if it was not.
 		@param range The range to test.
 	*/
 	bool contains(const CharacterRange& range) const;
-	
 	/**
 		Find the first matching character in the given string.
 		@returns The index of the first matching character in the string, or -1 if either <i>from</i> was greater than or equal to the string's length or there were no matching characters in the string.
@@ -189,7 +196,11 @@ public:
 		@param from Optional begin index. If -1, the last index will be used. Iteration is backwards.
 	*/
 	int findLastInString(const UnicodeString& str, int from=-1) const;
-	
+	/**
+		Remove all ranges from the set.
+		@returns Nothing.
+	*/
+	void clear();
 	/**
 		Add the given string ranges to the set.
 		@returns Nothing.
@@ -203,51 +214,36 @@ public:
 		@param length The length of the range.
 	*/
 	void addRange(UChar32 begin, unsigned int length);
-	
-	//void toString(UnicodeString& str) const;
-	
 	/**
-		Initialize the set with whitespace ranges.
-		Includes \t, \r, \n, and space.
-		@returns A reference to itself.
+		Add all whitespace characters to the set: tab, linefeed, carriage return, and space.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithWhitespace();
+	void addWhitespace();
 	/**
-		Initialize the set with alphanumeric ranges.
-		Includes A-Z, a-z, and 0-9.
-		@returns A reference to itself.
+		Add all alphanumberic characters to the set: A-Z, a-z, and 0-9.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithAlphanumeric();
+	void addAlphanumeric();
 	/**
-		Initialize the set with letter ranges.
-		Includes A-Z and a-z.
-		@returns A reference to itself.
+		Add A-Z and a-z to the set.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithLetters();
+	void addLetters();
 	/**
-		Initialize the set with upper-case letters ranges.
-		Includes A-Z.
-		@returns A reference to itself.
+		Add A-Z to the set.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithUppercaseLetters();
+	void addUppercaseLetters();
 	/**
-		Initialize the set with lower-case letters ranges.
-		Includez a-z.
-		@returns A reference to itself.
+		Add a-z to the set.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithLowercaseLetters();
+	void addLowercaseLetters();
 	/**
-		Initialize the set with number ranges.
-		Includes 0-9.
-		@returns A reference to itself.
+		Add 0-9 to the set.
+		@returns Nothing.
 	*/
-	CharacterSet& initWithNumbers();
-	/**
-		Initialize the set with newline.
-		Includes \n.
-		@returns A reference to itself.
-	*/
-	CharacterSet& initWithNewline();
+	void addNumbers();
 	
 protected:
 	RangeVec _ranges;

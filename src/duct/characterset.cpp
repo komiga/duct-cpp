@@ -22,10 +22,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-@section DESCRIPTION
-
-duct++ CharacterSet implementation.
 */
 
 #include <duct/debug.hpp>
@@ -197,10 +193,13 @@ int CharacterSet::findLastInString(const UnicodeString& str, int from) const {
 	return result;
 }
 
+void CharacterSet::clear() {
+	_ranges.clear();
+}
+
 void CharacterSet::addRangesWithString(const UnicodeString& str) {
 	const UChar32 CHAR_DASH=0x2D;
 	const UChar32 CHAR_ESCAPE=0x5C;
-	
 	int lastchar=-1;
 	int chr;
 	bool isrange=false;
@@ -266,44 +265,33 @@ void CharacterSet::addRange(UChar32 start, unsigned int length) {
 	}
 }
 
-CharacterSet& CharacterSet::initWithWhitespace() {
+void CharacterSet::addWhitespace() {
 	addRange('\t', 1); // \t and \n
 	addRange('\r', 0);
 	addRange(' ', 0);
-	return *this;
 }
 
-CharacterSet& CharacterSet::initWithAlphanumeric() {
+void CharacterSet::addAlphanumeric() {
 	addRange('A', 26);
 	addRange('a', 26);
 	addRange('0', 10);
-	return *this;
 }
 
-CharacterSet& CharacterSet::initWithLetters() {
+void CharacterSet::addLetters() {
 	addRange('A', 26);
 	addRange('a', 26);
-	return *this;
 }
 
-CharacterSet& CharacterSet::initWithUppercaseLetters() {
+void CharacterSet::addUppercaseLetters() {
 	addRange('A', 26);
-	return *this;
 }
 
-CharacterSet& CharacterSet::initWithLowercaseLetters() {
+void CharacterSet::addLowercaseLetters() {
 	addRange('a', 26);
-	return *this;
 }
 
-CharacterSet& CharacterSet::initWithNumbers() {
+void CharacterSet::addNumbers() {
 	addRange('0', 10);
-	return *this;
-}
-
-CharacterSet& CharacterSet::initWithNewline() {
-	addRange('\n', 0);
-	return *this;
 }
 
 } // namespace duct
