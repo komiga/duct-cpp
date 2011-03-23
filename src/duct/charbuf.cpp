@@ -45,42 +45,42 @@ CharBuf::~CharBuf() {
 }
 
 void CharBuf::addChar(UChar32 c) {
-	const size_t BUFFER_INITIAL_SIZE = 68;
-	const double BUFFER_MULTIPLIER = 1.75;
+	const size_t BUFFER_INITIAL_SIZE=68;
+	const double BUFFER_MULTIPLIER=1.75;
 	if (!_buffer) {
-		_bufsize = BUFFER_INITIAL_SIZE;
-		_buffer = (UChar32*)malloc(_bufsize * 4);
+		_bufsize=BUFFER_INITIAL_SIZE;
+		_buffer=(UChar32*)malloc(_bufsize*4);
 		debug_assertp(_buffer, this, "Unable to allocate buffer");
-		_buflength = 0;
-	} else if (_buflength >= _bufsize) {
-		size_t newsize = ceil(_bufsize * BUFFER_MULTIPLIER);
-		if (newsize < _buflength) {
-			newsize = ceil(_buflength * BUFFER_MULTIPLIER);
+		_buflength=0;
+	} else if (_buflength>=_bufsize) {
+		size_t newsize=ceil(_bufsize*BUFFER_MULTIPLIER);
+		if (newsize<_buflength) {
+			newsize=ceil(_buflength*BUFFER_MULTIPLIER);
 		}
-		_bufsize = newsize;
-		void* temp = realloc(_buffer, newsize * 4);
+		_bufsize=newsize;
+		void* temp=realloc(_buffer, newsize*4);
 		debug_assertp(temp, this, "Unable to allocate buffer");
-		_buffer = (UChar32*)temp;
+		_buffer=(UChar32*)temp;
 	}
-	_buffer[_buflength++] = c;
-	_cached = false;
+	_buffer[_buflength++]=c;
+	_cached=false;
 }
 
 const UnicodeString& CharBuf::cacheString() {
 	if (!_cached) {
-		if (_buffer && _buflength > 0) {
-			_bufstring = UnicodeString::fromUTF32(_buffer, _buflength);
+		if (_buffer && _buflength>0) {
+			_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
 		} else {
 			_bufstring.remove();
 		}
-		_cached = true;
+		_cached=true;
 	}
 	return _bufstring;
 }
 
 void CharBuf::reset() {
-	_buflength = 0;
-	_cached = false;
+	_buflength=0;
+	_cached=false;
 }
 
 void CharBuf::asString(UnicodeString& str) {

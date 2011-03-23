@@ -82,8 +82,8 @@ public:
 	*/
 	bool getAutoClose() const;
 	
-	virtual size_t read(void* data, size_t size) = 0;
-	virtual size_t write(const void* data, size_t size) = 0;
+	virtual size_t read(void* data, size_t size)=0;
+	virtual size_t write(const void* data, size_t size)=0;
 	
 	// Base functions passing down to the covered stream
 	virtual void flush();

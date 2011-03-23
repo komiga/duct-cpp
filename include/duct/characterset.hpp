@@ -88,14 +88,14 @@ public:
 		@param str The string to search.
 		@param from Optional start index.
 	*/
-	int findInString(const UnicodeString& str, unsigned int from = 0) const;
+	int findInString(const UnicodeString& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional start index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const UnicodeString& str, int from = -1) const;
+	int findLastInString(const UnicodeString& str, int from=-1) const;
 	
 	/**
 		Compare the given range with this range.
@@ -181,14 +181,14 @@ public:
 		@param str The string to search.
 		@param from Optional begin index.
 	*/
-	int findInString(const UnicodeString& str, unsigned int from = 0) const;
+	int findInString(const UnicodeString& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional begin index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const UnicodeString& str, int from = -1) const;
+	int findLastInString(const UnicodeString& str, int from=-1) const;
 	
 	/**
 		Add the given string ranges to the set.

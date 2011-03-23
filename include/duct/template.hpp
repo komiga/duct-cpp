@@ -106,7 +106,7 @@ public:
 	/**
 		Constructor with identity, layout and options.
 	*/
-	Template(Identity* iden, VTypeLayout* layout, bool casesens = false, /*bool flexible = false,*/ unsigned int infinitism = VARTYPE_NONE);
+	Template(Identity* iden, VTypeLayout* layout, bool casesens=false, /*bool flexible=false,*/ unsigned int infinitism=VARTYPE_NONE);
 	/**
 		Destructor.
 	*/
@@ -184,7 +184,7 @@ public:
 		@param sequential Whether value sequence is sequential.
 		If true, the comparison will require the template's layout to be matched in sequence (false will allow non-matching values in a sequence).
 	*/
-	unsigned int compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential = true) const;
+	unsigned int compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential=true) const;
 	
 	/**
 		Rename all matching identifiers to the given name.

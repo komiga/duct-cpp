@@ -37,6 +37,14 @@ duct++ FileStream class.
 namespace duct {
 
 /**
+	FileStream flags.
+*/
+enum FileStreamFlags {
+	/** Stream is opened with the append attribute. This flag implies STREAM_WRITEABLE. */
+	FILESTREAM_APPEND=__STREAM_RESERVED04
+};
+
+/**
 	File stream.
 	C stream for reading and writing files.
 */
@@ -49,7 +57,7 @@ public:
 		@param path The path to the file.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const char* path, const char* encoding = "utf8");
+	FileStream(const char* path, const char* encoding="utf8");
 	
 	/**
 		Constructor with path.
@@ -58,7 +66,7 @@ public:
 		@param path The path to the file.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const UnicodeString& path, const char* encoding = "utf8");
+	FileStream(const UnicodeString& path, const char* encoding="utf8");
 	
 	/**
 		Constructor with path and modes.
@@ -68,7 +76,7 @@ public:
 		@param readable Whether the stream can be read from.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const char* path, bool readable, bool writeable, const char* encoding = "utf8");
+	FileStream(const char* path, bool readable, bool writeable, const char* encoding="utf8");
 	
 	/**
 		Constructor with path and modes.
@@ -78,7 +86,7 @@ public:
 		@param readable Whether the stream can be read from.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding = "utf8");
+	FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
 	
 	/**
 		Constructor with path and flags.
@@ -87,7 +95,7 @@ public:
 		@param flags A combination of #Flags values.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const char* path, unsigned int flags, const char* encoding = "utf8");
+	FileStream(const char* path, unsigned int flags, const char* encoding="utf8");
 	
 	/**
 		Constructor with path and flags.
@@ -96,7 +104,7 @@ public:
 		@param flags A combination of #Flags values.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	FileStream(const UnicodeString& path, unsigned int flags, const char* encoding = "utf8");
+	FileStream(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
 	
 	/**
 		Destructor.
@@ -145,7 +153,7 @@ public:
 		@param writeable Open as writeable.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* openFile(const char* path, bool readable, bool writeable, const char* encoding = "utf8");
+	static FileStream* openFile(const char* path, bool readable, bool writeable, const char* encoding="utf8");
 	
 	/**
 		Open the given file with the given modes.
@@ -155,7 +163,7 @@ public:
 		@param writeable Open as writeable.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding = "utf8");
+	static FileStream* openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
 	
 	/**
 		Open the given file with the flags.
@@ -164,7 +172,7 @@ public:
 		@param flags The flags to open the stream with.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* openFile(const char* path, unsigned int flags, const char* encoding = "utf8");
+	static FileStream* openFile(const char* path, unsigned int flags, const char* encoding="utf8");
 	
 	/**
 		Open the given file with the flags.
@@ -173,7 +181,7 @@ public:
 		@param flags The flags to open the stream with.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* openFile(const UnicodeString& path, unsigned int flags, const char* encoding = "utf8");
+	static FileStream* openFile(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
 	
 	/**
 		Open the given file as readable.
@@ -181,7 +189,7 @@ public:
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* readFile(const char* path, const char* encoding = "utf8");
+	static FileStream* readFile(const char* path, const char* encoding="utf8");
 	
 	/**
 		Open the given file as readable.
@@ -189,7 +197,7 @@ public:
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* readFile(const UnicodeString& path, const char* encoding = "utf8");
+	static FileStream* readFile(const UnicodeString& path, const char* encoding="utf8");
 	
 	/**
 		Open the given file as writeable.
@@ -197,7 +205,7 @@ public:
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* writeFile(const char* path, const char* encoding = "utf8");
+	static FileStream* writeFile(const char* path, const char* encoding="utf8");
 	
 	/**
 		Open the given file as writeable.
@@ -205,7 +213,7 @@ public:
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	static FileStream* writeFile(const UnicodeString& path, const char* encoding = "utf8");
+	static FileStream* writeFile(const UnicodeString& path, const char* encoding="utf8");
 	
 protected:
 	FILE* _file;			// C FILE pointer

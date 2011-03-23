@@ -38,23 +38,23 @@ duct++ IniFormatter implementation.
 namespace duct {
 
 // Character constants
-const UChar32 CHAR_EOF = U_SENTINEL;
-const UChar32 CHAR_NEWLINE = '\n';
-const UChar32 CHAR_CARRIAGERETURN = '\r';
+const UChar32 CHAR_EOF=U_SENTINEL;
+const UChar32 CHAR_NEWLINE='\n';
+const UChar32 CHAR_CARRIAGERETURN='\r';
 
-const UChar32 CHAR_DECIMALPOINT = '.';
+const UChar32 CHAR_DECIMALPOINT='.';
 
-const UChar32 CHAR_QUOTE = '\"';
-const UChar32 CHAR_SEMICOLON = ';';
+const UChar32 CHAR_QUOTE='\"';
+const UChar32 CHAR_SEMICOLON=';';
 
-const UChar32 CHAR_OPENBRACKET = '[';
-const UChar32 CHAR_CLOSEBRACKET = ']';
-const UChar32 CHAR_EQUALSIGN = '=';
+const UChar32 CHAR_OPENBRACKET='[';
+const UChar32 CHAR_CLOSEBRACKET=']';
+const UChar32 CHAR_EQUALSIGN='=';
 
 // class IniToken implementation
 
 IniToken::IniToken() {
-	_type = NoToken;
+	_type=NoToken;
 }
 
 IniToken::IniToken(IniTokenType type) : _type(type) {
@@ -67,14 +67,14 @@ IniToken::~IniToken() {
 }
 
 void IniToken::reset(IniTokenType type) {
-	_type = type;
-	_buflength = 0; // Reset the write-position of the buffer, but keep the buffer intact
-	_cached = false;
+	_type=type;
+	_buflength=0; // Reset the write-position of the buffer, but keep the buffer intact
+	_cached=false;
 }
 
 void IniToken::setBeginningPosition(int line, int col) {
-	_beg_line = line;
-	_beg_col = col;
+	_beg_line=line;
+	_beg_col=col;
 }
 
 IniTokenType IniToken::getType() const {
@@ -82,42 +82,42 @@ IniTokenType IniToken::getType() const {
 }
 
 void IniToken::addChar(UChar32 c) {
-	const size_t BUFFER_INITIAL_SIZE = 68;
-	const double BUFFER_MULTIPLIER = 1.75;
+	const size_t BUFFER_INITIAL_SIZE=68;
+	const double BUFFER_MULTIPLIER=1.75;
 	if (!_buffer) {
-		_bufsize = BUFFER_INITIAL_SIZE;
-		_buffer = (UChar32*)malloc(_bufsize * 4);
-		_buflength = 0;
-	} else if (_buflength >= _bufsize) {
-		size_t newsize = ceil(_bufsize * BUFFER_MULTIPLIER);
-		if (newsize < _buflength) {
-			newsize = ceil(_buflength * BUFFER_MULTIPLIER);
+		_bufsize=BUFFER_INITIAL_SIZE;
+		_buffer=(UChar32*)malloc(_bufsize*4);
+		_buflength=0;
+	} else if (_buflength>=_bufsize) {
+		size_t newsize=ceil(_bufsize*BUFFER_MULTIPLIER);
+		if (newsize<_buflength) {
+			newsize=ceil(_buflength*BUFFER_MULTIPLIER);
 		}
-		_bufsize = newsize;
-		void* temp = realloc(_buffer, newsize * 4);
+		_bufsize=newsize;
+		void* temp=realloc(_buffer, newsize*4);
 		if (!temp) {
-			throw IniParserException(PARSERERROR_MEMALLOC, "IniToken::addChar", NULL, NULL, "Unable to allocate buffer of size %d bytes", (newsize * 4));
+			throw IniParserException(PARSERERROR_MEMALLOC, "IniToken::addChar", NULL, NULL, "Unable to allocate buffer of size %d bytes", (newsize*4));
 		}
-		_buffer = (UChar32*)temp;
+		_buffer=(UChar32*)temp;
 	}
-	_buffer[_buflength++] = c;
+	_buffer[_buflength++]=c;
 }
 
 void IniToken::cacheString() {
 	if (_buffer) {
-		_bufstring = UnicodeString::fromUTF32(_buffer, _buflength);
+		_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
 	} else {
 		_bufstring.remove();
 	}
-	_cached = true;
+	_cached=true;
 }
 
 int32_t IniToken::asInt() {
 	if (!_cached) {
 		cacheString();
 	}
-	UErrorCode status = U_ZERO_ERROR;
-	NumberFormat *nf = NumberFormat::createInstance(status);
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat *nf=NumberFormat::createInstance(status);
 	Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	if (U_FAILURE(status)) {
@@ -134,8 +134,8 @@ double IniToken::asDouble() {
 	if (!_cached) {
 		cacheString();
 	}
-	UErrorCode status = U_ZERO_ERROR;
-	NumberFormat *nf = NumberFormat::createInstance(status);
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat *nf=NumberFormat::createInstance(status);
 	Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	if (U_FAILURE(status)) {
@@ -191,9 +191,9 @@ const char* IniToken::typeAsString() const {
 
 // class IniParser implementation
 
-CharacterSet IniParser::_whitespaceset = CharacterSet("\t ");
-CharacterSet IniParser::_numberset = CharacterSet("0-9\\-+");
-CharacterSet IniParser::_digitset = CharacterSet(".0-9\\-+");
+CharacterSet IniParser::_whitespaceset=CharacterSet("\t ");
+CharacterSet IniParser::_numberset=CharacterSet("0-9\\-+");
+CharacterSet IniParser::_digitset=CharacterSet(".0-9\\-+");
 
 IniParser::IniParser() {
 	clean();
@@ -209,12 +209,12 @@ IniParser::~IniParser() {
 
 void IniParser::initWithStream(Stream* stream) {
 	clean();
-	_stream = stream;
+	_stream=stream;
 	nextChar(); // Get the first character
 }
 
 void IniParser::setHandler(IniParserHandler* handler) {
-	_handler = handler;
+	_handler=handler;
 }
 
 IniParserHandler* IniParser::getHandler() {
@@ -231,10 +231,10 @@ Stream* IniParser::getStream() {
 
 void IniParser::clean() {
 	_token.reset(NoToken);
-	_line = 1;
-	_col = 0;
-	_stream = NULL;
-	_curchar = CHAR_EOF;
+	_line=1;
+	_col=0;
+	_stream=NULL;
+	_curchar=CHAR_EOF;
 }
 
 bool IniParser::parse() {
@@ -242,41 +242,41 @@ bool IniParser::parse() {
 	skipWhitespace();
 	nextToken();
 	readToken();
-	if (_curchar == CHAR_EOF) {
+	if (_curchar==CHAR_EOF) {
 		_token.reset(EOFToken);
 		_handler->handleToken(_token); // Just to make sure the EOF gets handled (data might not end with a newline, causing an EOFToken)
 		return false;
-	} else if (_token._type == EOFToken) {
+	} else if (_token._type==EOFToken) {
 		return false;
 	}
 	return true;
 }
 
 UChar32 IniParser::nextChar() {
-	if (_curchar == CHAR_NEWLINE) {
+	if (_curchar==CHAR_NEWLINE) {
 		_line++;
-		_col = 0;
+		_col=0;
 	}
 	if (!_stream->eof()) {
-		_curchar = _stream->readChar();
+		_curchar=_stream->readChar();
 	} else {
-		_curchar = CHAR_EOF;
+		_curchar=CHAR_EOF;
 	}
-	if (_curchar == CHAR_CARRIAGERETURN) { // Skip \r
+	if (_curchar==CHAR_CARRIAGERETURN) { // Skip \r
 		nextChar();
-	} else if (_curchar != CHAR_EOF) {
+	} else if (_curchar!=CHAR_EOF) {
 		_col++;
 	}
 	return _curchar;
 }
 
 void IniParser::skipWhitespace() {
-	while (_curchar != CHAR_EOF && _whitespaceset.contains(_curchar))
+	while (_curchar!=CHAR_EOF && _whitespaceset.contains(_curchar))
 		nextChar();
 }
 
 void IniParser::skipToEOL() {
-	while (_curchar != CHAR_EOF && _curchar != CHAR_NEWLINE)
+	while (_curchar!=CHAR_EOF && _curchar!=CHAR_NEWLINE)
 		nextChar();
 }
 
@@ -284,32 +284,32 @@ IniToken& IniParser::nextToken() {
 	_token.reset(NoToken);
 	switch (_curchar) {
 		case CHAR_QUOTE:
-			_token._type = QuotedStringToken;
+			_token._type=QuotedStringToken;
 			break;
 		case CHAR_SEMICOLON:
-			_token._type = CommentToken;
+			_token._type=CommentToken;
 			break;
 		case CHAR_EOF:
-			_token._type = EOFToken;
+			_token._type=EOFToken;
 			break;
 		case CHAR_NEWLINE:
-			_token._type = EOLToken;
+			_token._type=EOLToken;
 			break;
 		case CHAR_DECIMALPOINT:
-			_token._type = DoubleToken;
+			_token._type=DoubleToken;
 			_token.addChar(_curchar); // Add the decimal
 			break;
 		case CHAR_EQUALSIGN:
-			_token._type = EqualsToken;
+			_token._type=EqualsToken;
 			break;
 		case CHAR_OPENBRACKET:
-			_token._type = NodeToken;
+			_token._type=NodeToken;
 			break;
 		default:
 			if (_numberset.contains(_curchar)) {
-				_token._type = NumberToken;
+				_token._type=NumberToken;
 			} else {
-				_token._type = StringToken;
+				_token._type=StringToken;
 			}
 			break;
 	}
@@ -359,22 +359,22 @@ void IniParser::readToken() {
 }
 
 void IniParser::readNumberToken() {
-	while (_curchar != CHAR_EOF) {
-		if (_curchar == CHAR_QUOTE) {
+	while (_curchar!=CHAR_EOF) {
+		if (_curchar==CHAR_QUOTE) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readNumberToken", &_token, this, "Unexpected quote");
-		} else if (_curchar == CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar == CHAR_SEMICOLON /*|| _curchar == CHAR_EQUALSIGN*/) {
+		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_SEMICOLON /*|| _curchar==CHAR_EQUALSIGN*/) {
 			break;
 		} else {
 			if (_numberset.contains(_curchar)) {
 				_token.addChar(_curchar);
-			} else if (_curchar == CHAR_DECIMALPOINT) {
+			} else if (_curchar==CHAR_DECIMALPOINT) {
 				_token.addChar(_curchar);
 				nextChar();
-				_token._type = DoubleToken;
+				_token._type=DoubleToken;
 				readDoubleToken();
 				return;
 			} else {
-				_token._type = StringToken;
+				_token._type=StringToken;
 				readStringToken();
 				return;
 			}
@@ -384,17 +384,17 @@ void IniParser::readNumberToken() {
 }
 
 void IniParser::readDoubleToken() {
-	while (_curchar != CHAR_EOF) {
-		if (_curchar == CHAR_QUOTE) {
+	while (_curchar!=CHAR_EOF) {
+		if (_curchar==CHAR_QUOTE) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readDoubleToken", &_token, this, "Unexpected quote");
-		} else if (_curchar == CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar == CHAR_SEMICOLON /*^^^|| _curchar == CHAR_EQUALSIGN*/) {
+		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_SEMICOLON /*^^^|| _curchar==CHAR_EQUALSIGN*/) {
 			break;
 		} else {
 			if (_numberset.contains(_curchar)) {
 				_token.addChar(_curchar);
-			} else { // (_curchar == CHAR_DECIMALPOINT)
+			} else { // (_curchar==CHAR_DECIMALPOINT)
 				// The token should've already contained a decimal point, so it must be a string.
-				_token._type = StringToken;
+				_token._type=StringToken;
 				readStringToken();
 				return;
 			}
@@ -404,10 +404,10 @@ void IniParser::readDoubleToken() {
 }
 
 void IniParser::readStringToken() {
-	while (_curchar != CHAR_EOF) {
-		if (_curchar == CHAR_QUOTE) {
+	while (_curchar!=CHAR_EOF) {
+		if (_curchar==CHAR_QUOTE) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readStringToken", &_token, this, "Unexpected quote");
-		} else if (_curchar == CHAR_NEWLINE /*^^^|| _whitespaceset.contains(_curchar)*/ || _curchar == CHAR_SEMICOLON || _curchar == CHAR_EQUALSIGN) {
+		} else if (_curchar==CHAR_NEWLINE /*^^^|| _whitespaceset.contains(_curchar)*/ || _curchar==CHAR_SEMICOLON || _curchar==CHAR_EQUALSIGN) {
 			break;
 		} else {
 			_token.addChar(_curchar);
@@ -418,7 +418,7 @@ void IniParser::readStringToken() {
 
 void IniParser::readQuotedStringToken() {
 	nextChar(); // Skip the first character (will be the initial quote)
-	while (_curchar != CHAR_QUOTE) {
+	while (_curchar!=CHAR_QUOTE) {
 		switch (_curchar) {
 			case CHAR_EOF:
 				throw IniParserException(PARSERERROR_PARSER, "IniParser::readQuotedStringToken", &_token, this, "Encountered EOF whilst reading quoted string");
@@ -435,14 +435,14 @@ void IniParser::readQuotedStringToken() {
 
 void IniParser::readNodeToken() {
 	nextChar(); // Skip initial bracket
-	while (_curchar != CHAR_EOF) {
-		if (_curchar == CHAR_OPENBRACKET) {
+	while (_curchar!=CHAR_EOF) {
+		if (_curchar==CHAR_OPENBRACKET) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readNodeToken", &_token, this, "Unexpected open bracket");
-		} else if (_curchar == CHAR_SEMICOLON) {
+		} else if (_curchar==CHAR_SEMICOLON) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readNodeToken", &_token, this, "Unexpected semicolon");
-		} else if (_curchar == CHAR_NEWLINE) {
+		} else if (_curchar==CHAR_NEWLINE) {
 			throw IniParserException(PARSERERROR_PARSER, "IniParser::readNodeToken", &_token, this, "Unexpected end of line");
-		} else if (_curchar == CHAR_CLOSEBRACKET /*|| _whitespaceset.contains(_curchar)*/) {
+		} else if (_curchar==CHAR_CLOSEBRACKET /*|| _whitespaceset.contains(_curchar)*/) {
 			break;
 		} else {
 			_token.addChar(_curchar);
@@ -465,13 +465,13 @@ void IniParserHandler::throwex(IniParserException e) {
 }
 
 void IniParserHandler::clean() {
-	_currentnode = NULL;
-	_rootnode = NULL;
+	_currentnode=NULL;
+	_rootnode=NULL;
 }
 
 void IniParserHandler::process() {
-	_rootnode = new Node(NULL);
-	_currentnode = _rootnode;
+	_rootnode=new Node(NULL);
+	_currentnode=_rootnode;
 	while (_parser.parse()) {
 	}
 	finish();
@@ -480,7 +480,7 @@ void IniParserHandler::process() {
 Node* IniParserHandler::processFromStream(Stream* stream) {
 	_parser.initWithStream(stream);
 	process();
-	Node* node = _rootnode; // Store before cleaning
+	Node* node=_rootnode; // Store before cleaning
 	clean();
 	_parser.clean();
 	return node;
@@ -489,19 +489,19 @@ Node* IniParserHandler::processFromStream(Stream* stream) {
 // class IniParserException implementation
 
 IniParserException::IniParserException(IniParserError error, const char* reporter, const IniToken* token, const IniParser* parser, const char* fmt, ...) {
-	_error = error;
-	_reporter = reporter;
-	_token = token;
-	_parser = parser;
+	_error=error;
+	_reporter=reporter;
+	_token=token;
+	_parser=parser;
 	
 	char temp[256];
 	va_list args;
 	va_start(args, fmt);
 	vsprintf(temp, fmt, args);
 	va_end(args);
-	temp[255] = '\0';
+	temp[255]='\0';
 	if (_parser && !_token)
-		_token = &_parser->getToken();
+		_token=&_parser->getToken();
 	if (_token && _parser)
 		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->_beg_line, _token->_beg_col, _parser->_line, _parser->_col, temp);
 	if (_token)
@@ -510,7 +510,7 @@ IniParserException::IniParserException(IniParserError error, const char* reporte
 		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->_line, _parser->_col, temp);
 	else
 		sprintf(_message, "(%s) [%s]: %s", _reporter, errorToString(_error), temp);
-	_message[511] = '\0';
+	_message[511]='\0';
 }
 
 const char* IniParserException::what() const throw() {
@@ -544,14 +544,14 @@ void StandardIniParserHandler::throwex(IniParserException e) {
 void StandardIniParserHandler::clean() {
 	IniParserHandler::clean();
 	_varname.remove();
-	_equals = false;
+	_equals=false;
 }
 
 void StandardIniParserHandler::freeData() {
 	if (_currentnode) {
-		if (_rootnode == _currentnode || _currentnode->getParent() != _rootnode) { // delete the root if the root and the current node are the same or if the current node has been parented
+		if (_rootnode==_currentnode || _currentnode->getParent()!=_rootnode) { // delete the root if the root and the current node are the same or if the current node has been parented
 			delete _rootnode;
-		} else if (_currentnode->getParent() == NULL) { // delete the root and the current node if the current node has not been parented
+		} else if (_currentnode->getParent()==NULL) { // delete the root and the current node if the current node has not been parented
 			delete _rootnode;
 			delete _currentnode;
 		}
@@ -565,16 +565,16 @@ void StandardIniParserHandler::handleToken(IniToken& token) {
 	switch (token.getType()) {
 		case StringToken:
 		case QuotedStringToken: {
-			if (_varname.length() > 0 && _equals) {
-				if (token.getType() == StringToken) {
-					int bv = Variable::stringToBool(token.asString());
-					if (bv != -1) {
+			if (_varname.length()>0 && _equals) {
+				if (token.getType()==StringToken) {
+					int bv=Variable::stringToBool(token.asString());
+					if (bv!=-1) {
 						addValueAndReset(new BoolVariable((bool)bv, _varname));
 						return;
 					}
 				}
 				addValueAndReset(new StringVariable(token.asString(), _varname));
-			} else if (_varname.length() > 0) {
+			} else if (_varname.length()>0) {
 				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected equals sign, got string"));
 			} else {
 				_varname.setTo(token.asString()).trim();
@@ -582,36 +582,36 @@ void StandardIniParserHandler::handleToken(IniToken& token) {
 			}
 			break;
 		case NumberToken:
-			if (_varname.length() > 0 && _equals) {
+			if (_varname.length()>0 && _equals) {
 				addValueAndReset(new IntVariable(token.asInt(), _varname));
 			} else {
 				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 			}
 			break;
 		case DoubleToken:
-			if (_varname.length() > 0 && _equals) {
+			if (_varname.length()>0 && _equals) {
 				addValueAndReset(new FloatVariable(token.asDouble(), _varname));
 			} else {
 				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 			}
 			break;
 		case EqualsToken:
-			if (_varname.length() == 0) {
+			if (_varname.length()==0) {
 				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected string, got equality sign"));
 			} else if (_equals) {
 				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected value, got equality sign"));
 			} else {
-				_equals = true;
+				_equals=true;
 			}
 			break;
 		case NodeToken: {
-			if (_varname.length() == 0) {
+			if (_varname.length()==0) {
 				_varname.setTo(token.asString()).trim();
-				_currentnode = new Node(_varname, _rootnode); // Trim whitespace
+				_currentnode=new Node(_varname, _rootnode); // Trim whitespace
 				_varname.remove(); // clear the string
 				_rootnode->addVariable(_currentnode);
 			} else {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "NodeToken: Unknown error. _varname length is > 0"));
+				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "NodeToken: Unknown error. _varname length is>0"));
 			}
 			}
 			break;
@@ -629,16 +629,16 @@ void StandardIniParserHandler::handleToken(IniToken& token) {
 }
 
 void StandardIniParserHandler::finish() {
-	if (_varname.length() > 0 && _equals) {
+	if (_varname.length()>0 && _equals) {
 		addValueAndReset(new StringVariable("", _varname));
-	} else if (_varname.length() > 0) {
+	} else if (_varname.length()>0) {
 		throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::finish", NULL, &_parser, "Expected equality sign, got EOL or EOF"));
 	}
 }
 
 void StandardIniParserHandler::reset() {
 	_varname.remove();
-	_equals = false;
+	_equals=false;
 }
 
 void StandardIniParserHandler::addValueAndReset(ValueVariable* value) {
@@ -648,15 +648,15 @@ void StandardIniParserHandler::addValueAndReset(ValueVariable* value) {
 
 // class IniFormatter implementation
 
-StandardIniParserHandler IniFormatter::_handler = StandardIniParserHandler();
+StandardIniParserHandler IniFormatter::_handler=StandardIniParserHandler();
 
 bool IniFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
-	if (value.getName().length() > 0) {
+	if (value.getName().length()>0) {
 		UnicodeString temp;
 		value.getNameFormatted(temp, nameformat);
 		result.setTo(temp);
 		value.getValueFormatted(temp, varformat);
-		result += "=" + temp;
+		result+="="+temp;
 		return true;
 	} else {
 		result.remove(); // clear the result string
@@ -666,9 +666,9 @@ bool IniFormatter::formatValue(const ValueVariable& value, UnicodeString& result
 }
 
 Node* IniFormatter::loadFromFile(const char* path, const char* encoding) {
-	Stream* stream = FileStream::readFile(path, encoding);
+	Stream* stream=FileStream::readFile(path, encoding);
 	if (stream) {
-		Node* root = _handler.processFromStream(stream);
+		Node* root=_handler.processFromStream(stream);
 		stream->close();
 		delete stream;
 		return root;
@@ -694,7 +694,7 @@ Node* IniFormatter::loadFromStream(Stream* stream) {
 }
 
 bool IniFormatter::writeToFile(const Node* root, const char* path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
-	Stream* stream = FileStream::writeFile(path, encoding);
+	Stream* stream=FileStream::writeFile(path, encoding);
 	if (stream) {
 		writeToStream(root, stream, 0, nameformat, varformat);
 		stream->close();
@@ -716,18 +716,18 @@ bool IniFormatter::writeToFile(const Node* root, const UnicodeString& path, cons
 bool IniFormatter::writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat, unsigned int varformat) {
 	if (root && stream) {
 		UnicodeString temp;
-		if (root->getParent() && root->getName().length() > 0) { // cheap way of saying the node is not a root node
+		if (root->getParent() && root->getName().length()>0) { // cheap way of saying the node is not a root node
 			writeTabs(stream, tcount, false);
 			root->getNameFormatted(temp, nameformat);
 			stream->writeChar16('[');
-			temp += ']';
+			temp+=']';
 			stream->writeLine(temp);
 		}
 		Node* node;
 		ValueVariable* value;
-		for (VarList::const_iterator iter = root->begin(); iter != root->end(); ++iter) {
-			value = dynamic_cast<ValueVariable*>(*iter);
-			node = dynamic_cast<Node*>(*iter);
+		for (VarList::const_iterator iter=root->begin(); iter!=root->end(); ++iter) {
+			value=dynamic_cast<ValueVariable*>(*iter);
+			node=dynamic_cast<Node*>(*iter);
 			if (node) {
 				writeToStream(node, stream, tcount, nameformat, varformat);
 			} else if (value) {
@@ -743,7 +743,7 @@ bool IniFormatter::writeToStream(const Node* root, Stream* stream, unsigned int 
 }
 
 void IniFormatter::writeTabs(Stream* stream, unsigned int count, bool newline) {
-	while (0 < count--) {
+	while (0<count--) {
 		stream->writeChar16('\t');
 	}
 	if (newline)

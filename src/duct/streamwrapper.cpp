@@ -49,7 +49,7 @@ void StreamWrapper::setStream(Stream* stream) {
 	if (_autoclose && _stream) {
 		close();
 	}
-	_stream = stream;
+	_stream=stream;
 }
 
 Stream* StreamWrapper::getStream() const {
@@ -57,7 +57,7 @@ Stream* StreamWrapper::getStream() const {
 }
 
 void StreamWrapper::setAutoClose(bool autoclose) {
-	_autoclose = autoclose;
+	_autoclose=autoclose;
 }
 
 bool StreamWrapper::getAutoClose() const {
@@ -193,7 +193,7 @@ unsigned long StreamWrapper::skip(long change) {
 void StreamWrapper::close() {
 	if (_stream) {
 		_stream->close();
-		_stream = NULL;
+		_stream=NULL;
 	}
 }
 

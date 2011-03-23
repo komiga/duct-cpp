@@ -42,7 +42,7 @@ enum CharEncoding {
 	/**
 		ASCII encoding (no encoding).
 	*/
-	ENC_ASCII = 1,
+	ENC_ASCII=1,
 	/**
 		UTF8 encoding.
 	*/
