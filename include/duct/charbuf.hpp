@@ -46,7 +46,6 @@ public:
 		Destructor.
 	*/
 	~CharBuf();
-	
 	/**
 		Add a character to the buffer.
 		Adding a character from the buffer will cause the cached string to be reset.
@@ -59,14 +58,12 @@ public:
 		@returns The cached string.
 	*/
 	const UnicodeString& cacheString();
-	
 	/**
 		Reset the buffer.
 		The internal memory buffer will not be freed, but the position and cached string will be reset.
 		@returns Nothing.
 	*/
 	void reset();
-	
 	/**
 		Convert the buffer to a string.
 		@returns Nothing.
