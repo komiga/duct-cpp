@@ -48,7 +48,7 @@ void CoverStream::setStream(Stream* stream) {
 	if (_autoclose && _stream) {
 		close();
 	}
-	_stream = stream;
+	_stream=stream;
 }
 
 Stream* CoverStream::getStream() const {
@@ -56,7 +56,7 @@ Stream* CoverStream::getStream() const {
 }
 
 void CoverStream::setAutoClose(bool autoclose) {
-	_autoclose = autoclose;
+	_autoclose=autoclose;
 }
 
 bool CoverStream::getAutoClose() const {
@@ -97,7 +97,7 @@ unsigned long CoverStream::skip(long change) {
 void CoverStream::close() {
 	if (_stream) {
 		_stream->close();
-		_stream = NULL;
+		_stream=NULL;
 	}
 }
 

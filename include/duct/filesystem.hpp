@@ -50,7 +50,7 @@ enum PathType {
 	/**
 		Non-existant file.
 	*/
-	PATHTYPE_NONE = 0,
+	PATHTYPE_NONE=0,
 	/**
 		File type.
 		Non-directories are always treated as files (e.g. links on UNIX).
@@ -234,21 +234,21 @@ bool fileExists(const UnicodeString& path);
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const char* path, bool structure = false);
+bool createDir(const char* path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const std::string& path, bool structure = false);
+bool createDir(const std::string& path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const UnicodeString& path, bool structure = false);
+bool createDir(const UnicodeString& path, bool structure=false);
 
 /**
 	Create the given file.
@@ -256,21 +256,21 @@ bool createDir(const UnicodeString& path, bool structure = false);
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const char* path, bool createpath = false);
+bool createFile(const char* path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const std::string& path, bool createpath = false);
+bool createFile(const std::string& path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const UnicodeString& path, bool createpath = false);
+bool createFile(const UnicodeString& path, bool createpath=false);
 
 /**
 	Delete the given file.

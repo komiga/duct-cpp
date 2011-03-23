@@ -44,7 +44,7 @@ namespace duct {
 	ScriptToken types.
 */
 enum ScriptTokenType {
-	NoToken = 0,
+	NoToken=0,
 	
 	StringToken,
 	QuotedStringToken,
@@ -376,14 +376,14 @@ public:
 		@returns Nothing.
 		@param token The token to handle.
 	*/
-	virtual void handleToken(ScriptToken& token) = 0;
+	virtual void handleToken(ScriptToken& token)=0;
 	
 	/**
 		Finish processing.
 		Close any handles, clean nodes, etc.
 		@returns Nothing.
 	*/
-	virtual void finish() = 0;
+	virtual void finish()=0;
 	
 	/**
 		Process the given stream.
@@ -408,7 +408,7 @@ enum ScriptParserError {
 	/**
 		Parser error.
 	*/
-	PARSERERROR_UNKNOWN = 0,
+	PARSERERROR_UNKNOWN=0,
 	/**
 		Parser error.
 	*/
@@ -503,7 +503,7 @@ public:
 		@param resetvalue Whether to reset the current value.
 		@param force Whether to force creation (create even if the handler has a current identifier).
 	*/
-	void makeIdentifier(const ScriptToken* token = NULL, bool resetiden = false, bool resetvalue = false, bool force = false);
+	void makeIdentifier(const ScriptToken* token=NULL, bool resetiden=false, bool resetvalue=false, bool force=false);
 	
 protected:
 	UnicodeString _varname;
@@ -526,7 +526,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatIdentifier(const Identifier& iden, UnicodeString& result, unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
+	static bool formatIdentifier(const Identifier& iden, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 	/**
 		Format the given value as a script value.
@@ -536,7 +536,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
+	static bool formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 	/**
 		Load a node from the given file path.
@@ -546,9 +546,9 @@ public:
 		@param path The file path to read.
 		@param encoding File character encoding. Default is UTF8.
 	*/
-	static Node* loadFromFile(const char* path, const char* encoding = "utf8");
-	static Node* loadFromFile(const std::string& path, const char* encoding = "utf8");
-	static Node* loadFromFile(const UnicodeString& path, const char* encoding = "utf8");
+	static Node* loadFromFile(const char* path, const char* encoding="utf8");
+	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
+	static Node* loadFromFile(const UnicodeString& path, const char* encoding="utf8");
 	
 	/**
 		Load a node from the given stream.
@@ -568,9 +568,9 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool writeToFile(const Node* root, const char* path, const char* encoding = "utf8", unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const std::string& path, const char* encoding = "utf8", unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const UnicodeString& path, const char* encoding = "utf8", unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
+	static bool writeToFile(const Node* root, const char* path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(const Node* root, const std::string& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(const Node* root, const UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 	/**
 		Write the given node to the given stream.
@@ -581,13 +581,13 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat = FMT_NAME_DEFAULT, unsigned int varformat = FMT_ALL_DEFAULT);
+	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
 	static StandardScriptParserHandler _handler;
 	
 private:
-	static void writeTabs(Stream* stream, unsigned int count, bool newline = false);
+	static void writeTabs(Stream* stream, unsigned int count, bool newline=false);
 };
 
 } // namespace duct

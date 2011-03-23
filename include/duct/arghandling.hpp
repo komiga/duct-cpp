@@ -1,5 +1,5 @@
 /**
-@file endianstream.hpp
+@file arghandling.hpp
 @author Tim Howard
 
 @section LICENSE
@@ -25,46 +25,28 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ EndianStream class.
+duct++ argument handling.
 */
 
-#ifndef _DUCT_ENDIANSTREAM_HPP
-#define _DUCT_ENDIANSTREAM_HPP
+#ifndef _DUCT_ARGHANDLING_HPP
+#define _DUCT_ARGHANDLING_HPP
 
 #include <duct/config.hpp>
-#include <duct/streamwrapper.hpp>
+#include <duct/variables.hpp>
 
 namespace duct {
 
 /**
-	Endian stream.
+	Parse the given arguments.
+	The expected value does <em>not</em> (by default) contain the first argument of standard arguments (the application location).
+	You can override this by passing fullargs as true. If you leave it as false, the root identifier's name will be set to the first argument (which should be the application location with standard arguments).
+	@returns: The root identifier containing the parsed arguments, or NULL if the given argument count is less than 1.
+	@param optarglimit Limits how many arguments can be given to an option (options start with "--" or "-"). If set to -1, there is no limit.
+	Single-dash options (e.g. "-a") are not parsed for arguments, whereas double-dash options (e.g. "--foo bar") will be.
 */
-class DUCT_API EndianStream : public StreamWrapper {
-public:
-	/**
-		Constructor with stream.
-		Automatically closing the wrapped stream is on by default.
-		@param stream The stream to wrap.
-		@param autoclose See setAutoClose(). Default is true.
-		@param order Byte order. Default is DUCT_LITTLE_ENDIAN.
-	*/
-	EndianStream(Stream* stream, bool autoclose=true, int order=DUCT_LITTLE_ENDIAN);
-	
-	virtual short readShort();
-	virtual int readInt();
-	virtual float readFloat();
-	
-	virtual void writeShort(short value);
-	virtual void writeInt(int value);
-	virtual void writeFloat(float value);
-	
-protected:
-	/** Byte order. */
-	int _order;
-	
-};
+DUCT_API Identifier* parseArgs(int argc, const char** argv, bool fullargs=true, int optarglimit=1);
 
 } // namespace duct
 
-#endif // _DUCT_ENDIANSTREAM_HPP
+#endif // _DUCT_ARGHANDLING_HPP
 

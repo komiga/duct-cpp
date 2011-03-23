@@ -39,24 +39,26 @@ duct++ Stream class.
 
 namespace duct {
 
+/**
+	Stream flags.
+	The values reserved are 0x01 through 0x10, any value further than that can be used for deriving classes' custom flags.
+*/
+enum StreamFlags {
+	/** Stream is readable. */
+	STREAM_READABLE=0x01,
+	/** Stream is writeable. */
+	STREAM_WRITEABLE=0x02,
+	/** Reserved flag 0x04. */
+	__STREAM_RESERVED04=0x04,
+	/** Reserved flag 0x08. */
+	__STREAM_RESERVED08=0x08,
+	/** Reserved flag 0x10. */
+	__STREAM_RESERVED10=0x10
+};
+
 /** Abstract class for every stream. */
 class DUCT_API Stream {
 public:
-	/**
-		Stream flags.
-		The values reserved are 0x01 through 0x08, any value further than that can be used for deriving classes' custom flags.
-	*/
-	enum Flags {
-		/** Stream is readable. */
-		STREAM_READABLE = 0x01,
-		/** Stream is writeable. */
-		STREAM_WRITEABLE = 0x02,
-		/** Reserved flag 0x04. */
-		__STREAM_RESERVED04 = 0x04,
-		/** Reserved flag 0x08. */
-		__STREAM_RESERVED08 = 0x08
-	};
-	
 	/**
 		Constructor.
 		This will set the _conv field to NULL.
@@ -71,7 +73,7 @@ public:
 		@param data Data pointer.
 		@param size Number of bytes to read.
 	*/
-	virtual size_t read(void* data, size_t size) = 0;
+	virtual size_t read(void* data, size_t size)=0;
 	/**
 		Write the given number of bytes from a pointer.
 		If the return value is not the given size, then an error occurred (likely end-of-stream).
@@ -79,7 +81,7 @@ public:
 		@param data Data pointer.
 		@param size Number of bytes to write.
 	*/
-	virtual size_t write(const void* data, size_t size) = 0;
+	virtual size_t write(const void* data, size_t size)=0;
 	
 	/**
 		Read a byte from the stream.
@@ -188,7 +190,7 @@ public:
 	virtual size_t writeLine(const UnicodeString& str);
 	/**
 		Write the given string to the stream as a null-terminated string.
-		This will basically write str + '\\0' to the stream.
+		This will basically write str+'\\0' to the stream.
 		The number of bytes written will depend on the stream's encoding.
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
@@ -201,7 +203,7 @@ public:
 		@param checkstr The string to compare with.
 		@param maxlength Optional max-length for reading the C string. If maxlength is greater than 0, it will be used as the maximum length for reading the C string, otherwise the given string's length will be used (plus one for the null character).
 	*/
-	bool readAndMatchCString(const UnicodeString& checkstr, size_t maxlength = 0);
+	bool readAndMatchCString(const UnicodeString& checkstr, size_t maxlength=0);
 
 	/**
 		Read a reserved-space null-terminated string.
@@ -240,30 +242,30 @@ public:
 		Flush the stream.
 		@returns Nothing.
 	*/
-	virtual void flush() = 0;
+	virtual void flush()=0;
 	/**
 		Get the end-of state.
 		NOTE: For streams that are <em>writeable</em>, a return value of true can mean that either the stream was closed,
 		or the writing position is at the very end of the stream (which should mean that it can still write data).
 		@returns true if the stream either has ended, or is at the end of the stream, or false if it has not.
 	*/
-	virtual bool eof() const = 0;
+	virtual bool eof() const=0;
 	/**
 		Get the size of the stream.
 		@returns The size of the stream.
 	*/
-	virtual size_t size() const = 0;
+	virtual size_t size() const=0;
 	/**
 		Get the stream's position.
 		@returns The position of the stream.
 	*/
-	virtual unsigned long pos() const = 0;
+	virtual unsigned long pos() const=0;
 	/**
 		Seek the stream (change the reading/writing position).
 		@returns The new position of the stream.
 		@param pos The position to seek to.
 	*/
-	virtual unsigned long seek(unsigned long pos) = 0;
+	virtual unsigned long seek(unsigned long pos)=0;
 	/**
 		Seek the stream forwards or backwards by the given value.
 		@returns The new position of the stream.
@@ -274,7 +276,7 @@ public:
 		Close the stream.
 		@returns Nothing.
 	*/
-	virtual void close() = 0;
+	virtual void close()=0;
 	
 	/**
 		Set the stream's flags.
@@ -308,6 +310,7 @@ public:
 		@returns The stream's character converter. This may be NULL if the character converter has not been opened.
 	*/
 	virtual UConverter* getConv();
+	virtual const UConverter* getConv() const;
 	/**
 		Close the stream's character converter.
 		@returns Nothing.

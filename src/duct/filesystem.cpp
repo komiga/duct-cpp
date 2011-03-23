@@ -51,18 +51,18 @@ DirStream::DirStream(const UnicodeString& path) {
 DirStream::~DirStream() {
 	if (_dir) {
 		closedir(_dir);
-		_dir = NULL;
-		_entry = NULL;
+		_dir=NULL;
+		_entry=NULL;
 	}
 }
 
 bool DirStream::nextEntry() {
-	_entry = readdir(_dir);
-	return _entry != NULL;
+	_entry=readdir(_dir);
+	return _entry!=NULL;
 }
 
 bool DirStream::nextEntry(UnicodeString& result) {
-	_entry = readdir(_dir);
+	_entry=readdir(_dir);
 	if (_entry) {
 		result.setTo(UnicodeString(_entry->d_name));
 		return true;
@@ -89,26 +89,26 @@ PathType DirStream::entryType() const {
 }
 
 bool DirStream::isOpen() const {
-	return _dir != NULL;
+	return _dir!=NULL;
 }
 
 bool DirStream::close() {
 	if (_dir) {
 		closedir(_dir);
-		_dir = NULL;
+		_dir=NULL;
 		return true;
 	}
 	return false;
 }
 
 void DirStream::init() {
-	char c = _path[_path.length() - 1];
-	if (c == '\\') {
-		_path.replace(_path.length() - 1, 1, 1, '/');
-	} else if (c != '/') {
+	char c=_path[_path.length()-1];
+	if (c=='\\') {
+		_path.replace(_path.length()-1, 1, 1, '/');
+	} else if (c!='/') {
 		_path.append("/");
 	}
-	_dir = opendir(_path.c_str());
+	_dir=opendir(_path.c_str());
 }
 
 // FileSystem implementation
@@ -116,17 +116,17 @@ void DirStream::init() {
 namespace FileSystem {
 
 bool statPath(const char* path, struct stat* s) {
-	return stat(path, s) == 0;
+	return stat(path, s)==0;
 }
 
 bool statPath(const std::string& path, struct stat* s) {
-	return stat(path.c_str(), s) == 0;
+	return stat(path.c_str(), s)==0;
 }
 
 bool statPath(const UnicodeString& path, struct stat* s) {
 	std::string str;
 	path.toUTF8String(str);
-	return stat(str.c_str(), s) == 0;
+	return stat(str.c_str(), s)==0;
 }
 
 PathType pathType(const char* path) {
@@ -210,50 +210,65 @@ bool fileExists(const UnicodeString& path) {
 	}
 }
 
+// TODO structure creation
+bool createDir(const char* path, bool structure) {
+	return mkdir(path, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)==0;
+}
+
+bool createDir(const std::string& path, bool structure) {
+	return createDir(path.c_str(), false);
+}
+
+bool createDir(const UnicodeString& path, bool structure) {
+	std::string str;
+	path.toUTF8String(str);
+	return createDir(str.c_str(), false);
+}
+
 bool createFile(const char* path, bool createpath) {
 	// TODO: dir/path extraction from file path
 	/*if (createpath && !dirExists()) {
 		createDir();
 	}*/
-	return creat(path, 0) == -1;
+	return creat(path, 0)!=-1;
 }
 
 bool createFile(const std::string& path, bool createpath) {
-	return creat(path.c_str(), 0) == -1;
+	return createFile(path.c_str(), createpath);
 }
 
 bool createFile(const UnicodeString& path, bool createpath) {
 	std::string str;
 	path.toUTF8String(str);
-	return creat(str.c_str(), 0) != -1;
+	return createFile(str.c_str(), createpath);
 }
 
 bool deleteFile(const char* path) {
-	return remove(path) == 0;
+	return remove(path)==0;
 }
 
 bool deleteFile(const std::string& path) {
-	return remove(path.c_str()) == 0;
+	return remove(path.c_str())==0;
 }
 
 bool deleteFile(const UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
-	return remove(str.c_str()) == 0;
+	return remove(str.c_str())==0;
 }
 
 bool deleteDir(const char* path) {
-	return rmdir(path) == 0;
+	return rmdir(path)==0;
 }
 
 bool deleteDir(const std::string& path) {
-	return rmdir(path.c_str()) == 0;
+	return rmdir(path.c_str())==0;
 }
 
 bool deleteDir(const UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
-	return rmdir(str.c_str()) == 0;
+	return rmdir(str.c_str())==0;
 }
 
 } // namespace FileSystem

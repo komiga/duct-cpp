@@ -34,57 +34,57 @@ duct++ EndianStream class implementation.
 namespace duct {
 
 EndianStream::EndianStream(Stream* stream, bool autoclose, int order) : _order(order) {
-	_stream = stream;
-	_autoclose = autoclose;
+	_stream=stream;
+	_autoclose=autoclose;
 }
 
 short EndianStream::readShort() {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	short s = _stream->readShort();
-	if (_order != DUCT_BYTEORDER) {
-		s = bswap_16(s);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	short s=_stream->readShort();
+	if (_order!=DUCT_BYTEORDER) {
+		s=bswap_16(s);
 	}
 	return s;
 }
 
 int EndianStream::readInt() {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	int i = _stream->readInt();
-	if (_order != DUCT_BYTEORDER) {
-		i = bswap_32(i);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	int i=_stream->readInt();
+	if (_order!=DUCT_BYTEORDER) {
+		i=bswap_32(i);
 	}
 	return i;
 }
 
 float EndianStream::readFloat() {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	float f = _stream->readFloat();
-	if (_order != DUCT_BYTEORDER) {
-		f = (float)bswap_32((unsigned int)f);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	float f=_stream->readFloat();
+	if (_order!=DUCT_BYTEORDER) {
+		f=(float)bswap_32((unsigned int)f);
 	}
 	return f;
 }
 
 void EndianStream::writeShort(short value) {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	if (_order != DUCT_BYTEORDER) {
-		value = bswap_16(value);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	if (_order!=DUCT_BYTEORDER) {
+		value=bswap_16(value);
 	}
 	_stream->writeShort(value);
 }
 
 void EndianStream::writeInt(int value) {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	if (_order != DUCT_BYTEORDER) {
-		value = bswap_32(value);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	if (_order!=DUCT_BYTEORDER) {
+		value=bswap_32(value);
 	}
 	_stream->writeInt(value);
 }
 
 void EndianStream::writeFloat(float value) {
-	debug_assertp(_stream != NULL, this, "Wrapped stream not set");
-	if (_order != DUCT_BYTEORDER) {
-		value = (float)bswap_32((unsigned int)value);
+	debug_assertp(_stream!=NULL, this, "Wrapped stream not set");
+	if (_order!=DUCT_BYTEORDER) {
+		value=(float)bswap_32((unsigned int)value);
 	}
 	_stream->writeFloat(value);
 }

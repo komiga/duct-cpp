@@ -45,8 +45,8 @@ BufferStream::BufferStream(void* buffer, size_t size, unsigned int flags, const 
 }
 
 void BufferStream::setBuffer(void* buffer, size_t size) {
-	_buffer = buffer;
-	_size = size;
+	_buffer=buffer;
+	_size=size;
 }
 
 void* BufferStream::getBuffer() {
@@ -54,20 +54,20 @@ void* BufferStream::getBuffer() {
 }
 
 size_t BufferStream::read(void* data, size_t size) {
-	debug_assertp(_buffer != NULL, this, "Cannot read from closed stream");
-	debug_assertp(_flags & STREAM_READABLE, this, "Stream is not readable");
-	debug_assertp(_pos < _size, this, "Cannot read past the size of the buffer");
-	memcpy(data, (char*)_buffer + _pos, size);
-	_pos += size;
+	debug_assertp(_buffer!=NULL, this, "Cannot read from closed stream");
+	debug_assertp(_flags&STREAM_READABLE, this, "Stream is not readable");
+	debug_assertp(_pos<_size, this, "Cannot read past the size of the buffer");
+	memcpy(data, (char*)_buffer+_pos, size);
+	_pos+=size;
 	return size;
 }
 
 size_t BufferStream::write(const void* data, size_t size) {
-	debug_assertp(_buffer != NULL, this, "Cannot write to closed stream");
-	debug_assertp(_flags & STREAM_WRITEABLE, this, "Stream is not writeable");
-	debug_assertp(_pos + size <= _size, this, "Cannot write past the size of the buffer");
-	memcpy((char*)_buffer + _pos, data, size);
-	_pos += size;
+	debug_assertp(_buffer!=NULL, this, "Cannot write to closed stream");
+	debug_assertp(_flags&STREAM_WRITEABLE, this, "Stream is not writeable");
+	debug_assertp(_pos+size<=_size, this, "Cannot write past the size of the buffer");
+	memcpy((char*)_buffer+_pos, data, size);
+	_pos+=size;
 	return size;
 }
 
@@ -77,7 +77,7 @@ void BufferStream::flush() {
 
 bool BufferStream::eof() const {
 	if (_buffer)
-		return _pos == _size;
+		return _pos==_size;
 	return true;
 }
 
@@ -90,17 +90,17 @@ unsigned long BufferStream::pos() const {
 }
 
 unsigned long BufferStream::seek(unsigned long pos) {
-	debug_assertp(_buffer != NULL, this, "Cannot seek closed stream");
-	debug_assertp(pos <= _size, this, "Cannot seek past the size of the buffer");
-	_pos = pos;
+	debug_assertp(_buffer!=NULL, this, "Cannot seek closed stream");
+	debug_assertp(pos<=_size, this, "Cannot seek past the size of the buffer");
+	_pos=pos;
 	return _pos;
 }
 
 void BufferStream::close() {
-	if (_buffer != NULL) {
-		_buffer = NULL;
-		_pos = 0;
-		_size = 0;
+	if (_buffer!=NULL) {
+		_buffer=NULL;
+		_pos=0;
+		_size=0;
 	}
 }
 

@@ -46,10 +46,10 @@ public:
 	/**
 		Constructor with buffer, buffer size, flags and character encoding.
 		@param buffer The buffer to read/write from/to.
-		@param flags The stream flags. Default is STREAM_READABLE | STREAM_WRITABLE.
+		@param flags The stream flags. Default is STREAM_READABLE|STREAM_WRITABLE.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	BufferStream(void* buffer, size_t size, unsigned int flags = STREAM_READABLE | STREAM_WRITEABLE, const char* encoding = "utf8");
+	BufferStream(void* buffer, size_t size, unsigned int flags=STREAM_READABLE|STREAM_WRITEABLE, const char* encoding="utf8");
 	
 	/**
 		Set the stream's buffer and size.

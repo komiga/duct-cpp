@@ -40,57 +40,57 @@ namespace duct {
 
 /**
 	Base Variable types.
-	0x1 through 0x80 are reserved types.
+	00x1 through 0x80 are reserved types.
 */
 enum VariableType {
 	/**
 		#IntVariable.
 	*/
-	VARTYPE_INTEGER = 0x1,
+	VARTYPE_INTEGER=0x01,
 	/**
 		#StringVariable.
 	*/
-	VARTYPE_STRING = 0x2,
+	VARTYPE_STRING=0x02,
 	/**
 		#FloatVariable.
 	*/
-	VARTYPE_FLOAT = 0x4,
+	VARTYPE_FLOAT=0x04,
 	/**
 		#BoolVariable.
 	*/
-	VARTYPE_BOOL = 0x8,
+	VARTYPE_BOOL=0x08,
 	/**
 		Reserved type 0x10.
 	*/
-	_VARTYPE_RESERVED0 = 0x10,
+	VARTYPE_RESERVED0=0x10,
 	/**
 		Reserved type 0x20.
 	*/
-	_VARTYPE_RESERVED1 = 0x20,
+	VARTYPE_RESERVED1=0x20,
 	/**
 		#Identifier.
 	*/
-	VARTYPE_IDENTIFIER = 0x40,
+	VARTYPE_IDENTIFIER=0x40,
 	/**
 		#Node.
 	*/
-	VARTYPE_NODE = 0x80,
+	VARTYPE_NODE=0x80,
 	/**
 		No variable type.
-		Special variable type (means 'no variable type'). Alias for 0x0 (no flags).
+		Special variable type (means 'no variable type'). Alias for 0x00 (no flags).
 		@see VARTYPE_ANY.
 	*/
-	VARTYPE_NONE = 0x0,
+	VARTYPE_NONE=0x00,
 	/**
 		Special value for variable searching.
 		Means 'any variable type'.
 		See CollectionVariable.findWithType().
 	*/
-	VARTYPE_ANY = 0xFFFFFFFF,
+	VARTYPE_ANY=0xFFFFFFFF,
 	/**
 		Special type for ValueVariables.
 	*/
-	VARTYPE_VALUE = VARTYPE_INTEGER | VARTYPE_STRING | VARTYPE_FLOAT | VARTYPE_BOOL
+	VARTYPE_VALUE=VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT|VARTYPE_BOOL
 };
 
 /**
@@ -102,83 +102,83 @@ enum ValueFormat {
 		Value quote-always format flag.
 		This flag is for any variable type. The output will always have quotes around it.
 	*/
-	FMT_VALUE_QUOTE_ALWAYS = 0x1,
+	FMT_VALUE_QUOTE_ALWAYS=0x01,
 	
 	/**
 		String quote-whitespace format flag.
 		This format will quote a string containing whitespace or newlines. e.g. "foo bar~t" -> "\"foo bar~t\"".
 	*/
-	FMT_STRING_QUOTE_WHITESPACE = 0x10,
+	FMT_STRING_QUOTE_WHITESPACE=0x10,
 	/**
 		String quote-empty format flag.
 		This format will quote an empty string. e.g. "" -> "\"\"".
 	*/
-	FMT_STRING_QUOTE_EMPTY = 0x20,
+	FMT_STRING_QUOTE_EMPTY=0x20,
 	/**
 		String quote-bool format flag.
 		This format will quote a string if it equals "true" or "false" as a type safeguard. e.g. "true" -> "\"true\"".
 	*/
-	FMT_STRING_SAFE_BOOL = 0x40,
+	FMT_STRING_SAFE_BOOL=0x40,
 	/**
 		String quote-number format flag.
 		This format will quote a string if it is a number as a type safeguard. e.g. "1234.5678" -> "\"1234.5678\"".
 	*/
-	FMT_STRING_SAFE_NUMBER = 0x80,
+	FMT_STRING_SAFE_NUMBER=0x80,
 	/**
 		String safe format flag.
 		Consists of #FMT_STRING_SAFE_BOOL and #FMT_STRING_SAFE_NUMBER
 	*/
-	FMT_STRING_SAFE = FMT_STRING_SAFE_BOOL | FMT_STRING_SAFE_NUMBER,
+	FMT_STRING_SAFE=FMT_STRING_SAFE_BOOL|FMT_STRING_SAFE_NUMBER,
 	/**
 		Default string format flag.
 		Consists of #FMT_STRING_SAFE, #FMT_STRING_QUOTE_WHITESPACE and #FMT_STRING_QUOTE_EMPTY.
 	*/
-	FMT_STRING_DEFAULT = FMT_STRING_SAFE | FMT_STRING_QUOTE_WHITESPACE | FMT_STRING_QUOTE_EMPTY,
+	FMT_STRING_DEFAULT=FMT_STRING_SAFE|FMT_STRING_QUOTE_WHITESPACE|FMT_STRING_QUOTE_EMPTY,
 	
 	/**
 		Float truncate format flag.
 		This format will remove repeated numbers at the end of a float. e.g. "0.123400000" -> "0.1234".
 	*/
-	FMT_FLOAT_TRUNCATE = 0x100,
+	FMT_FLOAT_TRUNCATE=0x0100,
 	/**
 		Default float format flag.
 		Consists of #FMT_FLOAT_TRUNCATE.
 	*/
-	FMT_FLOAT_DEFAULT = FMT_FLOAT_TRUNCATE,
+	FMT_FLOAT_DEFAULT=FMT_FLOAT_TRUNCATE,
 	
 	/**
 		Boolean string format flag.
 		Convert the boolean value to a string ("true", "false"). e.g. False -> "false", True -> "true".
 	*/
-	FMT_BOOL_STRING = 0x1000,
+	FMT_BOOL_STRING=0x1000,
 	/**
 		Default boolean format flag.
 		Consists of #FMT_BOOL_STRING.
 	*/
-	FMT_BOOL_DEFAULT = FMT_BOOL_STRING,
+	FMT_BOOL_DEFAULT=FMT_BOOL_STRING,
 	
 	/**
 		Default name format flag.
 		Consists of #FMT_STRING_SAFE, #FMT_STRING_QUOTE_WHITESPACE and #FMT_STRING_QUOTE_EMPTY.
 	*/
-	FMT_NAME_DEFAULT = FMT_STRING_SAFE | FMT_STRING_QUOTE_WHITESPACE | FMT_STRING_QUOTE_EMPTY,
+	FMT_NAME_DEFAULT=FMT_STRING_SAFE|FMT_STRING_QUOTE_WHITESPACE|FMT_STRING_QUOTE_EMPTY,
 	
 	/**
 		Default int format flag.
 		Unset flag (no formatting).
 	*/
-	FMT_INTEGER_DEFAULT = 0,
+	FMT_INTEGER_DEFAULT=0,
 	
 	/**
 		Default format flag for any variable.
 		Consists of all default format flags: #FMT_STRING_DEFAULT, #FMT_FLOAT_DEFAULT, #FMT_BOOL_DEFAULT and #FMT_INTEGER_DEFAULT.
 	*/
-	FMT_ALL_DEFAULT = FMT_STRING_DEFAULT | FMT_FLOAT_DEFAULT | FMT_BOOL_DEFAULT | FMT_INTEGER_DEFAULT,
+	FMT_ALL_DEFAULT=FMT_STRING_DEFAULT|FMT_FLOAT_DEFAULT|FMT_BOOL_DEFAULT|FMT_INTEGER_DEFAULT,
 	
 	/**
 		No-format flag.
 	*/
-	FMT_NONE = 0
+	FMT_NONE=0
 };
 
 // Forward declarations
@@ -209,7 +209,7 @@ public:
 		@param result The variable to store the formatted name.
 		@param format The formatting flags.
 	*/
-	virtual void getNameFormatted(UnicodeString& result, unsigned int format = FMT_NAME_DEFAULT) const;
+	virtual void getNameFormatted(UnicodeString& result, unsigned int format=FMT_NAME_DEFAULT) const;
 	
 	/**
 		Set the variable's parent.
@@ -227,13 +227,13 @@ public:
 		Return values for base Variable types can be found in the enum #VariableType.
 		@returns The variable's type.
 	*/
-	virtual unsigned int getType() const = 0;
+	virtual unsigned int getType() const=0;
 	/**
 		Get the variable's type as a string.
 		e.g. "string", "int", etc.
 		@returns A const char pointer to the variable's type.
 	*/
-	virtual const char* getTypeAsString() const = 0;
+	virtual const char* getTypeAsString() const=0;
 	
 	/**
 		Convert the given variable to a boolean.
@@ -257,7 +257,7 @@ public:
 		@param varname The variable name for the resulting value.
 		@param type Optional type-shortcut. Possible values for base ValueVariable types can be found in the #VariableType enum.
 	*/
-	static ValueVariable* stringToValue(const UnicodeString& source, const UnicodeString& varname, unsigned int type = VARTYPE_NONE);
+	static ValueVariable* stringToValue(const UnicodeString& source, const UnicodeString& varname, unsigned int type=VARTYPE_NONE);
 	/**
 		Convert the given string into a ValueVariable.
 		If the given source string is empty, an empty StringVariable will be returned.
@@ -265,7 +265,7 @@ public:
 		@param source The string to convert.
 		@param type Optional type-shortcut. Possible values for base ValueVariable types can be found in the #VariableType enum.
 	*/
-	static ValueVariable* stringToValue(const UnicodeString& source, unsigned int type = VARTYPE_NONE);
+	static ValueVariable* stringToValue(const UnicodeString& source, unsigned int type=VARTYPE_NONE);
 	
 protected:
 	UnicodeString _name;
@@ -284,21 +284,21 @@ public:
 		@returns Nothing.
 		@param value The string to set the variable from.
 	*/
-	virtual void setFromString(const UnicodeString& source) = 0;
+	virtual void setFromString(const UnicodeString& source)=0;
 	/**
 		Get the variable's value as a string with the given format.
 		@returns Nothing.
 		@param result The variable to store the formatted value.
 		@param format The formatting flags.
 	*/
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format = FMT_ALL_DEFAULT) const = 0;
+	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const=0;
 	/**
 		Get an unformatted string conversion of the variable.
 		@returns The variable's value as an unformatted string.
 		@param result The variable to store the result.
 		@param append Whether to append or replace the result string. Default is false.
 	*/
-	virtual void valueAsString(UnicodeString& result, bool append = false) const = 0;
+	virtual void valueAsString(UnicodeString& result, bool append=false) const=0;
 };
 
 /**
@@ -391,7 +391,7 @@ public:
 		@param casesens Case-sensitive name checking. Case-sensitivity is on by default.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	VarList::iterator findWithName(const UnicodeString& name, bool casesens = true, unsigned int type = VARTYPE_ANY);
+	VarList::iterator findWithName(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
 	/**
 		Find a variable with the given name.
 		@returns The iterator for the variable with the given name and type, or the end iterator if the variable was not found.
@@ -400,7 +400,7 @@ public:
 		@param casesens Case-sensitive name checking. Case-sensitivity is on by default.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	VarList::iterator findWithName(const UnicodeString& name, VarList::iterator iter, bool casesens = true, unsigned int type = VARTYPE_ANY);
+	VarList::iterator findWithName(const UnicodeString& name, VarList::iterator iter, bool casesens=true, unsigned int type=VARTYPE_ANY);
 	
 	/**
 		Remove the given iterator and delete its variable.
@@ -442,7 +442,7 @@ public:
 		@param casesens Case-sensitive name checking. Default is true.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	bool removeVariableWithName(const UnicodeString& name, bool casesens = true, unsigned int type = VARTYPE_ANY);
+	bool removeVariableWithName(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
 	
 	/**
 		Get a variable with the given name and type.
@@ -451,7 +451,7 @@ public:
 		@param casesens Case-sensitive name checking. Default is true.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	Variable* getVariableWithName(const UnicodeString& name, bool casesens = true, unsigned int type = VARTYPE_ANY);
+	Variable* getVariableWithName(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
 	
 	/**
 		Get the variable at the given index.
@@ -459,8 +459,8 @@ public:
 		@param index The index to retrieve.
 		@param type Variable type to retrieve. If the given variable type does not match the variable type at the given index, NULL will be returned.
 	*/
-	Variable* get(int index, unsigned int type = VARTYPE_ANY);
-	const Variable* get(int index, unsigned int type = VARTYPE_ANY) const;
+	Variable* get(int index, unsigned int type=VARTYPE_ANY);
+	const Variable* get(int index, unsigned int type=VARTYPE_ANY) const;
 	
 	/**
 		Get an integer from the given index.
@@ -491,7 +491,7 @@ public:
 		@param result The result. This is not changed if the retrieval failed.
 		@param format Optional formatting flags. Default is none.
 	*/
-	bool getAsString(int index, UnicodeString& result, unsigned int format = FMT_NONE) const;
+	bool getAsString(int index, UnicodeString& result, unsigned int format=FMT_NONE) const;
 	
 	/**
 		Get a float from the given index.
@@ -523,14 +523,14 @@ public:
 		@param value The value to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	IntVariable(int value = 0, CollectionVariable* parent = NULL);
+	IntVariable(int value=0, CollectionVariable* parent=NULL);
 	/**
 		Constructor with name and value.
 		@param value The value to initialize with.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	IntVariable(int value, const UnicodeString& name, CollectionVariable* parent = NULL);
+	IntVariable(int value, const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	/**
 		Set the variable's value.
@@ -545,8 +545,8 @@ public:
 	virtual int get() const;
 	
 	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format = FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append = false) const;
+	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(UnicodeString& result, bool append=false) const;
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;
@@ -564,27 +564,27 @@ public:
 		Constructor with parent.
 		@param parent The parent to initialize with.
 	*/
-	StringVariable(CollectionVariable* parent = NULL);
+	StringVariable(CollectionVariable* parent=NULL);
 	/**
 		Constructor with value and parent.
 		@param value The value to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	StringVariable(const UnicodeString& value, CollectionVariable* parent = NULL);
+	StringVariable(const UnicodeString& value, CollectionVariable* parent=NULL);
 	/**
 		Constructor with name, value and parent.
 		@param value The value to initialize with.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	StringVariable(const UnicodeString& value, const UnicodeString& name, CollectionVariable* parent = NULL);
+	StringVariable(const UnicodeString& value, const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	/**
 		Check if the string is numerical.
 		@returns True if the string is numerical.
 		@param allowdecimal Allow demical. Default is true.
 	*/
-	bool isNumeric(bool allowdecimal = true) const;
+	bool isNumeric(bool allowdecimal=true) const;
 	
 	/**
 		Set the variable's value.
@@ -599,8 +599,8 @@ public:
 	virtual const UnicodeString& get() const;
 	
 	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format = FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append = false) const;
+	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(UnicodeString& result, bool append=false) const;
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;
@@ -619,14 +619,14 @@ public:
 		@param value The value to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	FloatVariable(float value = 0.0, CollectionVariable* parent = NULL);
+	FloatVariable(float value=0.0, CollectionVariable* parent=NULL);
 	/**
 		Constructor with name, value and parent.
 		@param value The value to initialize with.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	FloatVariable(float value, const UnicodeString& name, CollectionVariable* parent = NULL);
+	FloatVariable(float value, const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	/**
 		Set the variable's value.
@@ -641,8 +641,8 @@ public:
 	virtual float get() const;
 	
 	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format = FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append = false) const;
+	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(UnicodeString& result, bool append=false) const;
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;
@@ -661,14 +661,14 @@ public:
 		@param value The value to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	BoolVariable(bool value = false, CollectionVariable* parent = NULL);
+	BoolVariable(bool value=false, CollectionVariable* parent=NULL);
 	/**
 		Constructor with name, value and parent.
 		@param value The value to initialize with.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	BoolVariable(bool value, const UnicodeString& name, CollectionVariable* parent = NULL);
+	BoolVariable(bool value, const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	/**
 		Set the variable's value.
@@ -683,8 +683,8 @@ public:
 	virtual bool get() const;
 	
 	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format = FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append = false) const;
+	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(UnicodeString& result, bool append=false) const;
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;
@@ -703,13 +703,13 @@ public:
 		Constructor with parent.
 		@param parent The parent to initialize with.
 	*/
-	Identifier(CollectionVariable* parent = NULL);
+	Identifier(CollectionVariable* parent=NULL);
 	/**
 		Constructor with name.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	Identifier(const UnicodeString& name, CollectionVariable* parent = NULL);
+	Identifier(const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;
@@ -725,13 +725,13 @@ public:
 		Constructor with parent.
 		@param parent The parent to initialize with.
 	*/
-	Node(CollectionVariable* parent = NULL);
+	Node(CollectionVariable* parent=NULL);
 	/**
 		Constructor with name.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	Node(const UnicodeString& name, CollectionVariable* parent = NULL);
+	Node(const UnicodeString& name, CollectionVariable* parent=NULL);
 	
 	virtual unsigned int getType() const;
 	virtual const char* getTypeAsString() const;

@@ -39,7 +39,7 @@ namespace duct {
 /**
 	duct++ version.
 */
-//const char* VERSION = "0.01"; // TODO: multiple definition errors with this line
+//const char* VERSION="0.01"; // TODO: multiple definition errors with this line
 
 // Platform
 #if defined(_WIN32) || defined(__WIN32__)
@@ -80,12 +80,12 @@ namespace duct {
 
 #ifndef bswap_16
 	#define bswap_16(x)	\
-		((((x) >> 8) & 0xff) | (((x) & 0xff) << 8))
+		((((x)>>8)&0xff)|(((x)&0xff)<<8))
 #endif
 
 #ifndef bswap_32
 	#define bswap_32(x)	\
-		((((x) & 0xff000000) >> 24) | (((x) & 0x00ff0000) >> 8) | (((x) & 0x0000ff00) << 8) | (((x) & 0x000000ff) << 24))
+		((((x)&0xff000000)>>24)|(((x)&0x00ff0000)>>8)|(((x)&0x0000ff00)<<8)|(((x)&0x000000ff)<<24))
 #endif
 
 /* This byteorder stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
@@ -108,7 +108,7 @@ namespace duct {
 // Define portable fixed-size types
 #include <limits.h>
 // 8-bit integer types (byte)
-#if UCHAR_MAX == 0xFF
+#if UCHAR_MAX==0xFF
 	typedef signed		char Byte;
 	typedef unsigned	char UByte;
 #else
@@ -116,13 +116,13 @@ namespace duct {
 #endif
 
 // 16-bit integer types (short)
-#if USHRT_MAX == 0xFFFF
+#if USHRT_MAX==0xFFFF
 	typedef signed		short Short;
 	typedef unsigned	short UShort;
-#elif UINT_MAX == 0xFFFF
+#elif UINT_MAX==0xFFFF
 	typedef signed		int Short;
 	typedef unsigned	int UShort;
-#elif ULONG_MAX == 0xFFFF
+#elif ULONG_MAX==0xFFFF
 	typedef signed		long Short;
 	typedef unsigned	long UShort;
 #else
@@ -130,13 +130,13 @@ namespace duct {
 #endif
 
 // 32-bit integer types (int)
-#if USHRT_MAX == 0xFFFFFFFF
+#if USHRT_MAX==0xFFFFFFFF
 	typedef signed		short Int;
 	typedef unsigned	short UInt;
-#elif UINT_MAX == 0xFFFFFFFF
+#elif UINT_MAX==0xFFFFFFFF
 	typedef signed		int Int;
 	typedef unsigned	int UInt;
-#elif ULONG_MAX == 0xFFFFFFFF
+#elif ULONG_MAX==0xFFFFFFFF
 	typedef signed		long Int;
 	typedef unsigned	long UInt;
 #else
@@ -144,10 +144,10 @@ namespace duct {
 #endif
 
 // 64-bit integer types (long)
-#if ULONG_MAX == 0xFFFFFFFFFFFFFFFF
+#if ULONG_MAX==0xFFFFFFFFFFFFFFFF
 	typedef signed		long int Long;
 	typedef unsigned	long int ULong;
-#elif ULLONG_MAX == 0xFFFFFFFFFFFFFFFF
+#elif ULLONG_MAX==0xFFFFFFFFFFFFFFFF
 	typedef signed		long long int Long;
 	typedef unsigned	long long int ULong;
 #else
