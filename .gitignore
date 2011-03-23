@@ -10,3 +10,7 @@
 # Generated documentation
 docs/latex/
 docs/html/
+# Makefiles and build data
+Makefile
+duct.make
+out/
