@@ -32,6 +32,9 @@ namespace duct {
 
 // class Token implementation
 
+Token::Token(int type) : _type(type) {
+}
+
 void Token::setType(int type) {
 	_type=type;
 }
@@ -125,15 +128,19 @@ Parser::Parser() : _line(1), _column(0), _curchar(-1), _peekchar(-1), _peeked(fa
 
 Parser::~Parser() {/* Do nothing */}
 
-int Parser::getLine() {
+int Parser::getLine() const {
 	return _line;
 }
 
-int Parser::getColumn() {
+int Parser::getColumn() const {
 	return _column;
 }
 
 Token& Parser::getToken() {
+	return _token;
+}
+
+const Token& Parser::getToken() const {
 	return _token;
 }
 
