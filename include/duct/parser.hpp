@@ -57,6 +57,11 @@ const int NULL_TOKEN=0xCA11ACAB;
 class DUCT_API Token {
 public:
 	/**
+		Constructor with type.
+		@param type The token's type.
+	*/
+	Token(int type=NULL_TOKEN);
+	/**
 		Set the token's type.
 		@returns Nothing.
 		@param type The token's type.
@@ -209,12 +214,12 @@ public:
 		Get the parser's current line.
 		@returns The parser's current line.
 	*/
-	virtual int getLine();
+	virtual int getLine() const;
 	/**
 		Get the parser's current column.
 		@returns The parser's current column.
 	*/
-	virtual int getColumn();
+	virtual int getColumn() const;
 	/**
 		Set the parser's handler.
 		@returns Nothing.
@@ -231,6 +236,11 @@ public:
 		@returns The parser's token.
 	*/
 	virtual Token& getToken();
+	/**
+		Get the parser's token (const).
+		@returns The parser's token.
+	*/
+	virtual const Token& getToken() const;
 	/**
 		Get the parser's stream.
 		@returns The parser's stream (which may be NULL).
@@ -257,8 +267,9 @@ public:
 	virtual UChar32 nextChar();
 	/**
 		Peek the next character in the stream, without advancing the parser's position.
-		This sets the peekchar field.
-		@returns The peeked character.
+		This does not set _curchar, and does not advance the parser, but will advance the stream.
+		If the next character has already been peeked (peek state not cleared by a call to nextChar(), the _peekchar will be returned).
+		@returns The next character in the stream.
 	*/
 	virtual UChar32 peekChar();
 	/**
@@ -311,12 +322,12 @@ public:
 		@returns Nothing.
 		@param parser The handler's parser.
 	*/
-	virtual void setParser(Parser* parser)=0;
+	virtual void setParser(Parser& parser)=0;
 	/**
 		Get the handler's parser.
 		@returns The handler's parser.
 	*/
-	virtual Parser* getParser()=0;
+	virtual Parser& getParser()=0;
 	/**
 		Clean the handler's state.
 		This should <em>not</em> not reset() the parser.
@@ -334,7 +345,7 @@ public:
 		@returns Nothing.
 		@param token The token to handle.
 	*/
-	virtual void handleToken()=0;
+	virtual void handleToken(Token& token)=0;
 	/**
 		Finish handling the parser's stream.
 		Called when there is no more data in the parser's stream.

@@ -25,28 +25,27 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ Quake-style script formatter.
+ductScript parser and formatter.
 */
 
 #ifndef _DUCT_SCRIPTFORMATTER_HPP
 #define _DUCT_SCRIPTFORMATTER_HPP
 
+#include <string>
+#include <exception>
 #include <duct/config.hpp>
+#include <duct/parser.hpp>
 #include <duct/filestream.hpp>
 #include <duct/characterset.hpp>
 #include <duct/variables.hpp>
-#include <exception>
-#include <string>
 
 namespace duct {
 
 /**
-	ScriptToken types.
+	Token types for the ScriptParser.
 */
 enum ScriptTokenType {
-	NoToken=0,
-	
-	StringToken,
+	StringToken=1,
 	QuotedStringToken,
 	NumberToken,
 	DoubleToken,
@@ -62,129 +61,14 @@ enum ScriptTokenType {
 	EOLToken
 };
 
-class ScriptParser; // Forward declaration
-class ScriptParserHandler; // Forward declaration
-class ScriptParserException; // Forward declaration
+// forward declarations
+class ScriptParserHandler;
+class ScriptParserException;
 
 /**
-	ScriptParser token.
+	ductScript parser.
 */
-class DUCT_API ScriptToken {
-public:
-	friend class ScriptParser;
-	friend class ScriptParserException;
-	
-	/**
-		Constructor.
-	*/
-	ScriptToken();
-	
-	/**
-		Constructor with type.
-	*/
-	ScriptToken(ScriptTokenType type);
-	
-	/**
-		Destructor.
-	*/
-	~ScriptToken();
-	
-	/**
-		Reset the token.
-		@returns Nothing.
-		@param type The token's new type.
-	*/
-	void reset(ScriptTokenType type);
-	
-	/**
-		Set the token's beginning position.
-		@returns Nothing.
-		@param line The line the token starts on.
-		@param col The character/column the token starts on.
-	*/
-	void setBeginningPosition(int line, int col);
-	
-	/**
-		Get the token's type.
-		@returns The token's type.
-	*/
-	ScriptTokenType getType() const;
-	
-	/**
-		Add the given character to the token's buffer.
-		@returns Nothing.
-		@param c The character to add to the token.
-	*/
-	void addChar(UChar32 c);
-	
-	/**
-		Cache the token's buffer as a string.
-		@returns Nothing.
-	*/
-	void cacheString();
-	
-	/**
-		Compare all the characters in the token's buffer with the given character set.
-		@returns true if all characters match a character in the range, or false if the token contains a non-matching character.
-		@param set The character set to use.
-	*/
-	bool compare(const CharacterSet& set);
-	
-	/**
-		Compare all the characters in the token's buffer to the given character.
-		@returns true if all characters match the given character, or false if the token contains a non-matching character.
-		@param c The character to compare against.
-	*/
-	bool compare(UChar32 c);
-	
-	/**
-		Convert the token to an integer.
-		@returns The token as an integer.
-	*/
-	int32_t asInt();
-	
-	/**
-		Convert the token to a double.
-		@returns The token as a double.
-	*/
-	double asDouble();
-	
-	/**
-		Convert the token to a UnicodeString.
-		@returns Nothing.
-		@param str The string to store the result in.
-	*/
-	void asString(UnicodeString& str);
-	
-	/**
-		Convert the token to a UnicodeString.
-		@returns A constant reference to the converted string.
-	*/
-	const UnicodeString& asString();
-	
-	/**
-		Get the token's name.
-		@returns The name of the token's type.
-	*/
-	const char* typeAsString() const;
-	
-protected:
-	ScriptTokenType _type;
-	int _beg_line;
-	int _beg_col;
-	UChar32* _buffer;
-	size_t _bufsize;
-	size_t _buflength;
-	UnicodeString _bufstring;
-	bool _cached;
-	
-};
-
-/**
-	Script parser.
-	Parses Quake-style scripts.
-*/
-class DUCT_API ScriptParser {
+class DUCT_API ScriptParser : public Parser {
 public:
 	friend class ScriptParserException;
 	
@@ -192,109 +76,38 @@ public:
 		Constructor.
 	*/
 	ScriptParser();
-	
 	/**
 		Constructor with stream.
 		The user is responsible for closing the stream.
 		@param stream The stream to read from.
 	*/
 	ScriptParser(Stream* stream);
-	
 	/**
 		Destructor.
 	*/
 	~ScriptParser();
-	
-	/**
-		Initialize the parser with the given stream.
-		@returns Nothing.
-		@param stream The stream to initialize with.
-	*/
-	void initWithStream(Stream* stream);
-	
-	/**
-		Set the parser's handler.
-		@returns Nothing.
-		@param handler The new handler.
-	*/
-	void setHandler(ScriptParserHandler* handler);
-	
-	/**
-		Get the parser's handler.
-		@returns The parser's handler.
-	*/
-	ScriptParserHandler* getHandler();
-	
-	/**
-		Get the parser's current token.
-		@returns The parser's current token.
-	*/
-	const ScriptToken& getToken() const;
-	
-	/**
-		Get the parser's stream.
-		@returns The parser's stream.
-	*/
-	Stream* getStream();
-	
-	/**
-		Clean the parser.
-		@returns Nothing.
-	*/
-	void clean();
-	
+	void setHandler(ParserHandler* handler);
+	ParserHandler* getHandler();
 	/**
 		Parse the next token.
 		@returns true if more data is left to be handled, or false if there is no more data to parse.
 	*/
 	bool parse();
-	
-	/**
-		Get the next character in the stream.
-		If the next character has been peeked, it will be the next character (rather than the character after the peeked character).
-		@returns The next character.
-	*/
-	UChar32 nextChar();
-	
-	/**
-		Peek the next character in the stream.
-		This does not set _curchar, and does not advance the parser, but will advance the stream.
-		If the next character has already been peeked (peek state not cleared by a call to nextChar(), the stored peeked character will be returned).
-		@returns The next character in the stream.
-	*/
-	UChar32 peekChar();
-	
 	/**
 		Skip whitespace characters.
 		@returns Nothing.
 	*/
 	void skipWhitespace();
-	
-	/**
-		Skip to EOL character.
-		@returns Nothing.
-	*/
-	void skipToEOL();
-	
-	/**
-		Skip to the given character.
-		This will read characters from the stream until it meets the EOF, or the given character.
-		@returns true if the given character was reached, or false if the EOF was reached.
-	*/
-	bool skipToChar(UChar32 c);
-	
 	/**
 		Get the next token.
 		@returns The next token.
 	*/
-	ScriptToken& nextToken();
-	
+	Token& nextToken();
 	/**
 		Read the current token.
 		@returns Nothing.
 	*/
 	void readToken();
-	
 	/**
 		Read a number token.
 		@returns Nothing.
@@ -331,74 +144,7 @@ protected:
 	static CharacterSet _numberset;
 	static CharacterSet _signset;
 	
-	Stream* _stream;
 	ScriptParserHandler* _handler;
-	int _line, _col;
-	UChar32 _curchar, _peekchar;
-	bool _peeked;
-	ScriptToken _token;
-	
-};
-
-class DUCT_API ScriptParserHandler {
-public:
-	/**
-		Destructor.
-	*/
-	virtual ~ScriptParserHandler();
-	
-	/**
-		Initialize the handler.
-		@returns Nothing.
-	*/
-	void init();
-	
-	/**
-		Throw an exception.
-		@returns Nothing.
-	*/
-	virtual void throwex(ScriptParserException e);
-	
-	/**
-		Clean the handler.
-		@returns Nothing.
-	*/
-	virtual void clean();
-	
-	/**
-		Run the parser.
-		@returns Nothing.
-	*/
-	virtual void process();
-	
-	/**
-		Handle the given token.
-		@returns Nothing.
-		@param token The token to handle.
-	*/
-	virtual void handleToken(ScriptToken& token)=0;
-	
-	/**
-		Finish processing.
-		Close any handles, clean nodes, etc.
-		@returns Nothing.
-	*/
-	virtual void finish()=0;
-	
-	/**
-		Process the given stream.
-		The user is responsible for closing the stream.
-		Calls made by this function may throw a ScriptParserException.
-		@returns The node processed from the given stream.
-		@param stream The stream to process.
-	*/
-	Node* processFromStream(Stream* stream);
-	
-protected:
-	ScriptParser _parser;
-	Node* _rootnode;
-	Node* _currentnode;
-	
 };
 
 /**
@@ -431,7 +177,7 @@ public:
 	/**
 		Constructor with values.
 	*/
-	ScriptParserException(ScriptParserError error, const char* reporter, const ScriptToken* token, const ScriptParser* parser, const char* fmt, ...);
+	ScriptParserException(ScriptParserError error, const char* reporter, const Token* token, const ScriptParser* parser, const char* fmt, ...);
 	
 	/**
 		Get the exception's message.
@@ -450,7 +196,7 @@ protected:
 	char _message[512];
 	ScriptParserError _error;
 	const char* _reporter;
-	const ScriptToken* _token;
+	const Token* _token;
 	const ScriptParser* _parser;
 	
 };
@@ -458,25 +204,55 @@ protected:
 /**
 	Standard ScriptParser handler.
 */
-class DUCT_API StandardScriptParserHandler : public ScriptParserHandler {
+class DUCT_API ScriptParserHandler : public ParserHandler {
 public:
 	/**
 		Constructor.
 	*/
-	StandardScriptParserHandler();
-	
+	ScriptParserHandler(ScriptParser& parser);
+	void setParser(Parser& parser);
+	Parser& getParser();
+	/**
+		Throw an exception.
+		@returns Nothing.
+	*/
 	void throwex(ScriptParserException e);
+	/**
+		Clean the handler.
+		@returns Nothing.
+	*/
 	void clean();
-	void handleToken(ScriptToken& token);
+	/**
+		Run the parser.
+		@returns Nothing.
+	*/
+	bool process();
+	/**
+		Handle the given token.
+		@returns Nothing.
+		@param token The token to handle.
+	*/
+	void handleToken(Token& token);
+	/**
+		Finish processing.
+		Close any handles, clean nodes, etc.
+		@returns Nothing.
+	*/
 	void finish();
-	
+	/**
+		Process the given stream.
+		The user is responsible for closing the stream.
+		Calls made by this function may throw a ScriptParserException.
+		@returns The node processed from the given stream.
+		@param stream The stream to process.
+	*/
+	Node* processFromStream(Stream* stream);
 	/**
 		Free any state data.
 		NOTE: Only call this when an exception is to be thrown, or when the handler does not return a valid node.
 		@returns Nothing.
 	*/
 	void freeData();
-	
 	/**
 		Reset the variable state.
 		@returns Nothing.
@@ -503,13 +279,16 @@ public:
 		@param resetvalue Whether to reset the current value.
 		@param force Whether to force creation (create even if the handler has a current identifier).
 	*/
-	void makeIdentifier(const ScriptToken* token=NULL, bool resetiden=false, bool resetvalue=false, bool force=false);
+	void makeIdentifier(const Token* token=NULL, bool resetiden=false, bool resetvalue=false, bool force=false);
 	
 protected:
+	ScriptParser& _parser;
 	UnicodeString _varname;
 	bool _equals;
 	Identifier* _currentiden;
 	ValueVariable* _currentvalue;
+	Node* _rootnode;
+	Node* _currentnode;
 	
 };
 
@@ -584,7 +363,8 @@ public:
 	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
-	static StandardScriptParserHandler _handler;
+	static ScriptParser _parser;
+	static ScriptParserHandler _handler;
 	
 private:
 	static void writeTabs(Stream* stream, unsigned int count, bool newline=false);
