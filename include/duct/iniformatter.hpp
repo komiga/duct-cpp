@@ -25,27 +25,30 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ IniFormatter class.
+Implements component parts:
+<ul>
+	<li>ductIni</li>
+</ul>
 */
 
 #ifndef _DUCT_INIFORMATTER_HPP
 #define _DUCT_INIFORMATTER_HPP
 
+#include <string>
+#include <exception>
 #include <duct/config.hpp>
+#include <duct/parser.hpp>
 #include <duct/filestream.hpp>
 #include <duct/characterset.hpp>
 #include <duct/variables.hpp>
-#include <exception>
 
 namespace duct {
 
 /**
-	IniToken types.
+	ductIni Token types.
 */
-enum IniTokenType {
-	NoToken=0,
-	
-	StringToken,
+enum TokenType {
+	StringToken=1,
 	QuotedStringToken,
 	NumberToken,
 	DoubleToken,
@@ -58,206 +61,39 @@ enum IniTokenType {
 	EOLToken
 };
 
-class IniParser; // Forward declaration
 class IniParserHandler; // Forward declaration
 class IniParserException; // Forward declaration
 
 /**
-	IniParser token.
+	ductIni parser.
 */
-class DUCT_API IniToken {
-public:
-	friend class IniParser;
-	friend class IniParserException;
-	
-	/**
-		Constructor.
-	*/
-	IniToken();
-	
-	/**
-		Constructor with type.
-	*/
-	IniToken(IniTokenType type);
-	
-	/**
-		Destructor.
-	*/
-	~IniToken();
-	
-	/**
-		Reset the token.
-		@returns Nothing.
-		@param type The token's new type.
-	*/
-	void reset(IniTokenType type);
-	
-	/**
-		Set the token's beginning position.
-		@returns Nothing.
-		@param line The line the token starts on.
-		@param col The character/column the token starts on.
-	*/
-	void setBeginningPosition(int line, int col);
-	
-	/**
-		Get the token's type.
-		@returns The token's type.
-	*/
-	IniTokenType getType() const;
-	
-	/**
-		Add the given character to the token's buffer.
-		@returns Nothing.
-		@param c The character to add to the token.
-	*/
-	void addChar(UChar32 c);
-	
-	/**
-		Cache the token's buffer as a string.
-		@returns Nothing.
-	*/
-	void cacheString();
-	
-	/**
-		Convert the token to an integer.
-		@returns The token as an integer.
-	*/
-	int32_t asInt();
-	
-	/**
-		Convert the token to a double.
-		@returns The token as a double.
-	*/
-	double asDouble();
-	
-	/**
-		Convert the token to a UnicodeString.
-		@returns Nothing.
-		@param str The string to store the result in.
-	*/
-	void asString(UnicodeString& str);
-	
-	/**
-		Convert the token to a UnicodeString.
-		@returns A constant reference to the converted string.
-	*/
-	const UnicodeString& asString();
-	
-	/**
-		Get the token's name.
-		@returns The name of the token's type.
-	*/
-	const char* typeAsString() const;
-	
-protected:
-	IniTokenType _type;
-	int _beg_line;
-	int _beg_col;
-	UChar32* _buffer;
-	size_t _bufsize;
-	size_t _buflength;
-	UnicodeString _bufstring;
-	bool _cached;
-	
-};
-
-/**
-	INI parser.
-*/
-class DUCT_API IniParser {
+class DUCT_API IniParser : public Parser {
 public:
 	friend class IniParserException;
-	
 	/**
 		Constructor.
 	*/
 	IniParser();
-	
 	/**
 		Constructor with stream.
 		The user is responsible for closing the stream.
 		@param stream The stream to read from.
 	*/
 	IniParser(Stream* stream);
-	
 	/**
 		Destructor.
 	*/
 	~IniParser();
-	
-	/**
-		Initialize the parser with the given stream.
-		@returns Nothing.
-		@param stream The stream to initialize with.
-	*/
-	void initWithStream(Stream* stream);
-	
-	/**
-		Set the parser's handler.
-		@returns Nothing.
-		@param handler The new handler.
-	*/
-	void setHandler(IniParserHandler* handler);
-	
-	/**
-		Get the parser's handler.
-		@returns The parser's handler.
-	*/
-	IniParserHandler* getHandler();
-	
-	/**
-		Get the parser's current token.
-		@returns The parser's current token.
-	*/
-	const IniToken& getToken() const;
-	
-	/**
-		Get the parser's stream.
-		@returns The parser's stream.
-	*/
-	Stream* getStream();
-	
-	/**
-		Clean the parser.
-		@returns Nothing.
-	*/
-	void clean();
-	
-	/**
-		Parse the next token.
-		@returns true if more data is left to be handled, or false if there is no more data to parse.
-	*/
-	bool parse();
-	
-	/**
-		Get the next character in the stream.
-		@returns The next character.
-	*/
-	UChar32 nextChar();
-	
+	void setHandler(ParserHandler* handler);
+	ParserHandler* getHandler();
 	/**
 		Skip whitespace characters.
 		@returns Nothing.
 	*/
 	void skipWhitespace();
-	/**
-		Skip to EOL character.
-		@returns Nothing.
-	*/
-	void skipToEOL();
-	
-	/**
-		Get the next token.
-		@returns The next token.
-	*/
-	IniToken& nextToken();
-	/**
-		Read the current token.
-		@returns Nothing.
-	*/
+	Token& nextToken();
 	void readToken();
-	
+	bool parse();
 	/**
 		Read a number token.
 		@returns Nothing.
@@ -289,71 +125,7 @@ protected:
 	static CharacterSet _numberset;
 	static CharacterSet _digitset;
 	
-	Stream* _stream;
 	IniParserHandler* _handler;
-	int _line, _col;
-	UChar32 _curchar;
-	IniToken _token;
-};
-
-class DUCT_API IniParserHandler {
-public:
-	/**
-		Destructor.
-	*/
-	virtual ~IniParserHandler();
-	
-	/**
-		Initialize the handler.
-		@returns Nothing.
-	*/
-	void init();
-	
-	/**
-		Throw an exception.
-		@returns Nothing.
-	*/
-	virtual void throwex(IniParserException e);
-	
-	/**
-		Clean the handler.
-		@returns Nothing.
-	*/
-	virtual void clean();
-	
-	/**
-		Run the parser.
-		@returns Nothing.
-	*/
-	virtual void process();
-	
-	/**
-		Handle the given token.
-		@returns Nothing.
-		@param token The token to handle.
-	*/
-	virtual void handleToken(IniToken& token)=0;
-	
-	/**
-		Finish processing.
-		Close any handles, clean nodes, etc.
-		@returns Nothing.
-	*/
-	virtual void finish()=0;
-	
-	/**
-		Process the given stream.
-		The user is responsible for closing the stream.
-		Calls made by this function may throw a IniParserException.
-		@returns The node processed from the given stream.
-		@param stream The stream to process.
-	*/
-	Node* processFromStream(Stream* stream);
-	
-protected:
-	IniParser _parser;
-	Node* _rootnode;
-	Node* _currentnode;
 };
 
 /**
@@ -379,21 +151,19 @@ enum IniParserError {
 };
 
 /**
-	A IniParser exception.
+	IniParser exception.
 */
 class DUCT_API IniParserException : public std::exception {
 public:
 	/**
 		Constructor with values.
 	*/
-	IniParserException(IniParserError error, const char* reporter, const IniToken* token, const IniParser* parser, const char* fmt, ...);
-	
+	IniParserException(IniParserError error, const char* reporter, const Token* token, const IniParser* parser, const char* fmt, ...);
 	/**
 		Get the exception's message.
 		@returns The exception's message.
 	*/
 	virtual const char* what() const throw();
-	
 	/**
 		Convert an exception error to a NUL-terminated string.
 		@returns The error as a string.
@@ -405,38 +175,49 @@ protected:
 	char _message[512];
 	IniParserError _error;
 	const char* _reporter;
-	const IniToken* _token;
+	const Token* _token;
 	const IniParser* _parser;
 };
 
 /**
-	Standard IniParser handler.
+	IniParser handler.
 */
-class DUCT_API StandardIniParserHandler : public IniParserHandler {
+class DUCT_API IniParserHandler : public ParserHandler {
 public:
 	/**
 		Constructor.
 	*/
-	StandardIniParserHandler();
-	
+	IniParserHandler(IniParser& parser);
+	void setParser(Parser& parser);
+	Parser& getParser();
+	/**
+		Throw an exception.
+		@returns Nothing.
+	*/
 	void throwex(IniParserException e);
 	void clean();
-	void handleToken(IniToken& token);
+	bool process();
+	/**
+		Process the given stream.
+		The user is responsible for closing the stream.
+		Calls made by this function may throw a IniParserException.
+		@returns The node processed from the given stream.
+		@param stream The stream to process.
+	*/
+	Node* processFromStream(Stream* stream);
+	void handleToken(Token& token);
 	void finish();
-	
 	/**
 		Free any state data.
 		NOTE: Only to be called when an exception is to be thrown, or when the handler does not return a valid node.
 		@returns Nothing.
 	*/
 	void freeData();
-	
 	/**
 		Reset the hanlder's state.
 		@returns Nothing.
 	*/
 	void reset();
-	
 	/**
 		Add the given variable to the current node and reset the handler's state.
 		@returns Nothing.
@@ -445,8 +226,11 @@ public:
 	void addValueAndReset(ValueVariable* value);
 	
 protected:
+	IniParser& _parser;
 	UnicodeString _varname;
 	bool _equals;
+	Node* _rootnode;
+	Node* _currentnode;
 };
 
 /**
@@ -463,7 +247,6 @@ public:
 		@param varformat The format for values.
 	*/
 	static bool formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	
 	/**
 		Load a node from the given file path.
 		The user owns the returned node.
@@ -483,7 +266,6 @@ public:
 		@param stream The stream to read from.
 	*/
 	static Node* loadFromStream(Stream* stream);
-	
 	/**
 		Write the given node to the given file path.
 		NOTE: Identifiers are unexpected variables for this formatter. They will be ignored.
@@ -512,7 +294,8 @@ public:
 	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
-	static StandardIniParserHandler _handler;
+	static IniParser _parser;
+	static IniParserHandler _handler;
 	
 private:
 	static void writeTabs(Stream* stream, unsigned int count, bool newline=false);
