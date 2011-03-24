@@ -24,10 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <duct/debug.hpp>
-#include <duct/charbuf.hpp>
 #include <math.h>
 #include <stdlib.h>
+#include <unicode/numfmt.h>
+#include <unicode/ustring.h>
+#include <duct/debug.hpp>
+#include <duct/charbuf.hpp>
 
 namespace duct {
 
@@ -67,7 +69,31 @@ void CharBuf::addChar(UChar32 c) {
 const UnicodeString& CharBuf::cacheString() {
 	if (!_cached) {
 		if (_buffer && _buflength>0) {
-			_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
+			//_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
+			int32_t capacity;
+			if (_buflength<=16) { // assumed upper size for small-sized buffers
+				capacity=16;
+			} else {
+				capacity=_buflength+(_buflength>>4)+4;
+			}
+			UChar* strbuf;
+			int32_t newsize;
+			UErrorCode err;
+			do {
+				strbuf=_bufstring.getBuffer(capacity);
+				err=U_ZERO_ERROR;
+				u_strFromUTF32WithSub(strbuf, _bufstring.getCapacity(), &newsize, _buffer, _buflength, 0xFFFD, NULL, &err);
+				_bufstring.releaseBuffer(newsize);
+				if (err==U_BUFFER_OVERFLOW_ERROR) {
+					capacity=newsize+1;  // for the terminating \n
+					continue; // repeat for the last char
+				} else if (U_FAILURE(err)) {
+					_bufstring.setToBogus();
+					debug_printp_source(this, "Failed to convert buffer to string; err:");
+					debug_print(u_errorName(err));
+				}
+				break;
+			} while (1);
 		} else {
 			_bufstring.remove();
 		}
@@ -81,12 +107,108 @@ void CharBuf::reset() {
 	_cached=false;
 }
 
-void CharBuf::asString(UnicodeString& str) {
+void CharBuf::toString(UnicodeString& str) {
 	str.setTo(cacheString());
 }
 
-const UnicodeString& CharBuf::asString() {
+const UnicodeString& CharBuf::toString() {
 	return cacheString();
+}
+
+int32_t CharBuf::toInt() {
+	int32_t value=0;
+	toInt(value);
+	return value;
+}
+
+bool CharBuf::toInt(int32_t& value) {
+	if (!_cached) {
+		cacheString();
+	}
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat* nf=NumberFormat::createInstance(status);
+	Formattable formattable;
+	nf->parse(_bufstring, formattable, status);
+	delete nf;
+	if (U_FAILURE(status)) {
+		debug_printp_source(this, u_errorName(status));
+		return false;
+	} else {
+		value=formattable.getLong();
+		return true;
+	}
+}
+
+int64_t CharBuf::toLong() {
+	int64_t value=0;
+	toLong(value);
+	return value;
+}
+
+bool CharBuf::toLong(int64_t& value) {
+	if (!_cached) {
+		cacheString();
+	}
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat* nf=NumberFormat::createInstance(status);
+	Formattable formattable;
+	nf->parse(_bufstring, formattable, status);
+	delete nf;
+	if (U_FAILURE(status)) {
+		debug_printp_source(this, u_errorName(status));
+		return false;
+	} else {
+		value=formattable.getInt64();
+		return true;
+	}
+}
+
+float CharBuf::toFloat() {
+	float value=0.0;
+	toFloat(value);
+	return value;
+}
+
+bool CharBuf::toFloat(float& value) {
+	if (!_cached) {
+		cacheString();
+	}
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat* nf=NumberFormat::createInstance(status);
+	Formattable formattable;
+	nf->parse(_bufstring, formattable, status);
+	delete nf;
+	if (U_FAILURE(status)) {
+		debug_printp_source(this, u_errorName(status));
+		return false;
+	} else {
+		value=(float)formattable.getDouble();
+		return true;
+	}
+}
+
+double CharBuf::toDouble() {
+	double value=0.0;
+	toDouble(value);
+	return value;
+}
+
+bool CharBuf::toDouble(double& value) {
+	if (!_cached) {
+		cacheString();
+	}
+	UErrorCode status=U_ZERO_ERROR;
+	NumberFormat* nf=NumberFormat::createInstance(status);
+	Formattable formattable;
+	nf->parse(_bufstring, formattable, status);
+	delete nf;
+	if (U_FAILURE(status)) {
+		debug_printp_source(this, u_errorName(status));
+		return false;
+	} else {
+		value=formattable.getDouble();
+		return true;
+	}
 }
 
 } // namespace duct
