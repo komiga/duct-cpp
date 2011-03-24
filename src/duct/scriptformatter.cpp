@@ -22,36 +22,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-@section DESCRIPTION
-
-duct++ Quake-style script formatter implementation.
 */
 
-#include <duct/debug.hpp>
-#include <duct/scriptformatter.hpp>
-#include <unicode/numfmt.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unicode/numfmt.h>
+#include <duct/debug.hpp>
+#include <duct/scriptformatter.hpp>
+#include <duct/charconstants.hpp>
 
 namespace duct {
-
-// Character constants
-const UChar32 CHAR_EOF=U_SENTINEL;
-const UChar32 CHAR_NEWLINE='\n';
-const UChar32 CHAR_CARRIAGERETURN='\r';
-
-const UChar32 CHAR_DECIMALPOINT='.';
-
-const UChar32 CHAR_QUOTE='\"';
-const UChar32 CHAR_SLASH='/';
-const UChar32 CHAR_BACKSLASH='\\';
-const UChar32 CHAR_ASTERISK='*';
-
-const UChar32 CHAR_OPENBRACE='{';
-const UChar32 CHAR_CLOSEBRACE='}';
-const UChar32 CHAR_EQUALSIGN='=';
 
 // class ScriptToken implementation
 

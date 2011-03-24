@@ -66,23 +66,24 @@ public:
 	*/
 	void reset();
 	/**
-		Compare all the characters in the buffer with the given character set.
-		@returns true if all characters match a character in the set, or false otherwise.
-		@param charset The character set to compare against.
-	*/
-	bool compare(const CharacterSet& charset);
-	/**
 		Compare all the characters in the buffer to the given character.
 		@returns true if all characters match the given character, or false otherwise.
 		@param c The character to compare against.
 	*/
-	bool compare(UChar32 c);
+	bool compare(UChar32 c) const;
+	/**
+		Compare all the characters in the buffer with the given character set.
+		@returns true if all characters match a character in the set, or false otherwise.
+		@param charset The character set to compare against.
+	*/
+	bool compare(const CharacterSet& charset) const;
 	/**
 		Convert the buffer to a string.
-		@returns Nothing.
+		If conversion fails, <em>str</em> is unmodified.
+		@returns true if the string was converted, or false on cache failure (likely because of an invalid surrogate pair).
 		@param str The string to store the result in.
 	*/
-	void toString(UnicodeString& str);
+	bool toString(UnicodeString& str);
 	/**
 		Convert the buffer to a string.
 		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
