@@ -101,7 +101,7 @@ public:
 		@returns Nothing.
 		@param c The character to add.
 	*/
-	void add(UChar32 c);
+	void addChar(UChar32 c);
 	/**
 		Reset the token.
 		This will clear the token's buffer and set the token's type.

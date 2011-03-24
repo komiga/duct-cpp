@@ -61,7 +61,7 @@ void Token::setPosition(int line, int column) {
 	_column=column;
 }
 
-void Token::add(UChar32 c) {
+void Token::addChar(UChar32 c) {
 	_buffer.addChar(c);
 }
 
