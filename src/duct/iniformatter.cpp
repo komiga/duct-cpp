@@ -24,8 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <unicode/numfmt.h>
 #include <duct/debug.hpp>
@@ -34,122 +32,10 @@ THE SOFTWARE.
 
 namespace duct {
 
-// class IniToken implementation
-
-IniToken::IniToken() {
-	_type=NoToken;
-}
-
-IniToken::IniToken(IniTokenType type) : _type(type) {
-}
-
-IniToken::~IniToken() {
-	if (_buffer) {
-		free(_buffer);
-	}
-}
-
-void IniToken::reset(IniTokenType type) {
-	_type=type;
-	_buflength=0; // Reset the write-position of the buffer, but keep the buffer intact
-	_cached=false;
-}
-
-void IniToken::setBeginningPosition(int line, int col) {
-	_beg_line=line;
-	_beg_col=col;
-}
-
-IniTokenType IniToken::getType() const {
-	return _type;
-}
-
-void IniToken::addChar(UChar32 c) {
-	const size_t BUFFER_INITIAL_SIZE=68;
-	const double BUFFER_MULTIPLIER=1.75;
-	if (!_buffer) {
-		_bufsize=BUFFER_INITIAL_SIZE;
-		_buffer=(UChar32*)malloc(_bufsize*4);
-		_buflength=0;
-	} else if (_buflength>=_bufsize) {
-		size_t newsize=ceil(_bufsize*BUFFER_MULTIPLIER);
-		if (newsize<_buflength) {
-			newsize=ceil(_buflength*BUFFER_MULTIPLIER);
-		}
-		_bufsize=newsize;
-		void* temp=realloc(_buffer, newsize*4);
-		if (!temp) {
-			throw IniParserException(PARSERERROR_MEMALLOC, "IniToken::addChar", NULL, NULL, "Unable to allocate buffer of size %d bytes", (newsize*4));
-		}
-		_buffer=(UChar32*)temp;
-	}
-	_buffer[_buflength++]=c;
-}
-
-void IniToken::cacheString() {
-	if (_buffer) {
-		_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
-	} else {
-		_bufstring.remove();
-	}
-	_cached=true;
-}
-
-int32_t IniToken::asInt() {
-	if (!_cached) {
-		cacheString();
-	}
-	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
-	Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
-	if (U_FAILURE(status)) {
-		debug_printp(this, u_errorName(status));
-		delete nf;
-		return 0;
-	} else {
-		delete nf;
-		return formattable.getLong();
-	}
-}
-
-double IniToken::asDouble() {
-	if (!_cached) {
-		cacheString();
-	}
-	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
-	Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
-	if (U_FAILURE(status)) {
-		debug_printp(this, u_errorName(status));
-		delete nf;
-		return 0.0;
-	} else {
-		//printf("(IniToken::asDouble) formattable.getDouble:%f\n", formattable.getDouble());
-		delete nf;
-		return formattable.getDouble(status);
-	}
-}
-
-void IniToken::asString(UnicodeString& str) {
-	if (!_cached) {
-		cacheString();
-	}
-	str.setTo(_bufstring);
-}
-
-const UnicodeString& IniToken::asString() {
-	if (!_cached) {
-		cacheString();
-	}
-	return _bufstring;
-}
-
-const char* IniToken::typeAsString() const {
-	switch (_type) {
-		case NoToken:
-			return "NoToken";
+const char* __ini_tokenName(const Token& token) {
+	switch (token.getType()) {
+		case NULL_TOKEN:
+			return "NULLToken";
 		case StringToken:
 			return "StringToken";
 		case QuotedStringToken:
@@ -178,46 +64,23 @@ CharacterSet IniParser::_whitespaceset=CharacterSet("\t ");
 CharacterSet IniParser::_numberset=CharacterSet("0-9\\-+");
 CharacterSet IniParser::_digitset=CharacterSet(".0-9\\-+");
 
-IniParser::IniParser() {
-	clean();
+IniParser::IniParser() : _handler(NULL) {
+	reset();
 }
-
-IniParser::IniParser(Stream* stream) {
+IniParser::IniParser(Stream* stream) : _handler(NULL) {
 	initWithStream(stream);
 }
 
 IniParser::~IniParser() {
-	clean();
+	reset();
 }
 
-void IniParser::initWithStream(Stream* stream) {
-	clean();
-	_stream=stream;
-	nextChar(); // Get the first character
+void IniParser::setHandler(ParserHandler* handler) {
+	_handler=(IniParserHandler*)handler;
 }
 
-void IniParser::setHandler(IniParserHandler* handler) {
-	_handler=handler;
-}
-
-IniParserHandler* IniParser::getHandler() {
+ParserHandler* IniParser::getHandler() {
 	return _handler;
-}
-
-const IniToken& IniParser::getToken() const {
-	return _token;
-}
-
-Stream* IniParser::getStream() {
-	return _stream;
-}
-
-void IniParser::clean() {
-	_token.reset(NoToken);
-	_line=1;
-	_col=0;
-	_stream=NULL;
-	_curchar=CHAR_EOF;
 }
 
 bool IniParser::parse() {
@@ -229,28 +92,10 @@ bool IniParser::parse() {
 		_token.reset(EOFToken);
 		_handler->handleToken(_token); // Just to make sure the EOF gets handled (data might not end with a newline, causing an EOFToken)
 		return false;
-	} else if (_token._type==EOFToken) {
+	} else if (_token.getType()==EOFToken) {
 		return false;
 	}
 	return true;
-}
-
-UChar32 IniParser::nextChar() {
-	if (_curchar==CHAR_NEWLINE) {
-		_line++;
-		_col=0;
-	}
-	if (!_stream->eof()) {
-		_curchar=_stream->readChar();
-	} else {
-		_curchar=CHAR_EOF;
-	}
-	if (_curchar==CHAR_CARRIAGERETURN) { // Skip \r
-		nextChar();
-	} else if (_curchar!=CHAR_EOF) {
-		_col++;
-	}
-	return _curchar;
 }
 
 void IniParser::skipWhitespace() {
@@ -258,51 +103,46 @@ void IniParser::skipWhitespace() {
 		nextChar();
 }
 
-void IniParser::skipToEOL() {
-	while (_curchar!=CHAR_EOF && _curchar!=CHAR_NEWLINE)
-		nextChar();
-}
-
-IniToken& IniParser::nextToken() {
-	_token.reset(NoToken);
+Token& IniParser::nextToken() {
+	_token.reset(NULL_TOKEN);
 	switch (_curchar) {
 		case CHAR_QUOTE:
-			_token._type=QuotedStringToken;
+			_token.setType(QuotedStringToken);
 			break;
 		case CHAR_SEMICOLON:
-			_token._type=CommentToken;
+			_token.setType(CommentToken);
 			break;
 		case CHAR_EOF:
-			_token._type=EOFToken;
+			_token.setType(EOFToken);
 			break;
 		case CHAR_NEWLINE:
-			_token._type=EOLToken;
+			_token.setType(EOLToken);
 			break;
 		case CHAR_DECIMALPOINT:
-			_token._type=DoubleToken;
+			_token.setType(DoubleToken);
 			_token.addChar(_curchar); // Add the decimal
 			break;
 		case CHAR_EQUALSIGN:
-			_token._type=EqualsToken;
+			_token.setType(EqualsToken);
 			break;
 		case CHAR_OPENBRACKET:
-			_token._type=NodeToken;
+			_token.setType(NodeToken);
 			break;
 		default:
 			if (_numberset.contains(_curchar)) {
-				_token._type=NumberToken;
+				_token.setType(NumberToken);
 			} else {
-				_token._type=StringToken;
+				_token.setType(StringToken);
 			}
 			break;
 	}
-	_token.setBeginningPosition(_line, _col);
+	_token.setPosition(_line, _column);
 	return _token;
 }
 
 void IniParser::readToken() {
-	//printf("(IniParser::readToken) token-type:%s line:%d, col:%d\n", _token.typeAsString(), _token._beg_line, _token._beg_col);
-	switch (_token._type) {
+	//printf("(IniParser::readToken) token-type:%s line:%d, col:%d\n", __ini_tokenName(_token), _token.getLine(), _token.getColumn());
+	switch (_token.getType()) {
 		case QuotedStringToken:
 			readQuotedStringToken();
 			nextChar();
@@ -335,7 +175,7 @@ void IniParser::readToken() {
 			// Do nothing
 			break;
 		default:
-			throw IniParserException(PARSERERROR_PARSER, "IniParser::readToken", NULL, this, "Unhandled token: %s", _token.typeAsString());
+			throw IniParserException(PARSERERROR_PARSER, "IniParser::readToken", NULL, this, "Unhandled token: %s", __ini_tokenName(_token));
 			break;
 	}
 	_handler->handleToken(_token);
@@ -353,11 +193,11 @@ void IniParser::readNumberToken() {
 			} else if (_curchar==CHAR_DECIMALPOINT) {
 				_token.addChar(_curchar);
 				nextChar();
-				_token._type=DoubleToken;
+				_token.setType(DoubleToken);
 				readDoubleToken();
 				return;
 			} else {
-				_token._type=StringToken;
+				_token.setType(StringToken);
 				readStringToken();
 				return;
 			}
@@ -377,7 +217,7 @@ void IniParser::readDoubleToken() {
 				_token.addChar(_curchar);
 			} else { // (_curchar==CHAR_DECIMALPOINT)
 				// The token should've already contained a decimal point, so it must be a string.
-				_token._type=StringToken;
+				_token.setType(StringToken);
 				readStringToken();
 				return;
 			}
@@ -434,49 +274,13 @@ void IniParser::readNodeToken() {
 	}
 }
 
-// class IniParserHandler implementation
-
-IniParserHandler::~IniParserHandler() {
-}
-
-void IniParserHandler::init() {
-	_parser.setHandler(this);
-}
-
-void IniParserHandler::throwex(IniParserException e) {
-	throw e;
-}
-
-void IniParserHandler::clean() {
-	_currentnode=NULL;
-	_rootnode=NULL;
-}
-
-void IniParserHandler::process() {
-	_rootnode=new Node(NULL);
-	_currentnode=_rootnode;
-	while (_parser.parse()) {
-	}
-	finish();
-}
-
-Node* IniParserHandler::processFromStream(Stream* stream) {
-	_parser.initWithStream(stream);
-	process();
-	Node* node=_rootnode; // Store before cleaning
-	clean();
-	_parser.clean();
-	return node;
-}
-
 // class IniParserException implementation
 
-IniParserException::IniParserException(IniParserError error, const char* reporter, const IniToken* token, const IniParser* parser, const char* fmt, ...) {
+IniParserException::IniParserException(IniParserError error, const char* reporter, const Token* token, const IniParser* parser, const char* fmt, ...) {
 	_error=error;
 	_reporter=reporter;
 	_token=token;
 	_parser=parser;
-	
 	char temp[256];
 	va_list args;
 	va_start(args, fmt);
@@ -486,11 +290,11 @@ IniParserException::IniParserException(IniParserError error, const char* reporte
 	if (_parser && !_token)
 		_token=&_parser->getToken();
 	if (_token && _parser)
-		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->_beg_line, _token->_beg_col, _parser->_line, _parser->_col, temp);
+		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), _parser->getLine(), _parser->getColumn(), temp);
 	if (_token)
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _token->_beg_line, _token->_beg_col, temp);
+		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), temp);
 	else if (_parser)
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->_line, _parser->_col, temp);
+		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->getLine(), _parser->getColumn(), temp);
 	else
 		sprintf(_message, "(%s) [%s]: %s", _reporter, errorToString(_error), temp);
 	_message[511]='\0';
@@ -513,24 +317,52 @@ const char* IniParserException::errorToString(IniParserError error) {
 	}
 }
 
-// class StandardIniParserHandler implementation
+// class IniParserHandler implementation
 
-StandardIniParserHandler::StandardIniParserHandler() {
-	init();
+IniParserHandler::IniParserHandler(IniParser& parser) : _parser(parser), _equals(false), _rootnode(NULL), _currentnode(NULL) {
+	_parser.setHandler(this);
 }
 
-void StandardIniParserHandler::throwex(IniParserException e) {
+void IniParserHandler::setParser(Parser& parser) {
+	_parser=(IniParser&)parser;
+	_parser.setHandler(this);
+}
+
+Parser& IniParserHandler::getParser() {
+	return _parser;
+}
+
+void IniParserHandler::throwex(IniParserException e) {
 	freeData();
 	throw e;
 }
 
-void StandardIniParserHandler::clean() {
-	IniParserHandler::clean();
+void IniParserHandler::clean() {
+	_currentnode=NULL;
+	_rootnode=NULL;
 	_varname.remove();
 	_equals=false;
 }
 
-void StandardIniParserHandler::freeData() {
+bool IniParserHandler::process() {
+	_rootnode=new Node(NULL);
+	_currentnode=_rootnode;
+	while (_parser.parse()) {
+	}
+	finish();
+	return true;
+}
+
+Node* IniParserHandler::processFromStream(Stream* stream) {
+	_parser.initWithStream(stream);
+	process();
+	Node* node=_rootnode; // Store before cleaning
+	clean();
+	_parser.reset();
+	return node;
+}
+
+void IniParserHandler::freeData() {
 	if (_currentnode) {
 		if (_rootnode==_currentnode || _currentnode->getParent()!=_rootnode) { // delete the root if the root and the current node are the same or if the current node has been parented
 			delete _rootnode;
@@ -544,57 +376,57 @@ void StandardIniParserHandler::freeData() {
 	clean();
 }
 
-void StandardIniParserHandler::handleToken(IniToken& token) {
+void IniParserHandler::handleToken(Token& token) {
 	switch (token.getType()) {
 		case StringToken:
 		case QuotedStringToken: {
 			if (_varname.length()>0 && _equals) {
 				if (token.getType()==StringToken) {
-					int bv=Variable::stringToBool(token.asString());
+					int bv=Variable::stringToBool(token.toString());
 					if (bv!=-1) {
 						addValueAndReset(new BoolVariable((bool)bv, _varname));
 						return;
 					}
 				}
-				addValueAndReset(new StringVariable(token.asString(), _varname));
+				addValueAndReset(new StringVariable(token.toString(), _varname));
 			} else if (_varname.length()>0) {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected equals sign, got string"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "Expected equals sign, got string"));
 			} else {
-				_varname.setTo(token.asString()).trim();
+				_varname.setTo(token.toString()).trim();
 			}
 			}
 			break;
 		case NumberToken:
 			if (_varname.length()>0 && _equals) {
-				addValueAndReset(new IntVariable(token.asInt(), _varname));
+				addValueAndReset(new IntVariable(token.toInt(), _varname));
 			} else {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 			}
 			break;
 		case DoubleToken:
 			if (_varname.length()>0 && _equals) {
-				addValueAndReset(new FloatVariable(token.asDouble(), _varname));
+				addValueAndReset(new FloatVariable(token.toDouble(), _varname));
 			} else {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 			}
 			break;
 		case EqualsToken:
 			if (_varname.length()==0) {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected string, got equality sign"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "Expected string, got equality sign"));
 			} else if (_equals) {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "Expected value, got equality sign"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "Expected value, got equality sign"));
 			} else {
 				_equals=true;
 			}
 			break;
 		case NodeToken: {
 			if (_varname.length()==0) {
-				_varname.setTo(token.asString()).trim();
+				_varname.setTo(token.toString()).trim();
 				_currentnode=new Node(_varname, _rootnode); // Trim whitespace
 				_varname.remove(); // clear the string
 				_rootnode->addVariable(_currentnode);
 			} else {
-				throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::handleToken", &token, &_parser, "NodeToken: Unknown error. _varname length is>0"));
+				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "NodeToken: Unknown error. _varname length is>0"));
 			}
 			}
 			break;
@@ -606,32 +438,33 @@ void StandardIniParserHandler::handleToken(IniToken& token) {
 			finish();
 			break;
 		default:
-			//printf("StandardIniParserHandler::handleToken Unhandled token of type: %s\n", token.typeAsString());
+			//printf("IniParserHandler::handleToken Unhandled token of type: %s\n", __ini_tokenName(token));
 			break;
 	}
 }
 
-void StandardIniParserHandler::finish() {
+void IniParserHandler::finish() {
 	if (_varname.length()>0 && _equals) {
 		addValueAndReset(new StringVariable("", _varname));
 	} else if (_varname.length()>0) {
-		throwex(IniParserException(PARSERERROR_PARSER, "StandardIniParserHandler::finish", NULL, &_parser, "Expected equality sign, got EOL or EOF"));
+		throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::finish", NULL, &_parser, "Expected equality sign, got EOL or EOF"));
 	}
 }
 
-void StandardIniParserHandler::reset() {
+void IniParserHandler::reset() {
 	_varname.remove();
 	_equals=false;
 }
 
-void StandardIniParserHandler::addValueAndReset(ValueVariable* value) {
+void IniParserHandler::addValueAndReset(ValueVariable* value) {
 	_currentnode->addVariable(value);
 	reset();
 }
 
 // class IniFormatter implementation
 
-StandardIniParserHandler IniFormatter::_handler=StandardIniParserHandler();
+IniParser IniFormatter::_parser=IniParser();
+IniParserHandler IniFormatter::_handler=IniParserHandler(IniFormatter::_parser);
 
 bool IniFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {

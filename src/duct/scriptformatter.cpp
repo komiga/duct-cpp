@@ -24,8 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <unicode/numfmt.h>
 #include <duct/debug.hpp>
@@ -34,7 +32,7 @@ THE SOFTWARE.
 
 namespace duct {
 
-const char* __tokenName(const Token& token) {
+const char* __script_tokenName(const Token& token) {
 	switch (token.getType()) {
 		case NULL_TOKEN:
 			return "NULLToken";
@@ -158,7 +156,7 @@ Token& ScriptParser::nextToken() {
 }
 
 void ScriptParser::readToken() {
-	//printf("(ScriptParser::readToken) token-type:%s line:%d, col:%d\n", __tokenName(_token), _token.getLine(), _token.getColumn());
+	//printf("(ScriptParser::readToken) token-type:%s line:%d, col:%d\n", __script_tokenName(_token), _token.getLine(), _token.getColumn());
 	switch (_token.getType()) {
 		case QuotedStringToken:
 			readQuotedStringToken();
@@ -195,7 +193,7 @@ void ScriptParser::readToken() {
 			// Do nothing
 			break;
 		default:
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readToken", NULL, this, "Unhandled token: %s", __tokenName(_token));
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readToken", NULL, this, "Unhandled token: %s", __script_tokenName(_token));
 			break;
 	}
 	// Special resolve when Number and Double tokens only contain signs or periods
@@ -507,7 +505,7 @@ void ScriptParserHandler::handleToken(Token& token) {
 			finish();
 			break;
 		default:
-			//DebugLog("(ScriptParserHandler::handleToken) Unhandled token of type "+__tokenName(token))
+			//DebugLog("(ScriptParserHandler::handleToken) Unhandled token of type "+__script_tokenName(token))
 			break;
 	}
 }

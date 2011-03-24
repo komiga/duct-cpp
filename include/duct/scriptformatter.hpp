@@ -25,7 +25,10 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-ductScript parser and formatter.
+Implements component parts:
+<ul>
+	<li>ductScript</li>
+</ul>
 */
 
 #ifndef _DUCT_SCRIPTFORMATTER_HPP
