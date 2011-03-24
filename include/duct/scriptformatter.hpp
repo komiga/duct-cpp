@@ -89,25 +89,13 @@ public:
 	void setHandler(ParserHandler* handler);
 	ParserHandler* getHandler();
 	/**
-		Parse the next token.
-		@returns true if more data is left to be handled, or false if there is no more data to parse.
-	*/
-	bool parse();
-	/**
 		Skip whitespace characters.
 		@returns Nothing.
 	*/
 	void skipWhitespace();
-	/**
-		Get the next token.
-		@returns The next token.
-	*/
 	Token& nextToken();
-	/**
-		Read the current token.
-		@returns Nothing.
-	*/
 	void readToken();
+	bool parse();
 	/**
 		Read a number token.
 		@returns Nothing.
