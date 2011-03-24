@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 #include <duct/debug.hpp>
 #include <duct/characterset.hpp>
+#include <duct/charconstants.hpp>
 
 namespace duct {
 
@@ -198,8 +199,6 @@ void CharacterSet::clear() {
 }
 
 void CharacterSet::addRangesWithString(const UnicodeString& str) {
-	const UChar32 CHAR_DASH=0x2D;
-	const UChar32 CHAR_ESCAPE=0x5C;
 	int lastchar=-1;
 	int chr;
 	bool isrange=false;
@@ -208,7 +207,7 @@ void CharacterSet::addRangesWithString(const UnicodeString& str) {
 		chr=str.charAt(i);
 		if (escape) {
 			escape=false;
-		} else if (chr==CHAR_ESCAPE) {
+		} else if (chr==CHAR_BACKSLASH) {
 			escape=true;
 			continue;
 		} else if (lastchar!=-1 && chr==CHAR_DASH && !isrange) {

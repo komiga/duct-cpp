@@ -107,8 +107,29 @@ void CharBuf::reset() {
 	_cached=false;
 }
 
-void CharBuf::toString(UnicodeString& str) {
-	str.setTo(cacheString());
+bool CharBuf::compare(UChar32 c) const {
+	for (unsigned int i=0; i<_buflength; ++i) {
+		if (_buffer[i]!=c)
+			return false;
+	}
+	return true;
+}
+
+bool CharBuf::compare(const CharacterSet& charset) const {
+	for (unsigned int i=0; i<_buflength; ++i) {
+		if (!charset.contains(_buffer[i]))
+			return false;
+	}
+	return true;
+}
+
+bool CharBuf::toString(UnicodeString& str) {
+	cacheString();
+	if (!_bufstring.isBogus()) {
+		str.setTo(_bufstring);
+		return true;
+	}
+	return false;
 }
 
 const UnicodeString& CharBuf::toString() {
