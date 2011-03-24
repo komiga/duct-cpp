@@ -31,8 +31,9 @@ duct++ CharBuf class.
 #ifndef _DUCT_CHARBUF_HPP
 #define _DUCT_CHARBUF_HPP
 
-#include <duct/config.hpp>
 #include <unicode/unistr.h>
+#include <duct/config.hpp>
+#include <duct/characterset.hpp>
 
 namespace duct {
 
@@ -65,16 +66,77 @@ public:
 	*/
 	void reset();
 	/**
+		Compare all the characters in the buffer with the given character set.
+		@returns true if all characters match a character in the set, or false otherwise.
+		@param charset The character set to compare against.
+	*/
+	bool compare(const CharacterSet& charset);
+	/**
+		Compare all the characters in the buffer to the given character.
+		@returns true if all characters match the given character, or false otherwise.
+		@param c The character to compare against.
+	*/
+	bool compare(UChar32 c);
+	/**
 		Convert the buffer to a string.
 		@returns Nothing.
 		@param str The string to store the result in.
 	*/
-	void asString(UnicodeString& str);
+	void toString(UnicodeString& str);
 	/**
 		Convert the buffer to a string.
-		@returns A reference to the cached string.
+		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
+		@returns A reference to the cached string (which will be bogus if conversion failed).
 	*/
-	const UnicodeString& asString();
+	const UnicodeString& toString();
+	/**
+		Convert the buffer to a 32-bit integer.
+		@returns The buffer as an integer, or 0 if the cached string was not a numeric value.
+	*/
+	int32_t toInt();
+	/**
+		Convert the buffer to a 32-bit integer (with error-return).
+		If the conversion fails, <em>value</em> is unmodified.
+		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
+		@param value Output value.
+	*/
+	bool toInt(int32_t& value);
+	/**
+		Convert the buffer to a 64-bit integer.
+		@returns The buffer as a long, or 0 if the cached string was not a numeric value.
+	*/
+	int64_t toLong();
+	/**
+		Convert the buffer to a long (with error-return).
+		If the conversion fails, <em>value</em> is unmodified.
+		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
+		@param value Output value.
+	*/
+	bool toLong(int64_t& value);
+	/**
+		Convert the buffer to a float.
+		@returns The buffer as a float, or 0.0 if the cached string was not a numeric value.
+	*/
+	float toFloat();
+	/**
+		Convert the buffer to a float (with error-return).
+		If the conversion fails, <em>value</em> is unmodified.
+		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
+		@param value Output value.
+	*/
+	bool toFloat(float& value);
+	/**
+		Convert the buffer to a double.
+		@returns The buffer as a double, or 0.0 if the cached string was not a numeric value.
+	*/
+	double toDouble();
+	/**
+		Convert the buffer to a double (with error-return).
+		If the conversion fails, <em>value</em> is unmodified.
+		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
+		@param value Output value.
+	*/
+	bool toDouble(double& value);
 	
 protected:
 	UChar32* _buffer;
