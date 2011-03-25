@@ -14,7 +14,7 @@ int main() {
 	IntVariable c(200, "foobar");
 	
 	printf("%d, %d, %d\n", a.get(), b.get(), c.get());
-	cout << a.getName() << ", " << b.getName() << ", " << c.getName() << endl;
+	cout<<a.getName()<<", "<<b.getName()<<", "<<c.getName()<<endl;
 	
 	return 0;
 }

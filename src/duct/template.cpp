@@ -244,7 +244,7 @@ void __add(CollectionVariable* collection, _PairList& pairs, const UnicodeString
 			} else {
 				collection->getChildren().erase(pair->iter); // erase without deleting the variable
 			}
-			iden->addVariable(pair->variable); // re-own to the new identifier
+			iden->add(pair->variable); // re-own to the new identifier
 		}
 		addcount+=1;
 	}

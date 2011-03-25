@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <unicode/numfmt.h>
 #include <duct/debug.hpp>
 #include <duct/iniformatter.hpp>
-#include <duct/charconstants.hpp>
+#include <duct/charutils.hpp>
 
 namespace duct {
 
@@ -424,7 +424,7 @@ void IniParserHandler::handleToken(Token& token) {
 				_varname.setTo(token.toString()).trim();
 				_currentnode=new Node(_varname, _rootnode); // Trim whitespace
 				_varname.remove(); // clear the string
-				_rootnode->addVariable(_currentnode);
+				_rootnode->add(_currentnode);
 			} else {
 				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "NodeToken: Unknown error. _varname length is>0"));
 			}
@@ -457,7 +457,7 @@ void IniParserHandler::reset() {
 }
 
 void IniParserHandler::addValueAndReset(ValueVariable* value) {
-	_currentnode->addVariable(value);
+	_currentnode->add(value);
 	reset();
 }
 

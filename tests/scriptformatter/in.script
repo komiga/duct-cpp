@@ -2,7 +2,7 @@
 attr value1 /* boo! */ "value two! // lalala {}"
 
 namednode { // Comment after opening node
-	data.zip\\sounds\intro.ogg 0 1 1 2 3 5 8 13 // Comment
+	data.zip\\sounds\\intro.ogg 0 1 1 2 3 5 8 13 // Comment
 }//Comment
 
 
@@ -12,7 +12,7 @@ namednode { // Comment after opening node
 }/* Comment */
 
 test.some.struff la(foo)
-"White-spaced identifier names" "Booyah!"
+"White-spaced\nidentifier\tnames" "Booyah!"
 
 SingleNode {First "single line test"}
 { Second "single line test" .003 2.0 }
@@ -47,6 +47,9 @@ node {value=1234 foo=bar}
 edon {value=4321/* */identifier "foo bar"}
 
 fine=enif
+
+escapes=\r\n\t
+more="\'\"\\"
 
 // Non-strings as identifiers or value names
 .42 42.0

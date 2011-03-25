@@ -230,7 +230,12 @@ bool createFile(const char* path, bool createpath) {
 	/*if (createpath && !dirExists()) {
 		createDir();
 	}*/
-	return creat(path, 0)!=-1;
+	int fd=creat(path, 0);
+	if (fd!=-1) {
+		close(fd);
+		return true;
+	}
+	return false;
 }
 
 bool createFile(const std::string& path, bool createpath) {
