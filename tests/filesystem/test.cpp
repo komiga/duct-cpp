@@ -8,26 +8,26 @@ using namespace std;
 using namespace duct;
 
 void testFile(const UnicodeString& path) {
-	cout << "(file) \"" << path << '\"';
+	cout<<"(file) \""<<path<<'\"';
 	if (FileSystem::fileExists(path)) {
-		cout << " exists" << endl;
+		cout<<" exists"<<endl;
 	} else {
-		cout << " does not exist" << endl;
+		cout<<" does not exist"<<endl;
 	}
 }
 
 void testDir(const UnicodeString& path) {
-	cout << "(dir) \"" << path << '\"';
+	cout<<"(dir) \""<<path<<'\"';
 	if (FileSystem::dirExists(path)) {
-		cout << " exists" << endl;
+		cout<<" exists"<<endl;
 	} else {
-		cout << " does not exist" << endl;
+		cout<<" does not exist"<<endl;
 	}
 }
 
 int main() {
 	UnicodeString dirname("うううう/");
-	UnicodeString filename = dirname + "ああああ.foobar";
+	UnicodeString filename=dirname+"ああああ.foobar";
 	testDir(dirname);
 	testFile(filename);
 	printf("createDir:%d\n", FileSystem::createDir(dirname));
@@ -40,11 +40,11 @@ int main() {
 		UnicodeString name;
 		while (ds.nextEntry(name)) {
 			printf("entry type:%d entry name:\"", ds.entryType());
-			cout << name << '\"' << endl;
+			cout<<name<<'\"'<<endl;
 		}
-		ds.close();
+		printf("close: %d\n", ds.close());
 	} else {
-		cout << "Could not open \"" << dirname << "\"" << endl;
+		cout<<"Could not open \""<<dirname<<"\""<<endl;
 	}
 	
 	printf("deleteFile:%d\n", FileSystem::deleteFile(filename));

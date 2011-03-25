@@ -1,9 +1,9 @@
 
-#include "duct/variables.hpp"
-#include <unicode/ustdio.h>
-#include <unicode/ustream.h>
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustdio.h>
+#include <unicode/ustream.h>
+#include "duct/variables.hpp"
 
 using namespace duct;
 using namespace std;
@@ -30,9 +30,9 @@ int main() {
 	iden.add(new BoolVariable(true, "bool"));
 	
 	printValues(iden);
-	printf("removing VARTYPE_BOOL: %d\n", iden.remove(VARTYPE_BOOL));
-	printf("removing \"string\": %d\n\n", iden.remove("string"));
-	printValues(iden);
+	Identifier* clone=(Identifier*)iden.clone();
+	printValues(*clone);
+	delete clone;
 	return 0;
 }
 

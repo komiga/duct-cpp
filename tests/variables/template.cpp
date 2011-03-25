@@ -9,15 +9,15 @@ using namespace duct;
 using namespace std;
 
 void printValues(const Identifier& iden) {
-	printf("Variable count: %d\n", iden.getChildCount());
+	printf("Variable count: %lu\n", iden.getChildCount());
 	UnicodeString str;
-	for (VarList::const_iterator iter = iden.begin(); iter != iden.end(); ++iter) {
-		ValueVariable* var = dynamic_cast<ValueVariable*>(*iter);
+	for (VarList::const_iterator iter=iden.begin(); iter!=iden.end(); ++iter) {
+		ValueVariable* var=dynamic_cast<ValueVariable*>(*iter);
 		if (var) {
 			var->getValueFormatted(str, FMT_ALL_DEFAULT);
-			cout << str << ", ";
+			cout<<str<<", ";
 			var->getNameFormatted(str, FMT_NAME_DEFAULT);
-			cout << str << endl;
+			cout<<str<<endl;
 		}
 	}
 }
@@ -26,13 +26,13 @@ int main() {
 	Template* tpl;
 	Template* tplv;
 	{
-		tpl = new Template(NULL, new VTypeLayout(2, VARTYPE_INTEGER, VARTYPE_BOOL), false, VARTYPE_NONE);
+		tpl=new Template(NULL, new VTypeLayout(2, VARTYPE_INTEGER, VARTYPE_BOOL), false, VARTYPE_NONE);
 		Identifier iden;
-		iden.addVariable(new IntVariable(100));
-		iden.addVariable(new BoolVariable(true));
+		iden.add(new IntVariable(100));
+		iden.add(new BoolVariable(true));
 		printf("tpl->validateIdentifier(iden): %d\n", tpl->validateIdentifier(&iden));
 		
-		tplv = new Template(Identity::withCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
+		tplv=new Template(Identity::withCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
 		BoolVariable value(true, "bool");
 		printf("tplv->validateValue(value): %d\n", tplv->validateValue(&value));
 	}

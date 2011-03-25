@@ -14,3 +14,4 @@ docs/html/
 Makefile
 duct.make
 out/
+lib/

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 #include <duct/debug.hpp>
 #include <duct/characterset.hpp>
-#include <duct/charconstants.hpp>
+#include <duct/charutils.hpp>
 
 namespace duct {
 

@@ -10,20 +10,20 @@ using namespace std;
 
 void printValue(ValueVariable* var) {
 	UnicodeString str;
-	cout << var->getType() << "; ";
+	cout<<var->getType()<<"; ";
 	var->getValueFormatted(str, FMT_ALL_DEFAULT);
-	cout << str << ", ";
+	cout<<str<<", ";
 	var->getNameFormatted(str, FMT_NAME_DEFAULT);
-	cout << str << endl;
+	cout<<str<<endl;
 }
 
 int main() {
-	UnicodeString source = "1.0";
-	ValueVariable* var = Variable::stringToValue(source);
+	UnicodeString source="1.0";
+	ValueVariable* var=Variable::stringToValue(source);
 	printValue(var);
 	delete var;
-	source = ".0";
-	var = Variable::stringToValue(source);
+	source=".0";
+	var=Variable::stringToValue(source);
 	printValue(var);
 	delete var;
 	return 0;

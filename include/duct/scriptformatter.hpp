@@ -104,25 +104,21 @@ public:
 		@returns Nothing.
 	*/
 	void readNumberToken();
-	
 	/**
 		Read a floating-point number token.
 		@returns Nothing.
 	*/
 	void readDoubleToken();
-	
 	/**
 		Read a string token.
 		@returns Nothing.
 	*/
 	void readStringToken();
-	
 	/**
 		Read a quoted-string token.
 		@returns Nothing.
 	*/
 	void readQuotedStringToken();
-	
 	/**
 		Read a block comment token.
 		@returns Nothing.
@@ -169,13 +165,11 @@ public:
 		Constructor with values.
 	*/
 	ScriptParserException(ScriptParserError error, const char* reporter, const Token* token, const ScriptParser* parser, const char* fmt, ...);
-	
 	/**
 		Get the exception's message.
 		@returns The exception's message.
 	*/
 	virtual const char* what() const throw();
-	
 	/**
 		Convert an exception error to a NUL-terminated string.
 		@returns The error as a string.
@@ -251,7 +245,6 @@ public:
 		@param value Whether to reset the value.
 	*/
 	void reset(bool iden, bool value);
-	
 	/**
 		Add the given variable to the given collection and reset the variable state.
 		@returns Nothing.
@@ -261,7 +254,6 @@ public:
 		@param value Whether to reset the value.
 	*/
 	void addVariableAndReset(CollectionVariable* collection, Variable* variable, bool iden, bool value);
-	
 	/**
 		Construct an identifier from the current state/token.
 		@returns Nothing.
@@ -297,7 +289,6 @@ public:
 		@param varformat The format for values.
 	*/
 	static bool formatIdentifier(const Identifier& iden, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	
 	/**
 		Format the given value as a script value.
 		@returns true if the value was formatted, or false if the given value did not have a name (script values require a name).
@@ -307,7 +298,6 @@ public:
 		@param varformat The format for values.
 	*/
 	static bool formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	
 	/**
 		Load a node from the given file path.
 		The user owns the returned node.
@@ -319,7 +309,6 @@ public:
 	static Node* loadFromFile(const char* path, const char* encoding="utf8");
 	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
 	static Node* loadFromFile(const UnicodeString& path, const char* encoding="utf8");
-	
 	/**
 		Load a node from the given stream.
 		The user owns the returned node.
@@ -328,7 +317,6 @@ public:
 		@param stream The stream to read from.
 	*/
 	static Node* loadFromStream(Stream* stream);
-	
 	/**
 		Write the given node to the given file path.
 		@returns true if the node was written to the file, or false if either the given node was NULL or the given path could not be opened for writing.
@@ -341,7 +329,6 @@ public:
 	static bool writeToFile(const Node* root, const char* path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	static bool writeToFile(const Node* root, const std::string& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	static bool writeToFile(const Node* root, const UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	
 	/**
 		Write the given node to the given stream.
 		@returns true if the node was written to the stream, or false if the given node or stream was NULL.

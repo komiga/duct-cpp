@@ -53,7 +53,7 @@ Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimi
 				while (i<=length) {
 					arg=UnicodeString(argv[i]);
 					if (arg.length()>0 || arg[0]!='-') {
-						sub->addVariable(Variable::stringToValue(arg));
+						sub->add(Variable::stringToValue(arg));
 						i++;
 						if (i>lim) {
 							i--;
@@ -65,14 +65,14 @@ Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimi
 					}
 				}
 			}
-			root->addVariable(sub);
+			root->add(sub);
 		} else {
 			if (!subset) {
-				root->addVariable(sub);
+				root->add(sub);
 				root=sub;
 				subset=true;
 			} else {
-				root->addVariable(Variable::stringToValue(arg));
+				root->add(Variable::stringToValue(arg));
 				delete sub;
 				sub=NULL;
 			}

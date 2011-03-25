@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <unicode/numfmt.h>
 #include <duct/debug.hpp>
 #include <duct/scriptformatter.hpp>
-#include <duct/charconstants.hpp>
+#include <duct/charutils.hpp>
 
 namespace duct {
 
@@ -226,20 +226,18 @@ void ScriptParser::readNumberToken() {
 			}
 		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
 			break;
+		} else if (_numberset.contains(_curchar)) {
+			_token.addChar(_curchar);
+		} else if (_curchar==CHAR_DECIMALPOINT) {
+			_token.addChar(_curchar);
+			nextChar();
+			_token.setType(DoubleToken);
+			readDoubleToken();
+			return;
 		} else {
-			if (_numberset.contains(_curchar)) {
-				_token.addChar(_curchar);
-			} else if (_curchar==CHAR_DECIMALPOINT) {
-				_token.addChar(_curchar);
-				nextChar();
-				_token.setType(DoubleToken);
-				readDoubleToken();
-				return;
-			} else {
-				_token.setType(StringToken);
-				readStringToken();
-				return;
-			}
+			_token.setType(StringToken);
+			readStringToken();
+			return;
 		}
 		nextChar();
 	}
@@ -277,9 +275,16 @@ void ScriptParser::readStringToken() {
 	while (_curchar!=CHAR_EOF) {
 		if (_curchar==CHAR_QUOTE) {
 			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected quote");
+		} else if (_curchar==CHAR_BACKSLASH) {
+			UChar32 c=CharUtils::getEscapeChar(nextChar());
+			if (c!=CHAR_EOF) {
+				_token.addChar(c);
+			} else {
+				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected escape sequence: %c", _curchar);
+			}
 		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
-					|| (_curchar==CHAR_SLASH && (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK))
-					|| _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
+				|| (_curchar==CHAR_SLASH && (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK))
+				|| _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
 			break;
 		} else {
 			_token.addChar(_curchar);
@@ -294,6 +299,13 @@ void ScriptParser::readQuotedStringToken() {
 	while (_curchar!=CHAR_QUOTE) {
 		if (_curchar==CHAR_EOF) {
 			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readQuotedStringToken", &_token, this, "Encountered EOF whilst reading quoted string");
+		} else if (_curchar==CHAR_BACKSLASH) {
+			UChar32 c=CharUtils::getEscapeChar(nextChar());
+			if (c!=CHAR_EOF) {
+				_token.addChar(c);
+			} else {
+				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected escape sequence: %c", _curchar);
+			}
 		} else {
 			if (!eolreached)
 				_token.addChar(_curchar);
@@ -561,7 +573,7 @@ void ScriptParserHandler::reset(bool iden, bool value) {
 }
 
 void ScriptParserHandler::addVariableAndReset(CollectionVariable* collection, Variable* variable, bool iden, bool value) {
-	collection->addVariable(variable);
+	collection->add(variable);
 	reset(iden, value);
 }
 

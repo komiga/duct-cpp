@@ -12,11 +12,11 @@ int main() {
 	stream.writeShort(0xa1b1);
 	stream.writeInt(0xa2b2c2d2);
 	stream.seek(0);
-	short a = stream.readShort();
-	short b = stream.readShort();
-	int c = stream.readInt();
+	short a=stream.readShort();
+	short b=stream.readShort();
+	int c=stream.readInt();
 	printf("%hx, %hx, %x\n", a, b, c);
-	for (unsigned int i = 0; i < 8; ++i) {
+	for (unsigned int i=0; i<8; ++i) {
 		printf("%hx", buffer[i]);
 	}
 	printf("\n");
