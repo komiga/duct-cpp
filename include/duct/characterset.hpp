@@ -56,7 +56,7 @@ public:
 		@param start The start of the range.
 		@param length The length of the range.
 	*/
-	CharacterRange(UChar32 start, unsigned int length);
+	CharacterRange(UChar32 start, unsigned int length=0);
 	/**
 		Copy constructor.
 		@param range The range to copy from.
@@ -135,19 +135,29 @@ typedef std::vector<CharacterRange> RangeVec;
 class DUCT_API CharacterSet {
 public:
 	/**
+		Constructor.
+	*/
+	CharacterSet();
+	/**
 		Constructor with string ranges.
+		@param str The ranges.
 	*/
 	CharacterSet(const UnicodeString& str);
+	CharacterSet(const char* str);
 	/**
 		Constructor with single range.
+		@param start The start character.
+		@param length The number of characters in the range.
 	*/
 	CharacterSet(UChar32 start, unsigned int length);
 	/**
 		Constructor with character.
+		@param character Single character in set.
 	*/
 	CharacterSet(UChar32 character);
 	/**
 		Copy constructor.
+		@param set The source set.
 	*/
 	CharacterSet(const CharacterSet& set);
 	/**
@@ -213,7 +223,7 @@ public:
 		@param begin The start of the range.
 		@param length The length of the range.
 	*/
-	void addRange(UChar32 begin, unsigned int length);
+	void addRange(UChar32 begin, unsigned int length=0);
 	/**
 		Add all whitespace characters to the set: tab, linefeed, carriage return, and space.
 		@returns Nothing.

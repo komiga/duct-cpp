@@ -139,7 +139,7 @@ protected:
 */
 enum ScriptParserError {
 	/**
-		Parser error.
+		Unknown error.
 	*/
 	PARSERERROR_UNKNOWN=0,
 	/**
@@ -183,7 +183,6 @@ protected:
 	const char* _reporter;
 	const Token* _token;
 	const ScriptParser* _parser;
-	
 };
 
 /**
@@ -272,7 +271,6 @@ protected:
 	ValueVariable* _currentvalue;
 	Node* _rootnode;
 	Node* _currentnode;
-	
 };
 
 /**
@@ -304,7 +302,7 @@ public:
 		Calls made by this function may throw ScriptParserExceptions.
 		@returns The root node for the script, or NULL if the file could not be opened/read.
 		@param path The file path to read.
-		@param encoding File character encoding. Default is UTF8.
+		@param encoding File character encoding.
 	*/
 	static Node* loadFromFile(const char* path, const char* encoding="utf8");
 	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
@@ -322,7 +320,7 @@ public:
 		@returns true if the node was written to the file, or false if either the given node was NULL or the given path could not be opened for writing.
 		@param root The node to write.
 		@param path The file path.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use.
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/

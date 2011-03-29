@@ -116,8 +116,16 @@ bool CharacterRange::intersects(const CharacterRange& other) const {
 
 // class CharacterSet implementation
 
+CharacterSet::CharacterSet() {
+}
+
 CharacterSet::CharacterSet(const UnicodeString& str) {
 	addRangesWithString(str);
+}
+
+CharacterSet::CharacterSet(const char* str) {
+	UnicodeString ustr(str);
+	addRangesWithString(ustr);
 }
 
 CharacterSet::CharacterSet(UChar32 start, unsigned int length) {
