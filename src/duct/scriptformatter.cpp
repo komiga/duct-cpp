@@ -257,15 +257,13 @@ void ScriptParser::readDoubleToken() {
 			}
 		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
 			break;
-		} else {
-			if (_numberset.contains(_curchar)) {
-				_token.addChar(_curchar);
-			} else { // (_curchar==CHAR_DECIMALPOINT)
-				// The token should've already contained a decimal point, so it must be a string.
-				_token.setType(StringToken);
-				readStringToken();
-				return;
-			}
+		} else if (_numberset.contains(_curchar)) {
+			_token.addChar(_curchar);
+		} else { // (_curchar==CHAR_DECIMALPOINT)
+			// The token should've already contained a decimal point, so it must be a string.
+			_token.setType(StringToken);
+			readStringToken();
+			return;
 		}
 		nextChar();
 	}
@@ -384,7 +382,6 @@ ScriptParserHandler::ScriptParserHandler(ScriptParser& parser) : _parser(parser)
 }
 
 void ScriptParserHandler::setParser(Parser& parser) {
-	debug_printp_source(this, "blblblbl");
 	_parser=(ScriptParser&)parser;
 	_parser.setHandler(this);
 }
@@ -517,7 +514,7 @@ void ScriptParserHandler::handleToken(Token& token) {
 			finish();
 			break;
 		default:
-			//DebugLog("(ScriptParserHandler::handleToken) Unhandled token of type "+__script_tokenName(token))
+			//printf("(ScriptParserHandler::handleToken) Unhandled token of type "+__script_tokenName(token))
 			break;
 	}
 }
