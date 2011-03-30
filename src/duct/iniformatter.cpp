@@ -287,16 +287,18 @@ IniParserException::IniParserException(IniParserError error, const char* reporte
 	vsprintf(temp, fmt, args);
 	va_end(args);
 	temp[255]='\0';
-	if (_parser && !_token)
+	if (_parser && !_token) {
 		_token=&_parser->getToken();
-	if (_token && _parser)
+	}
+	if (_token && _parser) {
 		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), _parser->getLine(), _parser->getColumn(), temp);
-	if (_token)
+	} else if (_token) {
 		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), temp);
-	else if (_parser)
+	} else if (_parser) {
 		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->getLine(), _parser->getColumn(), temp);
-	else
+	} else {
 		sprintf(_message, "(%s) [%s]: %s", _reporter, errorToString(_error), temp);
+	}
 	_message[511]='\0';
 }
 
