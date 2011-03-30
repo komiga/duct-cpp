@@ -123,7 +123,7 @@ bool Token::toDouble(double& value) {
 
 // class Parser implementation
 
-Parser::Parser() : _line(1), _column(0), _curchar(-1), _peekchar(-1), _peeked(false), _stream(NULL) {
+Parser::Parser() : _line(1), _column(1), _curchar(-1), _peekchar(-1), _peeked(false), _stream(NULL) {
 }
 
 Parser::~Parser() {/* Do nothing */}
@@ -161,7 +161,7 @@ bool Parser::initWithStream(Stream* stream) {
 void Parser::reset() {
 	_token.reset(NULL_TOKEN);
 	_line=1;
-	_column=0;
+	_column=1;
 	_stream=NULL;
 	_curchar=CHAR_EOF;
 	_peekchar=CHAR_EOF;
@@ -171,7 +171,7 @@ void Parser::reset() {
 UChar32 Parser::nextChar() {
 	if (_curchar==CHAR_NEWLINE) {
 		_line++;
-		_column=0;
+		_column=1;
 	}
 	if (_peeked) {
 		_curchar=_peekchar;
