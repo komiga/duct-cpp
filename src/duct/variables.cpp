@@ -992,10 +992,19 @@ bool CollectionVariable::getBoolValue(bool& result, const UnicodeString& name, b
 	return false;	
 }
 
-bool CollectionVariable::getAsString(UnicodeString& result, int index, unsigned int format) const {
-	const ValueVariable* var=(ValueVariable*)get(index, VARTYPE_VALUE);
+bool CollectionVariable::getAsString(UnicodeString& result, int index, unsigned int type) const {
+	const ValueVariable* var=(ValueVariable*)get(index, type);
 	if (var) {
-		var->getValueFormatted(result, format);
+		var->valueAsString(result, false);
+		return true;
+	}
+	return false;
+}
+
+bool CollectionVariable::getAsString(UnicodeString& result, const UnicodeString& name, bool casesens, unsigned int type) const {
+	const ValueVariable* var=(ValueVariable*)get(name, casesens, type);
+	if (var) {
+		var->valueAsString(result, false);
 		return true;
 	}
 	return false;

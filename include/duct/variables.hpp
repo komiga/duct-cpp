@@ -716,14 +716,14 @@ public:
 	const IntVariable* getInt(const UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the integer value at the given index.
-		@returns true on success, or false if the index was either out-of-bounds or the variable was not an IntVariable.
+		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
 	bool getIntValue(int& result, int index) const;
 	/**
 		Get the integer value matching the given name.
-		@returns true on success, or false if no children matched the given parameters.
+		@returns true on success, or false if no children matched the parameters.
 		@param result The result. This is not modified if the retrieval failed.
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
@@ -746,27 +746,29 @@ public:
 	const StringVariable* getString(const UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the string value at the given index.
-		@returns The string at the index, or NULL if the index was either out-of-bounds or the variable was not a StringVariable.
+		The returned string should not be destroyed.
+		@returns The string at the index, or NULL if either the index was invalid or the variable at the index wasn't the correct type.
 		@param index The index to retrieve.
 	*/
 	const UnicodeString* getStringValue(int index) const;
 	/**
 		Get the string value at the given index.
-		@returns true on success, or false if the index was either out-of-bounds or the variable was not an IntVariable.
+		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
 	bool getStringValue(UnicodeString& result, int index) const;
 	/**
 		Get the string value matching the given name.
-		@returns true on success, or false if no children matched the given parameters.
+		The returned string should not be destroyed.
+		@returns true on success, or false if no children matched the parameters.
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
 	const UnicodeString* getStringValue(const UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the string value matching the given name.
-		@returns true on success, or false if no children matched the given parameters.
+		@returns true on success, or false if no children matched the parameters.
 		@param result The result. This is not modified if the retrieval failed.
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
@@ -789,14 +791,14 @@ public:
 	const FloatVariable* getFloat(const UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the float value at the given index.
-		@returns true on success, or false if the index was either out-of-bounds or the variable was not a FloatVariable.
+		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
 	bool getFloatValue(float& result, int index) const;
 	/**
 		Get the float value matching the given name.
-		@returns true on success, or false if no children matched the given parameters.
+		@returns true on success, or false if no children matched the parameters.
 		@param result The result. This is not modified if the retrieval failed.
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
@@ -819,14 +821,14 @@ public:
 	const BoolVariable* getBool(const UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the bool value at the given index.
-		@returns true on success, or false if the index was either out-of-bounds or the variable was not a BoolVariable.
+		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
 	bool getBoolValue(bool& result, int index) const;
 	/**
 		Get the bool value matching the given name.
-		@returns true on success, or false if no children matched the given parameters.
+		@returns true on success, or false if no children matched the parameters.
 		@param result The result. This is not modified if the retrieval failed.
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
@@ -834,12 +836,20 @@ public:
 	bool getBoolValue(bool& result, const UnicodeString& name, bool casesens=true);
 	/**
 		Get the variable at the given index as a string.
-		@returns true on success, or false if either the index was out-of-bounds or the.
+		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
-		@param format Optional formatting flags. Default is VARTYPE_VALUE. Since this is only for ValueVariables, the format is masked by VARTYPE_VALUE before searching.
+		@param type Optional type. Since this is only for ValueVariables, the format is masked with VARTYPE_VALUE before searching.
 	*/
-	bool getAsString(UnicodeString& result, int index, unsigned int format=VARTYPE_VALUE) const;
+	bool getAsString(UnicodeString& result, int index, unsigned int type=VARTYPE_VALUE) const;
+	/**
+		Get the variable matching the given parameters.
+		@returns true on success, or false if no variables matched the parameters.
+		@param result The result. This is not modified if the retrieval failed.
+		@param name The name to search for.
+		@param casesens Whether to use case-sensitive name comparison.
+	*/
+	bool getAsString(UnicodeString& result, const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_VALUE) const;
 	/**
 		Get the identifier at the given index.
 		@returns The identifier at the index, or NULL if either index was invalid or the variable at the index was not an identifier.
