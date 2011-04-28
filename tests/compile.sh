@@ -4,7 +4,7 @@ relative=$(dirname `pwd`)
 CPP=g++
 CCFLAGS="-I$relative/include -Wall -pedantic -g -DDEBUG"
 LIBS="-licui18n -licudata -licuio -licuuc"
-LIBPATH=$relative/lib/linux/debug/libduct.so
+LIBPATH=$relative/lib/linux/libduct_debug.so
 
 compile() {
 	filepath=$1

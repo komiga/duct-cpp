@@ -1,13 +1,11 @@
 -- duct++ premake file
 -- run `premake4 [--installroot=PATH] install` after building to install duct++
 
-local root="../../"
-
 local name="duct"
 local outpath="out/"
 local binarypath=outpath..name
 
-if _ACTION == "clean" then
+if _ACTION=="clean" then
 	os.rmdir(outpath)
 end
 
@@ -36,14 +34,13 @@ configuration {"gmake"}
 
 configuration {"linux"}
 	defines {"PLATFORM_CHECKED", "UNIX_BUILD"}
+	postbuildcommands {"mkdir -p lib/linux"}
 
 configuration {"linux", "debug"}
-	postbuildcommands {"mkdir -p lib/linux/debug"}
-	postbuildcommands {"cp "..outpath.."lib"..name.."_debug.so lib/linux/debug/lib"..name..".so"}
+	postbuildcommands {"cp "..outpath.."lib"..name.."_debug.so lib/linux/lib"..name.."_debug.so"}
 
 configuration {"linux", "release"}
-	postbuildcommands {"mkdir -p lib/linux/release"}
-	postbuildcommands {"cp "..outpath.."lib"..name..".so lib/linux/release/lib"..name..".so"}
+	postbuildcommands {"cp "..outpath.."lib"..name..".so lib/linux/lib"..name..".so"}
 
 configuration {}
 
@@ -80,7 +77,7 @@ includedirs {
 function os.copydir(src_dir, dst_dir, filter, single_dst_dir)
 	filter = filter or "**"
 	src_dir = src_dir .. "/"
-	print('copy "' .. src_dir .. filter .. '" to "' .. dst_dir .. '".')
+	--print('copy "' .. src_dir .. filter .. '" to "' .. dst_dir .. '".')
 	dst_dir = dst_dir .. "/"
 	local dir = path.rebase(".",path.getabsolute("."), src_dir) -- root dir, relative from src_dir
  
@@ -99,10 +96,10 @@ function os.copydir(src_dir, dst_dir, filter, single_dst_dir)
 	end
  
 	if counter == #matches then
-		print( counter .. " files copied.")
+		--print( counter .. " files copied.")
 		return true
 	else
-		print( "Error: " .. counter .. "/" .. #matches .. " files copied.")
+		--print( "Error: " .. counter .. "/" .. #matches .. " files copied.")
 		return nil
 	end
 end
@@ -115,26 +112,44 @@ newoption {
 	description="Base install path (default is /usr/local)"
 }
 
+newoption {
+	trigger="installdebug",
+	description="Whether to install the debug build",
+	value="true|false",
+	allowed={
+		{"true", "Install the debug build as well as the release build"},
+		{"false", "Install only the release build (default)"}
+	}
+}
+
 newaction {
 	trigger="install",
-	description="Install duct",
+	description="Install duct++",
 	execute=function()
 		print("installing duct++")
-		local installroot=_OPTIONS["installroot"]
+		local installroot=_OPTIONS.installroot
 		if not installroot then
 			installroot="/usr/local"
 		end
 		print("installroot="..installroot)
+		local installdebug=nil
+		if _OPTIONS.installdebug=="true" then
+			installdebug=true
+		end
 		if not os.get()=="linux" then
 			print("unimplemented for non-Linux OSes")
 			return nil
 		end
-		if not os.isdir("lib/linux/release") then
-			print("must run build.sh first")
-			return nil
-		end
 		local opsys=os.get()
 		if opsys=="linux" then
+			if not os.isdir("./lib/linux") then
+				print("must run build.sh first")
+				return nil
+			end
+			if not os.isdir(installroot) then
+				os.mkdir(installroot)
+			end
+			os.rmdir(installroot.."/include/duct")
 			if not os.copydir("include", installroot.."/include", "**.hpp") then
 				printf("failed to copy includes")
 				return nil
@@ -142,9 +157,17 @@ newaction {
 			if not os.isdir(installroot.."/lib") then
 				os.mkdir(installroot.."/lib")
 			end
-			if not os.copyfile("lib/linux/release/libduct.so", installroot.."/lib/libduct.so") then
-				print("failed to copy library")
+			os.execute("rm "..installroot.."/lib/libduct.so")
+			if not os.copyfile("lib/linux/libduct.so", installroot.."/lib/libduct.so") then
+				print("failed to copy release library")
 				return nil
+			end
+			if installdebug then
+				os.execute("rm "..installroot.."/lib/libduct_debug.so")
+				if not os.copyfile("lib/linux/libduct_debug.so", installroot.."/lib/libduct_debug.so") then
+					print("failed to copy debug library")
+					return nil
+				end
 			end
 		end
 		return true
