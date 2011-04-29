@@ -30,7 +30,6 @@ configuration {"release"}
 	flags {"Optimize", "ExtraWarnings"}
 
 configuration {"gmake"}
-	links {"icui18n", "icudata", "icuio", "icuuc"}
 
 configuration {"linux"}
 	defines {"PLATFORM_CHECKED", "UNIX_BUILD"}
@@ -43,6 +42,8 @@ configuration {"linux", "release"}
 	postbuildcommands {"cp "..outpath.."lib"..name..".so lib/linux/lib"..name..".so"}
 
 configuration {}
+
+links {"icui18n", "icudata", "icuio", "icuuc"}
 
 files {"include/duct/*.hpp", "src/duct/*.cpp"}
 includedirs {
@@ -136,10 +137,6 @@ newaction {
 		if _OPTIONS.installdebug=="true" then
 			installdebug=true
 		end
-		if not os.get()=="linux" then
-			print("unimplemented for non-Linux OSes")
-			return nil
-		end
 		local opsys=os.get()
 		if opsys=="linux" then
 			if not os.isdir("./lib/linux") then
@@ -157,18 +154,21 @@ newaction {
 			if not os.isdir(installroot.."/lib") then
 				os.mkdir(installroot.."/lib")
 			end
-			os.execute("rm "..installroot.."/lib/libduct.so")
+			os.execute("rm -f "..installroot.."/lib/libduct.so")
 			if not os.copyfile("lib/linux/libduct.so", installroot.."/lib/libduct.so") then
 				print("failed to copy release library")
 				return nil
 			end
 			if installdebug then
-				os.execute("rm "..installroot.."/lib/libduct_debug.so")
+				os.execute("rm -f "..installroot.."/lib/libduct_debug.so")
 				if not os.copyfile("lib/linux/libduct_debug.so", installroot.."/lib/libduct_debug.so") then
 					print("failed to copy debug library")
 					return nil
 				end
 			end
+		else
+			print("unimplemented for non-Linux OSes")
+			return nil
 		end
 		return true
 	end
