@@ -9,14 +9,14 @@ using namespace std;
 using namespace duct;
 
 int main() {
-	Template tpl_test01(Identity::withCStrings(2, "test01", "testalt01"), new VTypeLayout(3, VARTYPE_INTEGER, VARTYPE_STRING, VARTYPE_FLOAT));
-	Template tpl_test02(Identity::withCStrings(2, "Test02", "TestAlt02"), new VTypeLayout(1, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT), true);
-	Template tpl_test03(Identity::withCStrings(1, "test03"), new VTypeLayout(1, VARTYPE_STRING), false, VARTYPE_ANY);
-	Template tpl_test04(Identity::withCStrings(1, "test04"), new VTypeLayout(2, VARTYPE_STRING, VARTYPE_INTEGER), false, VARTYPE_INTEGER);
-	Template tpl_test05(Identity::withCStrings(1, "test05"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT);
-	Template tpl_test06(Identity::withCStrings(1, "test06"), new VTypeLayout(1, VARTYPE_FLOAT), false, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT);
+	Template tpl_test01(StringArray::withVCStrings(2, "test01", "testalt01"), new VTypeLayout(3, VARTYPE_INTEGER, VARTYPE_STRING, VARTYPE_FLOAT));
+	Template tpl_test02(StringArray::withVCStrings(2, "Test02", "TestAlt02"), new VTypeLayout(1, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT), true);
+	Template tpl_test03(StringArray::withVCStrings(1, "test03"), new VTypeLayout(1, VARTYPE_STRING), false, VARTYPE_ANY);
+	Template tpl_test04(StringArray::withVCStrings(1, "test04"), new VTypeLayout(2, VARTYPE_STRING, VARTYPE_INTEGER), false, VARTYPE_INTEGER);
+	Template tpl_test05(StringArray::withVCStrings(1, "test05"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT);
+	Template tpl_test06(StringArray::withVCStrings(1, "test06"), new VTypeLayout(1, VARTYPE_FLOAT), false, VARTYPE_INTEGER|VARTYPE_STRING|VARTYPE_FLOAT);
 	Template tpl_test07(NULL, new VTypeLayout(2, VARTYPE_INTEGER, VARTYPE_STRING));
-	Template tpl_bools(Identity::withCStrings(1, "bools"), new VTypeLayout(4, VARTYPE_BOOL, VARTYPE_BOOL, VARTYPE_BOOL, VARTYPE_BOOL));
+	Template tpl_bools(StringArray::withVCStrings(1, "bools"), new VTypeLayout(4, VARTYPE_BOOL, VARTYPE_BOOL, VARTYPE_BOOL, VARTYPE_BOOL));
 	
 	try {
 		Node* root=ScriptFormatter::loadFromFile("templates.script");
