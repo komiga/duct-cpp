@@ -34,6 +34,14 @@ namespace duct {
 StringArray::StringArray() : _size(0), _data(NULL), _releasecontainer(true) {
 }
 
+StringArray::StringArray(const char* str) : _size(1), _data(new UnicodeString*[1]), _releasecontainer(true) {
+	_data[0]=new UnicodeString(str);
+}
+
+StringArray::StringArray(UnicodeString* str) : _size(1), _data(new UnicodeString*[1]), _releasecontainer(true) {
+	_data[0]=str;
+}
+
 StringArray::StringArray(const char** data, int size) : _size(0), _data(NULL), _releasecontainer(true) {
 	setFromCStrings(data, size);
 }
@@ -70,6 +78,7 @@ void StringArray::release() {
 }
 
 void StringArray::set(UnicodeString** data, int size, bool releasecontainer) {
+	release();
 	if (size<0) {
 		int i=0;
 		while (data[i]!=NULL) {
@@ -82,7 +91,22 @@ void StringArray::set(UnicodeString** data, int size, bool releasecontainer) {
 	_releasecontainer=releasecontainer;
 }
 
+void StringArray::set(const char* str) {
+	release();
+	_data=new UnicodeString*[_size=1];
+	_data[0]=new UnicodeString(str);
+	_releasecontainer=true;
+}
+
+void StringArray::set(UnicodeString* str) {
+	release();
+	_data=new UnicodeString*[_size=1];
+	_data[0]=str;
+	_releasecontainer=true;
+}
+
 void StringArray::setFromCStrings(const char** data, int size) {
+	release();
 	int i=0;
 	if (size<0) {
 		while (data[i]!=NULL) {
@@ -99,6 +123,7 @@ void StringArray::setFromCStrings(const char** data, int size) {
 }
 
 void StringArray::setFromVCStrings(unsigned int num, va_list ap) {
+	release();
 	_size=num;
 	_data=new UnicodeString*[_size];
 	for (unsigned int i=0; i<num; ++i) {
@@ -115,6 +140,7 @@ void StringArray::setFromVCStrings(unsigned int num, ...) {
 }
 
 void StringArray::setFromVUStrings(unsigned int num, va_list ap) {
+	release();
 	_size=num;
 	_data=new UnicodeString*[_size];
 	for (unsigned int i=0; i<num; ++i) {
