@@ -48,6 +48,17 @@ public:
 	*/
 	StringArray();
 	/**
+		Constructor with single C-string.
+		@param str The string to initialize with.
+	*/
+	StringArray(const char* str);
+	/**
+		Constructor with single UnicodeString.
+		The array takes ownership of the given string.
+		@param str The string to initialize with.
+	*/
+	StringArray(UnicodeString* str);
+	/**
 		Constructor with C-string array.
 		@param data The C-string array.
 		@param size The size of the array. If -1, the array must be NULL-terminated.
@@ -91,6 +102,19 @@ public:
 		@param releasecontainer Whether to free the given container. This is false by default in the assumption that a static array will be passed. However, the pointers in the array data will still be freed (does not copy strings).
 	*/
 	void set(UnicodeString** data, int size=-1, bool releasecontainer=false);
+	/**
+		Set the array data to the given C-string (single element).
+		@returns Nothing.
+		@param str The string to use.
+	*/
+	void set(const char* str);
+	/**
+		Set the array data to the given UnicodeString (single element).
+		The array takes ownership of the given string.
+		@returns Nothing.
+		@param str The string to use.
+	*/
+	void set(UnicodeString* str);
 	/**
 		Set the array data from the given C-string array.
 		@returns Nothing.
