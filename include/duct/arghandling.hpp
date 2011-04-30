@@ -31,8 +31,10 @@ duct++ argument handling.
 #ifndef _DUCT_ARGHANDLING_HPP
 #define _DUCT_ARGHANDLING_HPP
 
+#include <list>
 #include <duct/config.hpp>
 #include <duct/variables.hpp>
+#include <duct/unistrarray.hpp>
 
 namespace duct {
 
@@ -45,6 +47,158 @@ namespace duct {
 	Single-dash options (e.g. "-a") are not parsed for arguments, whereas double-dash options (e.g. "--foo bar") will be.
 */
 DUCT_API Identifier* parseArgs(int argc, const char** argv, bool fullargs=true, int optarglimit=1);
+
+/**
+	ArgImpl call type enum.
+	Flags 0x08 and 0x10 are reserved.
+*/
+enum CallType {
+	/** Initialized state (meaningless in operation). */
+	CALLTYPE_NONE=0x00,
+	/** Option type (e.g. '--help'). */
+	CALLTYPE_OPTION=0x01,
+	/** Command type (e.g. 'help'). */
+	CALLTYPE_COMMAND=0x02,
+	/** Switch type (e.g. "-a"). */
+	CALLTYPE_SWITCH=0x04,
+	/** Reserved type 0x08. */
+	_CALLTYPE_RESERVED2=0x08,
+	/** Reserved type 0x10. */
+	_CALLTYPE_RESERVED3=0x10
+};
+
+class ArgImpl; // forward declaration
+
+/**
+	ArgImpl* list.
+*/
+typedef std::list<ArgImpl*> ArgImplList;
+
+/**
+	Argument handler.
+	This class takes ownership of all ArgImpl pointers given to it.
+*/
+class DUCT_API ArgumentHandler {
+public:
+	/**
+		Constructor.
+	*/
+	ArgumentHandler();
+	/**
+		Destructor.
+	*/
+	~ArgumentHandler();
+	/**
+		Get the begin iterator for the argument handler.
+		@returns The begin iterator.
+	*/
+	ArgImplList::iterator begin();
+	ArgImplList::const_iterator begin() const;
+	/**
+		Get the end iterator for the argument handler.
+		@returns The end iterator.
+	*/
+	ArgImplList::iterator end();
+	ArgImplList::const_iterator end() const;
+	/**
+		Find an implementation with the given alias.
+		@returns The iterator for the implementation with the given alias, or end() if the given alias was not found.
+		@param alias The alias to search for.
+	*/
+	ArgImplList::iterator find(const UnicodeString& alias);
+	ArgImplList::const_iterator find(const UnicodeString& alias) const;
+	/**
+		Add an implementation to the handler.
+		The handler takes ownership of the given pointer.
+		@returns true if the implementation was added, or false if the implementation was either null or had an empty alias array.
+		@param impl The implementation to add.
+	*/
+	bool addImpl(ArgImpl* impl);
+	/**
+		Get the argument implementation with the given alias.
+		@returns The argument implementation with the given alias, or NULL if there is no argument implementation with the given alias.
+		@param alias The alias to search for.
+	*/
+	ArgImpl* getImpl(const UnicodeString& alias);
+	/**
+		Clear the handler.
+		This will free all argument implementations in the handler.
+		@returns Nothing.
+	*/
+	void clear();
+	
+protected:
+	ArgImplList _list;
+};
+
+/**
+	Argument implementation.
+*/
+class DUCT_API ArgImpl {
+public:
+	/**
+		Aliases constructor.
+	*/
+	ArgImpl();
+	/**
+		Destructor.
+	*/
+	virtual ~ArgImpl();
+	/**
+		Set the implementation's current call type.
+		@returns Nothing.
+		@param calltype The new call type.
+	*/
+	void setCallType(unsigned int calltype);
+	/**
+		Get the current call type.
+		@returns The implementation's current call type.
+	*/
+	unsigned int getCallType() const;
+	/**
+		Get the implementation's aliases.
+		@returns The implementation's aliases.
+	*/
+	StringArray& getAliases();
+	/**
+		Set the current arguments.
+		The implementation does not take ownership of the given identifier.
+		@returns Nothing.
+		@param args The argument identifier.
+	*/
+	void setArgs(Identifier* args);
+	/**
+		Get the current arguments.
+		@returns The implementation's current arguments.
+	*/
+	Identifier* getArgs();
+	/**
+		Check if the implementation has the given alias.
+		@returns true if the implementation has the given alias, or false if it does not.
+		@param alias The alias to search for.
+	*/
+	bool hasAlias(const UnicodeString& alias) const;
+	/**
+		Check the current arguments for errors.
+		@returns 0 on success, or some error code on failure.
+	*/
+	virtual int checkErrors()=0;
+	/**
+		Execute the argument.
+		@returns 0 on success, or some error code on failure.
+	*/
+	virtual int execute()=0;
+	/**
+		Get the implementation's usage string.
+		@returns The implementation's usage string.
+	*/
+	virtual const UnicodeString& getUsage() const=0;
+	
+protected:
+	unsigned int _calltype;
+	StringArray _aliases;
+	Identifier* _args;
+};
 
 } // namespace duct
 

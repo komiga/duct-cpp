@@ -9,7 +9,8 @@ using namespace duct;
 void argsToString(const Identifier* root, UnicodeString& out) {
 	out.append("\"").append(root->getName()).append("\": [");
 	int count=0;
-	for (VarList::const_iterator iter=root->begin(); iter!=root->end(); ++iter) {
+	VarList::const_iterator iter;
+	for (iter=root->begin(); iter!=root->end(); ++iter) {
 		const Variable* variable=*iter;
 		if (variable->getType()==VARTYPE_IDENTIFIER) {
 			argsToString((const Identifier*)variable, out);
@@ -34,8 +35,9 @@ int main(int argc, const char** argv) {
 		UnicodeString out;
 		argsToString(root, out);
 		std::cout<<out<<"\n";
+		delete root;
 	} else {
-		printf("No args");
+		printf("No args\n");
 	}
 	return 0;
 }

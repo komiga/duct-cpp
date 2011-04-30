@@ -22,10 +22,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-@section DESCRIPTION
-
-duct++ argument handling implementation.
 */
 
 #include <duct/arghandling.hpp>
@@ -82,6 +78,113 @@ Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimi
 		root=(Identifier*)root->getParent();
 	}
 	return root;
+}
+
+// class ArgumentHandler
+
+ArgumentHandler::ArgumentHandler() {
+}
+
+ArgumentHandler::~ArgumentHandler() {
+	clear();
+}
+
+ArgImplList::iterator ArgumentHandler::begin() {
+	return _list.begin();
+}
+
+ArgImplList::const_iterator ArgumentHandler::begin() const {
+	return _list.begin();
+}
+
+ArgImplList::iterator ArgumentHandler::end() {
+	return _list.end();
+}
+
+ArgImplList::const_iterator ArgumentHandler::end() const {
+	return _list.end();
+}
+
+ArgImplList::iterator ArgumentHandler::find(const UnicodeString& alias) {
+	ArgImplList::iterator iter;
+	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+		if ((*iter)->hasAlias(alias)) {
+			break;
+		}
+	}
+	return iter;
+}
+
+ArgImplList::const_iterator ArgumentHandler::find(const UnicodeString& alias) const {
+	ArgImplList::const_iterator iter;
+	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+		if ((*iter)->hasAlias(alias)) {
+			break;
+		}
+	}
+	return iter;
+}
+
+bool ArgumentHandler::addImpl(ArgImpl* impl) {
+	if (impl && impl->getAliases().getSize()>0) {
+		_list.push_back(impl);
+		return true;
+	}
+	return false;
+}
+
+ArgImpl* ArgumentHandler::getImpl(const UnicodeString& alias) {
+	ArgImplList::iterator iter=find(alias);
+	if (iter!=end()) {
+		return (*iter);
+	}
+	return NULL;
+}
+
+void ArgumentHandler::clear() {
+	ArgImplList::iterator iter;
+	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+		delete (*iter);
+	}
+	_list.clear();
+}
+
+// class ArgImpl implementation
+
+ArgImpl::ArgImpl() : _calltype(0), _args(NULL) {
+}
+
+ArgImpl::~ArgImpl() {
+	_args=NULL;
+}
+
+void ArgImpl::setCallType(unsigned int calltype) {
+	_calltype=calltype;
+}
+
+unsigned int ArgImpl::getCallType() const {
+	return _calltype;
+}
+
+StringArray& ArgImpl::getAliases() {
+	return _aliases;
+}
+
+void ArgImpl::setArgs(Identifier* args) {
+	_args=args;
+}
+
+Identifier* ArgImpl::getArgs() {
+	return _args;
+}
+
+bool ArgImpl::hasAlias(const UnicodeString& alias) const {
+	for (unsigned int i=0; i<_aliases.getSize(); ++i) {
+		if (alias.compare(*_aliases[i])==0) {
+			return true;
+		}
+	}
+	return false;
 }
 
 } // namespace duct
