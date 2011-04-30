@@ -22,10 +22,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-@section DESCRIPTION
-
-duct++ Template implementation.
 */
 
 #include <duct/debug.hpp>
@@ -64,48 +60,6 @@ const unsigned int& VTypeLayout::operator[](unsigned int i) const {
 	return data[i];
 }*/
 
-// class Identity implementation
-
-Identity::Identity() {
-	data=NULL;
-	count=0;
-}
-
-Identity::~Identity() {
-	if (data) {
-		for (unsigned int i=0; i<count; ++i) {
-			delete data[i];
-		}
-		delete[] data;
-	}
-}
-
-Identity* Identity::withUStrings(unsigned int num, ...) {
-	Identity* iden=new Identity();
-	iden->count=num;
-	iden->data=new UnicodeString*[num];
-	va_list ap;
-	va_start(ap, num);
-	for (unsigned int i=0; i<num; ++i) {
-		iden->data[i]=new UnicodeString(*va_arg(ap, const UnicodeString*));
-	}
-	va_end(ap);
-	return iden;
-}
-
-Identity* Identity::withCStrings(unsigned int num, ...) {
-	Identity* iden=new Identity();
-	iden->count=num;
-	iden->data=new UnicodeString*[num];
-	va_list ap;
-	va_start(ap, num);
-	for (unsigned int i=0; i<num; ++i) {
-		iden->data[i]=new UnicodeString(va_arg(ap, const char*));
-	}
-	va_end(ap);
-	return iden;
-}
-
 // class Template implementation
 
 Template::Template() {
@@ -115,7 +69,7 @@ Template::Template() {
 	_infinitism=VARTYPE_NONE;
 }
 
-Template::Template(Identity* iden, VTypeLayout* layout, bool casesens, unsigned int infinitism) {
+Template::Template(StringArray* iden, VTypeLayout* layout, bool casesens, unsigned int infinitism) {
 	_iden=iden;
 	_layout=layout;
 	_casesens=casesens;
@@ -129,13 +83,13 @@ Template::~Template() {
 		delete _layout;
 }
 
-void Template::setIdentity(Identity* iden) {
+void Template::setIdentity(StringArray* iden) {
 	if (_iden)
 		delete _iden;
 	_iden=iden;
 }
 
-const Identity* Template::getIdentity() const {
+const StringArray* Template::getIdentity() const {
 	return _iden;
 }
 
@@ -172,13 +126,13 @@ int _checkVariable(unsigned int type, const Variable* variable) {
 	return false;
 }
 
-int _checkIden(const Identity* iden, const UnicodeString& a, bool casesens, unsigned int i=0) {
+int _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, unsigned int i=0) {
 	//printf("duct::_checkIden iden:%p\n", (void*)iden);
 	if (iden) {
-		//printf("duct::_checkIden count:%d i:%d\n", iden->count, i);
+		//printf("duct::_checkIden count:%u i:%d\n", iden->getCount(), i);
 		const UnicodeString* b;
-		for (; i<iden->count; ++i) {
-			b=iden->data[i];
+		for (; i<iden->getSize(); ++i) {
+			b=(*iden)[i];
 			//printf("duct::_checkIden b:%p\n", (void*)b);
 			debug_assert(b, "NULL identity element");
 			if (casesens ? (a.compare(*b)==0) : (a.caseCompare(*b, U_FOLD_CASE_DEFAULT)==0)) {
@@ -199,12 +153,13 @@ bool _compareNames(const UnicodeString& a, const UnicodeString& b, bool casesens
 	}
 }
 
-bool __matchname(const unsigned int& mc, const Identity* iden, const UnicodeString& name, const bool& casesens, const unsigned int& infinitism) {
-	if (iden->count==0) {
+bool __matchname(const unsigned int& mc, const StringArray* iden, const UnicodeString& name, const bool& casesens, const unsigned int& infinitism) {
+	unsigned int count=iden->getSize();
+	if (count==0) {
 		return true;
-	} else if (mc<iden->count) {
-		return _compareNames(*(iden->data[mc]), name, casesens);
-	} else if (mc>=iden->count && (infinitism!=VARTYPE_NONE)) {
+	} else if (mc<count) {
+		return _compareNames(*(*iden)[mc], name, casesens);
+	} else if (mc>=count && (infinitism!=VARTYPE_NONE)) {
 		return true;
 	} else {
 		return false;
@@ -306,7 +261,7 @@ unsigned int Template::compactCollection(CollectionVariable* collection, const U
 		_PairList pairs;
 		bool matched; //, namematched, varmatched;
 		unsigned int mc=0;
-		unsigned int mmax=_iden ? _iden->count : 0;
+		unsigned int mmax=_iden ? _iden->getSize() : 0;
 		mmax=(_layout ? _layout->count : 0)>mmax ? _layout->count : mmax;
 		//printf("(Template::CompactCollection) mmax:%d\n", mmax);
 		ValueVariable* value=NULL;

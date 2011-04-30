@@ -31,7 +31,9 @@ duct++ Template class.
 #ifndef _DUCT_TEMPLATE_HPP
 #define _DUCT_TEMPLATE_HPP
 
+#include <duct/config.hpp>
 #include <duct/variables.hpp>
+#include <duct/unistrarray.hpp>
 
 namespace duct {
 
@@ -59,42 +61,6 @@ public:
 };
 
 /**
-	Variable identity.
-	An identity is an array of names that a #Template uses to match variable names.
-*/
-class Identity {
-public:
-	/**
-		Destructor.
-	*/
-	~Identity();
-	
-	/** Number of elements. */
-	unsigned int count;
-	/** Name array. */
-	UnicodeString** data;
-	
-	/**
-		Create an identity with the given C strings (NUL-terminated).
-		@returns The new identity.
-		@param num Number of variadic arguments.
-		@param ... Sequence of const char pointers.
-	*/
-	static Identity* withCStrings(unsigned int num, ...);
-	/**
-		Create an identity with the given UnicodeString pointers.
-		@returns The new identity.
-		@param num Number of variadic arguments.
-		@param ... Sequence of const UnicodeString pointers.
-	*/
-	static Identity* withUStrings(unsigned int num, ...);
-	
-protected:
-	Identity();
-	
-};
-
-/**
 	Template class.
 */
 class DUCT_API Template {
@@ -105,26 +71,28 @@ public:
 	Template();
 	/**
 		Constructor with identity, layout and options.
+		@param iden The template's identity. The given array is owned by the template.
+		@param layout The template's layout.
+		@param casesens Whether name comparison is case-sensitive.
+		@param infinitism The infinitism variable type. See setInfinitism().
 	*/
-	Template(Identity* iden, VTypeLayout* layout, bool casesens=false, /*bool flexible=false,*/ unsigned int infinitism=VARTYPE_NONE);
+	Template(StringArray* iden, VTypeLayout* layout, bool casesens=false, unsigned int infinitism=VARTYPE_NONE);
 	/**
 		Destructor.
 	*/
 	~Template();
-	
 	/**
 		Set the template's variable-identity.
 		NOTE: The template owns the given pointer (it will be destroyed by the template upon deconstruction).
 		@returns Nothing.
 		@param iden The new identity. Can be NULL.
 	*/
-	void setIdentity(Identity* identity);
+	void setIdentity(StringArray* identity);
 	/**
 		Get the template's variable-identity.
 		@returns The template's identity.
 	*/
-	const Identity* getIdentity() const;
-	
+	const StringArray* getIdentity() const;
 	/**
 		Set the variable type layout.
 		NOTE: The template owns the given pointer (it will be destroyed by the template upon deconstruction).
@@ -137,11 +105,9 @@ public:
 		@returns The template's layout.
 	*/
 	const VTypeLayout* getLayout() const;
-	
 	/**
 		Set the template's infinitism type (types for flexible-template matching).
-		Infinitism can be a combination of #VariableTypes, or equal to VARTYPE_ANY and VARTYPE_NONE (implying template flexibility is off).
-		See also #setFlexible.
+		Infinitism can be a combination of #VariableTypes, or equal to VARTYPE_ANY or VARTYPE_NONE (implying template flexibility is off).
 		@returns Nothing.
 		@param infinitism The new infinitsm type.
 	*/
@@ -151,7 +117,6 @@ public:
 		@returns The template's infinitism type.
 	*/
 	const unsigned int& getInfinitism() const;
-	
 	/**
 		Set the identifier matching case-sensitivity.
 		@returns Nothing.
@@ -163,7 +128,6 @@ public:
 		@returns true if name-matching is case-sensitive, or false if name-matching is not case sensitive.
 	*/
 	bool getCaseSensitive() const;
-	
 	/**
 		Validate the given identifier against the template.
 		@returns true if the given identifier matched the template, or false if either it did not match or the given identifier was NULL.
@@ -176,7 +140,6 @@ public:
 		@param value The value to test.
 	*/
 	bool validateValue(const ValueVariable* value) const;
-	
 	/**
 		Compact a sequence of value variables matching the template into identifiers.
 		@returns The number of identifiers created and added (0 if either the no matches were found, or the given collection is NULL or had no children).
@@ -185,7 +148,6 @@ public:
 		If true, the comparison will require the template's layout to be matched in sequence (false will allow non-matching values in a sequence).
 	*/
 	unsigned int compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential=true) const;
-	
 	/**
 		Rename all matching identifiers to the given name.
 		@returns The number of identifiers that were renamed.
@@ -200,7 +162,6 @@ public:
 		@param name New name.
 	*/
 	unsigned int renameValues(CollectionVariable* collection, const UnicodeString& name) const;
-	
 	/**
 		Get the first matching identifier from the given collection.
 		@returns The first matching identifier, or NULL if the given collection either was NULL or did not contain a matching identifier.
@@ -208,7 +169,6 @@ public:
 		@see validateIdentifier()
 	*/
 	Identifier* getMatchingIdentifier(const CollectionVariable* collection) const;
-	
 	/**
 		Get the first matching value variable from the given collection.
 		@returns The first matching value variable, or NULL if the given collection either was NULL or did not contain a matching value.
@@ -218,7 +178,7 @@ public:
 	ValueVariable* getMatchingValue(const CollectionVariable* collection) const;
 	
 protected:
-	Identity* _iden;
+	StringArray* _iden;
 	VTypeLayout* _layout;
 	unsigned int _infinitism;
 	bool _casesens;
