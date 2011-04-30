@@ -31,6 +31,7 @@ duct++ UnicodeString* array class.
 #ifndef _DUCT_UNISTRARRAY_HPP
 #define _DUCT_UNISTRARRAY_HPP
 
+#include <stdarg.h>
 #include <unicode/unistr.h>
 #include <duct/config.hpp>
 

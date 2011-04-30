@@ -131,12 +131,12 @@ void StringArray::setFromVUStrings(unsigned int num, ...) {
 }
 
 UnicodeString* StringArray::operator[](const int index) {
-	debug_assertp(_data==NULL, this, "_data==NULL");
+	debug_assertp(_data!=NULL, this, "_data==NULL");
 	return _data[index];
 }
 
 const UnicodeString* StringArray::operator[](const int index) const {
-	debug_assertp(_data==NULL, this, "_data==NULL");
+	debug_assertp(_data!=NULL, this, "_data==NULL");
 	return _data[index];
 }
 
