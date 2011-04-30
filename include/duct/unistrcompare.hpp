@@ -31,6 +31,7 @@ duct++ UnicodeString* comparison class.
 #ifndef _DUCT_UNISTRCOMPARE_HPP
 #define _DUCT_UNISTRCOMPARE_HPP
 
+#include <unicode/unistr.h>
 #include <duct/config.hpp>
 
 namespace duct {
