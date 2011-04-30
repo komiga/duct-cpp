@@ -30,13 +30,13 @@ int main() {
 		Identifier iden;
 		iden.add(new IntVariable(100));
 		iden.add(new BoolVariable(true));
-		printf("tpl->validateIdentifier(iden): %d\n", tpl->validateIdentifier(&iden));
+		printf("tpl->validateIdentifier(iden): %d\n", tpl->validateIdentifier(&iden)); // pass
 		
-		tplv=new Template(Identity::withCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
+		tplv=new Template(StringArray::withVCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
 		BoolVariable value(true, "bool");
-		printf("tplv->validateValue(value): %d\n", tplv->validateValue(&value));
+		printf("tplv->validateValue(value): %d\n", tplv->validateValue(&value)); // pass
 	}
-	printf("tplv->getIdentity()->data[0]: %p\n", (void*)(tplv->getIdentity()->data[0]));
+	printf("tplv->getIdentity()[0]: %p\n", (void*)((*tplv->getIdentity())[0]));
 	delete tpl;
 	delete tplv;
 	return 0;
