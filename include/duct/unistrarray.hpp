@@ -34,6 +34,7 @@ duct++ UnicodeString* array class.
 #include <stdarg.h>
 #include <unicode/unistr.h>
 #include <duct/config.hpp>
+#include <duct/genericarray.hpp>
 
 namespace duct {
 
@@ -41,7 +42,7 @@ namespace duct {
 	UnicodeString* array.
 	All data (except for C-string arguments and C-string data pointers) given to the class is owned by the class.
 */
-class StringArray {
+class DUCT_API StringArray : public GPArray<UnicodeString*> {
 public:
 	/**
 		Constructor.
@@ -53,55 +54,11 @@ public:
 	*/
 	StringArray(const char* str);
 	/**
-		Constructor with single UnicodeString.
-		The array takes ownership of the given string.
-		@param str The string to initialize with.
-	*/
-	StringArray(UnicodeString* str);
-	/**
 		Constructor with C-string array.
 		@param data The C-string array.
 		@param size The size of the array. If -1, the array must be NULL-terminated.
 	*/
 	StringArray(const char** data, int size=-1);
-	/**
-		Constructor with UnicodeString array.
-		The given array data is not copied - the StringArray owns the given data pointer (barring the container itself, when static).
-		@param data The UnicodeString array.
-		@param size The size of the array. If -1, the array must be NULL-terminated.
-		@param releasecontainer Whether to free the given container. This is false by default in the assumption that a static array will be passed. However, the pointers in the array data will still be freed (does not copy strings).
-	*/
-	StringArray(UnicodeString** data, int size=-1, bool releasecontainer=false);
-	/**
-		Destructor.
-	*/
-	~StringArray();
-	/**
-		Get the array's size.
-		@returns The array's size.
-	*/
-	unsigned int getSize() const;
-	/**
-		Get the array's data.
-		Don't free this.
-		@returns The array's data.
-		@see getSize()
-	*/
-	UnicodeString** get();
-	/**
-		Release the string's data.
-		@returns Nothing.
-	*/
-	void release();
-	/**
-		Set the array data.
-		The given array data is not copied - the StringArray owns the given data pointer (barring the container itself, when static).
-		@returns Nothing.
-		@param data The UnicodeString array.
-		@param size The size of the array. If -1, the array must be NULL-terminated.
-		@param releasecontainer Whether to free the given container. This is false by default in the assumption that a static array will be passed. However, the pointers in the array data will still be freed (does not copy strings).
-	*/
-	void set(UnicodeString** data, int size=-1, bool releasecontainer=false);
 	/**
 		Set the array data to the given C-string (single element).
 		@returns Nothing.
@@ -109,76 +66,33 @@ public:
 	*/
 	void set(const char* str);
 	/**
-		Set the array data to the given UnicodeString (single element).
-		The array takes ownership of the given string.
-		@returns Nothing.
-		@param str The string to use.
-	*/
-	void set(UnicodeString* str);
-	/**
 		Set the array data from the given C-string array.
 		@returns Nothing.
 		@param data The C-string array.
 		@param size The size of the array. If -1, the array must be NULL-terminated.
 	*/
-	void setFromCStrings(const char** data, int size=-1);
+	void set(const char** data, int size=-1);
 	/**
 		Set the array data from the const char* arguments in the given va_list.
 		@returns Nothing.
 		@param num The number of arguments in ap.
 		@param ap The variadic argument list.
 	*/
-	void setFromVCStrings(unsigned int num, va_list ap);
+	void setVLCStrings(unsigned int num, va_list ap);
 	/**
 		Set the array data from the given const char* arguments.
 		@returns Nothing.
 		@param num The number of variadic arguments.
 		@param ... The variadic arguments.
 	*/
-	void setFromVCStrings(unsigned int num, ...);
-	/**
-		Set the array data from the UnicodeString* arguments in the given va_list.
-		The StringArray takes ownership of the given UnicodeString pointers (no copy).
-		@returns Nothing.
-		@param num The number of arguments in ap.
-		@param ap The variadic argument list.
-	*/
-	void setFromVUStrings(unsigned int num, va_list ap);
-	/**
-		Set the array data from the UnicodeString* arguments in the given va_list.
-		The StringArray takes ownership of the given UnicodeString pointers (no copy).
-		@returns Nothing.
-		@param num The number of variadic arguments.
-		@param ... The variadic arguments.
-	*/
-	void setFromVUStrings(unsigned int num, ...);
-	/**
-		Element access.
-		The given index is not bounds-checked.
-		@returns The UnicodeString pointer at the given index.
-		@param index The string index.
-	*/
-	UnicodeString* operator[](const int index);
-	const UnicodeString* operator[](const int index) const;
+	void setVCStrings(unsigned int num, ...);
 	/**
 		Create a new array with the given const char* arguments.
 		@returns The new array.
 		@param num The number of variadic arguments.
 		@param ... The variadic arguments.
 	*/
-	static StringArray* withVCStrings(unsigned int num, ...);
-	/**
-		Create a new array with the given UnicodeString* arguments.
-		@returns The new array.
-		@param num The number of variadic arguments.
-		@param ... The variadic arguments.
-	*/
-	static StringArray* withVUStrings(unsigned int num, ...);
-	
-protected:
-	unsigned int _size;
-	UnicodeString** _data;
-	bool _releasecontainer;
+	static StringArray* withCStrings(unsigned int num, ...);
 };
 
 } // namespace duct

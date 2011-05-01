@@ -33,6 +33,7 @@ duct++ Template class.
 
 #include <duct/config.hpp>
 #include <duct/variables.hpp>
+#include <duct/genericarray.hpp>
 #include <duct/unistrarray.hpp>
 
 namespace duct {
@@ -41,24 +42,7 @@ namespace duct {
 	Variable type layout.
 	A type layout is an array of variable types that a #Template uses to match variable types.
 */
-class VTypeLayout {
-protected:
-	VTypeLayout();
-	
-public:
-	/**
-		Constructor with values.
-		@param num Number of variadic arguments.
-		@param ... Sequence of VarType combinations (unsigned ints).
-	*/
-	VTypeLayout(unsigned int num, ...);
-	~VTypeLayout();
-	
-	/** Number of elements. */
-	unsigned int count;
-	/** Variable type array. */
-	unsigned int* data;
-};
+typedef GArray<unsigned int> VTypeLayout;
 
 /**
 	Template class.
@@ -180,8 +164,8 @@ public:
 protected:
 	StringArray* _iden;
 	VTypeLayout* _layout;
-	unsigned int _infinitism;
 	bool _casesens;
+	unsigned int _infinitism;
 };
 
 } // namespace duct

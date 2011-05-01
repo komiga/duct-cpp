@@ -24,63 +24,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <list>
 #include <duct/debug.hpp>
 #include <duct/template.hpp>
-#include <list>
 
 namespace duct {
 
-// class VTypeLayout implementation
-
-VTypeLayout::VTypeLayout() {
-	data=NULL;
-}
-
-VTypeLayout::VTypeLayout(unsigned int num, ...) {
-	count=num;
-	data=new unsigned int[count];
-	va_list ap;
-	va_start(ap, num);
-	for (unsigned int i=0; i<count; ++i) {
-		data[i]=va_arg(ap, unsigned int);
-	}
-	va_end(ap);
-}
-
-VTypeLayout::~VTypeLayout() {
-	if (data)
-		delete[] data;
-}
-
-/*unsigned int VTypeLayout::operator[](unsigned int i) {
-	return data[i];
-}
-
-const unsigned int& VTypeLayout::operator[](unsigned int i) const {
-	return data[i];
-}*/
-
 // class Template implementation
 
-Template::Template() {
-	_iden=NULL;
-	_layout=NULL;
-	_casesens=false;
-	_infinitism=VARTYPE_NONE;
+Template::Template()
+	: _iden(NULL), _layout(NULL), _casesens(false), _infinitism(VARTYPE_NONE) {
 }
 
-Template::Template(StringArray* iden, VTypeLayout* layout, bool casesens, unsigned int infinitism) {
-	_iden=iden;
-	_layout=layout;
-	_casesens=casesens;
-	_infinitism=infinitism;
+Template::Template(StringArray* iden, VTypeLayout* layout, bool casesens, unsigned int infinitism)
+	: _iden(iden), _layout(layout), _casesens(casesens), _infinitism(infinitism) {
 }
 
 Template::~Template() {
-	if (_iden)
+	if (_iden) {
 		delete _iden;
-	if (_layout)
+		_iden=NULL;
+	}
+	if (_layout) {
 		delete _layout;
+		_layout=NULL;
+	}
 }
 
 void Template::setIdentity(StringArray* iden) {
@@ -131,7 +99,7 @@ int _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, u
 	if (iden) {
 		//printf("duct::_checkIden count:%u i:%d\n", iden->getCount(), i);
 		const UnicodeString* b;
-		for (; i<iden->getSize(); ++i) {
+		for (; i<iden->size(); ++i) {
 			b=(*iden)[i];
 			//printf("duct::_checkIden b:%p\n", (void*)b);
 			debug_assert(b, "NULL identity element");
@@ -154,7 +122,7 @@ bool _compareNames(const UnicodeString& a, const UnicodeString& b, bool casesens
 }
 
 bool __matchname(const unsigned int& mc, const StringArray* iden, const UnicodeString& name, const bool& casesens, const unsigned int& infinitism) {
-	unsigned int count=iden->getSize();
+	unsigned int count=iden->size();
 	if (count==0) {
 		return true;
 	} else if (mc<count) {
@@ -167,8 +135,8 @@ bool __matchname(const unsigned int& mc, const StringArray* iden, const UnicodeS
 }
 
 bool __matchvariable(const unsigned int& mc, const VTypeLayout* layout, const unsigned int& infinitism, const Variable* variable) {
-	if (layout && (mc<layout->count)) {
-		return layout->data[mc]&variable->getType();
+	if (layout && (mc<layout->size())) {
+		return (*layout)[mc]&variable->getType();
 	} else if (infinitism!=VARTYPE_NONE) {
 		return infinitism&variable->getType();
 	}
@@ -214,18 +182,18 @@ void __reset(unsigned int& mc, bool& repeatmatch, bool rep, _PairList& pairs) {
 bool Template::validateIdentifier(const Identifier* identifier) const {
 	if (identifier) {
 		//printf("Template::validateIdentifier _layout:%d _iden:%d _casesens:%d _infinitism:%d\n", _layout!=NULL, _iden!=NULL, _casesens, _infinitism);
-		if (!(identifier->getChildCount()>_layout->count && (_infinitism==VARTYPE_NONE)) && !(identifier->getChildCount()<_layout->count) && _checkIden(_iden, identifier->getName(), _casesens)) {
+		if (!(identifier->getChildCount()>_layout->size() && (_infinitism==VARTYPE_NONE)) && !(identifier->getChildCount()<_layout->size()) && _checkIden(_iden, identifier->getName(), _casesens)) {
 			// Compare defined variables in the identifier
 			VarList::const_iterator iter=identifier->begin();
-			for (unsigned int i=0; i<_layout->count; ++i) {
-				if (!(_layout->data[i]&(*iter)->getType())) {
+			for (unsigned int i=0; i<_layout->size(); ++i) {
+				if (!((*_layout)[i]&(*iter)->getType())) {
 					return false;
 				}
 				++iter;
 			}
 			// Check flexible and infinitism
-			if (identifier->getChildCount()>_layout->count && _infinitism!=VARTYPE_NONE) {
-				for (unsigned int i=_layout->count; i<identifier->getChildCount(); ++i) {
+			if (identifier->getChildCount()>_layout->size() && _infinitism!=VARTYPE_NONE) {
+				for (unsigned int i=_layout->size(); i<identifier->getChildCount(); ++i) {
 					if (!_checkVariable(_infinitism, (*iter))) {
 						return false;
 					}
@@ -243,8 +211,8 @@ bool Template::validateIdentifier(const Identifier* identifier) const {
 bool Template::validateValue(const ValueVariable* value) const {
 	if (value) {
 		if (_checkIden(_iden, value->getName(), _casesens)) {
-			if (_layout && _layout->count>0) {
-				return _layout->data[0]&value->getType();
+			if (_layout && _layout->size()>0) {
+				return (*_layout)[0]&value->getType();
 			}
 			// No canon types, check infinitism
 			if (_infinitism!=VARTYPE_NONE) {
@@ -261,8 +229,8 @@ unsigned int Template::compactCollection(CollectionVariable* collection, const U
 		_PairList pairs;
 		bool matched; //, namematched, varmatched;
 		unsigned int mc=0;
-		unsigned int mmax=_iden ? _iden->getSize() : 0;
-		mmax=(_layout ? _layout->count : 0)>mmax ? _layout->count : mmax;
+		unsigned int mmax=_iden ? _iden->size() : 0;
+		mmax=(_layout ? _layout->size() : 0)>mmax ? _layout->size() : mmax;
 		//printf("(Template::CompactCollection) mmax:%d\n", mmax);
 		ValueVariable* value=NULL;
 		bool repeatmatch=false;
@@ -280,8 +248,8 @@ unsigned int Template::compactCollection(CollectionVariable* collection, const U
 				//varmatched=__matchvariable(mc, _layout, _infinitism, value);
 				//matched=namematched && varmatched;
 				matched=__matchname(mc, _iden, value->getName(), _casesens, _infinitism) && __matchvariable(mc, _layout, _infinitism, value);
-				//printf("(Template::CompactCollection) [%d] type:%s, name:%s, namematched:%d, varmatched:%d, (mc<mmax):%d, (_layout && mc<_layout->count):%d\n",
-				//	mc, value->getTypeAsString(), "" /*value->getName()*/, namematched, varmatched, (mc<mmax), (_layout && mc<_layout->count));
+				//printf("(Template::CompactCollection) [%d] type:%s, name:%s, namematched:%d, varmatched:%d, (mc<mmax):%d, (_layout && mc<_layout->size()):%d\n",
+				//	mc, value->getTypeAsString(), "" /*value->getName()*/, namematched, varmatched, (mc<mmax), (_layout && mc<_layout->size()));
 				if (matched) {
 					//printf("(Template::CompactCollection) match at mc:%d\n", mc);
 					pairs.push_back(new _IteratorVariablePair(iter, value));

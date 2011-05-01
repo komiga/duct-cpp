@@ -126,7 +126,7 @@ ArgImplList::const_iterator ArgumentHandler::find(const UnicodeString& alias) co
 }
 
 bool ArgumentHandler::addImpl(ArgImpl* impl) {
-	if (impl && impl->getAliases().getSize()>0) {
+	if (impl && impl->getAliases().size()>0) {
 		_list.push_back(impl);
 		return true;
 	}
@@ -179,7 +179,7 @@ Identifier* ArgImpl::getArgs() {
 }
 
 bool ArgImpl::hasAlias(const UnicodeString& alias) const {
-	for (unsigned int i=0; i<_aliases.getSize(); ++i) {
+	for (unsigned int i=0; i<_aliases.size(); ++i) {
 		if (alias.compare(*_aliases[i])==0) {
 			return true;
 		}

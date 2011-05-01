@@ -31,81 +31,25 @@ namespace duct {
 
 // class StringArray implementation
 
-StringArray::StringArray() : _size(0), _data(NULL), _releasecontainer(true) {
+StringArray::StringArray() {
 }
 
-StringArray::StringArray(const char* str) : _size(1), _data(new UnicodeString*[1]), _releasecontainer(true) {
-	_data[0]=new UnicodeString(str);
+StringArray::StringArray(const char* str) {
+	set(str);
 }
 
-StringArray::StringArray(UnicodeString* str) : _size(1), _data(new UnicodeString*[1]), _releasecontainer(true) {
-	_data[0]=str;
-}
-
-StringArray::StringArray(const char** data, int size) : _size(0), _data(NULL), _releasecontainer(true) {
-	setFromCStrings(data, size);
-}
-
-StringArray::StringArray(UnicodeString** data, int size, bool _releasecontainer) : _size(0), _data(NULL), _releasecontainer(true) {
-	set(data, size, _releasecontainer);
-}
-
-StringArray::~StringArray() {
-	release();
-}
-
-unsigned int StringArray::getSize() const {
-	return _size;
-}
-
-UnicodeString** StringArray::get() {
-	return _data;
-}
-
-void StringArray::release() {
-	if (_data) {
-		for (unsigned int i=0; i<_size; ++i) {
-			if (_data[i]) {
-				delete _data[i];
-				_data[i]=NULL;
-			}
-		}
-		if (_releasecontainer)
-			delete [] _data;
-		_data=NULL;
-	}
-	_size=0;
-}
-
-void StringArray::set(UnicodeString** data, int size, bool releasecontainer) {
-	release();
-	if (size<0) {
-		int i=0;
-		while (data[i]!=NULL) {
-			++i;
-		}
-		size=i;
-	}
-	_size=size;
-	_data=data;
-	_releasecontainer=releasecontainer;
+StringArray::StringArray(const char** data, int size) {
+	set(data, size);
 }
 
 void StringArray::set(const char* str) {
 	release();
 	_data=new UnicodeString*[_size=1];
 	_data[0]=new UnicodeString(str);
-	_releasecontainer=true;
+	_static=false;
 }
 
-void StringArray::set(UnicodeString* str) {
-	release();
-	_data=new UnicodeString*[_size=1];
-	_data[0]=str;
-	_releasecontainer=true;
-}
-
-void StringArray::setFromCStrings(const char** data, int size) {
+void StringArray::set(const char** data, int size) {
 	release();
 	int i=0;
 	if (size<0) {
@@ -119,67 +63,31 @@ void StringArray::setFromCStrings(const char** data, int size) {
 	for (i=0; i<size; ++i) {
 		_data[i]=new UnicodeString(data[i]);
 	}
-	_releasecontainer=true;
+	_static=false;
 }
 
-void StringArray::setFromVCStrings(unsigned int num, va_list ap) {
+void StringArray::setVLCStrings(unsigned int num, va_list ap) {
 	release();
 	_size=num;
 	_data=new UnicodeString*[_size];
 	for (unsigned int i=0; i<num; ++i) {
 		_data[i]=new UnicodeString(va_arg(ap, const char*));
 	}
-	_releasecontainer=true;
+	_static=false;
 }
 
-void StringArray::setFromVCStrings(unsigned int num, ...) {
+void StringArray::setVCStrings(unsigned int num, ...) {
 	va_list ap;
 	va_start(ap, num);
-	setFromVCStrings(num, ap);
+	setVLCStrings(num, ap);
 	va_end(ap);
 }
 
-void StringArray::setFromVUStrings(unsigned int num, va_list ap) {
-	release();
-	_size=num;
-	_data=new UnicodeString*[_size];
-	for (unsigned int i=0; i<num; ++i) {
-		_data[i]=va_arg(ap, UnicodeString*);
-	}
-	_releasecontainer=true;
-}
-
-void StringArray::setFromVUStrings(unsigned int num, ...) {
-	va_list ap;
-	va_start(ap, num);
-	setFromVUStrings(num, ap);
-	va_end(ap);
-}
-
-UnicodeString* StringArray::operator[](const int index) {
-	debug_assertp(_data!=NULL, this, "_data==NULL");
-	return _data[index];
-}
-
-const UnicodeString* StringArray::operator[](const int index) const {
-	debug_assertp(_data!=NULL, this, "_data==NULL");
-	return _data[index];
-}
-
-StringArray* StringArray::withVCStrings(unsigned int num, ...) {
+StringArray* StringArray::withCStrings(unsigned int num, ...) {
 	StringArray* sa=new StringArray();
 	va_list ap;
 	va_start(ap, num);
-	sa->setFromVCStrings(num, ap);
-	va_end(ap);
-	return sa;
-}
-
-StringArray* StringArray::withVUStrings(unsigned int num, ...) {
-	StringArray* sa=new StringArray();
-	va_list ap;
-	va_start(ap, num);
-	sa->setFromVUStrings(num, ap);
+	sa->setVLCStrings(num, ap);
 	va_end(ap);
 	return sa;
 }
