@@ -194,6 +194,10 @@ public:
 		Constructor.
 	*/
 	ScriptParserHandler(ScriptParser& parser);
+	/**
+		Destructor.
+	*/
+	~ScriptParserHandler();
 	void setParser(Parser& parser);
 	Parser& getParser();
 	/**

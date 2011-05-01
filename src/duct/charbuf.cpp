@@ -41,6 +41,7 @@ CharBuf::CharBuf() : _buffer(NULL), _bufsize(0), _buflength(0), _cached(false) {
 CharBuf::~CharBuf() {
 	if (_buffer) {
 		free(_buffer);
+		_buffer=NULL;
 	}
 }
 
