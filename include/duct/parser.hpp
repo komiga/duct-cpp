@@ -62,6 +62,10 @@ public:
 	*/
 	Token(int type=NULL_TOKEN);
 	/**
+		Destructor.
+	*/
+	~Token();
+	/**
 		Set the token's type.
 		@returns Nothing.
 		@param type The token's type.

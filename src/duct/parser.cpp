@@ -35,6 +35,9 @@ namespace duct {
 Token::Token(int type) : _type(type) {
 }
 
+Token::~Token() {
+}
+
 void Token::setType(int type) {
 	_type=type;
 }

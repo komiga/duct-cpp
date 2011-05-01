@@ -383,6 +383,9 @@ ScriptParserHandler::ScriptParserHandler(ScriptParser& parser) : _parser(parser)
 	_parser.setHandler(this);
 }
 
+ScriptParserHandler::~ScriptParserHandler() {
+}
+
 void ScriptParserHandler::setParser(Parser& parser) {
 	_parser=(ScriptParser&)parser;
 	_parser.setHandler(this);
