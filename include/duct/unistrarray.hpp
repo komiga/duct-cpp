@@ -60,6 +60,10 @@ public:
 	*/
 	StringArray(const char** data, int size=-1);
 	/**
+		Destructor.
+	*/
+	~StringArray();
+	/**
 		Set the array data to the given C-string (single element).
 		@returns Nothing.
 		@param str The string to use.

@@ -227,6 +227,16 @@ protected:
 template <class T>
 class DUCT_API GPArray : public GArray<T> {
 public:
+	virtual ~GPArray() {
+		if (this->_data) {
+			for (unsigned int i=0; i<this->_size; ++i) {
+				if (this->_data[i]) {
+					delete this->_data[i];
+					this->_data[i]=NULL;
+				}
+			}
+		}
+	};
 	virtual void release() {
 		if (this->_data) {
 			for (unsigned int i=0; i<this->_size; ++i) {
