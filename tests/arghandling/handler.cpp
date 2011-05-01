@@ -51,7 +51,7 @@ const UnicodeString& HelpImpl::getUsage() const {
 // class TestImpl implementation
 
 TestImpl::TestImpl() {
-	_aliases.setFromVCStrings(2, "test", "--test"); // Can run as both a command and an option, for testing purposes
+	_aliases.setVCStrings(2, "test", "--test"); // Can run as both a command and an option, for testing purposes
 }
 
 int TestImpl::checkErrors() {

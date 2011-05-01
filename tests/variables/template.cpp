@@ -32,7 +32,7 @@ int main() {
 		iden.add(new BoolVariable(true));
 		printf("tpl->validateIdentifier(iden): %d\n", tpl->validateIdentifier(&iden)); // pass
 		
-		tplv=new Template(StringArray::withVCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
+		tplv=new Template(StringArray::withCStrings(1, "bool"), new VTypeLayout(1, VARTYPE_BOOL), false, VARTYPE_NONE);
 		BoolVariable value(true, "bool");
 		printf("tplv->validateValue(value): %d\n", tplv->validateValue(&value)); // pass
 	}
