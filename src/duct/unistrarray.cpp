@@ -42,6 +42,9 @@ StringArray::StringArray(const char** data, int size) {
 	set(data, size);
 }
 
+StringArray::~StringArray() {
+}
+
 void StringArray::set(const char* str) {
 	release();
 	_data=new UnicodeString*[_size=1];
