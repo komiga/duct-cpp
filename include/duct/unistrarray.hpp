@@ -60,6 +60,12 @@ public:
 	*/
 	StringArray(const char** data, int size=-1);
 	/**
+		Variadic constructor with UnicodeString elements.
+		@param num The number of arguments.
+		@param ... The elements of type T to initialize with.
+	*/
+	StringArray(size_t num, ...);
+	/**
 		Destructor.
 	*/
 	~StringArray();

@@ -42,6 +42,13 @@ StringArray::StringArray(const char** data, int size) {
 	set(data, size);
 }
 
+StringArray::StringArray(size_t num, ...) {
+	va_list ap;
+	va_start(ap, num);
+	setVL(num, ap);
+	va_end(ap);
+}
+
 StringArray::~StringArray() {
 }
 
