@@ -3,7 +3,7 @@
 @author Tim Howard
 
 @section LICENSE
-Copyright (c) 2010 Tim Howard
+Copyright (c) 2010-2011 Tim Howard
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
