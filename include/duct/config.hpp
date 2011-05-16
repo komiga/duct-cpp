@@ -25,37 +25,50 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ configuration header. Mostly taken from SFML.
+duct++ configuration header.
 */
 
 #ifndef _DUCT_CONFIG_HPP
 #define _DUCT_CONFIG_HPP
 
 #include <assert.h>
-//#include <stdint.h>
+#include <stdint.h> // TODO: windows?
 
 namespace duct {
 
-/**
+/*
 	duct++ version.
 */
-//const char* VERSION="0.01"; // TODO: multiple definition errors with this line
+//const char* VERSION="0.01"; // TODO: multiple definition errors with this line; use extern, you imbecile
 
 // Platform
 #if defined(_WIN32) || defined(__WIN32__)
 	// Windows
+	/** 
+		Defined when the system is Windows.
+	*/
 	#define DUCT_PLATFORM_WINDOWS
 #elif defined(linux) || defined(__linux)
 	// Linux
+	/**
+		Defined when the system is Linux.
+	*/
 	#define DUCT_PLATFORM_LINUX
 #elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
 	// MacOS
+	/**
+		Defined when the system is MacOS.
+	*/
 	#define DUCT_PLATFORM_MACOS
 #else // Unsupported
 	#error This operating system is not supported by duct++.
 #endif
 
 // Exports
+/**
+	\def DUCT_API
+	duct import/export define for win32 (undefined on UNIX).
+*/
 #if defined(DUCT_PLATFORM_WINDOWS)
 	#ifdef DUCT_DYNAMIC
 		#ifdef DUCT_EXPORTS
@@ -78,20 +91,55 @@ namespace duct {
 	#include <byteswap.h>
 #endif
 
+/**
+	\def bswap_16
+	Ensures bswap_16 is implemented (UNIX byteswap.h).
+	@see bswap_32, bswap_64
+*/
 #ifndef bswap_16
 	#define bswap_16(x)	\
 		((((x)>>8)&0xff)|(((x)&0xff)<<8))
 #endif
 
+/**
+	\def bswap_32
+	Ensures bswap_32 is implemented (UNIX byteswap.h).
+	@see bswap_16, bswap_64
+*/
 #ifndef bswap_32
 	#define bswap_32(x)	\
 		((((x)&0xff000000)>>24)|(((x)&0x00ff0000)>>8)|(((x)&0x0000ff00)<<8)|(((x)&0x000000ff)<<24))
 #endif
 
+/**
+	\def bswap_64
+	Ensures bswap_64 is implemented (UNIX byteswap.h).
+	@see bswap_16, bswap_32
+*/
+#ifndef bswap_64
+	#define bswap_64(x)	\
+		(((((x)&0xff00000000000000ULL) >> 56) | (((x)&0x00ff000000000000ULL) >> 40) | \
+		  (((x)&0x0000ff0000000000ULL) >> 24) | (((x)&0x000000ff00000000ULL) >>  8) | \
+		  (((x)&0x00000000ff000000ULL) <<  8) | (((x)&0x0000000000ff0000ULL) << 24) | \
+		  (((x)&0x000000000000ff00ULL) << 40) | (((x)&0x00000000000000ffULL) << 56)))
+#endif
+
 /* This byteorder stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
+/**
+	Little endian.
+	@see DUCT_BYTEORDER, DUCT_BIG_ENDIAN
+*/
 #define DUCT_LITTLE_ENDIAN	1234
+/**
+	Big endian.
+	@see DUCT_BYTEORDER, DUCT_LITTLE_ENDIAN
+*/
 #define DUCT_BIG_ENDIAN	4321
 
+/**
+	\def DUCT_BYTEORDER
+	System byteorder (equals either DUCT_LITTLE_ENDIAN or DUCT_BIG_ENDIAN).
+*/
 #if	defined(__i386__) || defined(__ia64__) || defined(WIN32) || \
 	(defined(__alpha__) || defined(__alpha)) || \
 	defined(__arm__) || defined(ARM) || \
@@ -103,57 +151,6 @@ namespace duct {
 #else
 	#define DUCT_BYTEORDER	DUCT_BIG_ENDIAN
 #endif
-
-/*
-// Define portable fixed-size types
-#include <limits.h>
-// 8-bit integer types (byte)
-#if UCHAR_MAX==0xFF
-	typedef signed		char Byte;
-	typedef unsigned	char UByte;
-#else
-	#error No 8-bit integer type for this platform
-#endif
-
-// 16-bit integer types (short)
-#if USHRT_MAX==0xFFFF
-	typedef signed		short Short;
-	typedef unsigned	short UShort;
-#elif UINT_MAX==0xFFFF
-	typedef signed		int Short;
-	typedef unsigned	int UShort;
-#elif ULONG_MAX==0xFFFF
-	typedef signed		long Short;
-	typedef unsigned	long UShort;
-#else
-	#error No 16-bit integer type for this platform
-#endif
-
-// 32-bit integer types (int)
-#if USHRT_MAX==0xFFFFFFFF
-	typedef signed		short Int;
-	typedef unsigned	short UInt;
-#elif UINT_MAX==0xFFFFFFFF
-	typedef signed		int Int;
-	typedef unsigned	int UInt;
-#elif ULONG_MAX==0xFFFFFFFF
-	typedef signed		long Int;
-	typedef unsigned	long UInt;
-#else
-	#error No 32-bit integer type for this platform
-#endif
-
-// 64-bit integer types (long)
-#if ULONG_MAX==0xFFFFFFFFFFFFFFFF
-	typedef signed		long int Long;
-	typedef unsigned	long int ULong;
-#elif ULLONG_MAX==0xFFFFFFFFFFFFFFFF
-	typedef signed		long long int Long;
-	typedef unsigned	long long int ULong;
-#else
-	#error No 64-bit integer type for this platform
-#endif
-*/
 
 } // namespace duct
 
