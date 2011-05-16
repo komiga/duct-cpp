@@ -41,24 +41,31 @@ namespace duct {
 */
 //const char* VERSION="0.01"; // TODO: multiple definition errors with this line; use extern, you imbecile
 
+// TODO: DUCT_PLATFORM_* not showing up on doxygen (defined, but to void)
+/** 
+	\def DUCT_PLATFORM_WINDOWS
+	Defined when the system is Windows.
+*/
+
+/**
+	\def DUCT_PLATFORM_LINUX
+	Defined when the system is Linux.
+*/
+
+/**
+	\def DUCT_PLATFORM_MACOS
+	Defined when the system is MacOS.
+*/
+
 // Platform
 #if defined(_WIN32) || defined(__WIN32__)
 	// Windows
-	/** 
-		Defined when the system is Windows.
-	*/
 	#define DUCT_PLATFORM_WINDOWS
 #elif defined(linux) || defined(__linux)
 	// Linux
-	/**
-		Defined when the system is Linux.
-	*/
 	#define DUCT_PLATFORM_LINUX
 #elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
 	// MacOS
-	/**
-		Defined when the system is MacOS.
-	*/
 	#define DUCT_PLATFORM_MACOS
 #else // Unsupported
 	#error This operating system is not supported by duct++.
@@ -67,7 +74,7 @@ namespace duct {
 // Exports
 /**
 	\def DUCT_API
-	duct import/export define for win32 (undefined on UNIX).
+	duct import/export define for win32 (undefined on Linux).
 */
 #if defined(DUCT_PLATFORM_WINDOWS)
 	#ifdef DUCT_DYNAMIC
@@ -83,7 +90,7 @@ namespace duct {
 		#define DUCT_API
 	#endif
 #else
-	// Not needed for unix
+	// Not needed for UNIX-based
 	#define DUCT_API
 #endif
 
@@ -93,7 +100,7 @@ namespace duct {
 
 /**
 	\def bswap_16
-	Ensures bswap_16 is implemented (UNIX byteswap.h).
+	Ensures bswap_16 is implemented (Linux byteswap.h).
 	@see bswap_32, bswap_64
 */
 #ifndef bswap_16
@@ -103,7 +110,7 @@ namespace duct {
 
 /**
 	\def bswap_32
-	Ensures bswap_32 is implemented (UNIX byteswap.h).
+	Ensures bswap_32 is implemented (Linux byteswap.h).
 	@see bswap_16, bswap_64
 */
 #ifndef bswap_32
@@ -113,7 +120,7 @@ namespace duct {
 
 /**
 	\def bswap_64
-	Ensures bswap_64 is implemented (UNIX byteswap.h).
+	Ensures bswap_64 is implemented (Linux byteswap.h).
 	@see bswap_16, bswap_32
 */
 #ifndef bswap_64
