@@ -24,9 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <string.h>
 #include <duct/debug.hpp>
 #include <duct/bufferstream.hpp>
-#include <string.h>
 
 namespace duct {
 

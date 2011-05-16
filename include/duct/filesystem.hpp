@@ -31,15 +31,15 @@ duct++ file system helpers.
 #ifndef _DUCT_FILESYSTEM_HPP
 #define _DUCT_FILESYSTEM_HPP
 
-#include <duct/config.hpp>
+#include <sys/stat.h>
+#include <string>
+#include <unicode/unistr.h>
 #ifdef DUCT_PLATFORM_WINDOWS
 #include <duct/win32/dirent.h>
 #else
 #include <dirent.h>
 #endif
-#include <sys/stat.h>
-#include <string>
-#include <unicode/unistr.h>
+#include <duct/config.hpp>
 
 namespace duct {
 
