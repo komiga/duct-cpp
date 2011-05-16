@@ -31,11 +31,11 @@ duct++ Stream class.
 #ifndef _DUCT_STREAM_HPP
 #define _DUCT_STREAM_HPP
 
-#include <duct/config.hpp>
-#include <duct/encoding.hpp>
 #include <unicode/utf.h>
 #include <unicode/unistr.h>
 #include <unicode/ucnv.h>
+#include <duct/config.hpp>
+#include <duct/encoding.hpp>
 
 namespace duct {
 

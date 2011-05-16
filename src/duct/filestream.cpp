@@ -24,11 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <duct/debug.hpp>
-#include <duct/filestream.hpp>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
+#include <duct/debug.hpp>
+#include <duct/filestream.hpp>
 
 namespace duct {
 
