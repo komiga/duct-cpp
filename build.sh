@@ -18,7 +18,11 @@ if [ ! -f "Makefile" ]; then
 	premake4 gmake
 fi
 
-make config=debug
-make config=release
+if [ -z "$ACTION" ]; then
+	make config=debug
+	make config=release
+else
+	make config="$ACTION"
+fi
 
 #clean_output
