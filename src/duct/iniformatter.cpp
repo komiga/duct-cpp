@@ -470,11 +470,10 @@ IniParserHandler IniFormatter::_handler=IniParserHandler(IniFormatter::_parser);
 
 bool IniFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {
+		value.getNameFormatted(result, nameformat);
 		UnicodeString temp;
-		value.getNameFormatted(temp, nameformat);
-		result.setTo(temp);
 		value.getValueFormatted(temp, varformat);
-		result+="="+temp;
+		result.append('=').append(temp);
 		return true;
 	} else {
 		result.remove(); // clear the result string
@@ -538,7 +537,7 @@ bool IniFormatter::writeToStream(const Node* root, Stream* stream, unsigned int 
 			writeTabs(stream, tcount, false);
 			root->getNameFormatted(temp, nameformat);
 			stream->writeChar16('[');
-			temp+=']';
+			temp.append(']');
 			stream->writeLine(temp);
 		}
 		Node* node;

@@ -613,7 +613,7 @@ bool ScriptFormatter::formatIdentifier(const Identifier& iden, UnicodeString& re
 				val->getValueFormatted(temp, varformat);
 				result+=temp;*/
 				val->getValueFormatted(temp, varformat);
-				result+=' '+temp;
+				result.append(' ').append(temp);
 			}
 		}
 		return true;
@@ -626,11 +626,10 @@ bool ScriptFormatter::formatIdentifier(const Identifier& iden, UnicodeString& re
 
 bool ScriptFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {
+		value.getNameFormatted(result, nameformat);
 		UnicodeString temp;
-		value.getNameFormatted(temp, nameformat);
-		result.setTo(temp);
 		value.getValueFormatted(temp, varformat);
-		result+="="+temp;
+		result.append('=').append(temp);
 		return true;
 	} else {
 		result.remove(); // clear the result string
