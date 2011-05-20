@@ -91,7 +91,7 @@ UChar32 Stream::readChar() {
 	ucnv_resetToUnicode(_conv);
 	char in[4];
 	char* inp;
-	UChar out[]={U_SENTINEL, U_SENTINEL};
+	UChar out[]={(UChar)U_SENTINEL, (UChar)U_SENTINEL};
 	UChar* outp=out;
 	int pending=1; // assume one UChar by default
 	int size=ucnv_getMinCharSize(_conv);
