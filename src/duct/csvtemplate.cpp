@@ -60,14 +60,14 @@ bool CSVTemplate::validate(const CSVRow& row, int startindex) const {
 			iter=row.find(index);
 			if (iter!=end) {
 				if (iter->second && !(_layout[index].type&iter->second->getType())) {
-					printf("debug: %s: [%d] non-matching type\n", __PRETTY_FUNCTION__, index);
+					//printf("debug: %s: [%d] non-matching type\n", __PRETTY_FUNCTION__, index);
 					return false;
 				} else if (!iter->second && !_layout[index].nullable) { // not nullable; is null
-					printf("debug: %s: [%d] not nullable; null\n", __PRETTY_FUNCTION__, index);
+					//printf("debug: %s: [%d] not nullable; null\n", __PRETTY_FUNCTION__, index);
 					return false;
 				}
 			} else if (!_layout[index].nullable) { // not nullable; is unset
-				printf("debug: %s: [%d] not nullable; unset\n", __PRETTY_FUNCTION__, index);
+				//printf("debug: %s: [%d] not nullable; unset\n", __PRETTY_FUNCTION__, index);
 				return false;
 			}
 			index++;
