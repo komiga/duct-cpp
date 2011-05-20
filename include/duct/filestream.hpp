@@ -55,63 +55,37 @@ public:
 		The file will be opened with both reading and writing modes.
 		isOpen() should be called to check if the file was opened successfully.
 		@param path The path to the file.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	FileStream(const char* path, const char* encoding="utf8");
-	
-	/**
-		Constructor with path.
-		The file will be opened with both reading and writing modes.
-		isOpen() should be called to check if the file was opened successfully.
-		@param path The path to the file.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	FileStream(const std::string& path, const char* encoding="utf8");
 	FileStream(const UnicodeString& path, const char* encoding="utf8");
-	
 	/**
 		Constructor with path and modes.
 		isOpen() should be called to check if the file was opened successfully.
 		@param path The path to the file.
 		@param writeable Whether the stream can be written to.
 		@param readable Whether the stream can be read from.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	FileStream(const char* path, bool readable, bool writeable, const char* encoding="utf8");
-	
-	/**
-		Constructor with path and modes.
-		isOpen() should be called to check if the file was opened successfully.
-		@param path The path to the file.
-		@param writeable Whether the stream can be written to.
-		@param readable Whether the stream can be read from.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	FileStream(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
 	FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
-	
 	/**
 		Constructor with path and flags.
 		isOpen() should be called to check if the file was opened successfully.
 		@param path The path to the file.
 		@param flags A combination of #Flags values.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	FileStream(const char* path, unsigned int flags, const char* encoding="utf8");
-	
-	/**
-		Constructor with path and flags.
-		isOpen() should be called to check if the file was opened successfully.
-		@param path The path to the file.
-		@param flags A combination of #Flags values.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	FileStream(const std::string& path, unsigned int flags, const char* encoding="utf8");
 	FileStream(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
-	
 	/**
 		Destructor.
 		The stream will be closed at deconstruction, though this should not be relied upon.
 	*/
 	~FileStream();
-	
 	/**
 		Check if the stream is open.
 		This is different from eof() -- which will check if the stream is closed <em>or</em> if it is at the end of the file.
@@ -128,15 +102,14 @@ public:
 	virtual unsigned long seek(unsigned long pos);
 	virtual void close();
 	
-	/**
+	/*
 		Scan and read the items in the given format.
 		This is a cover for fscanf().
 		@returns The number of items successfully read, or EOF if there is not enough data left in the stream.
 		@param format The format string.
 		@param ... Variadic arguments.
 	*/
-	int scanf(const char* format, ...);
-	
+	//int scanf(const char* format, ...);
 	/**
 		Set the stream's flags.
 		<em>NOTE: This function does nothing for FileStream. The flags cannot be changed after the stream is opened.</em>
@@ -144,75 +117,44 @@ public:
 		@param flags A combination of #Flags values (and possibly custom flags from a deriving class).
 	*/
 	virtual void setFlags(unsigned int flags);
-	
 	/**
 		Open the given file with the given modes.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
 		@param readable Open as readable.
 		@param writeable Open as writeable.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	static FileStream* openFile(const char* path, bool readable, bool writeable, const char* encoding="utf8");
-	
-	/**
-		Open the given file with the given modes.
-		@returns A new FileStream, or NULL if an error occurred.
-		@param path The file path to open.
-		@param readable Open as readable.
-		@param writeable Open as writeable.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	static FileStream* openFile(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
 	static FileStream* openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
-	
 	/**
 		Open the given file with the flags.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
 		@param flags The flags to open the stream with.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	static FileStream* openFile(const char* path, unsigned int flags, const char* encoding="utf8");
-	
-	/**
-		Open the given file with the flags.
-		@returns A new FileStream, or NULL if an error occurred.
-		@param path The file path to open.
-		@param flags The flags to open the stream with.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	static FileStream* openFile(const std::string& path, unsigned int flags, const char* encoding="utf8");
 	static FileStream* openFile(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
-	
 	/**
 		Open the given file as readable.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	static FileStream* readFile(const char* path, const char* encoding="utf8");
-	
-	/**
-		Open the given file as readable.
-		@returns A new FileStream, or NULL if an error occurred.
-		@param path The file path to open.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	static FileStream* readFile(const std::string& path, const char* encoding="utf8");
 	static FileStream* readFile(const UnicodeString& path, const char* encoding="utf8");
-	
 	/**
 		Open the given file as writeable.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
-		@param encoding The character encoding to use. Default is UTF8.
+		@param encoding The character encoding to use. Default is UTF-8.
 	*/
 	static FileStream* writeFile(const char* path, const char* encoding="utf8");
-	
-	/**
-		Open the given file as writeable.
-		@returns A new FileStream, or NULL if an error occurred.
-		@param path The file path to open.
-		@param encoding The character encoding to use. Default is UTF8.
-	*/
+	static FileStream* writeFile(const std::string& path, const char* encoding="utf8");
 	static FileStream* writeFile(const UnicodeString& path, const char* encoding="utf8");
 	
 protected:
@@ -227,10 +169,8 @@ protected:
 	
 private:
 	FileStream();
-	
 };
 
 } // namespace duct
 
 #endif // _DUCT_FILESTREAM_HPP
-
