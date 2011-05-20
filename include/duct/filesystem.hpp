@@ -35,7 +35,9 @@ duct++ file system helpers.
 #include <string>
 #include <unicode/unistr.h>
 #ifdef DUCT_PLATFORM_WINDOWS
-#include <duct/win32/dirent.h>
+#include <duct/windows/dirent.h>
+#include <direct.h>
+#include <io.h>
 #else
 #include <dirent.h>
 #endif
@@ -93,7 +95,6 @@ public:
 		Stream will be closed upon destruction.
 	*/
 	~DirStream();
-	
 	/**
 		Get the next entry in the directory stream.
 		If the next entry could not be retrieved, the current entry will be NULL'd and the stream should be closed.
@@ -107,7 +108,6 @@ public:
 		@param result Output string. Will not be cleared if the next entry was not retrieved.
 	*/
 	bool nextEntry(UnicodeString& result);
-	
 	/**
 		Get the current entry's name from the given directory stream.
 		@returns true if the result string was set, or false the current entry was invalid.
@@ -122,7 +122,6 @@ public:
 		@see PathType
 	*/
 	PathType entryType() const;
-	
 	/**
 		Check if the stream is opened.
 		@returns true if the stream is opened, or false if it is not.
@@ -134,14 +133,11 @@ public:
 	*/
 	bool close();
 	
-protected:
+private:
 	std::string _path;
 	DIR* _dir;
 	dirent* _entry;
-	
-private:
 	void init();
-	
 };
 
 /**
@@ -155,21 +151,21 @@ namespace FileSystem {
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-bool statPath(const char* path, struct stat* s);
-/**
+//bool statPath(const char* path, struct stat* s);
+/*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-bool statPath(const std::string& path, struct stat* s);
-/**
+//bool statPath(const std::string& path, struct stat* s);
+/*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-bool statPath(const UnicodeString& path, struct stat* s);
+//bool statPath(const UnicodeString& path, struct stat* s);
 
 /**
 	Get the given path's type.
