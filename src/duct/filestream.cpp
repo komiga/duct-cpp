@@ -41,6 +41,11 @@ FileStream::FileStream(const char* path, const char* encoding) {
 	init(path, STREAM_WRITEABLE|STREAM_READABLE);
 }
 
+FileStream::FileStream(const std::string& path, const char* encoding) {
+	setEncoding(encoding);
+	init(path.c_str(), STREAM_WRITEABLE|STREAM_READABLE);
+}
+
 FileStream::FileStream(const UnicodeString& path, const char* encoding) {
 	setEncoding(encoding);
 	std::string temp;
@@ -53,6 +58,11 @@ FileStream::FileStream(const char* path, bool readable, bool writeable, const ch
 	init(path, (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
 }
 
+FileStream::FileStream(const std::string& path, bool readable, bool writeable, const char* encoding) {
+	setEncoding(encoding);
+	init(path.c_str(), (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
+}
+
 FileStream::FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding) {
 	setEncoding(encoding);
 	std::string temp;
@@ -63,6 +73,11 @@ FileStream::FileStream(const UnicodeString& path, bool readable, bool writeable,
 FileStream::FileStream(const char* path, unsigned int flags, const char* encoding) {
 	setEncoding(encoding);
 	init(path, flags);
+}
+
+FileStream::FileStream(const std::string& path, unsigned int flags, const char* encoding) {
+	setEncoding(encoding);
+	init(path.c_str(), flags);
 }
 
 FileStream::FileStream(const UnicodeString& path, unsigned int flags, const char* encoding) {
@@ -140,14 +155,18 @@ void FileStream::close() {
 	}
 }
 
-int FileStream::scanf(const char* format, ...) {
+/*int FileStream::scanf(const char* format, ...) {
 	va_list vl;
 	va_start(vl, format);
+	#ifdef DUCT_PLATFORM_WINDOWS
+	// TODO
+	#else
 	int ni=vfscanf(_file, format, vl);
+	#endif
 	va_end(vl);
 	_pos=ftell(_file);
 	return ni;
-}
+}*/
 
 void FileStream::setFlags(unsigned int) {
 	debug_printp(this, "warning: Flags cannot be set for FileStream");
@@ -197,6 +216,16 @@ FileStream* FileStream::openFile(const char* path, bool readable, bool writeable
 	}
 }
 
+FileStream* FileStream::openFile(const std::string& path, bool readable, bool writeable, const char* encoding) {
+	FileStream* fs=new FileStream(path.c_str(), readable, writeable, encoding);
+	if (fs->isOpen()) {
+		return fs;
+	} else {
+		delete fs;
+		return NULL;
+	}
+}
+
 FileStream* FileStream::openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding) {
 	FileStream* fs=new FileStream(path, readable, writeable, encoding);
 	if (fs->isOpen()) {
@@ -209,6 +238,16 @@ FileStream* FileStream::openFile(const UnicodeString& path, bool readable, bool 
 
 FileStream* FileStream::openFile(const char* path, unsigned int flags, const char* encoding) {
 	FileStream* fs=new FileStream(path, flags, encoding);
+	if (fs->isOpen()) {
+		return fs;
+	} else {
+		delete fs;
+		return NULL;
+	}
+}
+
+FileStream* FileStream::openFile(const std::string& path, unsigned int flags, const char* encoding) {
+	FileStream* fs=new FileStream(path.c_str(), flags, encoding);
 	if (fs->isOpen()) {
 		return fs;
 	} else {
@@ -237,6 +276,16 @@ FileStream* FileStream::readFile(const char* path, const char* encoding) {
 	}
 }
 
+FileStream* FileStream::readFile(const std::string& path, const char* encoding) {
+	FileStream* fs=new FileStream(path.c_str(), true, false, encoding);
+	if (fs->isOpen()) {
+		return fs;
+	} else {
+		delete fs;
+		return NULL;
+	}
+}
+
 FileStream* FileStream::readFile(const UnicodeString& path, const char* encoding) {
 	FileStream* fs=new FileStream(path, true, false, encoding);
 	if (fs->isOpen()) {
@@ -249,6 +298,16 @@ FileStream* FileStream::readFile(const UnicodeString& path, const char* encoding
 
 FileStream* FileStream::writeFile(const char* path, const char* encoding) {
 	FileStream* fs=new FileStream(path, false, true, encoding);
+	if (fs->isOpen()) {
+		return fs;
+	} else {
+		delete fs;
+		return NULL;
+	}
+}
+
+FileStream* FileStream::writeFile(const std::string& path, const char* encoding) {
+	FileStream* fs=new FileStream(path.c_str(), false, true, encoding);
 	if (fs->isOpen()) {
 		return fs;
 	} else {
