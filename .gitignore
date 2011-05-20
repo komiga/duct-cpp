@@ -7,11 +7,18 @@
 *.obj
 *.o
 *.a
+
 # Generated documentation
 docs/latex/
 docs/html/
+
 # Makefiles and build data
 Makefile
 duct.make
 out/
 lib/
+*.sln
+*.suo
+*.vcproj
+*.ncb
+*.user
