@@ -91,7 +91,7 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_print_source(mesg)	\
-			(printf("debug: from %s: %s\n", _FUNCTION_, mesg))
+			(printf("debug: from %s: %s\n", __FUNCTION__, mesg))
 	#else
 		#define debug_print_source(mesg)	\
 			(printf("debug: from %s: %s\n", __PRETTY_FUNCTION__, mesg))
@@ -109,7 +109,7 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_printp_source(p, mesg)	\
-			(printf("debug: [%p] from %s: %s\n", (const void*)p, _FUNCTION_, mesg))
+			(printf("debug: [%p] from %s: %s\n", (const void*)p, __FUNCTION__, mesg))
 	#else
 		#define debug_printp_source(p, mesg)	\
 			(printf("debug: [%p] from %s: %s\n", (const void*)p, __PRETTY_FUNCTION__, mesg))
@@ -126,7 +126,7 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_called()	\
-			(printf("debug_called: %s\n", _FUNCTION_))
+			(printf("debug_called: %s\n", __FUNCTION__))
 	#else
 		#define debug_called()	\
 			(printf("debug_called: %s\n", __PRETTY_FUNCTION__))
