@@ -46,10 +46,10 @@ configuration {"linux"}
 	links {"icui18n", "icudata", "icuio", "icuuc"}
 	
 configuration {"linux", "debug"}
-	postbuildcommands {"cp "..outpath.."//lib"..name.."_debug.so "..libpath_linux.."/lib"..name.."_debug.so"}
+	postbuildcommands {"cp "..outpath.."/lib"..name.."_debug.so "..libpath_linux.."/lib"..name.."_debug.so"}
 
 configuration {"linux", "release"}
-	postbuildcommands {"cp "..outpath.."//lib"..name..".so "..libpath_linux.."/lib"..name..".so"}
+	postbuildcommands {"cp "..outpath.."/lib"..name..".so "..libpath_linux.."/lib"..name..".so"}
 
 configuration {"vs2008"}
 --	postbuildcommands {"md "..libpath_windows}
