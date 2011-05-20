@@ -54,9 +54,9 @@ void CharBuf::addChar(UChar32 c) {
 		debug_assertp(_buffer, this, "Unable to allocate buffer");
 		_buflength=0;
 	} else if (_buflength>=_bufsize) {
-		size_t newsize=ceil(_bufsize*BUFFER_MULTIPLIER);
+		size_t newsize=(size_t)ceil(_bufsize*BUFFER_MULTIPLIER);
 		if (newsize<_buflength) {
-			newsize=ceil(_buflength*BUFFER_MULTIPLIER);
+			newsize=(size_t)ceil(_buflength*BUFFER_MULTIPLIER);
 		}
 		_bufsize=newsize;
 		void* temp=realloc(_buffer, newsize*4);
