@@ -26,8 +26,8 @@ void testDir(const UnicodeString& path) {
 }
 
 int main() {
-	UnicodeString dirname("うううう/");
-	UnicodeString filename=dirname+"ああああ.foobar";
+	UnicodeString dirname("うううう");
+	UnicodeString filename=dirname+"/ああああ.foobar";
 	testDir(dirname);
 	testFile(filename);
 	printf("createDir:%d\n", FileSystem::createDir(dirname));

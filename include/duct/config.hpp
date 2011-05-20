@@ -78,7 +78,7 @@ namespace duct {
 */
 #if defined(DUCT_PLATFORM_WINDOWS)
 	#ifdef DUCT_DYNAMIC
-		#ifdef DUCT_EXPORTS
+		#ifdef DUCT_EXPORT
 			// Library
 			#define DUCT_API __declspec(dllexport)
 		#else

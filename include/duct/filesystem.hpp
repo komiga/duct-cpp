@@ -34,6 +34,7 @@ duct++ file system helpers.
 #include <sys/stat.h>
 #include <string>
 #include <unicode/unistr.h>
+#include <duct/config.hpp>
 #ifdef DUCT_PLATFORM_WINDOWS
 #include <duct/windows/dirent.h>
 #include <direct.h>
@@ -41,7 +42,6 @@ duct++ file system helpers.
 #else
 #include <dirent.h>
 #endif
-#include <duct/config.hpp>
 
 namespace duct {
 
@@ -151,78 +151,78 @@ namespace FileSystem {
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool statPath(const char* path, struct stat* s);
+//bool DUCT_API statPath(const char* path, struct stat* s);
 /*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool statPath(const std::string& path, struct stat* s);
+//bool DUCT_API statPath(const std::string& path, struct stat* s);
 /*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool statPath(const UnicodeString& path, struct stat* s);
+//bool DUCT_API statPath(const UnicodeString& path, struct stat* s);
 
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType pathType(const char* path);
+PathType DUCT_API pathType(const char* path);
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType pathType(const std::string& path);
+PathType DUCT_API pathType(const std::string& path);
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType pathType(const UnicodeString& path);
+PathType DUCT_API pathType(const UnicodeString& path);
 
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool dirExists(const char* path);
+bool DUCT_API dirExists(const char* path);
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool dirExists(const std::string& path);
+bool DUCT_API dirExists(const std::string& path);
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool dirExists(const UnicodeString& path);
+bool DUCT_API dirExists(const UnicodeString& path);
 
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool fileExists(const char* path);
+bool DUCT_API fileExists(const char* path);
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool fileExists(const std::string& path);
+bool DUCT_API fileExists(const std::string& path);
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool fileExists(const UnicodeString& path);
+bool DUCT_API fileExists(const UnicodeString& path);
 
 /**
 	Create the given directory path.
@@ -230,21 +230,21 @@ bool fileExists(const UnicodeString& path);
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const char* path, bool structure=false);
+bool DUCT_API createDir(const char* path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const std::string& path, bool structure=false);
+bool DUCT_API createDir(const std::string& path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool createDir(const UnicodeString& path, bool structure=false);
+bool DUCT_API createDir(const UnicodeString& path, bool structure=false);
 
 /**
 	Create the given file.
@@ -252,59 +252,59 @@ bool createDir(const UnicodeString& path, bool structure=false);
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const char* path, bool createpath=false);
+bool DUCT_API createFile(const char* path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const std::string& path, bool createpath=false);
+bool DUCT_API createFile(const std::string& path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool createFile(const UnicodeString& path, bool createpath=false);
+bool DUCT_API createFile(const UnicodeString& path, bool createpath=false);
 
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool deleteFile(const char* path);
+bool DUCT_API deleteFile(const char* path);
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool deleteFile(const std::string& path);
+bool DUCT_API deleteFile(const std::string& path);
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool deleteFile(const UnicodeString& path);
+bool DUCT_API deleteFile(const UnicodeString& path);
 
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool deleteDir(const char* path);
+bool DUCT_API deleteDir(const char* path);
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool deleteDir(const std::string& path);
+bool DUCT_API deleteDir(const std::string& path);
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool deleteDir(const UnicodeString& path);
+bool DUCT_API deleteDir(const UnicodeString& path);
 
 } // namespace FileSystem
 

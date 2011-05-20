@@ -50,8 +50,8 @@ duct++ debug functions.
 	namespace duct {
 		
 		// Debug functions
-		void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg);
-		void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg);
+		void DUCT_API __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg);
+		void DUCT_API __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg);
 		
 	} // namespace duct
 	

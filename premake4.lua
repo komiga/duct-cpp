@@ -25,6 +25,8 @@ local proj=project(name)
 proj.language="C++"
 proj.kind="SharedLib"
 
+platforms {"x32", "x64"}
+
 configuration {"debug"}
 	targetsuffix("_debug")
 	targetdir(outpath)
@@ -63,13 +65,14 @@ configuration {"vs2008"}
 		"deps/include/icu/"
 	}
 	links {"icuin", "icudt", "icuio", "icuuc"}
-	targetdir(libpath_windows)
 	
---configuration {"vs2008", "x86"}
-	libdirs {"deps/msvc/x86/icu/"}
+configuration {"vs2008", "x32"}
+	targetdir(libpath_windows.."/x86")
+	libdirs {"deps/msvc/x86/icu/lib"}
 
---configuration {"vs2008", "x64"}
---	libdirs {"deps/msvc/x64/icu/"}
+configuration {"vs2008", "x64"}
+	targetdir(libpath_windows.."/x64")
+	libdirs {"deps/msvc/x64/icu/lib"}
 
 --configuration {"vs2008", "debug"}
 --	postbuildcommands {"copy /Y "..outpath.."\\lib"..name.."_debug.dll "..libpath_windows.."\\lib"..name.."_debug.dll"}
@@ -78,6 +81,8 @@ configuration {"vs2008"}
 --	postbuildcommands {"copy /Y "..outpath.."\\lib"..name..".dll "..libpath_windows.."\\lib"..name..".dll"}
 
 configuration {}
+	-- need this on Windows; doesn't affect other platforms
+	defines {"DUCT_DYNAMIC", "DUCT_EXPORT"}
 
 files {
 	"include/duct/*.hpp",
