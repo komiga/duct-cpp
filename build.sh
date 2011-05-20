@@ -1,10 +1,25 @@
 #!/bin/bash
 
 ACTION="$1"
+BUILD="$2"
+
+# guess OS
+if [ $# -lt 2 ]; then
+	unamestr=`uname`
+	if [ "$unamestr" == "MINGW32_NT-5.1" ]; then # msysgit
+		BUILD="vs2008"
+	fi
+fi
+
+if [ -z "$BUILD" ]; then
+	BUILD="gmake"
+fi
 
 function clean_output() {
-	make config=debug clean
-	make config=release clean
+	if [ "$BUILD" == "gmake" ]; then
+		make config=debug clean
+		make config=release clean
+	fi
 	rm -rf "out"
 }
 
@@ -15,14 +30,16 @@ if [ "$ACTION" == "clean" ]; then
 fi
 
 if [ ! -f "Makefile" ]; then
-	premake4 gmake
+	premake4 $BUILD
 fi
 
-if [ -z "$ACTION" ]; then
-	make config=debug
-	make config=release
-else
-	make config="$ACTION"
+if [ "$BUILD" == "gmake" ]; then
+	if [ -z "$ACTION" ]; then
+		make config=debug
+		make config=release
+	else
+		make config="$ACTION"
+	fi
 fi
 
 #clean_output

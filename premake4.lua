@@ -1,9 +1,18 @@
 -- duct++ premake file
--- run `premake4 [--installroot=PATH] install` after building to install duct++
+-- run `premake4 [--installdebug=true|false] [--installroot=PATH] install` after building to install duct++
 
 local name="duct"
-local outpath="out/"
-local binarypath=outpath..name
+local outpath="out"
+
+-- requires premake 4.4
+--[[local bitness="x86"
+if os.is64bit() then
+	bitness="x64"
+end
+local libpath_linux="lib/linux/"..bitness
+local libpath_windows="lib/windows/"..bitness]]
+local libpath_linux="lib/linux"
+local libpath_windows="lib\\windows"
 
 if _ACTION=="clean" then
 	os.rmdir(outpath)
@@ -32,20 +41,49 @@ configuration {"release"}
 configuration {"gmake"}
 
 configuration {"linux"}
-	defines {"PLATFORM_CHECKED", "UNIX_BUILD"}
-	postbuildcommands {"mkdir -p lib/linux"}
-
+	defines {"PLATFORM_CHECKED", "UNIX_BUILD"} -- TODO: needed? I think not.
+	postbuildcommands {"mkdir -p "..libpath_linux}
+	links {"icui18n", "icudata", "icuio", "icuuc"}
+	
 configuration {"linux", "debug"}
-	postbuildcommands {"cp "..outpath.."lib"..name.."_debug.so lib/linux/lib"..name.."_debug.so"}
+	postbuildcommands {"cp "..outpath.."//lib"..name.."_debug.so "..libpath_linux.."/lib"..name.."_debug.so"}
 
 configuration {"linux", "release"}
-	postbuildcommands {"cp "..outpath.."lib"..name..".so lib/linux/lib"..name..".so"}
+	postbuildcommands {"cp "..outpath.."//lib"..name..".so "..libpath_linux.."/lib"..name..".so"}
+
+configuration {"vs2008"}
+--	postbuildcommands {"md "..libpath_windows}
+	files {
+		"src/duct/windows/*.cpp",
+		"include/duct/windows/dirent.h",
+		"src/duct/windows/dirent.c"
+	}
+	includedirs {
+		"deps/msvc/msinttypes/",
+		"deps/include/icu/"
+	}
+	links {"icuin", "icudt", "icuio", "icuuc"}
+	targetdir(libpath_windows)
+	
+--configuration {"vs2008", "x86"}
+	libdirs {"deps/msvc/x86/icu/"}
+
+--configuration {"vs2008", "x64"}
+--	libdirs {"deps/msvc/x64/icu/"}
+
+--configuration {"vs2008", "debug"}
+--	postbuildcommands {"copy /Y "..outpath.."\\lib"..name.."_debug.dll "..libpath_windows.."\\lib"..name.."_debug.dll"}
+
+--configuration {"vs2008", "release"}
+--	postbuildcommands {"copy /Y "..outpath.."\\lib"..name..".dll "..libpath_windows.."\\lib"..name..".dll"}
 
 configuration {}
 
-links {"icui18n", "icudata", "icuio", "icuuc"}
+files {
+	"include/duct/*.hpp",
+	"src/duct/*.cpp"
+}
 
-files {"include/duct/*.hpp", "src/duct/*.cpp"}
 includedirs {
 	"include/"
 }
@@ -137,9 +175,18 @@ newaction {
 		if _OPTIONS.installdebug=="true" then
 			installdebug=true
 		end
+		-- requires premake 4.4
+		--[[local bitness="x86"
+		if os.is64bit() then
+			bitness="x64"
+		end
+		local libpath_linux="lib/linux/"..bitness
+		local libpath_windows="lib/windows/"..bitness]]
+		local libpath_linux="lib/linux"
+		local libpath_windows="lib\\windows"
 		local opsys=os.get()
 		if opsys=="linux" then
-			if not os.isdir("./lib/linux") then
+			if not os.isdir(libpath_linux) then
 				print("must run build.sh first")
 				return nil
 			end
@@ -155,13 +202,13 @@ newaction {
 				os.mkdir(installroot.."/lib")
 			end
 			os.execute("rm -f "..installroot.."/lib/libduct.so")
-			if not os.copyfile("lib/linux/libduct.so", installroot.."/lib/libduct.so") then
+			if not os.copyfile(libpath_linux.."/libduct.so", installroot.."/lib/libduct.so") then
 				print("failed to copy release library")
 				return nil
 			end
 			if installdebug then
 				os.execute("rm -f "..installroot.."/lib/libduct_debug.so")
-				if not os.copyfile("lib/linux/libduct_debug.so", installroot.."/lib/libduct_debug.so") then
+				if not os.copyfile(libpath_linux.."/libduct_debug.so", installroot.."/lib/libduct_debug.so") then
 					print("failed to copy debug library")
 					return nil
 				end
