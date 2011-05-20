@@ -426,7 +426,7 @@ void ScriptParserHandler::handleToken(Token& token) {
 			if (_varname.length()>0 && _equals) {
 				int bv=Variable::stringToBool(token.toString());
 				if (bv!=-1) {
-					addVariableAndReset(_currentnode, new BoolVariable((bool)bv, _varname), false, false);
+					addVariableAndReset(_currentnode, new BoolVariable(bv!=0, _varname), false, false);
 					return;
 				} else {
 					addVariableAndReset(_currentnode, new StringVariable(token.toString(), _varname), false, false);
@@ -435,7 +435,7 @@ void ScriptParserHandler::handleToken(Token& token) {
 				makeIdentifier(&token);
 				int bv=Variable::stringToBool(token.toString());
 				if (bv!=-1) {
-					addVariableAndReset(_currentiden, new BoolVariable((bool)bv), false, false);
+					addVariableAndReset(_currentiden, new BoolVariable(bv!=0), false, false);
 					return;
 				}
 				addVariableAndReset(_currentiden, new StringVariable(token.toString()), false, false);
@@ -468,11 +468,11 @@ void ScriptParserHandler::handleToken(Token& token) {
 			break;
 		case DoubleToken:
 			if (_varname.length()>0 && _equals) {
-				_currentvalue=new FloatVariable(token.toDouble(), _varname);
+				_currentvalue=new FloatVariable((float)token.toDouble(), _varname);
 				addVariableAndReset(_currentnode, _currentvalue, false, false);
 			} else if ((_varname.length()>0 || _currentiden) && !_equals) {
 				makeIdentifier(&token);
-				addVariableAndReset(_currentiden, new FloatVariable(token.toDouble()), false, false);
+				addVariableAndReset(_currentiden, new FloatVariable((float)token.toDouble()), false, false);
 			} else {
 				//throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 				_varname.setTo(token.toString());
@@ -579,7 +579,7 @@ void ScriptParserHandler::addVariableAndReset(CollectionVariable* collection, Va
 	reset(iden, value);
 }
 
-void ScriptParserHandler::makeIdentifier(const Token* token, bool resetiden, bool resetvalue, bool force) {
+void ScriptParserHandler::makeIdentifier(const Token* /*token*/, bool resetiden, bool resetvalue, bool force) {
 	//if (_currentvalue) {
 	//	throw ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::makeIdentifier", token, NULL, "Value already defined on line");
 	if (!_currentiden || force) {
