@@ -136,9 +136,9 @@ bool __matchname(const unsigned int& mc, const StringArray* iden, const UnicodeS
 
 bool __matchvariable(const unsigned int& mc, const VTypeLayout* layout, const unsigned int& infinitism, const Variable* variable) {
 	if (layout && (mc<layout->size())) {
-		return (*layout)[mc]&variable->getType();
+		return ((*layout)[mc]&variable->getType())!=0;
 	} else if (infinitism!=VARTYPE_NONE) {
-		return infinitism&variable->getType();
+		return (infinitism&variable->getType())!=0;
 	}
 	return false;
 }
@@ -212,11 +212,11 @@ bool Template::validateValue(const ValueVariable* value) const {
 	if (value) {
 		if (_checkIden(_iden, value->getName(), _casesens)) {
 			if (_layout && _layout->size()>0) {
-				return (*_layout)[0]&value->getType();
+				return ((*_layout)[0]&value->getType())!=0;
 			}
 			// No canon types, check infinitism
 			if (_infinitism!=VARTYPE_NONE) {
-				return _infinitism&value->getType();
+				return (_infinitism&value->getType())!=0;
 			}
 		}
 	}
@@ -224,7 +224,7 @@ bool Template::validateValue(const ValueVariable* value) const {
 }
 
 unsigned int Template::compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential) const {
-	unsigned int addcount;
+	unsigned int addcount=0;
 	if (collection && collection->getChildCount()>0) {
 		_PairList pairs;
 		bool matched; //, namematched, varmatched;
@@ -265,7 +265,7 @@ unsigned int Template::compactCollection(CollectionVariable* collection, const U
 				if (mmax>0 && ((mc==mmax && (_infinitism==VARTYPE_NONE)) || (mc>0 && !(iter!=collection->end())))) {
 					//printf("(Template::CompactCollection) unmatched total mc:%d, creating identifier\n", mc);
 					__add(collection, pairs, name, addcount);
-					__reset(mc, repeatmatch, ~matched, pairs);
+					__reset(mc, repeatmatch, !matched, pairs);
 				}
 			} else if (mc>0 && sequential) {
 				//printf("(Template::CompactCollection) non-value inbetween match series mc:%d\n", mc);
