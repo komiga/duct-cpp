@@ -234,7 +234,7 @@ bool createFile(const char* path, bool createpath) {
 	/*if (createpath && !dirExists()) {
 		createDir();
 	}*/
-	int fd=_creat(path, 0);
+	int fd=_creat(path, _S_IREAD|_S_IWRITE);
 	if (fd!=-1) {
 		close(fd);
 		return true;
