@@ -5,6 +5,8 @@
 *.idb
 *.pdb
 *.obj
+*.lib
+*.exp
 *.o
 *.a
 
@@ -22,3 +24,15 @@ lib/
 *.vcproj
 *.ncb
 *.user
+
+# Keep deps/
+!deps/msvc/x86/icu/bin/*.dll
+!deps/msvc/x86/icu/lib/
+!deps/msvc/x86/icu/lib/*.lib
+!deps/msvc/x86/icu/lib/*.exp
+
+!deps/msvc/x64/icu/bin/*.dll
+!deps/msvc/x64/icu/lib/
+!deps/msvc/x64/icu/lib/*.lib
+!deps/msvc/x64/icu/lib/*.exp
+
