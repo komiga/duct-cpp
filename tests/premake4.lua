@@ -28,13 +28,19 @@ function setup_test(name, src)
 	configuration {"release"}
 		targetdir(".")
 		objdir(outpath)
-		defines{"NDEBUG", "RELEASE"}
+		defines {"NDEBUG", "RELEASE"}
 		flags {"Optimize", "ExtraWarnings"}
 		links {"duct"}
 	
-	--configuration {"gmake"}
-	--	postbuildcommands {"mkdir -p bin/"}
-	--	postbuildcommands {"cp "..execpath.." bin/"..name}
+	configuration {"linux", "x32"}
+		libdirs {
+			"../../lib/linux/x86/"
+		}
+	
+	configuration {"linux", "x64"}
+		libdirs {
+			"../../lib/linux/x64/"
+		}
 	
 	configuration {"vs2008"}
 		includedirs {
@@ -42,7 +48,7 @@ function setup_test(name, src)
 			"../../deps/include/icu/"
 		}
 		links {"icuin", "icudt", "icuio", "icuuc"}
-
+	
 	configuration {"vs2008", "x32"}
 		libdirs {
 			"../../lib/windows/x86/",
@@ -54,22 +60,15 @@ function setup_test(name, src)
 			"../../lib/windows/x64/",
 			"../../deps/msvc/x64/icu/lib/"
 		}
-
+	
 	configuration {}
-	
-	includedirs {
-		"include/",
-		"../../include/",
-		"/usr/local/include/"
-	}
-	
-	libdirs {
-		"../../lib/windows",
-		"../../lib/linux"
-	}
-	files {
-		src
-	}
+		includedirs {
+			"../../include/",
+			"/usr/local/include/"
+		}
+		files {
+			src
+		}
 end
 
 -- categories

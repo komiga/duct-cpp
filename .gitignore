@@ -16,7 +16,7 @@ docs/html/
 
 # Makefiles and build data
 Makefile
-duct.make
+*.make
 out/
 lib/
 *.sln

@@ -29,31 +29,42 @@ platforms {"x32", "x64"}
 
 configuration {"debug"}
 	targetsuffix("_debug")
-	targetdir(outpath)
 	objdir(outpath)
 	defines {"DEBUG", "_DEBUG"}
 	flags {"Symbols", "ExtraWarnings"}
 
 configuration {"release"}
-	targetdir(outpath)
 	objdir(outpath)
 	defines {"NDEBUG", "RELEASE"}
 	flags {"Optimize", "ExtraWarnings"}
 
-configuration {"gmake"}
+configuration {}
+	files {
+		"include/duct/*.hpp",
+		"src/duct/*.cpp"
+	}
+	includedirs {
+		"include/"
+	}
 
 configuration {"linux"}
-	defines {"PLATFORM_CHECKED", "UNIX_BUILD"} -- TODO: needed? I think not.
-	postbuildcommands {"mkdir -p "..libpath_linux}
+	files {
+		"src/duct/unix/*.cpp"
+	}
+--	includedirs {
+--		"deps/include/icu/"
+--	}
 	links {"icui18n", "icudata", "icuio", "icuuc"}
-	
-configuration {"linux", "debug"}
-	postbuildcommands {"cp "..outpath.."/lib"..name.."_debug.so "..libpath_linux.."/lib"..name.."_debug.so"}
 
-configuration {"linux", "release"}
-	postbuildcommands {"cp "..outpath.."/lib"..name..".so "..libpath_linux.."/lib"..name..".so"}
+configuration {"linux", "x32"}
+	targetdir(libpath_linux.."/x86")
+--	libdirs {"deps/linux/x86/icu/lib"}
 
-configuration {"vs2008"}
+configuration {"linux", "x64"}
+	targetdir(libpath_linux.."/x64")
+--	libdirs {"deps/linux/x64/icu/lib"}
+
+configuration {"windows"}
 --	postbuildcommands {"md "..libpath_windows}
 	files {
 		"src/duct/windows/*.cpp",
@@ -65,7 +76,7 @@ configuration {"vs2008"}
 		"deps/include/icu/"
 	}
 	links {"icuin", "icudt", "icuio", "icuuc"}
-	
+
 configuration {"vs2008", "x32"}
 	targetdir(libpath_windows.."/x86")
 	libdirs {"deps/msvc/x86/icu/lib"}
@@ -74,24 +85,8 @@ configuration {"vs2008", "x64"}
 	targetdir(libpath_windows.."/x64")
 	libdirs {"deps/msvc/x64/icu/lib"}
 
---configuration {"vs2008", "debug"}
---	postbuildcommands {"copy /Y "..outpath.."\\lib"..name.."_debug.dll "..libpath_windows.."\\lib"..name.."_debug.dll"}
-
---configuration {"vs2008", "release"}
---	postbuildcommands {"copy /Y "..outpath.."\\lib"..name..".dll "..libpath_windows.."\\lib"..name..".dll"}
-
-configuration {}
-	-- need this on Windows; doesn't affect other platforms
+configuration {"windows"}
 	defines {"DUCT_DYNAMIC", "DUCT_EXPORT"}
-
-files {
-	"include/duct/*.hpp",
-	"src/duct/*.cpp"
-}
-
-includedirs {
-	"include/"
-}
 
 -- extensions
 
