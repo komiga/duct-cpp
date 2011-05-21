@@ -35,8 +35,7 @@ fi
 
 if [ "$BUILD" == "gmake" ]; then
 	if [ -z "$ACTION" ]; then
-		make config=debug
-		make config=release
+		make config=all
 	else
 		make config="$ACTION"
 	fi
