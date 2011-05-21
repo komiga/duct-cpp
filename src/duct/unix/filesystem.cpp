@@ -49,22 +49,22 @@ DirStream::DirStream(const UnicodeString& path) {
 }
 
 DirStream::~DirStream() {
-	if (_inst) {
-		closedir(_inst);
-		_inst=NULL;
+	if (_dir) {
+		closedir(_dir);
+		_dir=NULL;
 		_entry=NULL;
 	}
 }
 
 bool DirStream::nextEntry() {
-	_entry=(void*)readdir(_inst);
+	_entry=readdir(_dir);
 	return _entry!=NULL;
 }
 
 bool DirStream::nextEntry(UnicodeString& result) {
-	_entry=(void*)readdir(_inst);
+	_entry=readdir(_dir);
 	if (_entry) {
-		result.setTo(UnicodeString(((struct dirent*)_entry)->d_name));
+		result.setTo(UnicodeString(_entry->d_name));
 		return true;
 	}
 	return false;
@@ -72,7 +72,7 @@ bool DirStream::nextEntry(UnicodeString& result) {
 
 bool DirStream::entryName(UnicodeString& result) const {
 	if (_entry) {
-		result.setTo(UnicodeString(((struct dirent*)_entry)->d_name));
+		result.setTo(UnicodeString(_entry->d_name));
 		return true;
 	}
 	return false;
@@ -81,7 +81,7 @@ bool DirStream::entryName(UnicodeString& result) const {
 PathType DirStream::entryType() const {
 	if (_entry) {
 		std::string temp(_path);
-		temp.append(((struct dirent*)_entry)->d_name);
+		temp.append(_entry->d_name);
 		return FileSystem::pathType(temp);
 	} else {
 		return PATHTYPE_NONE;
@@ -89,13 +89,13 @@ PathType DirStream::entryType() const {
 }
 
 bool DirStream::isOpen() const {
-	return _inst!=NULL;
+	return _dir!=NULL;
 }
 
 bool DirStream::close() {
-	if (_inst) {
-		closedir(_inst);
-		_inst=NULL;
+	if (_dir) {
+		closedir(_dir);
+		_dir=NULL;
 		return true;
 	}
 	return false;
@@ -108,7 +108,7 @@ void DirStream::init() {
 	} else if (c!='/') {
 		_path.append("/");
 	}
-	_inst=(void*)opendir(_path.c_str());
+	_dir=opendir(_path.c_str());
 }
 
 // FileSystem implementation
