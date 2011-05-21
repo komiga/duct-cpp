@@ -236,7 +236,7 @@ bool createFile(const char* path, bool createpath) {
 	}*/
 	int fd=_creat(path, _S_IREAD|_S_IWRITE);
 	if (fd!=-1) {
-		close(fd);
+		_close(fd);
 		return true;
 	}
 	return false;
