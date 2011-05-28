@@ -51,21 +51,24 @@ configuration {"linux"}
 	files {
 		"src/duct/unix/*.cpp"
 	}
---	includedirs {
---		"deps/include/icu/"
---	}
+	includedirs {
+		"deps/include/icu/"
+	}
 	links {"icui18n", "icudata", "icuio", "icuuc"}
 
 configuration {"linux", "x32"}
 	targetdir(libpath_linux.."/x86")
---	libdirs {"deps/linux/x86/icu/lib"}
+	libdirs {
+		"deps/linux/x86/icu/lib"
+	}
 
 configuration {"linux", "x64"}
 	targetdir(libpath_linux.."/x64")
---	libdirs {"deps/linux/x64/icu/lib"}
+	libdirs {
+		"deps/linux/x64/icu/lib"
+	}
 
 configuration {"windows"}
---	postbuildcommands {"md "..libpath_windows}
 	files {
 		"src/duct/windows/*.cpp",
 		"include/duct/windows/dirent.h",
@@ -76,6 +79,7 @@ configuration {"windows"}
 		"deps/include/icu/"
 	}
 	links {"icuin", "icudt", "icuio", "icuuc"}
+	defines {"DUCT_DYNAMIC", "DUCT_EXPORT"}
 
 configuration {"vs2008", "x32"}
 	targetdir(libpath_windows.."/x86")
@@ -84,10 +88,7 @@ configuration {"vs2008", "x32"}
 configuration {"vs2008", "x64"}
 	targetdir(libpath_windows.."/x64")
 	libdirs {"deps/msvc/x64/icu/lib"}
-
-configuration {"windows"}
-	defines {"DUCT_DYNAMIC", "DUCT_EXPORT"}
-
+	
 -- extensions
 
 -- src: http://industriousone.com/topic/oscopydir

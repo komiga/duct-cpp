@@ -26,8 +26,10 @@ lib/
 *.user
 
 # Dependencies
-deps/msvc/x64/icu/lib/
-deps/msvc/x64/icu/bin/
-deps/msvc/x86/icu/lib/
-deps/msvc/x86/icu/bin/
+# MSVC
+deps/msvc/x64/icu/
+deps/msvc/x86/icu/
 
+# Linux
+deps/linux/x64/icu/
+deps/linux/x86/icu/
