@@ -19,7 +19,6 @@ function clean_output() {
 	if [ "$BUILD" == "gmake" ]; then
 		make config=all clean
 	fi
-	rm -rf "out"
 }
 
 if [ "$ACTION" == "clean" ]; then
@@ -28,11 +27,19 @@ if [ "$ACTION" == "clean" ]; then
 	exit
 fi
 
+function fix_makefile() {
+	# we /don't/ want to link to the OS' version of ICU first
+	echo "sedding: $1"
+	sed -i -e 's/ -L\/usr\/lib32//g' -e 's/ -L\/usr\/lib64//g' $1
+}
+
 if [ ! -f "Makefile" ]; then
 	premake4 $BUILD
 	if [ "$BUILD" == "gmake" ]; then
-		# fix `/usr/lib`-firstness for 32-bit and 64-bit
-		sed -i -e 's/ -L\/usr\/lib32//g' -e 's/ -L\/usr\/lib64//g' duct.make
+		# fix library path order for 32-bit and 64-bit
+		echo "Removing /usr/libxx lib dirs"
+		export -f fix_makefile
+		find . -maxdepth 2 -name "*.make" -exec bash -c 'fix_makefile {}' \;
 	fi
 fi
 
