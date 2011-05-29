@@ -1,4 +1,4 @@
-duct++ is a [duct](http://duct.komiga.com) port to C++.
+duct++ is an official [duct](http://duct.komiga.com) implementation in C++.
 
 This library has only been tested on Linux (Ubuntu 10.10, 32-bit and 64-bit) and Windows (Visual Studio 2008, 32-bit). It *should* work on Mac OS.
 
