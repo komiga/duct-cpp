@@ -44,17 +44,9 @@ configuration {}
 		"src/duct/*.cpp"
 	}
 	includedirs {
-		"include/"
+		"include",
+		"deps/include/icu"
 	}
-
-configuration {"linux"}
-	files {
-		"src/duct/unix/*.cpp"
-	}
-	includedirs {
-		"deps/include/icu/"
-	}
-	links {"icui18n", "icudata", "icuio", "icuuc"}
 
 configuration {"linux", "x32"}
 	targetdir(libpath_linux.."/x86")
@@ -68,27 +60,40 @@ configuration {"linux", "x64"}
 		"deps/linux/x64/icu/lib"
 	}
 
+configuration {"linux"}
+	files {
+		"src/duct/unix/*.cpp"
+	}
+	links {
+		"icui18n", "icudata", "icuio", "icuuc"
+	}
+
+configuration {"vs2008", "x32"}
+	targetdir(libpath_windows.."/x86")
+	libdirs {
+		"deps/msvc/x86/icu/lib"
+	}
+
+configuration {"vs2008", "x64"}
+	targetdir(libpath_windows.."/x64")
+	libdirs {
+		"deps/msvc/x64/icu/lib"
+	}
+
+configuration {"vs2008"} -- no stdint.h on MSVC 9.0
+	includedirs {
+		"deps/msvc/msinttypes"
+	}
+
 configuration {"windows"}
 	files {
 		"src/duct/windows/*.cpp",
 		"include/duct/windows/dirent.h",
 		"src/duct/windows/dirent.c"
 	}
-	includedirs {
-		"deps/msvc/msinttypes/",
-		"deps/include/icu/"
-	}
 	links {"icuin", "icudt", "icuio", "icuuc"}
 	defines {"DUCT_DYNAMIC", "DUCT_EXPORT"}
 
-configuration {"vs2008", "x32"}
-	targetdir(libpath_windows.."/x86")
-	libdirs {"deps/msvc/x86/icu/lib"}
-
-configuration {"vs2008", "x64"}
-	targetdir(libpath_windows.."/x64")
-	libdirs {"deps/msvc/x64/icu/lib"}
-	
 -- extensions
 
 -- src: http://industriousone.com/topic/oscopydir
