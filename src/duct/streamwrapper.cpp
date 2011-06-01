@@ -86,6 +86,11 @@ int StreamWrapper::readInt() {
 	return _stream->readInt();
 }
 
+long StreamWrapper::readLong() {
+	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
+	return _stream->readLong();
+}
+
 float StreamWrapper::readFloat() {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->readFloat();
@@ -124,6 +129,11 @@ void StreamWrapper::writeShort(short value) {
 void StreamWrapper::writeInt(int value) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	_stream->writeInt(value);
+}
+
+void StreamWrapper::writeLong(long value) {
+	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
+	_stream->writeLong(value);
 }
 
 void StreamWrapper::writeFloat(float value) {

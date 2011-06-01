@@ -81,6 +81,12 @@ int Stream::readInt() {
 	return i;
 }
 
+long Stream::readLong() {
+	long l;
+	read(&l, 8);
+	return l;
+}
+
 float Stream::readFloat() {
 	float f;
 	read(&f, 4);
@@ -198,6 +204,10 @@ void Stream::writeShort(short value) {
 
 void Stream::writeInt(int value) {
 	write(&value, 4);
+}
+
+void Stream::writeLong(long value) {
+	write(&value, 8);
 }
 
 void Stream::writeFloat(float value) {

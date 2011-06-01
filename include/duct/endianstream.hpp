@@ -52,10 +52,12 @@ public:
 	
 	virtual short readShort();
 	virtual int readInt();
+	virtual long readLong();
 	virtual float readFloat();
 	
 	virtual void writeShort(short value);
 	virtual void writeInt(int value);
+	virtual void writeLong(long value);
 	virtual void writeFloat(float value);
 	
 protected:
