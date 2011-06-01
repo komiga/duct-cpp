@@ -75,6 +75,7 @@ end
 
 -- categories
 
+include "archive"
 include "arghandling"
 include "charutils"
 include "csv"
