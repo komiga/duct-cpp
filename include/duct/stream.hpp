@@ -98,6 +98,11 @@ public:
 	*/
 	virtual int readInt();
 	/**
+		Read a long from the stream.
+		@returns The value read from the stream.
+	*/
+	virtual long readLong();
+	/**
 		Read a float from the stream.
 		@returns The value read from the stream.
 	*/
@@ -152,6 +157,12 @@ public:
 		@param value The integer to write to the stream.
 	*/
 	virtual void writeInt(int value);
+	/**
+		Write a long to the stream.
+		@returns Nothing.
+		@param value The long to write to the stream.
+	*/
+	virtual void writeLong(long value);
 	/**
 		Write a float to the stream.
 		@returns Nothing.

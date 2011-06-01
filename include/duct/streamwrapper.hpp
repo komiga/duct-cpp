@@ -87,6 +87,7 @@ public:
 	virtual char readByte();
 	virtual short readShort();
 	virtual int readInt();
+	virtual long readLong();
 	virtual float readFloat();
 	
 	virtual UChar32 readChar();
@@ -97,6 +98,7 @@ public:
 	virtual void writeByte(char value);
 	virtual void writeShort(short value);
 	virtual void writeInt(int value);
+	virtual void writeLong(long value);
 	virtual void writeFloat(float value);
 	
 	virtual size_t writeChar16(UChar value);
