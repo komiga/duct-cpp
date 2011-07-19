@@ -224,7 +224,9 @@ void ScriptParser::readNumberToken() {
 				readStringToken();
 				return;
 			}
-		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
+		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
+				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE
+				|| _curchar==CHAR_EQUALSIGN) {
 			break;
 		} else if (_numberset.contains(_curchar)) {
 			_token.addChar(_curchar);
@@ -255,7 +257,9 @@ void ScriptParser::readDoubleToken() {
 				readStringToken();
 				return;
 			}
-		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar) || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
+		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
+				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE
+				|| _curchar==CHAR_EQUALSIGN) {
 			break;
 		} else if (_numberset.contains(_curchar)) {
 			_token.addChar(_curchar);
@@ -282,7 +286,7 @@ void ScriptParser::readStringToken() {
 			}
 		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
 				|| (_curchar==CHAR_SLASH && (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK))
-				|| _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
+				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
 			break;
 		} else {
 			_token.addChar(_curchar);
@@ -506,6 +510,8 @@ void ScriptParserHandler::handleToken(Token& token) {
 			} else {
 				if (_currentiden) {
 					reset(true, true);
+				} else if (_varname.length()>0) { // brace acts terminatively on a yet-realized identifier
+					makeIdentifier(NULL, true, true, true);
 				}
 				_currentnode=(Node*)_currentnode->getParent();
 			}
