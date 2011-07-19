@@ -26,6 +26,7 @@ as well" {
 	Named {Alloc 22}
 	Named2 {"Make cookies"}
 	{notnamed 84.002}
+	a{bc} // Open-brace is terminative on names
 }
 
 foobar "Multiline
