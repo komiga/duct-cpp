@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "-- in clean.sh"
+
 files=$(find . -maxdepth 2 -type f -name \*.cpp)
 
 for file in $files
