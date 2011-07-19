@@ -27,6 +27,10 @@ THE SOFTWARE.
 // class Archive inline implementation
 
 inline
+Archive::Archive() : _stream(NULL), _readable(false), _writeable(false) {
+}
+
+inline
 Archive::Archive(const icu::UnicodeString& path) : _stream(NULL), _path(path), _readable(false), _writeable(false) {
 }
 
