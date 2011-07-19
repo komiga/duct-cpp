@@ -70,6 +70,10 @@ class Entry;
 class DUCT_API Archive {
 public:
 	/**
+		Constructor.
+	*/
+	inline Archive();
+	/**
 		Constructor with path.
 	*/
 	inline Archive(const icu::UnicodeString& path);
