@@ -174,6 +174,41 @@ bool changeDir(const UnicodeString& path) {
 	return changeDir(str.c_str());
 }
 
+bool getWorkingDir(UnicodeString& result) {
+	char* buffer=getcwd(NULL, 0);
+	if (buffer!=NULL) {
+		UnicodeString temp(buffer);
+		result.setTo(temp);
+		free(buffer);
+		return true;
+	}
+	return false;
+}
+
+uint64_t getFileSize(const char* path) {
+	struct stat s;
+	if (statPath(path, &s)) {
+		return s.st_size;
+	}
+	return 0;
+}
+
+uint64_t getFileSize(const std::string& path) {
+	struct stat s;
+	if (statPath(path, &s)) {
+		return s.st_size;
+	}
+	return 0;
+}
+
+uint64_t getFileSize(const UnicodeString& path) {
+	struct stat s;
+	if (statPath(path, &s)) {
+		return s.st_size;
+	}
+	return 0;
+}
+
 bool dirExists(const char* path) {
 	struct stat s;
 	if (statPath(path, &s)) {
