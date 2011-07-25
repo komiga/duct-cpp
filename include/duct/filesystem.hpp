@@ -187,6 +187,25 @@ PathType DUCT_API pathType(const std::string& path);
 PathType DUCT_API pathType(const UnicodeString& path);
 
 /**
+	Change the current working directory.
+	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
+	@param path The path to change to.
+*/
+bool DUCT_API changeDir(const char* path);
+/**
+	Change the current working directory.
+	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
+	@param path The path to change to.
+*/
+bool DUCT_API changeDir(const std::string& path);
+/**
+	Change the current working directory.
+	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
+	@param path The path to change to.
+*/
+bool DUCT_API changeDir(const UnicodeString& path);
+
+/**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.

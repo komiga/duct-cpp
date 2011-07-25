@@ -160,6 +160,23 @@ PathType pathType(const UnicodeString& path) {
 	}
 }
 
+bool changeDir(const char* path) {
+	if (_chdir(path)==0) {
+		return true;
+	}
+	return false;
+}
+
+bool changeDir(const std::string& path) {
+	return changeDir(path.c_str());
+}
+
+bool changeDir(const UnicodeString& path) {
+	std::string str;
+	path.toUTF8String(str);
+	return changeDir(str.c_str());
+}
+
 bool dirExists(const char* path) {
 	struct _stat s;
 	if (statPath(path, &s)) {

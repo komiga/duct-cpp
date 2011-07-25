@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "-- in clean.sh"
+#echo "-- in clean_binaries.sh"
 
 files=$(find . -maxdepth 2 -type f -name \*.cpp)
 
