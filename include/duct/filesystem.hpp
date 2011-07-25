@@ -206,6 +206,33 @@ bool DUCT_API changeDir(const std::string& path);
 bool DUCT_API changeDir(const UnicodeString& path);
 
 /**
+	Get the current working directory.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	@param result The string to place the result in.
+*/
+bool DUCT_API getWorkingDir(UnicodeString& result);
+
+/**
+	Get the filesize of the given file.
+	@returns The size of the given file.
+	@param path The file path.
+*/
+uint64_t DUCT_API getFileSize(const char* path);
+/**
+	Get the filesize of the given file.
+	@returns The size of the given file.
+	@param path The file path.
+*/
+uint64_t DUCT_API getFileSize(const std::string& path);
+/**
+	Get the filesize of the given file.
+	@returns The size of the given file.
+	@param path The file path.
+*/
+uint64_t DUCT_API getFileSize(const UnicodeString& path);
+
+/**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
