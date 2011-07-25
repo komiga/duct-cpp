@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <duct/debug.hpp>
 #include <duct/filesystem.hpp>
 
@@ -154,6 +155,23 @@ PathType pathType(const UnicodeString& path) {
 	} else {
 		return PATHTYPE_NONE;
 	}
+}
+
+bool changeDir(const char* path) {
+	if (chdir(path)==0) {
+		return true;
+	}
+	return false;
+}
+
+bool changeDir(const std::string& path) {
+	return changeDir(path.c_str());
+}
+
+bool changeDir(const UnicodeString& path) {
+	std::string str;
+	path.toUTF8String(str);
+	return changeDir(str.c_str());
 }
 
 bool dirExists(const char* path) {
