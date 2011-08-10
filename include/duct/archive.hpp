@@ -259,7 +259,7 @@ public:
 		Get the entry's data offset.
 		@returns the entry's data offset.
 	*/
-	inline size_t getDataOffset() const;
+	inline uint64_t getDataOffset() const;
 	/**
 		Get the entry's data size.
 		@returns The entry's data size.
@@ -332,9 +332,9 @@ public:
 	
 protected:
 	bool _opened;
-	unsigned short _flags;
-	size_t _dataoffset;
-	size_t _datasize;
+	uint16_t _flags;
+	uint64_t _dataoffset;
+	uint32_t _datasize;
 };
 
 #include <duct/inline/archive.inl>

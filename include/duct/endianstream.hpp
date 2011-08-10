@@ -38,6 +38,7 @@ namespace duct {
 
 /**
 	Endian stream.
+	Note that only fixed-size read/write methods will use endian switching.
 */
 class DUCT_API EndianStream : public StreamWrapper {
 public:
@@ -45,25 +46,32 @@ public:
 		Constructor with stream.
 		Automatically closing the wrapped stream is on by default.
 		@param stream The stream to wrap.
-		@param autoclose See setAutoClose(). Default is true.
-		@param order Byte order. Default is DUCT_LITTLE_ENDIAN.
+		@param autoclose See setAutoClose().
+		@param order Byte order of the stream.
 	*/
 	EndianStream(Stream* stream, bool autoclose=true, int order=DUCT_LITTLE_ENDIAN);
 	
-	virtual short readShort();
-	virtual int readInt();
-	virtual long readLong();
+	virtual int16_t readInt16();
+	virtual uint16_t readUInt16();
+	virtual int32_t readInt32();
+	virtual uint32_t readUInt32();
+	virtual int64_t readInt64();
+	virtual uint64_t readUInt64();
 	virtual float readFloat();
+	virtual double readDouble();
 	
-	virtual void writeShort(short value);
-	virtual void writeInt(int value);
-	virtual void writeLong(long value);
-	virtual void writeFloat(float value);
+	virtual size_t writeInt16(int16_t value);
+	virtual size_t writeUInt16(uint16_t value);
+	virtual size_t writeInt32(int32_t value);
+	virtual size_t writeUInt32(uint32_t value);
+	virtual size_t writeInt64(int64_t value);
+	virtual size_t writeUInt64(uint64_t value);
+	virtual size_t writeFloat(float value);
+	virtual size_t writeDouble(double value);
 	
 protected:
 	/** Byte order. */
 	int _order;
-	
 };
 
 } // namespace duct

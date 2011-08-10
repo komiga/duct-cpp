@@ -31,29 +31,6 @@ THE SOFTWARE.
 
 namespace duct {
 
-// stream ByteSink for writing a UnicodeString as UTF8
-
-/*class _UTF8ByteSink : public ByteSink {
-public:
-	_UTF8ByteSink(Stream* stream) {
-		__stream=stream;
-		__size=0;
-	}
-	
-	void Append(const char* bytes, int32_t n) {
-		__stream->write((void*)bytes, (size_t)n);
-		__size+=n;
-	}
-	
-	size_t size() {
-		return __size;
-	}
-	
-private:
-	Stream* __stream;
-	size_t __size;
-};*/
-
 // class Stream implementation
 
 Stream::Stream() : _conv(NULL) {
@@ -63,34 +40,64 @@ Stream::~Stream() {
 	closeConv();
 }
 
-char Stream::readByte() {
-	char c;
-	read(&c, 1);
-	return c;
+int8_t Stream::readInt8() {
+	int8_t v;
+	read(v);
+	return v;
 }
 
-short Stream::readShort() {
-	short s;
-	read(&s, 2);
-	return s;
+uint8_t Stream::readUInt8() {
+	uint8_t v;
+	read(v);
+	return v;
 }
 
-int Stream::readInt() {
-	int i;
-	read(&i, 4);
-	return i;
+int16_t Stream::readInt16() {
+	int16_t v;
+	read(v);
+	return v;
 }
 
-long Stream::readLong() {
-	long l;
-	read(&l, 8);
-	return l;
+uint16_t Stream::readUInt16() {
+	uint16_t v;
+	read(v);
+	return v;
+}
+
+int32_t Stream::readInt32() {
+	int32_t v;
+	read(v);
+	return v;
+}
+
+uint32_t Stream::readUInt32() {
+	uint32_t v;
+	read(v);
+	return v;
+}
+
+int64_t Stream::readInt64() {
+	int64_t v;
+	read(v);
+	return v;
+}
+
+uint64_t Stream::readUInt64() {
+	uint64_t v;
+	read(v);
+	return v;
 }
 
 float Stream::readFloat() {
-	float f;
-	read(&f, 4);
-	return f;
+	float v;
+	read(v);
+	return v;
+}
+
+double Stream::readDouble() {
+	double v;
+	read(v);
+	return v;
 }
 
 UChar32 Stream::readChar() {
@@ -194,24 +201,44 @@ size_t Stream::readCString(UnicodeString& str, size_t maxlength) {
 	return (size_t)(pos()-bpos);
 }
 
-void Stream::writeByte(char value) {
-	write(&value, 1);
+size_t Stream::writeInt8(int8_t value) {
+	return write(value);
 }
 
-void Stream::writeShort(short value) {
-	write(&value, 2);
+size_t Stream::writeUInt8(uint8_t value) {
+	return write(value);
 }
 
-void Stream::writeInt(int value) {
-	write(&value, 4);
+size_t Stream::writeInt16(int16_t value) {
+	return write(value);
 }
 
-void Stream::writeLong(long value) {
-	write(&value, 8);
+size_t Stream::writeUInt16(uint16_t value) {
+	return write(value);
 }
 
-void Stream::writeFloat(float value) {
-	write(&value, 4);
+size_t Stream::writeInt32(int32_t value) {
+	return write(value);
+}
+
+size_t Stream::writeUInt32(uint32_t value) {
+	return write(value);
+}
+
+size_t Stream::writeInt64(int64_t value) {
+	return write(value);
+}
+
+size_t Stream::writeUInt64(uint64_t value) {
+	return write(value);
+}
+
+size_t Stream::writeFloat(float value) {
+	return write(value);
+}
+
+size_t Stream::writeDouble(double value) {
+	return write(value);
 }
 
 size_t Stream::writeChar16(UChar value) {

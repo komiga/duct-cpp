@@ -84,22 +84,32 @@ public:
 	virtual size_t read(void* data, size_t size);
 	virtual size_t write(const void* data, size_t size);
 	
-	virtual char readByte();
-	virtual short readShort();
-	virtual int readInt();
-	virtual long readLong();
+	virtual int8_t readInt8();
+	virtual uint8_t readUInt8();
+	virtual int16_t readInt16();
+	virtual uint16_t readUInt16();
+	virtual int32_t readInt32();
+	virtual uint32_t readUInt32();
+	virtual int64_t readInt64();
+	virtual uint64_t readUInt64();
 	virtual float readFloat();
+	virtual double readDouble();
 	
 	virtual UChar32 readChar();
 	virtual size_t readString(UnicodeString& str, size_t length);
 	virtual size_t readLine(UnicodeString& str);
 	virtual size_t readCString(UnicodeString& str, size_t maxlength);
 	
-	virtual void writeByte(char value);
-	virtual void writeShort(short value);
-	virtual void writeInt(int value);
-	virtual void writeLong(long value);
-	virtual void writeFloat(float value);
+	virtual size_t writeInt8(int8_t value);
+	virtual size_t writeUInt8(uint8_t value);
+	virtual size_t writeInt16(int16_t value);
+	virtual size_t writeUInt16(uint16_t value);
+	virtual size_t writeInt32(int32_t value);
+	virtual size_t writeUInt32(uint32_t value);
+	virtual size_t writeInt64(int64_t value);
+	virtual size_t writeUInt64(uint64_t value);
+	virtual size_t writeFloat(float value);
+	virtual size_t writeDouble(double value);
 	
 	virtual size_t writeChar16(UChar value);
 	virtual size_t writeChar32(UChar32 value);
@@ -130,7 +140,6 @@ protected:
 	Stream* _stream;
 	/** Used to tell the destructor to close the wrapped stream. */
 	bool _autoclose;
-	
 };
 
 } // namespace duct

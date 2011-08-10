@@ -114,7 +114,7 @@ void Entry::setCompressed(bool compressed) {
 }
 
 inline
-size_t Entry::getDataOffset() const {
+uint64_t Entry::getDataOffset() const {
 	return _dataoffset;
 }
 

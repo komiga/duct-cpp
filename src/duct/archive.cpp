@@ -124,16 +124,16 @@ bool Archive::serialize() {
 // class Entry implementation
 
 bool Entry::deserialize(Stream* stream) {
-	_flags=(unsigned short)stream->readShort();
-	_dataoffset=(size_t)stream->readLong();
-	_datasize=(unsigned int)stream->readInt();
+	_flags=stream->readUInt16();
+	_dataoffset=stream->readUInt64();
+	_datasize=stream->readUInt32();
 	return deserializeUserspace(stream);
 }
 
 bool Entry::serialize(Stream* stream) {
-	stream->writeShort(_flags);
-	stream->writeLong(_dataoffset);
-	stream->writeInt(_datasize);
+	stream->writeUInt16(_flags);
+	stream->writeUInt64(_dataoffset);
+	stream->writeUInt32(_datasize);
 	return serializeUserspace(stream);
 }
 

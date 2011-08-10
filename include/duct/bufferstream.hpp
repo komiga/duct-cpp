@@ -77,7 +77,6 @@ protected:
 	void* _buffer;			// Buffer
 	unsigned long _pos;		// Stream position
 	size_t _size;			// Stream size
-	
 };
 
 } // namespace duct
