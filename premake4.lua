@@ -167,6 +167,16 @@ newoption {
 	}
 }
 
+newoption {
+	trigger="installbuild",
+	description="Which build to install",
+	value="x86|x64",
+	allowed={
+		{"x86", "Install the 32-bit build"},
+		{"x64", "Install the 64-bit build"}
+	}
+}
+
 newaction {
 	trigger="install",
 	description="Install duct++",
@@ -181,15 +191,28 @@ newaction {
 		if _OPTIONS.installdebug=="true" then
 			installdebug=true
 		end
-		-- requires premake 4.4
-		--[[local bitness="x86"
-		if os.is64bit() then
-			bitness="x64"
+		local installroot=_OPTIONS.installroot
+		if not installroot then
+			installroot="/usr/local"
 		end
+		-- requires premake 4.4
+		local bitness=_OPTIONS.installbuild
+		if not bitness then
+			if _PREMAKE_VERSION>="4.4" then
+				if os.is64bit() then
+					bitness="x64"
+				else
+					bitness="x86"
+				end
+			else
+				bitness="x86"
+			end
+		end
+		print("installing "..bitness.." build")
 		local libpath_linux="lib/linux/"..bitness
-		local libpath_windows="lib/windows/"..bitness]]
-		local libpath_linux="lib/linux"
-		local libpath_windows="lib\\windows"
+		local libpath_windows="lib/windows/"..bitness
+		--[[local libpath_linux="lib/linux"
+		local libpath_windows="lib\\windows"]]
 		local opsys=os.get()
 		if opsys=="linux" then
 			if not os.isdir(libpath_linux) then
@@ -200,7 +223,7 @@ newaction {
 				os.mkdir(installroot)
 			end
 			os.rmdir(installroot.."/include/duct")
-			if not os.copydir("include", installroot.."/include", "**.hpp") then
+			if not os.copydir("include", installroot.."/include", "**.hpp") or not os.copydir("include", installroot.."/include", "**.inl") then
 				printf("failed to copy includes")
 				return nil
 			end
@@ -212,7 +235,7 @@ newaction {
 				print("failed to copy release library")
 				return nil
 			end
-			if installdebug then
+			if installdebug==true then
 				os.execute("rm -f "..installroot.."/lib/libduct_debug.so")
 				if not os.copyfile(libpath_linux.."/libduct_debug.so", installroot.."/lib/libduct_debug.so") then
 					print("failed to copy debug library")
