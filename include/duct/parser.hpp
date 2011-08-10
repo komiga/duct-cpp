@@ -318,6 +318,10 @@ protected:
 class DUCT_API ParserHandler {
 public:
 	/**
+		Constructor.
+	*/
+	ParserHandler();
+	/**
 		Destructor.
 	*/
 	virtual ~ParserHandler();

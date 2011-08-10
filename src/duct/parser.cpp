@@ -217,6 +217,8 @@ bool Parser::skipToEOL() {
 
 // class ParserHandler implementation
 
+ParserHandler::ParserHandler() {/* Do nothing */}
+
 ParserHandler::~ParserHandler() {/* Do nothing */}
 
 } // namespace duct

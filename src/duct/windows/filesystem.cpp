@@ -189,7 +189,7 @@ bool getWorkingDir(UnicodeString& result) {
 }
 
 uint64_t getFileSize(const char* path) {
-	struct stat s;
+	struct _stat s;
 	if (statPath(path, &s)) {
 		return s.st_size;
 	}
@@ -197,7 +197,7 @@ uint64_t getFileSize(const char* path) {
 }
 
 uint64_t getFileSize(const std::string& path) {
-	struct stat s;
+	struct _stat s;
 	if (statPath(path, &s)) {
 		return s.st_size;
 	}
@@ -205,7 +205,7 @@ uint64_t getFileSize(const std::string& path) {
 }
 
 uint64_t getFileSize(const UnicodeString& path) {
-	struct stat s;
+	struct _stat s;
 	if (statPath(path, &s)) {
 		return s.st_size;
 	}
