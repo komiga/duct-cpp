@@ -51,7 +51,7 @@ void MyArchive::clear() {
 
 bool MyArchive::deserializeUserspace() {
 	// no special data
-	unsigned int entrycount=(unsigned int)_stream->readInt();
+	unsigned int entrycount=_stream->readUInt32();
 	for (unsigned int i=0; i<entrycount; ++i) {
 		MyEntry* e=new MyEntry();
 		if (!e->deserialize(_stream)) {
@@ -65,7 +65,7 @@ bool MyArchive::deserializeUserspace() {
 
 bool MyArchive::serializeUserspace() {
 	// no special data
-	_stream->writeInt(getCount());
+	_stream->writeUInt32(getCount());
 	MyEntryList::iterator iter;
 	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
 		if (!(*iter)->serialize(_stream)) {
@@ -143,7 +143,7 @@ void MyEntry::close() {
 }
 
 bool MyEntry::deserializeUserspace(duct::Stream* stream) {
-	unsigned short len=(unsigned short)stream->readShort();
+	uint16_t len=stream->readUInt16();
 	char* buf=(char*)malloc(len);
 	debug_assertp(buf, this, "unable to allocate string buffer");
 	stream->read(buf, len);
@@ -155,7 +155,7 @@ bool MyEntry::deserializeUserspace(duct::Stream* stream) {
 bool MyEntry::serializeUserspace(duct::Stream* stream) {
 	std::string temp;
 	_path.toUTF8String(temp);
-	stream->writeShort((unsigned short)temp.size());
+	stream->writeUInt16((uint16_t)temp.size());
 	stream->write(temp.data(), temp.size());
 	return true;
 }
@@ -182,7 +182,7 @@ void MyEntry::load(const icu::UnicodeString& path) {
 	_path.setTo(path);
 	duct::FileStream* stream=duct::FileStream::openFile(_path, true, false);
 	if (stream) {
-		_datasize=(unsigned int)stream->size();
+		_datasize=(uint32_t)stream->size();
 		_data=(char*)malloc(_datasize);
 		stream->read(_data, _datasize);
 		delete stream;

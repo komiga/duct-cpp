@@ -145,7 +145,7 @@ private:
 */
 namespace FileSystem {
 
-/**
+/*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.

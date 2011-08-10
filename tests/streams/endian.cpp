@@ -11,20 +11,22 @@ using namespace duct;
 int main() {
 	{
 		FileStream out("data/littleendian", false, true);
-		out.writeShort(0xa0b0);
+		out.writeInt16(0xa0b0);
 		{
 			EndianStream stream(&out, false, DUCT_LITTLE_ENDIAN);
-			stream.writeShort(0xa1b1);
-			stream.writeInt(0xa2b2c2d2);
+			stream.writeInt16(0xa1b1);
+			stream.writeInt32(0xa2b2c2d2);
+			stream.writeFloat(12.34f);
 		}
 	}
 	{
 		FileStream out("data/bigendian", false, true);
-		out.writeShort(0xa0b0);
+		out.writeInt16(0xa0b0);
 		{
 			EndianStream stream(&out, false, DUCT_BIG_ENDIAN);
-			stream.writeShort(0xa1b1);
-			stream.writeInt(0xa2b2c2d2);
+			stream.writeInt16(0xa1b1);
+			stream.writeInt32(0xa2b2c2d2);
+			stream.writeFloat(12.34f);
 		}
 	}
 	return 0;

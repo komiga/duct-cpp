@@ -63,6 +63,9 @@ public:
 		This will set the _conv field to NULL.
 	*/
 	Stream();
+	/**
+		Destructor.
+	*/
 	virtual ~Stream();
 	
 	/**
@@ -83,30 +86,57 @@ public:
 	virtual size_t write(const void* data, size_t size)=0;
 	
 	/**
-		Read a byte from the stream.
+		Read an 8-bit integer from the stream.
 		@returns The value read from the stream.
 	*/
-	virtual char readByte();
+	virtual int8_t readInt8();
 	/**
-		Read a short from the stream.
+		Read an unsigned 8-bit integer from the stream.
 		@returns The value read from the stream.
 	*/
-	virtual short readShort();
+	virtual uint8_t readUInt8();
 	/**
-		Read an integer from the stream.
+		Read a 16-bit integer from the stream.
 		@returns The value read from the stream.
 	*/
-	virtual int readInt();
+	virtual int16_t readInt16();
 	/**
-		Read a long from the stream.
+		Read an unsigned 16-bit integer from the stream.
 		@returns The value read from the stream.
 	*/
-	virtual long readLong();
+	virtual uint16_t readUInt16();
+	/**
+		Read a 32-bit integer from the stream.
+		@returns The value read from the stream.
+	*/
+	virtual int32_t readInt32();
+	/**
+		Read an unsigned 32-bit integer from the stream.
+		@returns The value read from the stream.
+	*/
+	virtual uint32_t readUInt32();
+	/**
+		Read a 64-bit integer from the stream.
+		@returns The value read from the stream.
+	*/
+	virtual int64_t readInt64();
+	/**
+		Read an unsigned 64-bit integer from the stream.
+		@returns The value read from the stream.
+	*/
+	virtual uint64_t readUInt64();
 	/**
 		Read a float from the stream.
+		The size of a float depends on the compiler/architecture.
 		@returns The value read from the stream.
 	*/
 	virtual float readFloat();
+	/**
+		Read a double from the stream.
+		The size of a double depends on the compiler/architecture.
+		@returns The value read from the stream.
+	*/
+	virtual double readDouble();
 	
 	/**
 		Read a code point from the stream.
@@ -140,35 +170,77 @@ public:
 	virtual size_t readCString(UnicodeString& str, size_t maxlength);
 	
 	/**
-		Write a byte to the stream.
-		@returns Nothing.
-		@param value The byte to write to the stream.
+		Write an 8-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
 	*/
-	virtual void writeByte(char value);
+	virtual size_t writeInt8(int8_t value);
 	/**
-		Write a short to the stream.
-		@returns Nothing.
-		@param value The short to write to the stream.
+		Write an unsigned 8-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
 	*/
-	virtual void writeShort(short value);
+	virtual size_t writeUInt8(uint8_t value);
 	/**
-		Write a integer to the stream.
-		@returns Nothing.
-		@param value The integer to write to the stream.
+		Write a 16-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
 	*/
-	virtual void writeInt(int value);
+	virtual size_t writeInt16(int16_t value);
 	/**
-		Write a long to the stream.
-		@returns Nothing.
-		@param value The long to write to the stream.
+		Write an unsigned 16-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
 	*/
-	virtual void writeLong(long value);
+	virtual size_t writeUInt16(uint16_t value);
+	/**
+		Write a 32-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
+	*/
+	virtual size_t writeInt32(int32_t value);
+	/**
+		Write an unsigned 32-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
+	*/
+	virtual size_t writeUInt32(uint32_t value);
+	/**
+		Write an 64-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
+	*/
+	virtual size_t writeInt64(int64_t value);
+	/**
+		Write an unsigned 64-bit integer to the stream.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write.
+	*/
+	virtual size_t writeUInt64(uint64_t value);
 	/**
 		Write a float to the stream.
-		@returns Nothing.
-		@param value The float to write to the stream.
+		The size of a float depends on the compiler/architecture.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write to the stream.
 	*/
-	virtual void writeFloat(float value);
+	virtual size_t writeFloat(float value);
+	/**
+		Write a double to the stream.
+		The size of a double depends on the compiler/architecture.
+		If the return value is not the size of the value, then an error occurred (likely end-of-stream).
+		@returns The number of bytes written.
+		@param value The value to write to the stream.
+	*/
+	virtual size_t writeDouble(double value);
 	
 	/**
 		Write a code unit to the stream.
@@ -214,7 +286,6 @@ public:
 		@param maxlength Optional max-length for reading the C string. If maxlength is greater than 0, it will be used as the maximum length for reading the C string, otherwise the given string's length will be used (plus one for the null character).
 	*/
 	bool readAndMatchCString(const UnicodeString& checkstr, size_t maxlength=0);
-
 	/**
 		Read a reserved-space null-terminated string.
 		@returns Nothing.
@@ -222,7 +293,6 @@ public:
 		@param size The size of the reserved space.
 	*/
 	void readReservedCString(UnicodeString& result, size_t size);
-
 	/**
 		Read a reserved-space null-terminated string (limited size string) and compare the given string against it.
 		@returns true if the given string matched the read string, or false if they did not match.
@@ -230,7 +300,6 @@ public:
 		@param size The size of the reserved space.
 	*/
 	bool readAndMatchReservedCString(const UnicodeString& checkstr, size_t size);
-
 	/**
 		Write reserved-area data.
 		@returns Nothing.
@@ -238,7 +307,6 @@ public:
 		@param padvalue The value with which to pad the space.
 	*/
 	void writeReservedData(size_t size, unsigned char padvalue);
-
 	/**
 		Write the given string as a null-terminated string with reserved-area padding.
 		@returns Nothing.
@@ -327,6 +395,26 @@ public:
 	*/
 	virtual void closeConv();
 	
+private:
+	/**
+		Read an element by size.
+		This is an alias for read(&element, sizeof(_elem_t)).
+		If the return value is not the size of the element, then an error occurred (likely end-of-stream).
+		@returns The number of bytes read, which mightn't be the size of the element.
+		@param element Reference to the element to read into.
+	*/
+	template <typename _elem_t>
+	inline size_t read(_elem_t& element);
+	/**
+		Write the given element by size.
+		This is an alias for write(&element, sizeof(_elem_t)).
+		If the return value is not the size of the element, then an error occurred (likely end-of-stream).
+		@returns The number of bytes read, which mightn't be the size of the element.
+		@param element Reference to the element to write.
+	*/
+	template <typename _elem_t>
+	inline size_t write(const _elem_t& element);
+	
 protected:
 	/**
 		Stream flags (readable, writeable, etc.)
@@ -337,8 +425,9 @@ protected:
 		Character converter for string reading/writing.
 	*/
 	UConverter* _conv;
-	
 };
+
+#include <duct/inline/stream.inl>
 
 } // namespace duct
 

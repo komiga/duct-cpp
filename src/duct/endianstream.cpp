@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <algorithm>
 #include <duct/debug.hpp>
 #include <duct/endianstream.hpp>
 
@@ -34,72 +35,143 @@ EndianStream::EndianStream(Stream* stream, bool autoclose, int order) : _order(o
 	_autoclose=autoclose;
 }
 
-short EndianStream::readShort() {
+int16_t EndianStream::readInt16() {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
-	short s=_stream->readShort();
+	int16_t v=_stream->readInt16();
 	if (_order!=DUCT_BYTEORDER) {
-		s=bswap_16(s);
+		v=bswap_16(v);
 	}
-	return s;
+	return v;
 }
 
-int EndianStream::readInt() {
+uint16_t EndianStream::readUInt16() {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
-	int i=_stream->readInt();
+	uint16_t v=_stream->readUInt16();
 	if (_order!=DUCT_BYTEORDER) {
-		i=bswap_32(i);
+		v=bswap_16(v);
 	}
-	return i;
+	return v;
 }
 
-long EndianStream::readLong() {
+int32_t EndianStream::readInt32() {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
-	long l=_stream->readLong();
+	int32_t v=_stream->readInt32();
 	if (_order!=DUCT_BYTEORDER) {
-		l=bswap_64(l);
+		v=bswap_32(v);
 	}
-	return l;
+	return v;
+}
+
+uint32_t EndianStream::readUInt32() {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	uint32_t v=_stream->readUInt32();
+	if (_order!=DUCT_BYTEORDER) {
+		v=bswap_32(v);
+	}
+	return v;
+}
+
+int64_t EndianStream::readInt64() {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	int64_t v=_stream->readInt64();
+	if (_order!=DUCT_BYTEORDER) {
+		v=bswap_64(v);
+	}
+	return v;
+}
+
+uint64_t EndianStream::readUInt64() {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	uint64_t v=_stream->readUInt64();
+	if (_order!=DUCT_BYTEORDER) {
+		v=bswap_64(v);
+	}
+	return v;
 }
 
 float EndianStream::readFloat() {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
-	float f=_stream->readFloat();
+	float v=_stream->readFloat();
 	if (_order!=DUCT_BYTEORDER) {
-		f=(float)bswap_32((unsigned int)f);
+		char& b=reinterpret_cast<char&>(v);
+		std::reverse(&b, &b+sizeof(float));
 	}
-	return f;
+	return v;
 }
 
-void EndianStream::writeShort(short value) {
+double EndianStream::readDouble() {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	double v=_stream->readDouble();
+	if (_order!=DUCT_BYTEORDER) {
+		char& b=reinterpret_cast<char&>(v);
+		std::reverse(&b, &b+sizeof(double));
+	}
+	return v;
+}
+
+size_t EndianStream::writeInt16(int16_t value) {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
 	if (_order!=DUCT_BYTEORDER) {
 		value=bswap_16(value);
 	}
-	_stream->writeShort(value);
+	return _stream->writeInt16(value);
 }
 
-void EndianStream::writeInt(int value) {
+size_t EndianStream::writeUInt16(uint16_t value) {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	if (_order!=DUCT_BYTEORDER) {
+		value=bswap_16(value);
+	}
+	return _stream->writeUInt16(value);
+}
+
+size_t EndianStream::writeInt32(int32_t value) {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
 	if (_order!=DUCT_BYTEORDER) {
 		value=bswap_32(value);
 	}
-	_stream->writeInt(value);
+	return _stream->writeInt32(value);
 }
 
-void EndianStream::writeLong(long value) {
+size_t EndianStream::writeUInt32(uint32_t value) {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	if (_order!=DUCT_BYTEORDER) {
+		value=bswap_32(value);
+	}
+	return _stream->writeUInt32(value);
+}
+
+size_t EndianStream::writeInt64(int64_t value) {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
 	if (_order!=DUCT_BYTEORDER) {
 		value=bswap_64(value);
 	}
-	_stream->writeLong(value);
+	return _stream->writeInt64(value);
 }
 
-void EndianStream::writeFloat(float value) {
+size_t EndianStream::writeUInt64(uint64_t value) {
 	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
 	if (_order!=DUCT_BYTEORDER) {
-		value=(float)bswap_32((unsigned int)value);
+		value=bswap_64(value);
 	}
-	_stream->writeFloat(value);
+	return _stream->writeUInt64(value);
+}
+size_t EndianStream::writeFloat(float value) {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	if (_order!=DUCT_BYTEORDER) {
+		char& b=reinterpret_cast<char&>(value);
+		std::reverse(&b, &b+sizeof(float));
+	}
+	return _stream->writeFloat(value);
+}
+
+size_t EndianStream::writeDouble(double value) {
+	debug_assertp(_stream!=NULL, this, "Wrapped stream cannot be NULL");
+	if (_order!=DUCT_BYTEORDER) {
+		char& b=reinterpret_cast<char&>(value);
+		std::reverse(&b, &b+sizeof(double));
+	}
+	return _stream->writeDouble(value);
 }
 
 } // namespace duct
