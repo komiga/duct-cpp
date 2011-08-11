@@ -4,13 +4,6 @@
 local name="duct"
 local outpath="out"
 
--- requires premake 4.4
---[[local bitness="x86"
-if os.is64bit() then
-	bitness="x64"
-end
-local libpath_linux="lib/linux/"..bitness
-local libpath_windows="lib/windows/"..bitness]]
 local libpath_linux="lib/linux"
 local libpath_windows="lib\\windows"
 
@@ -41,6 +34,7 @@ configuration {"release"}
 configuration {}
 	files {
 		"include/duct/*.hpp",
+		"include/duct/inline/*.inl",
 		"src/duct/*.cpp"
 	}
 	includedirs {
