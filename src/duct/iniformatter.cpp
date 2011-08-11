@@ -386,7 +386,7 @@ void IniParserHandler::handleToken(Token& token) {
 				if (token.getType()==StringToken) {
 					int bv=Variable::stringToBool(token.toString());
 					if (bv!=-1) {
-						addValueAndReset(new BoolVariable((bool)bv, _varname));
+						addValueAndReset(new BoolVariable((bv==1) ? true : false, _varname));
 						return;
 					}
 				}
@@ -407,7 +407,7 @@ void IniParserHandler::handleToken(Token& token) {
 			break;
 		case DoubleToken:
 			if (_varname.length()>0 && _equals) {
-				addValueAndReset(new FloatVariable(token.toDouble(), _varname));
+				addValueAndReset(new FloatVariable(token.toFloat(), _varname));
 			} else {
 				throwex(IniParserException(PARSERERROR_PARSER, "IniParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
 			}
