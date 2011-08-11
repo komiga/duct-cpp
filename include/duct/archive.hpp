@@ -237,13 +237,13 @@ public:
 		Get the entry's flags.
 		@returns The entry's flags.
 	*/
-	inline unsigned int getFlags() const;
+	inline uint16_t getFlags() const;
 	/**
 		Set the entry's flags.
 		@returns Nothing.
 		@param flags The entry's new flags.
 	*/
-	inline void setFlags(unsigned int flags);
+	inline void setFlags(uint16_t flags);
 	/**
 		Determine if the entry is compressed.
 		@returns true if the entry is compressed, or false if the entry is uncompressed.

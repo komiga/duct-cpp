@@ -90,12 +90,12 @@ bool Entry::isOpen() const {
 }
 
 inline
-unsigned int Entry::getFlags() const {
+uint16_t Entry::getFlags() const {
 	return _flags;
 }
 
 inline
-void Entry::setFlags(unsigned int flags) {
+void Entry::setFlags(uint16_t flags) {
 	_flags=flags;
 }
 

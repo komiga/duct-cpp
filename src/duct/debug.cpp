@@ -29,27 +29,40 @@ THE SOFTWARE.
 namespace duct {
 
 #ifndef NDEBUG
-	
-	void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
-		fprintf(stderr, "assertion failure: %s\n", __mesg);
-		fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
-		abort();
-	}
-	
-	void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
-		fprintf(stderr, "assertion failure: [%p] %s\n", __p, __mesg);
-		fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
-		abort();
-	}
-	
+
+void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
+	fprintf(stderr, "assertion failure: %s\n", __mesg);
+	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
+	abort();
+}
+
+void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
+	fprintf(stderr, "assertion failure: [%p] %s\n", __p, __mesg);
+	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
+	abort();
+}
+
 #else
-	
-	void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
-	}
-	
-	void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
-	}
-	
+
+void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
+	(void)__assertion;
+	(void)__function;
+	(void)__file;
+	(void)__line;
+	(void)__function;
+	(void)__mesg;
+}
+
+void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
+	(void)__assertion;
+	(void)__function;
+	(void)__file;
+	(void)__line;
+	(void)__function;
+	(void)__p;
+	(void)__mesg;
+}
+
 #endif // if !NDEBUG
 
 } // namespace duct

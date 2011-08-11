@@ -366,7 +366,7 @@ void FloatVariable::setFromString(const UnicodeString& source) {
 		debug_printp_source(this, u_errorName(status));
 		_value=0.0;
 	} else {
-		_value=formattable.getDouble(status);
+		_value=(float)formattable.getDouble(status);
 		//printf("FloatVariable::setFromString formattable _value:%f\n", _value);
 	}
 	delete nf;

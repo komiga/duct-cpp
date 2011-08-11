@@ -178,7 +178,7 @@ bool changeDir(const UnicodeString& path) {
 }
 
 bool getWorkingDir(UnicodeString& result) {
-	char* buffer=getcwd(NULL, 0);
+	char* buffer=_getcwd(NULL, 0);
 	if (buffer!=NULL) {
 		UnicodeString temp(buffer);
 		result.setTo(temp);
@@ -268,20 +268,22 @@ bool fileExists(const UnicodeString& path) {
 
 // TODO structure creation
 bool createDir(const char* path, bool structure) {
-	return CreateDirectory(path, NULL);
+	(void)structure;
+	return CreateDirectory(path, NULL)!=0;
 }
 
 bool createDir(const std::string& path, bool structure) {
-	return createDir(path.c_str(), false);
+	return createDir(path.c_str(), structure);
 }
 
 bool createDir(const UnicodeString& path, bool structure) {
 	std::string str;
 	path.toUTF8String(str);
-	return createDir(str.c_str(), false);
+	return createDir(str.c_str(), structure);
 }
 
 bool createFile(const char* path, bool createpath) {
+	(void)createpath;
 	// TODO: dir/path extraction from file path
 	/*if (createpath && !dirExists()) {
 		createDir();
@@ -305,31 +307,31 @@ bool createFile(const UnicodeString& path, bool createpath) {
 }
 
 bool deleteFile(const char* path) {
-	return DeleteFile(path);
+	return DeleteFile(path)!=0;
 }
 
 bool deleteFile(const std::string& path) {
-	return DeleteFile(path.c_str());
+	return DeleteFile(path.c_str())!=0;
 }
 
 bool deleteFile(const UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
-	return DeleteFile(str.c_str());
+	return DeleteFile(str.c_str())!=0;
 }
 
 bool deleteDir(const char* path) {
-	return RemoveDirectory(path);
+	return RemoveDirectory(path)!=0;
 }
 
 bool deleteDir(const std::string& path) {
-	return RemoveDirectory(path.c_str());
+	return RemoveDirectory(path.c_str())!=0;
 }
 
 bool deleteDir(const UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
-	return RemoveDirectory(str.c_str());
+	return RemoveDirectory(str.c_str())!=0;
 }
 
 } // namespace FileSystem
