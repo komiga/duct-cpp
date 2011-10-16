@@ -169,7 +169,7 @@ size_t Stream::readLine(UnicodeString& str) {
 			if (c!='\r')
 				buf[count++]=c;
 		}
-		if (count>0) {
+		if (count>0 && !(count==1 && c=='\n')) {
 			str+=UnicodeString::fromUTF32(buf, count+(c=='\n' ? -1 : 0));
 		}
 	}
@@ -194,7 +194,7 @@ size_t Stream::readCString(UnicodeString& str, size_t maxlength) {
 			buf[count++]=c;
 			tcount++;
 		}
-		if (count>0) {
+		if (count>0 && !(count==1 && c=='\0')) {
 			str+=UnicodeString::fromUTF32(buf, count+(c=='\0' ? -1 : 0));
 		}
 	}

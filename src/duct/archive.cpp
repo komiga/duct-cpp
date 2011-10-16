@@ -50,8 +50,9 @@ bool Archive::open(bool deserialize_, bool readable, bool writeable) {
 }
 
 void Archive::close() {
-	if ((_readable || _writeable) && _stream!=NULL) {
+	if (_stream!=NULL) {
 		_stream->close();
+		delete _stream;
 		_stream=NULL;
 	}
 	_readable=false;
