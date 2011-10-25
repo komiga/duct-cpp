@@ -87,14 +87,14 @@ bool Template::getCaseSensitive() const {
 	return _casesens;
 }
 
-int _checkVariable(unsigned int type, const Variable* variable) {
+bool _checkVariable(unsigned int type, const Variable* variable) {
 	if (variable && type!=VARTYPE_NONE) {
 		return type&variable->getType();
 	}
 	return false;
 }
 
-int _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, unsigned int i=0) {
+bool _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, unsigned int i=0) {
 	//printf("duct::_checkIden iden:%p\n", (void*)iden);
 	if (iden) {
 		//printf("duct::_checkIden count:%u i:%d\n", iden->getCount(), i);
@@ -219,6 +219,13 @@ bool Template::validateValue(const ValueVariable* value) const {
 				return (_infinitism&value->getType())!=0;
 			}
 		}
+	}
+	return false;
+}
+
+bool Template::validateIdentity(const Variable* variable) const {
+	if (variable) {
+		return _checkIden(_iden, variable->getName(), _casesens);
 	}
 	return false;
 }

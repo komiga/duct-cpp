@@ -125,6 +125,12 @@ public:
 	*/
 	bool validateValue(const ValueVariable* value) const;
 	/**
+		Check if the given variable matches the template's identity.
+		@returns true if the given variable matched the template's identity, or false if either it did not match or the given variable was NULL.
+		@param variable The variable to validate.
+	*/
+	bool validateIdentity(const Variable* variable) const;
+	/**
 		Compact a sequence of value variables matching the template into identifiers.
 		@returns The number of identifiers created and added (0 if either the no matches were found, or the given collection is NULL or had no children).
 		@param name The name to give new identifiers.
