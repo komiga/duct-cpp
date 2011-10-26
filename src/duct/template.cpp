@@ -317,27 +317,23 @@ unsigned int Template::renameValues(CollectionVariable* collection, const Unicod
 	return count;
 }
 
-Identifier* Template::getMatchingIdentifier(const CollectionVariable* collection) const {
+Identifier* Template::getMatchingIdentifier(const CollectionVariable* collection, bool reverse) const {
 	if (collection) {
-		Identifier* iden;
-		for (VarList::const_iterator iter=collection->begin(); iter!=collection->end(); ++iter) {
-			iden=dynamic_cast<Identifier*>(*iter);
-			if (iden && validateIdentifier(iden)) {
-				return iden;
-			}
+		if (reverse) {
+			return (Identifier*)getMatchingVariable(collection->getChildren().rbegin(), collection->getChildren().rend(), VARTYPE_IDENTIFIER);
+		} else {
+			return (Identifier*)getMatchingVariable(collection->begin(), collection->end(), VARTYPE_IDENTIFIER);
 		}
 	}
 	return NULL;
 }
 
-ValueVariable* Template::getMatchingValue(const CollectionVariable* collection) const {
+ValueVariable* Template::getMatchingValue(const CollectionVariable* collection, bool reverse) const {
 	if (collection) {
-		ValueVariable* value;
-		for (VarList::const_iterator iter=collection->begin(); iter!=collection->end(); ++iter) {
-			value=dynamic_cast<ValueVariable*>(*iter);
-			if (value && validateValue(value)) {
-				return value;
-			}
+		if (reverse) {
+			return (ValueVariable*)getMatchingVariable(collection->getChildren().rbegin(), collection->getChildren().rend(), VARTYPE_VALUE);
+		} else {
+			return (ValueVariable*)getMatchingVariable(collection->begin(), collection->end(), VARTYPE_VALUE);
 		}
 	}
 	return NULL;
