@@ -153,19 +153,49 @@ public:
 	*/
 	unsigned int renameValues(CollectionVariable* collection, const UnicodeString& name) const;
 	/**
+		Get the first matching variable from the given begin-end pair.
+		@returns The first matching variable, or NULL if a matching variable was not found.
+		@param begin The beginning iterator.
+		@param end The ending iterator.
+		@param type The variable type(s) to validate. If equal to 0 or if VARTYPE_NODE is present, only the identity will be validated.
+		@see validateIdentifier()
+		@see validateValue()
+		@see validateIdentity()
+	*/
+	template <typename iterator_type>
+	Variable* getMatchingVariable(iterator_type begin, iterator_type end, unsigned int type) const {
+		for (iterator_type iter=begin; iter!=end; ++iter) {
+			Variable* variable=*iter;
+			if (type&variable->getType()) {
+				if (variable->getType()==VARTYPE_IDENTIFIER && validateIdentifier(dynamic_cast<Identifier*>(variable))) {
+					return variable;
+				} else if (variable->getType()&VARTYPE_VALUE && validateValue(dynamic_cast<ValueVariable*>(variable))) {
+					return variable;
+				} else if (variable->getType()==VARTYPE_NODE && validateIdentity(variable)) {
+					return variable;
+				}
+			} else if (0==type && validateIdentity(variable)) {
+				return variable;
+			}
+		}
+		return NULL;
+	}
+	/**
 		Get the first matching identifier from the given collection.
 		@returns The first matching identifier, or NULL if the given collection either was NULL or did not contain a matching identifier.
 		@param collection The collection to operate on.
+		@param reverse Whether to start searching at the bottom of the collection.
 		@see validateIdentifier()
 	*/
-	Identifier* getMatchingIdentifier(const CollectionVariable* collection) const;
+	Identifier* getMatchingIdentifier(const CollectionVariable* collection, bool reverse=false) const;
 	/**
 		Get the first matching value variable from the given collection.
 		@returns The first matching value variable, or NULL if the given collection either was NULL or did not contain a matching value.
 		@param collection The collection to operate on.
+		@param reverse Whether to start searching at the bottom of the collection.
 		@see validateValue()
 	*/
-	ValueVariable* getMatchingValue(const CollectionVariable* collection) const;
+	ValueVariable* getMatchingValue(const CollectionVariable* collection, bool reverse=false) const;
 	
 protected:
 	StringArray* _iden;
