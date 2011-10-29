@@ -55,12 +55,13 @@ bool hasLeadingPeriod(const UnicodeString& path) {
 	}
 }*/
 
-size_t getRightPartPos_(const std::string& path, bool allow_leading, size_t& beg_pos) {
+size_t getPartSplitPos_(const std::string& path, bool allow_leading, size_t& beg_pos) {
 	size_t sla_pos=path.find_last_of('/');
-	beg_pos=(std::string::npos!=sla_pos) ? sla_pos : 0;
+	beg_pos=(std::string::npos!=sla_pos) ? sla_pos+1 : 0;
+	sla_pos=(std::string::npos!=sla_pos) ? sla_pos : 0;
 	size_t dot_pos=path.find_first_of('.', beg_pos);
-	if (allow_leading && (0==dot_pos || beg_pos+1==dot_pos)) {
-		sla_pos=dot_pos+1<path.size() ? path.find_first_of('.', dot_pos+1) : std::string::npos;
+	if (allow_leading && (0==dot_pos || sla_pos+1==dot_pos)) {
+		sla_pos=path.find_first_of('.', dot_pos+1);
 		if (std::string::npos!=sla_pos) {
 			return sla_pos;
 		}
@@ -68,27 +69,18 @@ size_t getRightPartPos_(const std::string& path, bool allow_leading, size_t& beg
 	return dot_pos;
 }
 
-size_t getRightPartPos_(const std::string& path, bool allow_leading) {
-	size_t beg_pos;
-	return getRightPartPos_(path, allow_leading, beg_pos);
-}
-
-int32_t getRightPartPos_(const UnicodeString& path, bool allow_leading, int32_t& beg_pos) {
+int32_t getPartSplitPos_(const UnicodeString& path, bool allow_leading, int32_t& beg_pos) {
 	int32_t sla_pos=path.lastIndexOf('/');
-	beg_pos=(-1!=sla_pos) ? sla_pos : 0;
+	beg_pos=(-1!=sla_pos) ? sla_pos+1 : 0;
+	sla_pos=(-1!=sla_pos) ? sla_pos : 0;
 	int32_t dot_pos=path.indexOf('.', beg_pos);
-	if (allow_leading && (0==dot_pos || beg_pos+1==dot_pos)) {
-		sla_pos=dot_pos+1<path.length() ? path.indexOf('.', dot_pos+1) : -1;
+	if (allow_leading && (0==dot_pos || sla_pos+1==dot_pos)) {
+		sla_pos=path.indexOf('.', dot_pos+1);
 		if (-1!=sla_pos) {
 			return sla_pos;
 		}
 	}
 	return dot_pos;
-}
-
-int32_t getRightPartPos_(const UnicodeString& path, bool allow_leading) {
-	int32_t beg_pos;
-	return getRightPartPos_(path, allow_leading, beg_pos);
 }
 
 size_t getExtensionPos_(const std::string& path) {
@@ -212,8 +204,12 @@ bool pathHasExtension(const UnicodeString& path) {
 bool pathHasLeftPart(const std::string& path, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
-		size_t dot_pos=getRightPartPos_(path, allow_leading, beg_pos);
-		return std::string::npos!=dot_pos && beg_pos!=dot_pos && beg_pos+1!=dot_pos;
+		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (std::string::npos==dot_pos) {
+			return pathHasFilename(path);
+		} else {
+			return !(!allow_leading && dot_pos==beg_pos);
+		}
 	}
 	return false;
 }
@@ -221,22 +217,30 @@ bool pathHasLeftPart(const std::string& path, bool allow_leading) {
 bool pathHasLeftPart(const UnicodeString& path, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
-		int32_t dot_pos=getRightPartPos_(path, allow_leading, beg_pos);
-		return -1!=dot_pos && beg_pos!=dot_pos && beg_pos+1!=dot_pos;
+		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (-1==dot_pos) {
+			return pathHasFilename(path);
+		} else {
+			return !(!allow_leading && dot_pos==beg_pos);
+		}
 	}
 	return false;
 }
 
 bool pathHasRightPart(const std::string& path, bool allow_leading) {
 	if (!path.empty()) {
-		return std::string::npos!=getRightPartPos_(path, allow_leading);
+		size_t beg_pos;
+		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		return std::string::npos!=dot_pos && !(allow_leading && dot_pos==beg_pos);
 	}
 	return false;
 }
 
 bool pathHasRightPart(const UnicodeString& path, bool allow_leading) {
 	if (!path.isEmpty()) {
-		return -1!=getRightPartPos_(path, allow_leading);
+		int32_t beg_pos;
+		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		return -1!=dot_pos && !(allow_leading && dot_pos==beg_pos);
 	}
 	return false;
 }
@@ -328,11 +332,18 @@ bool extractFilename(const UnicodeString& path, UnicodeString& result, bool with
 bool extractFileLeftPart(const std::string& path, std::string& result, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
-		size_t dot_pos=getRightPartPos_(path, allow_leading, beg_pos);
-		if (std::string::npos!=dot_pos && beg_pos!=dot_pos && beg_pos+1!=dot_pos) {
-			result.assign(path, beg_pos, dot_pos-beg_pos);
-			return true;
+		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (std::string::npos==dot_pos) {
+			return extractFilename(path, result, false);
+		} else if (dot_pos==beg_pos) {
+			if (!allow_leading) {
+				return false;
+			} else {
+				dot_pos=path.find_first_of('.', dot_pos+1);
+			}
 		}
+		result.assign(path, beg_pos, (std::string::npos==dot_pos) ? std::string::npos : dot_pos-beg_pos);
+		return true;
 	}
 	return false;
 }
@@ -340,19 +351,27 @@ bool extractFileLeftPart(const std::string& path, std::string& result, bool allo
 bool extractFileLeftPart(const UnicodeString& path, UnicodeString& result, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
-		int32_t dot_pos=getRightPartPos_(path, allow_leading, beg_pos);
-		if (-1!=dot_pos && beg_pos!=dot_pos && beg_pos+1!=dot_pos) {
-			result.setTo(path, beg_pos, dot_pos-beg_pos);
-			return true;
+		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (-1==dot_pos) {
+			return extractFilename(path, result, false);
+		} else if (dot_pos==beg_pos) {
+			if (!allow_leading) {
+				return false;
+			} else {
+				dot_pos=path.indexOf('.', dot_pos+1);
+			}
 		}
+		result.setTo(path, beg_pos, (-1==dot_pos) ? INT32_MAX : dot_pos-beg_pos);
+		return true;
 	}
 	return false;
 }
 
 bool extractFileRightPart(const std::string& path, std::string& result, bool include_period, bool allow_leading) {
 	if (!path.empty()) {
-		size_t dot_pos=getRightPartPos_(path, allow_leading);
-		if (std::string::npos!=dot_pos) {
+		size_t beg_pos;
+		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (std::string::npos!=dot_pos && (!allow_leading || (allow_leading && dot_pos!=beg_pos))) {
 			result.assign(path, include_period ? dot_pos : dot_pos+1, std::string::npos);
 			return true;
 		}
@@ -362,8 +381,9 @@ bool extractFileRightPart(const std::string& path, std::string& result, bool inc
 
 bool extractFileRightPart(const UnicodeString& path, UnicodeString& result, bool include_period, bool allow_leading) {
 	if (!path.isEmpty()) {
-		int32_t dot_pos=getRightPartPos_(path, allow_leading);
-		if (-1!=dot_pos) {
+		int32_t beg_pos;
+		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
+		if (-1!=dot_pos && (!allow_leading || (allow_leading && dot_pos!=beg_pos))) {
 			result.setTo(path, include_period ? dot_pos : dot_pos+1, INT32_MAX);
 			return true;
 		}
