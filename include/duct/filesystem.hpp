@@ -116,6 +116,17 @@ public:
 	*/
 	bool entryName(UnicodeString& result) const;
 	/**
+		Check if the current entry is either the directory's parent ("..") or relative to the directory (".").
+		@returns true if the current entry is the directory's parent or relative to the directory, false otherwise.
+	*/
+	bool isEntryParentOrRelative() const;
+	/**
+		Check if the stream currently has an entry.
+		@returns true if the stream currently has an entry, or false if it does not.
+		@param name description.
+	*/
+	bool hasEntry() const;
+	/**
 		Get the current entry's type.
 		@returns The current entry's type. Either PATHTYPE_FILE or PATHTYPE_DIR.
 		@see entryName()
@@ -134,10 +145,12 @@ public:
 	bool close();
 	
 private:
+	void init();
+	
+private:
 	std::string _path;
 	DIR* _dir;
 	dirent* _entry;
-	void init();
 };
 
 /**

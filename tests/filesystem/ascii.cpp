@@ -39,7 +39,7 @@ int main() {
 	if (ds.isOpen()) {
 		UnicodeString name;
 		while (ds.nextEntry(name)) {
-			printf("entry type:%d entry name:\"", ds.entryType());
+			printf("entry type:%d parent/relative:%d entry name:\"", ds.entryType(), ds.isEntryParentOrRelative());
 			cout<<name<<'\"'<<endl;
 		}
 		printf("close: %d\n", ds.close());
