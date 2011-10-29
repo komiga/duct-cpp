@@ -120,12 +120,12 @@ int main(int argc, char** argv) {
 		assign(arg_path);
 		TEST_HAS_PARTS("test_has_left", "test_has_right", true);
 		TEST_HAS_PARTS("test_has_left_na", "test_has_right_na", false);
+		EXTRACT_PARTS("extract_left", "extract_right", true);
+		EXTRACT_PARTS("extract_left_na", "extract_right_na", false);
 		TEST_HAS("test_has_ext", "test_has_name", "test_has_dir");
 		EXTRACT_EXT("extract_ext", false);
 		EXTRACT_NAME("extract_name", false);
 		EXTRACT_NAME("extract_name+ext", true);
-		EXTRACT_PARTS("extract_left", "extract_right", true);
-		EXTRACT_PARTS("extract_left_na", "extract_right_na", false);
 		EXTRACT_DIR("extract_dir", false);
 		EXTRACT_DIR("extract_dir+trail", true);
 	}
