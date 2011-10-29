@@ -25,6 +25,7 @@ THE SOFTWARE.
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <duct/debug.hpp>
@@ -33,6 +34,8 @@ THE SOFTWARE.
 namespace duct {
 
 // class DirStream implementation
+
+const char* g_cstr_periods="..";
 
 DirStream::DirStream(const char* path) {
 	_path.append(path);
@@ -79,6 +82,17 @@ bool DirStream::entryName(UnicodeString& result) const {
 	return false;
 }
 
+bool DirStream::isEntryParentOrRelative() const {
+	if (_entry) {
+		return (1==strlen(_entry->d_name) && 0==strncmp(g_cstr_periods, _entry->d_name, 1)) || 0==strcmp(g_cstr_periods, _entry->d_name);
+	}
+	return false;
+}
+
+bool DirStream::hasEntry() const {
+	return NULL!=_entry;
+}
+
 PathType DirStream::entryType() const {
 	if (_entry) {
 		std::string temp(_path);
@@ -110,6 +124,7 @@ void DirStream::init() {
 		_path.append("/");
 	}
 	_dir=opendir(_path.c_str());
+	_entry=NULL;
 }
 
 // FileSystem implementation
