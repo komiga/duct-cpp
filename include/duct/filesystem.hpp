@@ -142,6 +142,8 @@ private:
 
 /**
 	File system functions.
+	No functions here will automatically normalize paths. They are always expected to be normalized (that is, with <em>'/'</em> as the separator).
+	See FileSystem::normalizePath().
 */
 namespace FileSystem {
 
@@ -166,6 +168,209 @@ namespace FileSystem {
 	@param s The pointer to store the result.
 */
 //bool DUCT_API statPath(const UnicodeString& path, struct stat* s);
+
+/**
+	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Any trailing slashes are kept as-is.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param result The resulting string.
+*/
+void DUCT_API normalizePath(const std::string& path, std::string& result);
+/**
+	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Any trailing slashes are kept as-is.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param result The resulting string.
+*/
+void DUCT_API normalizePath(const UnicodeString& path, UnicodeString& result);
+
+/**
+	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param result The resulting string.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API normalizePath(const std::string& path, std::string& result, bool trailing_slash);
+/**
+	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param result The resulting string.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API normalizePath(const UnicodeString& path, UnicodeString& result, bool trailing_slash);
+
+/**
+	Check if the given path has a trailing slash.
+	@returns true if the given path has a trailing slash, or false if the path does not have a trailing slash.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasTrailingSlash(const std::string& path);
+/**
+	Check if the given path has a trailing slash.
+	@returns true if the given path has a trailing slash, or false if the path does not have a trailing slash.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasTrailingSlash(const UnicodeString& path);
+
+/**
+	Check if the given path has a file name.
+	@returns true if the given path appears to have a filename, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasFilename(const std::string& path);
+/**
+	Check if the given path has a file name.
+	@returns true if the given path appears to have a filename, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasFilename(const UnicodeString& path);
+
+/**
+	Check if the given path has an extension.
+	@returns true if the given path has an extension, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasExtension(const std::string& path);
+/**
+	Check if the given path has an extension.
+	@returns true if the given path has an extension, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasExtension(const UnicodeString& path);
+
+/**
+	Check if the given path has a left part.
+	@returns true if the given path has a left part, or false if it does not.
+	@param path The path to test.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API pathHasLeftPart(const std::string& path, bool allow_leading=true);
+/**
+	Check if the given path has a left part.
+	@returns true if the given path has a left part, or false if it does not.
+	@param path The path to test.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API pathHasLeftPart(const UnicodeString& path, bool allow_leading=true);
+
+/**
+	Check if the given path has a right part.
+	@returns true if the given path has a right part, or false if it does not.
+	@param path The path to test.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API pathHasRightPart(const std::string& path, bool allow_leading=true);
+/**
+	Check if the given path has a right part.
+	@returns true if the given path has a right part, or false if it does not.
+	@param path The path to test.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API pathHasRightPart(const UnicodeString& path, bool allow_leading=true);
+
+/**
+	Check if the given path has a directory path.
+	@returns true if the given path has a directory path, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasDirectory(const std::string& path);
+/**
+	Check if the given path has a directory path.
+	@returns true if the given path has a directory path, or false if it does not.
+	@param path The path to test.
+*/
+bool DUCT_API pathHasDirectory(const UnicodeString& path);
+
+/**
+	Extract the extension from the given file path.
+	@returns true if the extension was extracted, or false if the path doesn't have an extension.
+	@param path The path to extract from.
+	@param result This will be assigned to the extension if the path contains one.
+	@param include_period Whether to include the period in the extension (false by default).
+*/
+bool DUCT_API extractFileExtension(const std::string& path, std::string& result, bool include_period=false);
+/**
+	Extract the extension from the given file path.
+	@returns true if the extension was extracted, or false if the path doesn't have an extension.
+	@param path The path to extract from.
+	@param result This will be assigned to the extension if the path contains one.
+	@param include_period Whether to include the period in the extension (false by default).
+*/
+bool DUCT_API extractFileExtension(const UnicodeString& path, UnicodeString& result, bool include_period=false);
+
+/**
+	Extract the directory path from the given file path.
+	@returns true if the given file path has a directory path, or false if it does not.
+	@param path The file path to extract from.
+	@param result This will be assigned to the directory if the path contains one.
+	@param trailing_slash Whether to append a trailing slash to the directory path.
+*/
+bool DUCT_API extractFileDirectory(const std::string& path, std::string& result, bool trailing_slash=true);
+/**
+	Extract the directory path from the given file path.
+	@returns true if the given file path has a directory path, or false if it does not.
+	@param path The file path to extract from.
+	@param result This will be assigned to the directory if the path contains one.
+	@param trailing_slash Whether to append a trailing slash to the directory path.
+*/
+bool DUCT_API extractFileDirectory(const UnicodeString& path, UnicodeString& result, bool trailing_slash=true);
+
+/**
+	Extract the file name from the given file path.
+	@returns true if the given path contains a file name, or false if it does not (for example, "/some/directory/path/").
+	@param path The file path to extract from.
+	@param result This will be assigned to the filename.
+	@param with_extension Whether to include the extension.
+*/
+bool DUCT_API extractFilename(const std::string& path, std::string& result, bool with_extension);
+/**
+	Extract the file name from the given file path.
+	@returns true if the given path contains a file name, or false if it does not (for example, "/some/directory/path/").
+	@param path The file path to extract from.
+	@param result This will be assigned to the filename.
+	@param with_extension Whether to include the extension.
+*/
+bool DUCT_API extractFilename(const UnicodeString& path, UnicodeString& result, bool with_extension);
+
+/**
+	Extract the file path part before the first period.
+	@returns true if the part was extracted, or false otherwise.
+	@param path The file path to extract from.
+	@param result This will be assigned to the right half.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API extractFileLeftPart(const std::string& path, std::string& result, bool allow_leading=true);
+/**
+	Extract the file path part before the first period.
+	@returns true if the part was extracted, or false otherwise.
+	@param path The file path to extract from.
+	@param result This will be assigned to the right half.
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API extractFileLeftPart(const UnicodeString& path, UnicodeString& result, bool allow_leading=true);
+
+/**
+	Extract the file path part after the first period.
+	@returns true if the part was extracted, or false otherwise.
+	@param path The file path to extract from.
+	@param result This will be assigned to the right half.
+	@param include_period Whether to include the first period (true by default).
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API extractFileRightPart(const std::string& path, std::string& result, bool include_period=true, bool allow_leading=true);
+/**
+	Extract the file path part after the first period.
+	@returns true if the part was extracted, or false otherwise.
+	@param path The file path to extract from.
+	@param result This will be assigned to the right half.
+	@param include_period Whether to include the first period (true by default).
+	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
+*/
+bool DUCT_API extractFileRightPart(const UnicodeString& path, UnicodeString& result, bool include_period=true, bool allow_leading=true);
 
 /**
 	Get the given path's type.

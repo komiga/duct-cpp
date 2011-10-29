@@ -33,8 +33,6 @@ configuration {"release"}
 
 configuration {}
 	files {
-		"include/duct/*.hpp",
-		"include/duct/inline/*.inl",
 		"src/duct/*.cpp"
 	}
 	includedirs {
@@ -82,7 +80,6 @@ configuration {"vs2008"} -- no stdint.h on MSVC 9.0
 configuration {"windows"}
 	files {
 		"src/duct/windows/*.cpp",
-		"include/duct/windows/dirent.h",
 		"src/duct/windows/dirent.c"
 	}
 	links {"icuin", "icudt", "icuio", "icuuc"}
