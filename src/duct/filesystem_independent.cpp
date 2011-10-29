@@ -248,7 +248,7 @@ bool pathHasRightPart(const UnicodeString& path, bool allow_leading) {
 bool pathHasDirectory(const std::string& path) {
 	if (!path.empty()) {
 		size_t sla_pos=path.find_last_of('/');
-		if (std::string::npos!=sla_pos && path.size()-1!=sla_pos) {
+		if (std::string::npos!=sla_pos) {
 			return true;
 		}
 	}
@@ -258,7 +258,7 @@ bool pathHasDirectory(const std::string& path) {
 bool pathHasDirectory(const UnicodeString& path) {
 	if (!path.isEmpty()) {
 		int32_t sla_pos=path.lastIndexOf('/');
-		if (-1!=sla_pos && path.length()-1!=sla_pos) {
+		if (-1!=sla_pos) {
 			return true;
 		}
 	}
@@ -286,10 +286,7 @@ bool extractFileExtension(const UnicodeString& path, UnicodeString& result, bool
 bool extractFileDirectory(const std::string& path, std::string& result, bool trailing_slash) {
 	if (pathHasDirectory(path)) {
 		size_t sla_pos=path.find_last_of('/');
-		result.assign(path, 0, sla_pos);
-		if (trailing_slash || 0==result.size()) {
-			result.push_back('/');
-		}
+		result.assign(path, 0, (trailing_slash || sla_pos==0) ? sla_pos+1 : sla_pos);
 		return true;
 	}
 	return false;
@@ -298,10 +295,7 @@ bool extractFileDirectory(const std::string& path, std::string& result, bool tra
 bool extractFileDirectory(const UnicodeString& path, UnicodeString& result, bool trailing_slash) {
 	if (pathHasDirectory(path)) {
 		int32_t sla_pos=path.lastIndexOf('/');
-		result.setTo(path, 0, sla_pos);
-		if (trailing_slash || 0==result.length()) {
-			result.append('/');
-		}
+		result.setTo(path, 0, (trailing_slash || sla_pos==0) ? sla_pos+1 : sla_pos);
 		return true;
 	}
 	return false;
