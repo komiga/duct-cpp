@@ -183,7 +183,37 @@ namespace FileSystem {
 //bool DUCT_API statPath(const UnicodeString& path, struct stat* s);
 
 /**
-	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
+	Any trailing slashes are kept as-is.
+	@returns Nothing.
+	@param path The path to normalize.
+*/
+void DUCT_API normalizePath(std::string& path);
+/**
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
+	Any trailing slashes are kept as-is.
+	@returns Nothing.
+	@param path The path to normalize.
+*/
+void DUCT_API normalizePath(UnicodeString& path);
+
+/**
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API normalizePath(std::string& path, bool trailing_slash);
+/**
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
+	@returns Nothing.
+	@param path The path to normalize.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API normalizePath(UnicodeString& path, bool trailing_slash);
+
+/**
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	Any trailing slashes are kept as-is.
 	@returns Nothing.
 	@param path The path to normalize.
@@ -191,7 +221,7 @@ namespace FileSystem {
 */
 void DUCT_API normalizePath(const std::string& path, std::string& result);
 /**
-	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	Any trailing slashes are kept as-is.
 	@returns Nothing.
 	@param path The path to normalize.
@@ -200,7 +230,7 @@ void DUCT_API normalizePath(const std::string& path, std::string& result);
 void DUCT_API normalizePath(const UnicodeString& path, UnicodeString& result);
 
 /**
-	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	@returns Nothing.
 	@param path The path to normalize.
 	@param result The resulting string.
@@ -208,7 +238,7 @@ void DUCT_API normalizePath(const UnicodeString& path, UnicodeString& result);
 */
 void DUCT_API normalizePath(const std::string& path, std::string& result, bool trailing_slash);
 /**
-	Normalize the given path. This will replace all occurrances of <em>'\\'</em> with <em>'/'</em>.
+	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	@returns Nothing.
 	@param path The path to normalize.
 	@param result The resulting string.
