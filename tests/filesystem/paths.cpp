@@ -115,8 +115,8 @@ void note_success(char const* name) {
 int main(int argc, char** argv) {
 	for (int i=1; i<argc; ++i) {
 		printf("-----------------\n");
-		std::string arg_path;
-		duct::FileSystem::normalizePath(std::string(argv[i]), arg_path);
+		std::string arg_path(argv[i]);
+		duct::FileSystem::normalizePath(arg_path);
 		assign(arg_path);
 		TEST_HAS_PARTS("test_has_left", "test_has_right", true);
 		TEST_HAS_PARTS("test_has_left_na", "test_has_right_na", false);

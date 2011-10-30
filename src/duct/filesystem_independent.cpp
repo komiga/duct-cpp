@@ -105,11 +105,49 @@ int32_t getExtensionPos_(const UnicodeString& path) {
 	return -1;
 }
 
+void normalizePath(std::string& path) {
+	if (!path.empty()) {
+		std::replace(path.begin(), path.end(), '\\', '/');
+	}
+}
+
+void normalizePath(UnicodeString& path) {
+	if (!path.isEmpty()) {
+		path.findAndReplace(g_ustr_dos_slash, g_ustr_nix_slash);
+	}
+}
+
+void normalizePath(std::string& path, bool trailing_slash) {
+	normalizePath(path);
+	// don't remove the root path slash, if there is one
+	if (1<path.size()) {
+		std::string::reverse_iterator it=path.rbegin();
+		if (trailing_slash && '/'!=(*it)) {
+			path.push_back('/');
+		} else if (!trailing_slash && '/'==(*it)) {
+			path.erase(--(it.base()));
+		}
+	}
+}
+
+void normalizePath(UnicodeString& path, bool trailing_slash) {
+	normalizePath(path);
+	// don't remove the root path slash, if there is one
+	if (1<path.length()) {
+		UChar c=path[path.length()-1];
+		if (trailing_slash && '/'!=c) {
+			path.append('/');
+		} else if (!trailing_slash && '/'==c) {
+			path.remove(path.length()-1);
+		}
+	}
+}
+
 void normalizePath(const std::string& path, std::string& result) {
 	if (!path.empty()) {
 		result.reserve(path.size()+1);
 		result.assign(path);
-		std::replace(result.begin(), result.end(), '\\', '/');
+		normalizePath(result);
 	} else {
 		result.clear();
 	}
@@ -118,36 +156,20 @@ void normalizePath(const std::string& path, std::string& result) {
 void normalizePath(const UnicodeString& path, UnicodeString& result) {
 	if (!path.isEmpty()) {
 		result.setTo(path);
-		result.findAndReplace(g_ustr_dos_slash, g_ustr_nix_slash);
+		normalizePath(result);
 	} else {
 		result.remove();
 	}
 }
 
 void normalizePath(const std::string& path, std::string& result, bool trailing_slash) {
-	normalizePath(path, result);
-	// don't remove the root path slash, if there is one
-	if (1<result.size()) {
-		std::string::reverse_iterator it=result.rbegin();
-		if (trailing_slash && '/'!=(*it)) {
-			result.push_back('/');
-		} else if (!trailing_slash && '/'==(*it)) {
-			result.erase(--(it.base()));
-		}
-	}
+	result.assign(path);
+	normalizePath(result, trailing_slash);
 }
 
 void normalizePath(const UnicodeString& path, UnicodeString& result, bool trailing_slash) {
-	normalizePath(path, result);
-	// don't remove the root path slash, if there is one
-	if (1<result.length()) {
-		UChar c=result[result.length()-1];
-		if (trailing_slash && '/'!=c) {
-			result.append('/');
-		} else if (!trailing_slash && '/'==c) {
-			result.remove(path.length()-1);
-		}
-	}
+	result.setTo(path);
+	normalizePath(result, trailing_slash);
 }
 
 bool pathHasTrailingSlash(const std::string& path) {
