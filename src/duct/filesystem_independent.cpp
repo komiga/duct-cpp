@@ -407,6 +407,22 @@ bool extractFileRightPart(const UnicodeString& path, UnicodeString& result, bool
 	return false;
 }
 
+bool getWorkingDir(std::string& result, bool trailing_slash) {
+	if (getWorkingDir(result)) {
+		normalizePath(result, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
+bool getWorkingDir(icu::UnicodeString& result, bool trailing_slash) {
+	if (getWorkingDir(result)) {
+		normalizePath(result, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
 } // namespace FileSystem
 
 } // namespace duct
