@@ -182,18 +182,19 @@ void __reset(unsigned int& mc, bool& repeatmatch, bool rep, _PairList& pairs) {
 bool Template::validateIdentifier(const Identifier* identifier) const {
 	if (identifier) {
 		//printf("Template::validateIdentifier _layout:%d _iden:%d _casesens:%d _infinitism:%d\n", _layout!=NULL, _iden!=NULL, _casesens, _infinitism);
-		if (!(identifier->getChildCount()>_layout->size() && (_infinitism==VARTYPE_NONE)) && !(identifier->getChildCount()<_layout->size()) && _checkIden(_iden, identifier->getName(), _casesens)) {
+		size_t layout_size=(NULL!=_layout) ? _layout->size() : 0;
+		if (!(identifier->getChildCount()>layout_size && (_infinitism==VARTYPE_NONE)) && !(identifier->getChildCount()<layout_size) && _checkIden(_iden, identifier->getName(), _casesens)) {
 			// Compare defined variables in the identifier
 			VarList::const_iterator iter=identifier->begin();
-			for (unsigned int i=0; i<_layout->size(); ++i) {
+			for (unsigned int i=0; i<layout_size; ++i) {
 				if (!((*_layout)[i]&(*iter)->getType())) {
 					return false;
 				}
 				++iter;
 			}
 			// Check flexible and infinitism
-			if (identifier->getChildCount()>_layout->size() && _infinitism!=VARTYPE_NONE) {
-				for (unsigned int i=_layout->size(); i<identifier->getChildCount(); ++i) {
+			if (identifier->getChildCount()>layout_size && _infinitism!=VARTYPE_NONE) {
+				for (unsigned int i=layout_size; i<identifier->getChildCount(); ++i) {
 					if (!_checkVariable(_infinitism, (*iter))) {
 						return false;
 					}
