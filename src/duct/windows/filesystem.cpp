@@ -192,6 +192,16 @@ bool changeDir(const UnicodeString& path) {
 	return changeDir(str.c_str());
 }
 
+bool getWorkingDir(std::string& result) {
+	char* buffer=_getcwd(NULL, 0);
+	if (buffer!=NULL) {
+		result.assign(buffer);
+		free(buffer);
+		return true;
+	}
+	return false;
+}
+
 bool getWorkingDir(UnicodeString& result) {
 	char* buffer=_getcwd(NULL, 0);
 	if (buffer!=NULL) {

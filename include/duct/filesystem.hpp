@@ -457,9 +457,33 @@ bool DUCT_API changeDir(const UnicodeString& path);
 	Get the current working directory.
 	The given string is unmodified if an error occurs (which is very unlikely).
 	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
-	@param result The string to place the result in.
+	@param result The resulting path. This will be set to the working directory.
+*/
+bool DUCT_API getWorkingDir(std::string& result);
+/**
+	Get the current working directory.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	@param result The resulting path. This will be set to the working directory.
 */
 bool DUCT_API getWorkingDir(UnicodeString& result);
+
+/**
+	Get the current working directory and normalize the path.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	@param result The resulting path. This will be set to the working directory.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API getWorkingDir(std::string& result, bool trailing_slash);
+/**
+	Get the current working directory and normalize the path.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	@param result The resulting path. This will be set to the working directory.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API getWorkingDir(icu::UnicodeString& result, bool trailing_slash);
 
 /**
 	Get the filesize of the given file.
