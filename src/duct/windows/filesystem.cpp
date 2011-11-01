@@ -213,6 +213,60 @@ bool getWorkingDir(UnicodeString& result) {
 	return false;
 }
 
+void getAbsolutePath(const std::string& path, std::string& result) {
+	if (0!=path.size()) {
+		if ('/'!=path[0]) {
+			std::string build;
+			if (!getWorkingDir(build, true)) {
+				return;
+			}
+			build.append(path);
+			result.assign(build);
+		} else if (&result!=&path) {
+			result.assign(path);
+		}
+	}
+}
+
+void getAbsolutePath(const UnicodeString& path, UnicodeString& result) {
+	if (0!=path.length()) {
+		if ('/'!=path[0]) {
+			UnicodeString build;
+			if (!getWorkingDir(build, true)) {
+				return;
+			}
+			build.append(path);
+			result.setTo(build);
+		} else if (&result!=&path) {
+			result.setTo(path);
+		}
+	}
+}
+
+bool resolvePath(const std::string& path, std::string& result) {
+	#define BUFSIZE 1024
+	char buffer[BUFSIZE];
+	int len=GetFullPathNameA(path.c_str(), BUFSIZE, buffer, NULL);
+	if (0!=len) {
+		result.assign(buffer, len);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePath(const UnicodeString& path, UnicodeString& result) {
+	#define BUFSIZE 1024
+	wchar_t buffer[BUFSIZE];
+	UnicodeString path_copy;
+	path_copy.fastCopyFrom(path);
+	int len=GetFullPathNameW(path_copy.getTerminatedBuffer(), BUFSIZE, buffer, NULL);
+	if (0!=len) {
+		result.setTo(buffer, len);
+		return true;
+	}
+	return false;
+}
+
 uint64_t getFileSize(const char* path) {
 	struct _stat s;
 	if (statPath(path, &s)) {

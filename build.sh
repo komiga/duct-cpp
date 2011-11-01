@@ -6,7 +6,7 @@ BUILD="$2"
 # guess OS
 if [ $# -lt 2 ]; then
 	unamestr=`uname`
-	if [ "$unamestr" == "MINGW32_NT-5.1" ]; then # msysgit
+	if [[ "$unamestr" == MINGW32_NT* ]]; then # msysgit
 		BUILD="vs2008"
 	fi
 fi

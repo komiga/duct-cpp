@@ -455,35 +455,259 @@ bool DUCT_API changeDir(const UnicodeString& path);
 
 /**
 	Get the current working directory.
-	The given string is unmodified if an error occurs (which is very unlikely).
-	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
 	@param result The resulting path. This will be set to the working directory.
 */
 bool DUCT_API getWorkingDir(std::string& result);
 /**
 	Get the current working directory.
-	The given string is unmodified if an error occurs (which is very unlikely).
-	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
 	@param result The resulting path. This will be set to the working directory.
 */
 bool DUCT_API getWorkingDir(UnicodeString& result);
 
 /**
 	Get the current working directory and normalize the path.
-	The given string is unmodified if an error occurs (which is very unlikely).
-	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
 	@param result The resulting path. This will be set to the working directory.
 	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
 */
 bool DUCT_API getWorkingDir(std::string& result, bool trailing_slash);
 /**
 	Get the current working directory and normalize the path.
-	The given string is unmodified if an error occurs (which is very unlikely).
-	@returns true on success, or false if there was not enough free memory to allocate a string buffer.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
 	@param result The resulting path. This will be set to the working directory.
 	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
 */
-bool DUCT_API getWorkingDir(icu::UnicodeString& result, bool trailing_slash);
+bool DUCT_API getWorkingDir(UnicodeString& result, bool trailing_slash);
+
+/**
+	Get the absolute path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+*/
+void DUCT_API getAbsolutePath(std::string const& path, std::string& result);
+/**
+	Get the absolute path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+*/
+void DUCT_API getAbsolutePath(UnicodeString const& path, UnicodeString& result);
+
+/**
+	Get the absolute path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+*/
+void DUCT_API getAbsolutePath(std::string& path);
+/**
+	Get the absolute path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+*/
+void DUCT_API getAbsolutePath(UnicodeString& path);
+
+/**
+	Get the absolute normalized path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+*/
+void DUCT_API getAbsolutePathNormalized(std::string const& path, std::string& result);
+/**
+	Get the absolute normalized path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+*/
+void DUCT_API getAbsolutePathNormalized(UnicodeString const& path, UnicodeString& result);
+
+/**
+	Get the absolute normalized path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API getAbsolutePathNormalized(std::string const& path, std::string& result, bool trailing_slash);
+/**
+	Get the absolute normalized path for the given path.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify.
+	@param result The resulting absolute path.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API getAbsolutePathNormalized(UnicodeString const& path, UnicodeString& result, bool trailing_slash);
+
+/**
+	Get the absolute normalized path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+*/
+void DUCT_API getAbsolutePathNormalized(std::string& path);
+/**
+	Get the absolute normalized path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+*/
+void DUCT_API getAbsolutePathNormalized(UnicodeString& path);
+
+/**
+	Get the absolute normalized path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API getAbsolutePathNormalized(std::string& path, bool trailing_slash);
+/**
+	Get the absolute normalized path for the given path, and store the result in the given string.
+	This does not guarantee that the resulting path actually exists.
+	The result string is unmodified if the given path is 0-length or if the working directory could not be retrieved.
+	@returns Nothing.
+	@param path The path to absoluteify and to store the result in.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+void DUCT_API getAbsolutePathNormalized(UnicodeString& path, bool trailing_slash);
+
+/**
+	Resolve the given path to an absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+*/
+bool DUCT_API resolvePath(std::string const& path, std::string& result);
+/**
+	Resolve the given path to an absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+*/
+bool DUCT_API resolvePath(UnicodeString const& path, UnicodeString& result);
+
+/**
+	Resolve the given path to an absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+*/
+bool DUCT_API resolvePath(std::string& path);
+/**
+	Resolve the given path to an absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+*/
+bool DUCT_API resolvePath(UnicodeString& path);
+
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+*/
+bool DUCT_API resolvePathNormalized(std::string const& path, std::string& result);
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+*/
+bool DUCT_API resolvePathNormalized(UnicodeString const& path, UnicodeString& result);
+
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API resolvePathNormalized(std::string const& path, std::string& result, bool trailing_slash);
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The result string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve.
+	@param result The resulting absolute path.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API resolvePathNormalized(UnicodeString const& path, UnicodeString& result, bool trailing_slash);
+
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+*/
+bool DUCT_API resolvePathNormalized(std::string& path);
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+*/
+bool DUCT_API resolvePathNormalized(UnicodeString& path);
+
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API resolvePathNormalized(std::string& path, bool trailing_slash);
+/**
+	Resolve the given path to a normalized absolute path, following symbolic links and such, and store the result in the given string.
+	Under a POSIX-compliant system, this will only resolve the path if it exists.
+	The given string is unmodified if an error occurs (which is very unlikely).
+	@returns true on success, or false if there was an error.
+	@param path The path to resolve and to store the result in.
+	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
+*/
+bool DUCT_API resolvePathNormalized(UnicodeString& path, bool trailing_slash);
 
 /**
 	Get the filesize of the given file.

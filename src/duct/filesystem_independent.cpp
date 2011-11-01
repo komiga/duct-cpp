@@ -415,9 +415,133 @@ bool getWorkingDir(std::string& result, bool trailing_slash) {
 	return false;
 }
 
-bool getWorkingDir(icu::UnicodeString& result, bool trailing_slash) {
+bool getWorkingDir(UnicodeString& result, bool trailing_slash) {
 	if (getWorkingDir(result)) {
 		normalizePath(result, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
+// getAbsolutePath
+void getAbsolutePath(std::string& path) {
+	getAbsolutePath(path, path);
+}
+
+void getAbsolutePath(UnicodeString& path) {
+	getAbsolutePath(path, path);
+}
+
+// - normalized
+void getAbsolutePathNormalized(const std::string& path, std::string& result) {
+	getAbsolutePath(path, result);
+	normalizePath(result);
+}
+
+void getAbsolutePathNormalized(const UnicodeString& path, UnicodeString& result) {
+	getAbsolutePath(path, result);
+	normalizePath(result);
+}
+
+void getAbsolutePathNormalized(const std::string& path, std::string& result, bool trailing_slash) {
+	getAbsolutePath(path, result);
+	normalizePath(result, trailing_slash);
+}
+
+void getAbsolutePathNormalized(const UnicodeString& path, UnicodeString& result, bool trailing_slash) {
+	getAbsolutePath(path, result);
+	normalizePath(result, trailing_slash);
+}
+
+void getAbsolutePathNormalized(std::string& path) {
+	getAbsolutePath(path, path);
+	normalizePath(path);
+}
+
+void getAbsolutePathNormalized(UnicodeString& path) {
+	getAbsolutePath(path, path);
+	normalizePath(path);
+}
+
+void getAbsolutePathNormalized(std::string& path, bool trailing_slash) {
+	getAbsolutePath(path, path);
+	normalizePath(path, trailing_slash);
+}
+
+void getAbsolutePathNormalized(UnicodeString& path, bool trailing_slash) {
+	getAbsolutePath(path, path);
+	normalizePath(path, trailing_slash);
+}
+
+// resolvePath
+bool resolvePath(std::string& path) {
+	return resolvePath(path, path);
+}
+
+bool resolvePath(UnicodeString& path) {
+	return resolvePath(path, path);
+}
+
+// - normalized
+bool resolvePathNormalized(const std::string& path, std::string& result) {
+	if (resolvePath(path, result)) {
+		normalizePath(result);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(const UnicodeString& path, UnicodeString& result) {
+	if (resolvePath(path, result)) {
+		normalizePath(result);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(const std::string& path, std::string& result, bool trailing_slash) {
+	if (resolvePath(path, result)) {
+		normalizePath(result, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(const UnicodeString& path, UnicodeString& result, bool trailing_slash) {
+	if (resolvePath(path, result)) {
+		normalizePath(result, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(std::string& path) {
+	if (resolvePath(path, path)) {
+		normalizePath(path);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(UnicodeString& path) {
+	if (resolvePath(path, path)) {
+		normalizePath(path);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(std::string& path, bool trailing_slash) {
+	if (resolvePath(path, path)) {
+		normalizePath(path, trailing_slash);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePathNormalized(UnicodeString& path, bool trailing_slash) {
+	if (resolvePath(path, path)) {
+		normalizePath(path, trailing_slash);
 		return true;
 	}
 	return false;
