@@ -115,9 +115,34 @@ void note_success(char const* name) {
 int main(int argc, char** argv) {
 	for (int i=1; i<argc; ++i) {
 		printf("-----------------\n");
-		std::string arg_path(argv[i]);
-		duct::FileSystem::normalizePath(arg_path);
-		assign(arg_path);
+		// STL tests
+		std::string std_arg(argv[i]);
+		duct::FileSystem::normalizePath(std_arg);
+		std::string std_absolute;
+		duct::FileSystem::getAbsolutePath(std_arg, std_absolute);
+		std::cout<<"std_absolute: "<<std_absolute<<std::endl;
+		std::string std_resolved;
+		if (duct::FileSystem::resolvePath(std_arg, std_resolved)) {
+			std::cout<<"std_resolved: "<<std_resolved<<std::endl;
+		} else {
+			std::cout<<"Unable to resolve "<<std_arg<<std::endl;
+		}
+		
+		// ICU tests
+		UnicodeString icu_arg(argv[i]);
+		duct::FileSystem::normalizePath(icu_arg);
+		UnicodeString icu_absolute;
+		duct::FileSystem::getAbsolutePath(icu_arg, icu_absolute);
+		std::cout<<"icu_absolute: "<<icu_absolute<<std::endl;
+		UnicodeString icu_resolved;
+		if (duct::FileSystem::resolvePath(icu_arg, icu_resolved)) {
+			std::cout<<"icu_resolved: "<<icu_resolved<<std::endl;
+		} else {
+			std::cout<<"Unable to resolve "<<icu_arg<<std::endl;
+		}
+		
+		// tests
+		assign(std_arg);
 		TEST_HAS_PARTS("test_has_left", "test_has_right", true);
 		TEST_HAS_PARTS("test_has_left_na", "test_has_right_na", false);
 		EXTRACT_PARTS("extract_left", "extract_right", true);

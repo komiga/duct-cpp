@@ -210,6 +210,59 @@ bool getWorkingDir(UnicodeString& result) {
 	return false;
 }
 
+void getAbsolutePath(const std::string& path, std::string& result) {
+	if (0!=path.size()) {
+		if ('/'!=path[0]) {
+			std::string build;
+			if (!getWorkingDir(build, true)) {
+				return;
+			}
+			build.append(path);
+			result.assign(build);
+		} else if (&result!=&path) {
+			result.assign(path);
+		}
+	}
+}
+
+void getAbsolutePath(const UnicodeString& path, UnicodeString& result) {
+	if (0!=path.length()) {
+		if ('/'!=path[0]) {
+			UnicodeString build;
+			if (!getWorkingDir(build, true)) {
+				return;
+			}
+			build.append(path);
+			result.setTo(build);
+		} else if (&result!=&path) {
+			result.setTo(path);
+		}
+	}
+}
+
+bool resolvePath(const std::string& path, std::string& result) {
+	char* buffer=realpath(path.c_str(), NULL);
+	if (buffer!=NULL) {
+		result.assign(buffer);
+		free(buffer);
+		return true;
+	}
+	return false;
+}
+
+bool resolvePath(const UnicodeString& path, UnicodeString& result) {
+	std::string str;
+	path.toUTF8String(str);
+	char* buffer=realpath(str.c_str(), NULL);
+	if (buffer!=NULL) {
+		UnicodeString temp(buffer);
+		result.setTo(temp);
+		free(buffer);
+		return true;
+	}
+	return false;
+}
+
 uint64_t getFileSize(const char* path) {
 	struct stat s;
 	if (statPath(path, &s)) {
