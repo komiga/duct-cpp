@@ -533,7 +533,7 @@ VarList::const_iterator CollectionVariable::find(const Variable* variable, VarLi
 }
 
 VarList::iterator CollectionVariable::findAt(int index, unsigned int type) {
-	if (index<0 && (size_t)index>=_children.size()) {
+	if (index<0 || (size_t)index>=_children.size()) {
 		return end();
 	}
 	int i=0;
@@ -548,7 +548,7 @@ VarList::iterator CollectionVariable::findAt(int index, unsigned int type) {
 }
 
 VarList::const_iterator CollectionVariable::findAt(int index, unsigned int type) const {
-	if (index<0 && (size_t)index>=_children.size()) {
+	if (index<0 || (size_t)index>=_children.size()) {
 		return end();
 	}
 	int i=0;
