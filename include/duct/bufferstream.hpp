@@ -46,10 +46,11 @@ public:
 	/**
 		Constructor with buffer, buffer size, flags and character encoding.
 		@param buffer The buffer to read/write from/to.
+		@param size The size of the given buffer.
 		@param flags The stream flags. Default is STREAM_READABLE|STREAM_WRITABLE.
 		@param encoding The character encoding to use. Default is UTF8.
 	*/
-	BufferStream(void* buffer, size_t size, unsigned int flags=STREAM_READABLE|STREAM_WRITEABLE, const char* encoding="utf8");
+	BufferStream(void* buffer, size_t size, unsigned int flags=STREAM_READABLE|STREAM_WRITEABLE, char const* encoding="utf8");
 	
 	/**
 		Set the stream's buffer and size.
@@ -65,7 +66,7 @@ public:
 	void* getBuffer();
 	
 	virtual size_t read(void* data, size_t size);
-	virtual size_t write(const void* data, size_t size);
+	virtual size_t write(void const* data, size_t size);
 	virtual void flush();
 	virtual bool eof() const;
 	virtual size_t size() const;
@@ -77,6 +78,56 @@ protected:
 	void* _buffer;			// Buffer
 	unsigned long _pos;		// Stream position
 	size_t _size;			// Stream size
+	
+private:
+	BufferStream();
+};
+
+/**
+	Read-only buffer stream.
+	The stream is not responsible for freeing the buffer.
+*/
+class DUCT_API ReadOnlyBufferStream : public Stream {
+public:
+	/**
+		Constructor with buffer, buffer size, flags and character encoding.
+		@param buffer The buffer to read from.
+		@param size The size of the given buffer.
+		@param flags The stream flags. Default is STREAM_READABLE.
+		@param encoding The character encoding to use. Default is UTF8.
+	*/
+	ReadOnlyBufferStream(void const* buffer, size_t size, unsigned int flags=STREAM_READABLE, char const* encoding="utf8");
+	
+	/**
+		Set the stream's buffer and size.
+		@returns Nothing.
+		@param buffer The stream's new buffer.
+		@param size The new size of the stream.
+	*/
+	void setBuffer(void const* buffer, size_t size);
+	/**
+		Get the stream's buffer.
+		@returns The stream's buffer.
+	*/
+	void const* getBuffer();
+	
+	virtual size_t read(void* data, size_t size);
+	virtual size_t write(void const* data, size_t size);
+	virtual void flush();
+	virtual bool eof() const;
+	virtual size_t size() const;
+	virtual unsigned long pos() const;
+	virtual unsigned long seek(unsigned long pos);
+	virtual void close();
+	virtual void setFlags(unsigned int flags);
+	
+protected:
+	void const* _buffer;	// Buffer
+	unsigned long _pos;		// Stream position
+	size_t _size;			// Stream size
+	
+private:
+	ReadOnlyBufferStream();
 };
 
 } // namespace duct
