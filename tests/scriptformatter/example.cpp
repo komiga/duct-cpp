@@ -1,8 +1,9 @@
 
-#include "duct/scriptformatter.hpp"
-#include <unicode/ustream.h>
+#include <duct/scriptformatter.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustream.h>
 
 using namespace std;
 using namespace duct;
@@ -17,7 +18,7 @@ void outputNode(Node* node, unsigned int tcount=0) {
 	Node* n;
 	Identifier* i;
 	ValueVariable* v;
-	UnicodeString temp;
+	icu::UnicodeString temp;
 	for (VarList::const_iterator iter=node->begin(); iter!=node->end(); ++iter) {
 		n=dynamic_cast<Node*>(*iter);
 		i=dynamic_cast<Identifier*>(*iter);

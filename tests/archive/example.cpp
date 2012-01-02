@@ -1,12 +1,13 @@
 
+#include "example.hpp"
+#include <duct/debug.hpp>
+#include <duct/archive.hpp>
+#include <duct/filesystem.hpp>
+
 #include <stdio.h>
 #include <stdexcept>
 #include <iostream>
 #include <unicode/ustream.h>
-#include <duct/debug.hpp>
-#include <duct/archive.hpp>
-#include <duct/filesystem.hpp>
-#include "example.hpp"
 
 MyArchive::MyArchive(const icu::UnicodeString& path) : duct::Archive(path) {
 }
@@ -147,7 +148,7 @@ bool MyEntry::deserializeUserspace(duct::Stream* stream) {
 	char* buf=(char*)malloc(len);
 	debug_assertp(buf, this, "unable to allocate string buffer");
 	stream->read(buf, len);
-	_path=UnicodeString(buf, len, "utf8");
+	_path=icu::UnicodeString(buf, len, "utf8");
 	free(buf);
 	return true;
 }

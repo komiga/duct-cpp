@@ -24,11 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <stdio.h>
-#include <unicode/numfmt.h>
 #include <duct/debug.hpp>
 #include <duct/scriptformatter.hpp>
 #include <duct/charutils.hpp>
+
+#include <stdio.h>
+#include <unicode/numfmt.h>
 
 namespace duct {
 
@@ -605,16 +606,16 @@ void ScriptParserHandler::makeIdentifier(const Token* /*token*/, bool resetiden,
 ScriptParser ScriptFormatter::_parser=ScriptParser();
 ScriptParserHandler ScriptFormatter::_handler=ScriptParserHandler(ScriptFormatter::_parser);
 
-bool ScriptFormatter::formatIdentifier(const Identifier& iden, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::formatIdentifier(const Identifier& iden, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (iden.getName().length()>0) {
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		iden.getNameFormatted(temp, nameformat);
 		result.setTo(temp);
 		ValueVariable* val;
 		for (VarList::const_iterator iter=iden.begin(); iter!=iden.end(); ++iter) {
 			val=dynamic_cast<ValueVariable*>(*iter);
 			if (val) {
-				/*temp=UnicodeString(val->getTypeAsString());
+				/*temp=icu::UnicodeString(val->getTypeAsString());
 				result+=" <"+temp+">";
 				val->getValueFormatted(temp, varformat);
 				result+=temp;*/
@@ -630,10 +631,10 @@ bool ScriptFormatter::formatIdentifier(const Identifier& iden, UnicodeString& re
 	return false;
 }
 
-bool ScriptFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {
 		value.getNameFormatted(result, nameformat);
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		value.getValueFormatted(temp, varformat);
 		result.append('=').append(temp);
 		return true;
@@ -659,7 +660,7 @@ Node* ScriptFormatter::loadFromFile(const std::string& path, const char* encodin
 	return loadFromFile(path.c_str(), encoding);
 }
 
-Node* ScriptFormatter::loadFromFile(const UnicodeString& path, const char* encoding) {
+Node* ScriptFormatter::loadFromFile(const icu::UnicodeString& path, const char* encoding) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return loadFromFile(temp.c_str(), encoding);
@@ -686,7 +687,7 @@ bool ScriptFormatter::writeToFile(const Node* root, const std::string& path, con
 	return writeToFile(root, path.c_str(), encoding, nameformat, varformat);
 }
 
-bool ScriptFormatter::writeToFile(const Node* root, const UnicodeString& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return writeToFile(root, temp.c_str(), encoding, nameformat, varformat);
@@ -694,7 +695,7 @@ bool ScriptFormatter::writeToFile(const Node* root, const UnicodeString& path, c
 
 bool ScriptFormatter::writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat, unsigned int varformat) {
 	if (root && stream) {
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		unsigned int tcountd=tcount;
 		if (root->getParent()) {
 			writeTabs(stream, tcount);

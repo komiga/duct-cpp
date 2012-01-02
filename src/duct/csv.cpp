@@ -24,11 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <stdlib.h>
 #include <duct/debug.hpp>
 #include <duct/csv.hpp>
 #include <duct/filestream.hpp>
 #include <duct/charutils.hpp>
+
+#include <stdlib.h>
 
 namespace duct {
 
@@ -201,7 +202,7 @@ const StringVariable* CSVRow::getString(int index) const {
 	return NULL;
 }
 
-const UnicodeString* CSVRow::getStringValue(int index) const {
+const icu::UnicodeString* CSVRow::getStringValue(int index) const {
 	const StringVariable* v=getString(index);
 	if (v) {
 		return &v->get();
@@ -209,7 +210,7 @@ const UnicodeString* CSVRow::getStringValue(int index) const {
 	return NULL;
 }
 
-bool CSVRow::getStringValue(UnicodeString& result, int index) const {
+bool CSVRow::getStringValue(icu::UnicodeString& result, int index) const {
 	const StringVariable* v=getString(index);
 	if (v) {
 		result.setTo(v->get());
@@ -268,7 +269,7 @@ bool CSVRow::getBoolValue(bool& result, int index) const {
 	return false;
 }
 
-bool CSVRow::getAsString(UnicodeString& result, int index) const {
+bool CSVRow::getAsString(icu::UnicodeString& result, int index) const {
 	const ValueVariable* v=get(index);
 	if (v) {
 		v->valueAsString(result, false);
@@ -574,7 +575,7 @@ const StringVariable* CSVMap::getString(int row, int column) const {
 	return NULL;
 }
 
-const UnicodeString* CSVMap::getStringValue(int row, int column) const {
+const icu::UnicodeString* CSVMap::getStringValue(int row, int column) const {
 	const CSVRow* r=get(row);
 	if (r) {
 		return r->getStringValue(column);
@@ -582,7 +583,7 @@ const UnicodeString* CSVMap::getStringValue(int row, int column) const {
 	return NULL;
 }
 
-bool CSVMap::getStringValue(UnicodeString& result, int row, int column) const {
+bool CSVMap::getStringValue(icu::UnicodeString& result, int row, int column) const {
 	const CSVRow* r=get(row);
 	if (r) {
 		return r->getStringValue(result, column);
@@ -638,7 +639,7 @@ bool CSVMap::getBoolValue(bool& result, int row, int column) const {
 	return false;
 }
 
-bool CSVMap::getAsString(UnicodeString& result, int row, int column) const {
+bool CSVMap::getAsString(icu::UnicodeString& result, int row, int column) const {
 	const CSVRow* r=get(row);
 	if (r) {
 		return r->getAsString(result, column);
@@ -988,7 +989,7 @@ void CSVParserHandler::handleToken(Token& token) {
 					"Unexpected non-whitespace StringToken"));
 			}
 		}
-		const UnicodeString& str=token.toString();
+		const icu::UnicodeString& str=token.toString();
 		int bv=Variable::stringToBool(str);
 		if (bv!=-1) {
 			addToRow(new BoolVariable(bv==1 ? true : false));
@@ -1086,9 +1087,9 @@ void CSVParserHandler::newRow() {
 CSVParser CSVFormatter::_parser=CSVParser();
 CSVParserHandler CSVFormatter::_handler=CSVParserHandler(CSVFormatter::_parser);
 
-void CSVFormatter::formatRow(const CSVRow& row, UnicodeString& result, UChar32 sepchar, unsigned int varformat) {
+void CSVFormatter::formatRow(const CSVRow& row, icu::UnicodeString& result, UChar32 sepchar, unsigned int varformat) {
 	result.remove();
-	UnicodeString formatted;
+	icu::UnicodeString formatted;
 	int lastcolumn=0;
 	CSVRecordMap::const_iterator iter;
 	for (iter=row.begin(); iter!=row.end(); ++iter) {
@@ -1122,7 +1123,7 @@ CSVMap* CSVFormatter::loadFromFile(const std::string& path, UChar32 sepchar, uns
 	return loadFromFile(path.c_str(), sepchar, headercount, encoding);
 }
 
-CSVMap* CSVFormatter::loadFromFile(const UnicodeString& path, UChar32 sepchar, unsigned int headercount, const char* encoding) {
+CSVMap* CSVFormatter::loadFromFile(const icu::UnicodeString& path, UChar32 sepchar, unsigned int headercount, const char* encoding) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return loadFromFile(temp.c_str(), sepchar, headercount, encoding);
@@ -1150,7 +1151,7 @@ bool CSVFormatter::writeToFile(const CSVMap* map, const std::string& path, UChar
 	return writeToFile(map, path.c_str(), sepchar, encoding, varformat);
 }
 
-bool CSVFormatter::writeToFile(const CSVMap* map, const UnicodeString& path, UChar32 sepchar, const char* encoding, unsigned int varformat) {
+bool CSVFormatter::writeToFile(const CSVMap* map, const icu::UnicodeString& path, UChar32 sepchar, const char* encoding, unsigned int varformat) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return writeToFile(map, temp.c_str(), sepchar, encoding, varformat);
@@ -1158,7 +1159,7 @@ bool CSVFormatter::writeToFile(const CSVMap* map, const UnicodeString& path, UCh
 
 bool CSVFormatter::writeToStream(const CSVMap* map, Stream* stream, UChar32 sepchar, unsigned int varformat) {
 	if (map!=NULL && stream!=NULL) {
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		bool first=false;
 		int lastrow=0;
 		CSVRowMap::const_iterator iter;

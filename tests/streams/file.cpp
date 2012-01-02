@@ -1,14 +1,15 @@
 
-#include "duct/filestream.hpp"
-#include <unicode/ustream.h>
+#include <duct/filestream.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustream.h>
 
 using namespace duct;
 
 int main() {
 	const char* file="data/foobar";
-	UnicodeString str("abcd");
+	icu::UnicodeString str("abcd");
 	
 	{
 		FileStream out(file, false, true);

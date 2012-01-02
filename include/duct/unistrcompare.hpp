@@ -25,23 +25,24 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ UnicodeString* comparison class.
+duct++ icu::UnicodeString* comparison class.
 */
 
 #ifndef _DUCT_UNISTRCOMPARE_HPP
 #define _DUCT_UNISTRCOMPARE_HPP
 
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
+
+#include <unicode/unistr.h>
 
 namespace duct {
 
 /**
-	UnicodeString* comparison class.
+	icu::UnicodeString* comparison class.
 */
-class DUCT_API UnicodeStringPCompare {
+class DUCT_API icu::UnicodeStringPCompare {
 public:
-	bool operator()(const UnicodeString* x, const UnicodeString* y) const {
+	bool operator()(const icu::UnicodeString* x, const icu::UnicodeString* y) const {
 		return x->compare(*y)<0;
 	};
 };

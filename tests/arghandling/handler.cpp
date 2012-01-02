@@ -1,9 +1,10 @@
 
+#include "handler.hpp"
+#include <duct/arghandling.hpp>
+
 #include <stdio.h>
 #include <iostream>
 #include <unicode/ustream.h>
-#include <duct/arghandling.hpp>
-#include "handler.hpp"
 
 using namespace duct;
 
@@ -43,8 +44,8 @@ int HelpImpl::execute() {
 	return 0;
 }
 
-const UnicodeString& HelpImpl::getUsage() const {
-	static UnicodeString help_text("help <command>");
+const icu::UnicodeString& HelpImpl::getUsage() const {
+	static icu::UnicodeString help_text("help <command>");
 	return help_text;
 }
 
@@ -63,20 +64,20 @@ int TestImpl::checkErrors() {
 }
 
 int TestImpl::execute() {
-	UnicodeString str;
+	icu::UnicodeString str;
 	_args->getAsString(str, 0);
 	std::cout<<"test: "<<str<<std::endl;
 	return 0;
 }
 
-const UnicodeString& TestImpl::getUsage() const {
-	static UnicodeString __usage("test|--test <blah>");
+const icu::UnicodeString& TestImpl::getUsage() const {
+	static icu::UnicodeString __usage("test|--test <blah>");
 	return __usage;
 }
 
 // other
 
-void argsToString(const Identifier* root, UnicodeString& out) {
+void argsToString(const Identifier* root, icu::UnicodeString& out) {
 	out.append("\"").append(root->getName()).append("\": [");
 	int count=0;
 	VarList::const_iterator iter;
@@ -87,7 +88,7 @@ void argsToString(const Identifier* root, UnicodeString& out) {
 			out.append(", ");
 		} else if (variable->getType()&VARTYPE_VALUE) {
 			const ValueVariable* vv=(ValueVariable*)variable;
-			out.append(UnicodeString(vv->getTypeName())).append(": \"");
+			out.append(icu::UnicodeString(vv->getTypeName())).append(": \"");
 			vv->valueAsString(out, true);
 			out.append("\", ");
 		}
@@ -105,7 +106,7 @@ void runArgs(const Identifier* root) {
 	VarList::const_iterator iter;
 	for (iter=root->begin(); iter!=root->end(); ++iter) {
 		if ((*iter)->getType()&VARTYPE_IDENTIFIER) {
-			const UnicodeString& name=(*iter)->getName();
+			const icu::UnicodeString& name=(*iter)->getName();
 			if ((impl=__handler.getImpl(name))) {
 				impl->setCallType(
 					name.startsWith(__uchar_dashes, 1) ? CALLTYPE_SWITCH
@@ -126,7 +127,7 @@ int main(int argc, const char** argv) {
 	__handler.addImpl(new TestImpl());
 	Identifier* root=parseArgs(argc, argv, true, 1);
 	if (root!=NULL) {
-		UnicodeString out;
+		icu::UnicodeString out;
 		argsToString(root, out);
 		std::cout<<out<<"\n";
 		runArgs(root);

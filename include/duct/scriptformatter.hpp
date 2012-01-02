@@ -34,13 +34,14 @@ Implements component parts:
 #ifndef _DUCT_SCRIPTFORMATTER_HPP
 #define _DUCT_SCRIPTFORMATTER_HPP
 
-#include <string>
-#include <exception>
 #include <duct/config.hpp>
 #include <duct/parser.hpp>
 #include <duct/filestream.hpp>
 #include <duct/characterset.hpp>
 #include <duct/variables.hpp>
+
+#include <string>
+#include <exception>
 
 namespace duct {
 
@@ -269,7 +270,7 @@ public:
 	
 protected:
 	ScriptParser& _parser;
-	UnicodeString _varname;
+	icu::UnicodeString _varname;
 	bool _equals;
 	Identifier* _currentiden;
 	ValueVariable* _currentvalue;
@@ -290,7 +291,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatIdentifier(const Identifier& iden, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool formatIdentifier(const Identifier& iden, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Format the given value as a script value.
 		@returns true if the value was formatted, or false if the given value did not have a name (script values require a name).
@@ -299,7 +300,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Load a node from the given file path.
 		The user owns the returned node.
@@ -310,7 +311,7 @@ public:
 	*/
 	static Node* loadFromFile(const char* path, const char* encoding="utf8");
 	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
-	static Node* loadFromFile(const UnicodeString& path, const char* encoding="utf8");
+	static Node* loadFromFile(const icu::UnicodeString& path, const char* encoding="utf8");
 	/**
 		Load a node from the given stream.
 		The user owns the returned node.
@@ -330,7 +331,7 @@ public:
 	*/
 	static bool writeToFile(const Node* root, const char* path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	static bool writeToFile(const Node* root, const std::string& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Write the given node to the given stream.
 		@returns true if the node was written to the stream, or false if the given node or stream was NULL.

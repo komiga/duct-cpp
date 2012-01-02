@@ -28,6 +28,8 @@ THE SOFTWARE.
 duct++ Template class.
 */
 
+// TODO: Copy constructors for Template, GArray and StringArray
+
 #ifndef _DUCT_TEMPLATE_HPP
 #define _DUCT_TEMPLATE_HPP
 
@@ -67,7 +69,7 @@ public:
 	~Template();
 	/**
 		Set the template's variable-identity.
-		NOTE: The template owns the given pointer (it will be destroyed by the template upon deconstruction).
+		NOTE: The template owns the given pointer (it will be destroyed by the template upon destruction).
 		@returns Nothing.
 		@param iden The new identity. Can be NULL.
 	*/
@@ -79,7 +81,7 @@ public:
 	const StringArray* getIdentity() const;
 	/**
 		Set the variable type layout.
-		NOTE: The template owns the given pointer (it will be destroyed by the template upon deconstruction).
+		NOTE: The template owns the given pointer (it will be destroyed by the template upon destruction).
 		@returns Nothing.
 		@param types The new variable type array. Can be NULL.
 	*/
@@ -137,21 +139,21 @@ public:
 		@param sequential Whether value sequence is sequential.
 		If true, the comparison will require the template's layout to be matched in sequence (false will allow non-matching values in a sequence).
 	*/
-	unsigned int compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential=true) const;
+	unsigned int compactCollection(CollectionVariable* collection, const icu::UnicodeString& name, bool sequential=true) const;
 	/**
 		Rename all matching identifiers to the given name.
 		@returns The number of identifiers that were renamed.
 		@param collection The collection to operate on.
 		@param name New name.
 	*/
-	unsigned int renameIdentifiers(CollectionVariable* collection, const UnicodeString& name) const;
+	unsigned int renameIdentifiers(CollectionVariable* collection, const icu::UnicodeString& name) const;
 	/**
 		Rename all matching values to the given name.
 		@returns The number of values that were renamed.
 		@param collection The collection to operate on.
 		@param name New name.
 	*/
-	unsigned int renameValues(CollectionVariable* collection, const UnicodeString& name) const;
+	unsigned int renameValues(CollectionVariable* collection, const icu::UnicodeString& name) const;
 	/**
 		Get the first matching variable from the given begin-end pair.
 		@returns The first matching variable, or NULL if a matching variable was not found.

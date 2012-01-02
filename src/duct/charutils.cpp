@@ -53,7 +53,7 @@ UChar32 getEscapeChar(UChar32 c) {
 	}
 }
 
-void escapeString(UnicodeString& result, const UnicodeString& str, unsigned int format) {
+void escapeString(icu::UnicodeString& result, const icu::UnicodeString& str, unsigned int format) {
 	if (str.isEmpty()
 		|| ((format&FMT_STRING_ESCAPE_OTHER)==0
 		&& ( format&FMT_STRING_ESCAPE_CONTROL)==0

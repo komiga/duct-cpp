@@ -1,12 +1,13 @@
 
 #include <duct/arghandling.hpp>
+
 #include <stdio.h>
 #include <iostream>
 #include <unicode/ustream.h>
 
 using namespace duct;
 
-void argsToString(const Identifier* root, UnicodeString& out) {
+void argsToString(const Identifier* root, icu::UnicodeString& out) {
 	out.append("\"").append(root->getName()).append("\": [");
 	int count=0;
 	VarList::const_iterator iter;
@@ -17,7 +18,7 @@ void argsToString(const Identifier* root, UnicodeString& out) {
 			out.append(", ");
 		} else if (variable->getType()&VARTYPE_VALUE) {
 			const ValueVariable* vv=(ValueVariable*)variable;
-			out.append(UnicodeString(vv->getTypeName())).append(": \"");
+			out.append(icu::UnicodeString(vv->getTypeName())).append(": \"");
 			vv->valueAsString(out, true);
 			out.append("\", ");
 		}
@@ -32,7 +33,7 @@ void argsToString(const Identifier* root, UnicodeString& out) {
 int main(int argc, const char** argv) {
 	Identifier* root=parseArgs(argc, argv, true, 1);
 	if (root!=NULL) {
-		UnicodeString out;
+		icu::UnicodeString out;
 		argsToString(root, out);
 		std::cout<<out<<"\n";
 		delete root;

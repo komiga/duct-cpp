@@ -39,10 +39,11 @@ Implements component parts:
 #ifndef _DUCT_PARSER_HPP
 #define _DUCT_PARSER_HPP
 
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
 #include <duct/charbuf.hpp>
 #include <duct/stream.hpp>
+
+#include <unicode/unistr.h>
 
 namespace duct {
 
@@ -136,13 +137,13 @@ public:
 		@returns true if the string was converted, or false on cache failure (likely because of an invalid surrogate pair).
 		@param str The output string.
 	*/
-	bool toString(UnicodeString& str);
+	bool toString(icu::UnicodeString& str);
 	/**
 		Convert the token's buffer as a string.
 		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
 		@returns A reference to the cached string (which will be bogus if conversion failed).
 	*/
-	const UnicodeString& toString();
+	const icu::UnicodeString& toString();
 	/**
 		Convert the token's buffer to a 32-bit integer.
 		@returns The buffer as an integer, or 0 if the buffer was not a numeric value.

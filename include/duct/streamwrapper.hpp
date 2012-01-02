@@ -96,9 +96,9 @@ public:
 	virtual double readDouble();
 	
 	virtual UChar32 readChar();
-	virtual size_t readString(UnicodeString& str, size_t length);
-	virtual size_t readLine(UnicodeString& str);
-	virtual size_t readCString(UnicodeString& str, size_t maxlength);
+	virtual size_t readString(icu::UnicodeString& str, size_t length);
+	virtual size_t readLine(icu::UnicodeString& str);
+	virtual size_t readCString(icu::UnicodeString& str, size_t maxlength);
 	
 	virtual size_t writeInt8(int8_t value);
 	virtual size_t writeUInt8(uint8_t value);
@@ -113,9 +113,9 @@ public:
 	
 	virtual size_t writeChar16(UChar value);
 	virtual size_t writeChar32(UChar32 value);
-	virtual size_t writeString(const UnicodeString& str);
-	virtual size_t writeLine(const UnicodeString& str);
-	virtual size_t writeCString(const UnicodeString& str);
+	virtual size_t writeString(const icu::UnicodeString& str);
+	virtual size_t writeLine(const icu::UnicodeString& str);
+	virtual size_t writeCString(const icu::UnicodeString& str);
 	
 	virtual void flush();
 	virtual bool eof() const;
@@ -129,7 +129,7 @@ public:
 	virtual unsigned int getFlags() const;
 	
 	virtual bool setEncoding(const char* encoding);
-	virtual bool setEncoding(const UnicodeString& encoding);
+	virtual bool setEncoding(const icu::UnicodeString& encoding);
 	virtual const char* getEncoding() const;
 	
 	virtual UConverter* getConv();

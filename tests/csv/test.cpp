@@ -1,6 +1,7 @@
 
-#include <stdio.h>
 #include <duct/csv.hpp>
+
+#include <stdio.h>
 
 using namespace duct;
 

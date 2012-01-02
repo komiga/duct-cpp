@@ -34,20 +34,20 @@ Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimi
 	Identifier* root=new Identifier();
 	int i=0, length=argc-1;
 	if (fullargs)
-		root->setName(UnicodeString(argv[i++]));
-	UnicodeString arg;
+		root->setName(icu::UnicodeString(argv[i++]));
+	icu::UnicodeString arg;
 	Identifier* sub;
 	bool subset=false;
 	optarglimit=(optarglimit==-1) ? length : optarglimit;
 	for (; i<=length; ++i) {
-		arg=UnicodeString(argv[i]);
+		arg=icu::UnicodeString(argv[i]);
 		sub=new Identifier(arg, NULL);
 		if (arg.length()>0 && arg[0]=='-') {
 			if (arg.length()>1 && arg[1]=='-') {
 				int lim=(length<(i+optarglimit)) ? length : (i+optarglimit);
 				i++;
 				while (i<=length) {
-					arg=UnicodeString(argv[i]);
+					arg=icu::UnicodeString(argv[i]);
 					if (arg.length()>0 || arg[0]!='-') {
 						sub->add(Variable::stringToValue(arg));
 						i++;
@@ -105,7 +105,7 @@ ArgImplList::const_iterator ArgumentHandler::end() const {
 	return _list.end();
 }
 
-ArgImplList::iterator ArgumentHandler::find(const UnicodeString& alias) {
+ArgImplList::iterator ArgumentHandler::find(const icu::UnicodeString& alias) {
 	ArgImplList::iterator iter;
 	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
 		if ((*iter)->hasAlias(alias)) {
@@ -115,7 +115,7 @@ ArgImplList::iterator ArgumentHandler::find(const UnicodeString& alias) {
 	return iter;
 }
 
-ArgImplList::const_iterator ArgumentHandler::find(const UnicodeString& alias) const {
+ArgImplList::const_iterator ArgumentHandler::find(const icu::UnicodeString& alias) const {
 	ArgImplList::const_iterator iter;
 	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
 		if ((*iter)->hasAlias(alias)) {
@@ -133,7 +133,7 @@ bool ArgumentHandler::addImpl(ArgImpl* impl) {
 	return false;
 }
 
-ArgImpl* ArgumentHandler::getImpl(const UnicodeString& alias) {
+ArgImpl* ArgumentHandler::getImpl(const icu::UnicodeString& alias) {
 	ArgImplList::iterator iter=find(alias);
 	if (iter!=end()) {
 		return (*iter);
@@ -178,7 +178,7 @@ Identifier* ArgImpl::getArgs() {
 	return _args;
 }
 
-bool ArgImpl::hasAlias(const UnicodeString& alias) const {
+bool ArgImpl::hasAlias(const icu::UnicodeString& alias) const {
 	for (unsigned int i=0; i<_aliases.size(); ++i) {
 		if (alias.compare(*_aliases[i])==0) {
 			return true;

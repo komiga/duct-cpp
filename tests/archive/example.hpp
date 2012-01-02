@@ -1,8 +1,9 @@
 
-#include <list>
-#include <unicode/unistr.h>
 #include <duct/archive.hpp>
 #include <duct/filestream.hpp>
+
+#include <list>
+#include <unicode/unistr.h>
 
 class MyEntry;
 class MyArchive;

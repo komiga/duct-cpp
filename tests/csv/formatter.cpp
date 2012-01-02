@@ -1,8 +1,9 @@
 
+#include <duct/csv.hpp>
+
 #include <stdio.h>
 #include <iostream>
 #include <unicode/ustream.h>
-#include <duct/csv.hpp>
 
 using namespace duct;
 
@@ -13,7 +14,7 @@ const unsigned int headercount=1;
 
 void printRow(const CSVRow& row) {
 	printf("[%d:%lu] ", row.getIndex(), row.getCount(true));
-	UnicodeString temp;
+	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);
 	std::cout<<temp<<std::endl;
 }

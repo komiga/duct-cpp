@@ -1,9 +1,10 @@
 
-#include "duct/variables.hpp"
-#include <unicode/ustdio.h>
-#include <unicode/ustream.h>
+#include <duct/variables.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustdio.h>
+#include <unicode/ustream.h>
 
 using namespace duct;
 using namespace std;

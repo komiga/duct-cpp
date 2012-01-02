@@ -24,11 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <stdio.h>
-#include <unicode/numfmt.h>
 #include <duct/debug.hpp>
 #include <duct/iniformatter.hpp>
 #include <duct/charutils.hpp>
+
+#include <stdio.h>
+#include <unicode/numfmt.h>
 
 namespace duct {
 
@@ -468,10 +469,10 @@ void IniParserHandler::addValueAndReset(ValueVariable* value) {
 IniParser IniFormatter::_parser=IniParser();
 IniParserHandler IniFormatter::_handler=IniParserHandler(IniFormatter::_parser);
 
-bool IniFormatter::formatValue(const ValueVariable& value, UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
+bool IniFormatter::formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {
 		value.getNameFormatted(result, nameformat);
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		value.getValueFormatted(temp, varformat);
 		result.append('=').append(temp);
 		return true;
@@ -497,7 +498,7 @@ Node* IniFormatter::loadFromFile(const std::string& path, const char* encoding) 
 	return loadFromFile(path.c_str(), encoding);
 }
 
-Node* IniFormatter::loadFromFile(const UnicodeString& path, const char* encoding) {
+Node* IniFormatter::loadFromFile(const icu::UnicodeString& path, const char* encoding) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return loadFromFile(temp.c_str(), encoding);
@@ -524,7 +525,7 @@ bool IniFormatter::writeToFile(const Node* root, const std::string& path, const 
 	return writeToFile(root, path.c_str(), encoding, nameformat, varformat);
 }
 
-bool IniFormatter::writeToFile(const Node* root, const UnicodeString& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
+bool IniFormatter::writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return writeToFile(root, temp.c_str(), encoding, nameformat, varformat);
@@ -532,7 +533,7 @@ bool IniFormatter::writeToFile(const Node* root, const UnicodeString& path, cons
 
 bool IniFormatter::writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat, unsigned int varformat) {
 	if (root && stream) {
-		UnicodeString temp;
+		icu::UnicodeString temp;
 		if (root->getParent() && root->getName().length()>0) { // cheap way of saying the node is not a root node
 			writeTabs(stream, tcount, false);
 			root->getNameFormatted(temp, nameformat);

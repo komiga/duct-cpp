@@ -126,17 +126,17 @@ UChar32 StreamWrapper::readChar() {
 	return _stream->readChar();
 }
 
-size_t StreamWrapper::readString(UnicodeString& str, size_t length) {
+size_t StreamWrapper::readString(icu::UnicodeString& str, size_t length) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->readString(str, length);
 }
 
-size_t StreamWrapper::readLine(UnicodeString& str) {
+size_t StreamWrapper::readLine(icu::UnicodeString& str) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->readLine(str);
 }
 
-size_t StreamWrapper::readCString(UnicodeString& str, size_t maxlength) {
+size_t StreamWrapper::readCString(icu::UnicodeString& str, size_t maxlength) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->readCString(str, maxlength);
 }
@@ -201,17 +201,17 @@ size_t StreamWrapper::writeChar32(UChar32 value) {
 	return _stream->writeChar32(value);
 }
 
-size_t StreamWrapper::writeString(const UnicodeString& str) {
+size_t StreamWrapper::writeString(const icu::UnicodeString& str) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->writeString(str);
 }
 
-size_t StreamWrapper::writeLine(const UnicodeString& str) {
+size_t StreamWrapper::writeLine(const icu::UnicodeString& str) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->writeLine(str);
 }
 
-size_t StreamWrapper::writeCString(const UnicodeString& str) {
+size_t StreamWrapper::writeCString(const icu::UnicodeString& str) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->writeCString(str);
 }
@@ -268,7 +268,7 @@ bool StreamWrapper::setEncoding(const char* encoding) {
 	return _stream->setEncoding(encoding);
 }
 
-bool StreamWrapper::setEncoding(const UnicodeString& encoding) {
+bool StreamWrapper::setEncoding(const icu::UnicodeString& encoding) {
 	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
 	return _stream->setEncoding(encoding);
 }

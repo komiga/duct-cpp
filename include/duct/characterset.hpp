@@ -38,9 +38,10 @@ Implements component parts:
 #ifndef _DUCT_CHARACTERSET_HPP
 #define _DUCT_CHARACTERSET_HPP
 
+#include <duct/config.hpp>
+
 #include <vector>
 #include <unicode/unistr.h>
-#include <duct/config.hpp>
 
 namespace duct {
 
@@ -96,14 +97,14 @@ public:
 		@param str The string to search.
 		@param from Optional start index.
 	*/
-	int findInString(const UnicodeString& str, unsigned int from=0) const;
+	int findInString(const icu::UnicodeString& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional start index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const UnicodeString& str, int from=-1) const;
+	int findLastInString(const icu::UnicodeString& str, int from=-1) const;
 	/**
 		Compare the given range with this range.
 		@returns -1 if the given range is greater than this, 1 if this range is greater than the given, or 0 if they are the same.
@@ -142,7 +143,7 @@ public:
 		Constructor with string ranges.
 		@param str The ranges.
 	*/
-	CharacterSet(const UnicodeString& str);
+	CharacterSet(const icu::UnicodeString& str);
 	CharacterSet(const char* str);
 	/**
 		Constructor with single range.
@@ -198,14 +199,14 @@ public:
 		@param str The string to search.
 		@param from Optional begin index.
 	*/
-	int findInString(const UnicodeString& str, unsigned int from=0) const;
+	int findInString(const icu::UnicodeString& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional begin index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const UnicodeString& str, int from=-1) const;
+	int findLastInString(const icu::UnicodeString& str, int from=-1) const;
 	/**
 		Remove all ranges from the set.
 		@returns Nothing.
@@ -216,7 +217,7 @@ public:
 		@returns Nothing.
 		@param str The string ranges to add.
 	*/
-	void addRangesWithString(const UnicodeString& str);
+	void addRangesWithString(const icu::UnicodeString& str);
 	/**
 		Add the given integer range.
 		@returns Nothing.
