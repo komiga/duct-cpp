@@ -1,16 +1,17 @@
 
-#include "duct/variables.hpp"
-#include "duct/template.hpp"
-#include <unicode/ustream.h>
+#include <duct/variables.hpp>
+#include <duct/template.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustream.h>
 
 using namespace duct;
 using namespace std;
 
 void printValues(const Identifier& iden) {
 	printf("Variable count: %lu\n", iden.getChildCount());
-	UnicodeString str;
+	icu::UnicodeString str;
 	for (VarList::const_iterator iter=iden.begin(); iter!=iden.end(); ++iter) {
 		ValueVariable* var=dynamic_cast<ValueVariable*>(*iter);
 		if (var) {

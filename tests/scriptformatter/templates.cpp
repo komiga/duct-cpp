@@ -1,9 +1,10 @@
 
-#include "duct/template.hpp"
-#include "duct/scriptformatter.hpp"
-#include <unicode/ustream.h>
+#include <duct/template.hpp>
+#include <duct/scriptformatter.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustream.h>
 
 using namespace std;
 using namespace duct;
@@ -21,7 +22,7 @@ int main() {
 	try {
 		Node* root=ScriptFormatter::loadFromFile("templates.script");
 		if (root) {
-			UnicodeString temp;
+			icu::UnicodeString temp;
 			const Identifier* identifier;
 			bool pass=false;
 			for (VarList::const_iterator iter=root->begin(); iter!=root->end(); ++iter) {

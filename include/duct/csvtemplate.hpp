@@ -34,10 +34,11 @@ Extension to component parts:
 #ifndef _DUCT_CSVTEMPLATE_HPP
 #define _DUCT_CSVTEMPLATE_HPP
 
-#include <map>
 #include <duct/config.hpp>
 #include <duct/csv.hpp>
 #include <duct/variables.hpp>
+
+#include <map>
 
 namespace duct {
 

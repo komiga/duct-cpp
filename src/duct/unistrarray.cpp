@@ -54,8 +54,8 @@ StringArray::~StringArray() {
 
 void StringArray::set(const char* str) {
 	release();
-	_data=new UnicodeString*[_size=1];
-	_data[0]=new UnicodeString(str);
+	_data=new icu::UnicodeString*[_size=1];
+	_data[0]=new icu::UnicodeString(str);
 	_static=false;
 }
 
@@ -69,9 +69,9 @@ void StringArray::set(const char** data, int size) {
 		size=i;
 	}
 	_size=size;
-	_data=new UnicodeString*[size];
+	_data=new icu::UnicodeString*[size];
 	for (i=0; i<size; ++i) {
-		_data[i]=new UnicodeString(data[i]);
+		_data[i]=new icu::UnicodeString(data[i]);
 	}
 	_static=false;
 }
@@ -79,9 +79,9 @@ void StringArray::set(const char** data, int size) {
 void StringArray::setVLCStrings(unsigned int num, va_list ap) {
 	release();
 	_size=num;
-	_data=new UnicodeString*[_size];
+	_data=new icu::UnicodeString*[_size];
 	for (unsigned int i=0; i<num; ++i) {
-		_data[i]=new UnicodeString(va_arg(ap, const char*));
+		_data[i]=new icu::UnicodeString(va_arg(ap, const char*));
 	}
 	_static=false;
 }

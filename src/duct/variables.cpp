@@ -24,11 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <algorithm>
-#include <unicode/numfmt.h>
 #include <duct/debug.hpp>
 #include <duct/charutils.hpp>
 #include <duct/variables.hpp>
+
+#include <algorithm>
+#include <unicode/numfmt.h>
 
 namespace duct {
 
@@ -43,16 +44,16 @@ const UChar __uchar_quotedempty[]={'\"', '\"', '\0'};
 
 Variable::~Variable() { /* Do nothing */ }
 
-void Variable::setName(const UnicodeString& name) {
+void Variable::setName(const icu::UnicodeString& name) {
 	_name.setTo(name);
 }
 
-const UnicodeString& Variable::getName() const {
+const icu::UnicodeString& Variable::getName() const {
 	return _name;
 }
 
-void Variable::getNameFormatted(UnicodeString& result, unsigned int format) const {
-	UnicodeString temp;
+void Variable::getNameFormatted(icu::UnicodeString& result, unsigned int format) const {
+	icu::UnicodeString temp;
 	if (format&FMT_VALUE_QUOTE_ALWAYS) {
 		temp.setTo('\"'+_name+'\"');
 	} else if (_name.isEmpty() && format&FMT_STRING_QUOTE_EMPTY) {
@@ -79,7 +80,7 @@ signed int Variable::variableToBool(Variable* source) {
 	if (source->getType()==VARTYPE_BOOL) {
 		return ((BoolVariable*)source)->get();
 	} else if (source->getType()==VARTYPE_STRING) {
-		const UnicodeString& str=((StringVariable*)source)->get();
+		const icu::UnicodeString& str=((StringVariable*)source)->get();
 		if (str.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || str.compare(__uchar_1, 1)==0) {
 			return 1;
 		} else if (str.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || str.compare(__uchar_0, 1)==0) {
@@ -96,7 +97,7 @@ signed int Variable::variableToBool(Variable* source) {
 	return -1;
 }
 
-signed int Variable::stringToBool(const UnicodeString& source) {
+signed int Variable::stringToBool(const icu::UnicodeString& source) {
 	if (source.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_1, 1)==0) {
 		return 1;
 	} else if (source.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_0, 1)==0) {
@@ -105,7 +106,7 @@ signed int Variable::stringToBool(const UnicodeString& source) {
 	return -1;
 }
 
-ValueVariable* Variable::stringToValue(const UnicodeString& source, const UnicodeString& varname, unsigned int type) {
+ValueVariable* Variable::stringToValue(const icu::UnicodeString& source, const icu::UnicodeString& varname, unsigned int type) {
 	if (source.isEmpty()) {
 		return new StringVariable(source, varname, NULL);
 	}
@@ -152,8 +153,8 @@ ValueVariable* Variable::stringToValue(const UnicodeString& source, const Unicod
 	return var;
 }
 
-ValueVariable* Variable::stringToValue(const UnicodeString& source, unsigned int type) {
-	UnicodeString varname;
+ValueVariable* Variable::stringToValue(const icu::UnicodeString& source, unsigned int type) {
+	icu::UnicodeString varname;
 	return stringToValue(source, varname, type);
 }
 
@@ -168,7 +169,7 @@ IntVariable::IntVariable(int value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-IntVariable::IntVariable(int value, const UnicodeString& name, CollectionVariable* parent) {
+IntVariable::IntVariable(int value, const icu::UnicodeString& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
@@ -182,10 +183,10 @@ int IntVariable::get() const {
 	return _value;
 }
 
-void IntVariable::setFromString(const UnicodeString& source) {
+void IntVariable::setFromString(const icu::UnicodeString& source) {
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(source, formattable, status);
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
@@ -196,7 +197,7 @@ void IntVariable::setFromString(const UnicodeString& source) {
 	delete nf;
 }
 
-void IntVariable::getValueFormatted(UnicodeString& result, unsigned int format) const {
+void IntVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
 	if (format&FMT_VALUE_QUOTE_ALWAYS) {
 		result.setTo('\"');
 		valueAsString(result, true);
@@ -206,9 +207,9 @@ void IntVariable::getValueFormatted(UnicodeString& result, unsigned int format) 
 	}
 }
 
-void IntVariable::valueAsString(UnicodeString& result, bool append) const {
+void IntVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	nf->setGroupingUsed(false);
 	nf->setParseIntegerOnly(true);
 	if (!append)
@@ -236,12 +237,12 @@ StringVariable::StringVariable(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-StringVariable::StringVariable(const UnicodeString& value, CollectionVariable* parent) {
+StringVariable::StringVariable(const icu::UnicodeString& value, CollectionVariable* parent) {
 	set(value);
 	setParent(parent);
 }
 
-StringVariable::StringVariable(const UnicodeString& value, const UnicodeString& name, CollectionVariable* parent) {
+StringVariable::StringVariable(const icu::UnicodeString& value, const icu::UnicodeString& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
@@ -282,16 +283,16 @@ bool StringVariable::isNumeric(bool allowdecimal) const {
 	return result;
 }
 
-void StringVariable::set(const UnicodeString& value) {
+void StringVariable::set(const icu::UnicodeString& value) {
 	_value=value;
 }
 
-void StringVariable::setFromString(const UnicodeString& source) {
+void StringVariable::setFromString(const icu::UnicodeString& source) {
 	_name.setTo(source);
 }
 
-void StringVariable::getValueFormatted(UnicodeString& result, unsigned int format) const {
-	UnicodeString temp;
+void StringVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
+	icu::UnicodeString temp;
 	if (format&FMT_VALUE_QUOTE_ALWAYS || format&FMT_STRING_QUOTE_ALWAYS) {
 		temp.setTo('\"'); temp.append(_value); temp+='\"';
 	} else if (format&FMT_STRING_QUOTE_EMPTY && _value.isEmpty()) {
@@ -311,7 +312,7 @@ void StringVariable::getValueFormatted(UnicodeString& result, unsigned int forma
 	CharUtils::escapeString(result, temp, format);
 }
 
-void StringVariable::valueAsString(UnicodeString& result, bool append) const {
+void StringVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	if (append) {
 		result+=_value;
 	} else {
@@ -319,7 +320,7 @@ void StringVariable::valueAsString(UnicodeString& result, bool append) const {
 	}
 }
 
-const UnicodeString& StringVariable::get() const {
+const icu::UnicodeString& StringVariable::get() const {
 	return _value;
 }
 
@@ -343,7 +344,7 @@ FloatVariable::FloatVariable(float value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-FloatVariable::FloatVariable(float value, const UnicodeString& name, CollectionVariable* parent) {
+FloatVariable::FloatVariable(float value, const icu::UnicodeString& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
@@ -357,10 +358,10 @@ float FloatVariable::get() const {
 	return _value;
 }
 
-void FloatVariable::setFromString(const UnicodeString& source) {
+void FloatVariable::setFromString(const icu::UnicodeString& source) {
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(source, formattable, status);
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
@@ -372,7 +373,7 @@ void FloatVariable::setFromString(const UnicodeString& source) {
 	delete nf;
 }
 
-void FloatVariable::getValueFormatted(UnicodeString& result, unsigned int format) const {
+void FloatVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
 	if (format&FMT_VALUE_QUOTE_ALWAYS) {
 		result.setTo('\"');
 		valueAsString(result, true);
@@ -382,9 +383,9 @@ void FloatVariable::getValueFormatted(UnicodeString& result, unsigned int format
 	}
 }
 
-void FloatVariable::valueAsString(UnicodeString& result, bool append) const {
+void FloatVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat *nf=NumberFormat::createInstance(status);
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	nf->setGroupingUsed(false);
 	nf->setParseIntegerOnly(false);
 	nf->setMinimumFractionDigits(1);
@@ -414,7 +415,7 @@ BoolVariable::BoolVariable(bool value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-BoolVariable::BoolVariable(bool value, const UnicodeString& name, CollectionVariable* parent) {
+BoolVariable::BoolVariable(bool value, const icu::UnicodeString& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
@@ -428,7 +429,7 @@ bool BoolVariable::get() const {
 	return _value;
 }
 
-void BoolVariable::setFromString(const UnicodeString& source) {
+void BoolVariable::setFromString(const icu::UnicodeString& source) {
 	if (source.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_1, 1)==0) {
 		_value=true;
 	//} else if (source.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_0, 1)==0) {
@@ -438,7 +439,7 @@ void BoolVariable::setFromString(const UnicodeString& source) {
 	}
 }
 
-void BoolVariable::getValueFormatted(UnicodeString& result, unsigned int format) const {
+void BoolVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
 	if (format&FMT_BOOL_QUOTE || format&FMT_VALUE_QUOTE_ALWAYS) {
 		result.setTo('\"');
 		(_value) ? result.append(__uchar_true, 4) : result.append(__uchar_false, 5);
@@ -448,7 +449,7 @@ void BoolVariable::getValueFormatted(UnicodeString& result, unsigned int format)
 	}
 }
 
-void BoolVariable::valueAsString(UnicodeString& result, bool append) const {
+void BoolVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	if (!append) {
 		result.remove(); // Clear the string
 	}
@@ -592,15 +593,15 @@ VarList::const_iterator CollectionVariable::findWithType(unsigned int type, VarL
 	return ei;
 }
 
-VarList::iterator CollectionVariable::findWithName(const UnicodeString& name, bool casesens, unsigned int type) {
+VarList::iterator CollectionVariable::findWithName(const icu::UnicodeString& name, bool casesens, unsigned int type) {
 	return findWithName(name, begin(), casesens, type);
 }
 
-VarList::const_iterator CollectionVariable::findWithName(const UnicodeString& name, bool casesens, unsigned int type) const {
+VarList::const_iterator CollectionVariable::findWithName(const icu::UnicodeString& name, bool casesens, unsigned int type) const {
 	return findWithName(name, begin(), casesens, type);
 }
 
-VarList::iterator CollectionVariable::findWithName(const UnicodeString& name, VarList::iterator iter, bool casesens, unsigned int type) {
+VarList::iterator CollectionVariable::findWithName(const icu::UnicodeString& name, VarList::iterator iter, bool casesens, unsigned int type) {
 	VarList::iterator ei=end();
 	const Variable* variable;
 	while (iter!=ei) {
@@ -615,7 +616,7 @@ VarList::iterator CollectionVariable::findWithName(const UnicodeString& name, Va
 	return ei;
 }
 
-VarList::const_iterator CollectionVariable::findWithName(const UnicodeString& name, VarList::const_iterator iter, bool casesens, unsigned int type) const {
+VarList::const_iterator CollectionVariable::findWithName(const icu::UnicodeString& name, VarList::const_iterator iter, bool casesens, unsigned int type) const {
 	VarList::const_iterator ei=end();
 	const Variable* variable;
 	while (iter!=ei) {
@@ -736,7 +737,7 @@ bool CollectionVariable::remove(unsigned int type) {
 	return false;
 }
 
-bool CollectionVariable::remove(const UnicodeString& name, bool casesens, unsigned int type) {
+bool CollectionVariable::remove(const icu::UnicodeString& name, bool casesens, unsigned int type) {
 	VarList::iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		erase(iter);
@@ -745,7 +746,7 @@ bool CollectionVariable::remove(const UnicodeString& name, bool casesens, unsign
 	return false;
 }
 
-Variable* CollectionVariable::get(const UnicodeString& name, bool casesens, unsigned int type) {
+Variable* CollectionVariable::get(const icu::UnicodeString& name, bool casesens, unsigned int type) {
 	VarList::iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		return (*iter);
@@ -753,7 +754,7 @@ Variable* CollectionVariable::get(const UnicodeString& name, bool casesens, unsi
 	return NULL;
 }
 
-const Variable* CollectionVariable::get(const UnicodeString& name, bool casesens, unsigned int type) const {
+const Variable* CollectionVariable::get(const icu::UnicodeString& name, bool casesens, unsigned int type) const {
 	VarList::const_iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		return (*iter);
@@ -793,7 +794,7 @@ const IntVariable* CollectionVariable::getInt(int index) const {
 	return NULL;
 }
 
-IntVariable* CollectionVariable::getInt(const UnicodeString& name, bool casesens) {
+IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_INTEGER);
 	if (var) {
 		return (IntVariable*)var;
@@ -801,7 +802,7 @@ IntVariable* CollectionVariable::getInt(const UnicodeString& name, bool casesens
 	return NULL;
 }
 
-const IntVariable* CollectionVariable::getInt(const UnicodeString& name, bool casesens) const {
+const IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_INTEGER);
 	if (var) {
 		return (IntVariable*)var;
@@ -818,7 +819,7 @@ bool CollectionVariable::getIntValue(int& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getIntValue(int& result, const UnicodeString& name, bool casesens) const {
+bool CollectionVariable::getIntValue(int& result, const icu::UnicodeString& name, bool casesens) const {
 	const IntVariable* var=getInt(name, casesens);
 	if (var) {
 		result=var->get();
@@ -842,7 +843,7 @@ const StringVariable* CollectionVariable::getString(int index) const {
 	return NULL;
 }
 
-StringVariable* CollectionVariable::getString(const UnicodeString& name, bool casesens) {
+StringVariable* CollectionVariable::getString(const icu::UnicodeString& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_STRING);
 	if (var) {
 		return (StringVariable*)var;
@@ -850,7 +851,7 @@ StringVariable* CollectionVariable::getString(const UnicodeString& name, bool ca
 	return NULL;
 }
 
-const StringVariable* CollectionVariable::getString(const UnicodeString& name, bool casesens) const {
+const StringVariable* CollectionVariable::getString(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_STRING);
 	if (var) {
 		return (StringVariable*)var;
@@ -858,7 +859,7 @@ const StringVariable* CollectionVariable::getString(const UnicodeString& name, b
 	return NULL;
 }
 
-const UnicodeString* CollectionVariable::getStringValue(int index) const {
+const icu::UnicodeString* CollectionVariable::getStringValue(int index) const {
 	const StringVariable* var=getString(index);
 	if (var) {
 		return &(var->get());
@@ -866,8 +867,8 @@ const UnicodeString* CollectionVariable::getStringValue(int index) const {
 	return NULL;
 }
 
-bool CollectionVariable::getStringValue(UnicodeString& result, int index) const {
-	const UnicodeString* ptr=getStringValue(index);
+bool CollectionVariable::getStringValue(icu::UnicodeString& result, int index) const {
+	const icu::UnicodeString* ptr=getStringValue(index);
 	if (ptr) {
 		result.setTo(*ptr);
 		return true;
@@ -875,7 +876,7 @@ bool CollectionVariable::getStringValue(UnicodeString& result, int index) const 
 	return false;
 }
 
-const UnicodeString* CollectionVariable::getStringValue(const UnicodeString& name, bool casesens) const {
+const icu::UnicodeString* CollectionVariable::getStringValue(const icu::UnicodeString& name, bool casesens) const {
 	const StringVariable* var=getString(name, casesens);
 	if (var) {
 		return &(var->get());
@@ -883,8 +884,8 @@ const UnicodeString* CollectionVariable::getStringValue(const UnicodeString& nam
 	return NULL;
 }
 
-bool CollectionVariable::getStringValue(UnicodeString& result, const UnicodeString& name, bool casesens) const {
-	const UnicodeString* ptr=getStringValue(name, casesens);
+bool CollectionVariable::getStringValue(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens) const {
+	const icu::UnicodeString* ptr=getStringValue(name, casesens);
 	if (ptr) {
 		result.setTo(*ptr);
 		return true;
@@ -908,7 +909,7 @@ const FloatVariable* CollectionVariable::getFloat(int index) const {
 	return NULL;
 }
 
-FloatVariable* CollectionVariable::getFloat(const UnicodeString& name, bool casesens) {
+FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_FLOAT);
 	if (var) {
 		return (FloatVariable*)var;
@@ -916,7 +917,7 @@ FloatVariable* CollectionVariable::getFloat(const UnicodeString& name, bool case
 	return NULL;
 }
 
-const FloatVariable* CollectionVariable::getFloat(const UnicodeString& name, bool casesens) const {
+const FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_FLOAT);
 	if (var) {
 		return (FloatVariable*)var;
@@ -933,7 +934,7 @@ bool CollectionVariable::getFloatValue(float& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getFloatValue(float& result, const UnicodeString& name, bool casesens) const {
+bool CollectionVariable::getFloatValue(float& result, const icu::UnicodeString& name, bool casesens) const {
 	const FloatVariable* var=getFloat(name, casesens);
 	if (var) {
 		result=var->get();
@@ -958,7 +959,7 @@ const BoolVariable* CollectionVariable::getBool(int index) const {
 	return NULL;
 }
 
-BoolVariable* CollectionVariable::getBool(const UnicodeString& name, bool casesens) {
+BoolVariable* CollectionVariable::getBool(const icu::UnicodeString& name, bool casesens) {
 	const Variable* var=get(name, casesens, VARTYPE_BOOL);
 	if (var) {
 		return (BoolVariable*)var;
@@ -966,7 +967,7 @@ BoolVariable* CollectionVariable::getBool(const UnicodeString& name, bool casese
 	return NULL;
 }
 
-const BoolVariable* CollectionVariable::getBool(const UnicodeString& name, bool casesens) const {
+const BoolVariable* CollectionVariable::getBool(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_BOOL);
 	if (var) {
 		return (BoolVariable*)var;
@@ -983,7 +984,7 @@ bool CollectionVariable::getBoolValue(bool& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getBoolValue(bool& result, const UnicodeString& name, bool casesens) {
+bool CollectionVariable::getBoolValue(bool& result, const icu::UnicodeString& name, bool casesens) {
 	const BoolVariable* var=getBool(name, casesens);
 	if (var) {
 		result=var->get();
@@ -992,7 +993,7 @@ bool CollectionVariable::getBoolValue(bool& result, const UnicodeString& name, b
 	return false;	
 }
 
-bool CollectionVariable::getAsString(UnicodeString& result, int index, unsigned int type) const {
+bool CollectionVariable::getAsString(icu::UnicodeString& result, int index, unsigned int type) const {
 	const ValueVariable* var=(ValueVariable*)get(index, type);
 	if (var) {
 		var->valueAsString(result, false);
@@ -1001,7 +1002,7 @@ bool CollectionVariable::getAsString(UnicodeString& result, int index, unsigned 
 	return false;
 }
 
-bool CollectionVariable::getAsString(UnicodeString& result, const UnicodeString& name, bool casesens, unsigned int type) const {
+bool CollectionVariable::getAsString(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens, unsigned int type) const {
 	const ValueVariable* var=(ValueVariable*)get(name, casesens, type);
 	if (var) {
 		var->valueAsString(result, false);
@@ -1026,7 +1027,7 @@ const Identifier* CollectionVariable::getIdentifier(int index) const {
 	return NULL;
 }
 
-Identifier* CollectionVariable::getIdentifier(const UnicodeString& name, bool casesens) {
+Identifier* CollectionVariable::getIdentifier(const icu::UnicodeString& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_IDENTIFIER);
 	if (var) {
 		return (Identifier*)var;
@@ -1034,7 +1035,7 @@ Identifier* CollectionVariable::getIdentifier(const UnicodeString& name, bool ca
 	return NULL;
 }
 
-const Identifier* CollectionVariable::getIdentifier(const UnicodeString& name, bool casesens) const {
+const Identifier* CollectionVariable::getIdentifier(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_IDENTIFIER);
 	if (var) {
 		return (Identifier*)var;
@@ -1058,7 +1059,7 @@ const Node* CollectionVariable::getNode(int index) const {
 	return NULL;
 }
 
-Node* CollectionVariable::getNode(const UnicodeString& name, bool casesens) {
+Node* CollectionVariable::getNode(const icu::UnicodeString& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_NODE);
 	if (var) {
 		return (Node*)var;
@@ -1066,7 +1067,7 @@ Node* CollectionVariable::getNode(const UnicodeString& name, bool casesens) {
 	return NULL;
 }
 
-const Node* CollectionVariable::getNode(const UnicodeString& name, bool casesens) const {
+const Node* CollectionVariable::getNode(const icu::UnicodeString& name, bool casesens) const {
 	const Variable* var=get(name, casesens, VARTYPE_NODE);
 	if (var) {
 		return (Node*)var;
@@ -1087,7 +1088,7 @@ Identifier::Identifier(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-Identifier::Identifier(const UnicodeString& name, CollectionVariable* parent) {
+Identifier::Identifier(const icu::UnicodeString& name, CollectionVariable* parent) {
 	setName(name);
 	setParent(parent);
 }
@@ -1112,7 +1113,7 @@ Node::Node(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-Node::Node(const UnicodeString& name, CollectionVariable* parent) {
+Node::Node(const icu::UnicodeString& name, CollectionVariable* parent) {
 	setName(name);
 	setParent(parent);
 }

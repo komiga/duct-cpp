@@ -34,10 +34,11 @@ Implements component parts:
 #ifndef _DUCT_VARIABLES_HPP
 #define _DUCT_VARIABLES_HPP
 
+#include <duct/config.hpp>
+
 #include <list>
 #include <unicode/uchar.h>
 #include <unicode/unistr.h>
-#include <duct/config.hpp>
 
 namespace duct {
 
@@ -224,19 +225,19 @@ public:
 		@returns Nothing.
 		@param name The new name.
 	*/
-	virtual void setName(const UnicodeString& name);
+	virtual void setName(const icu::UnicodeString& name);
 	/**
 		Get the variable's name.
 		@returns The variable's name.
 	*/
-	virtual const UnicodeString& getName() const;
+	virtual const icu::UnicodeString& getName() const;
 	/**
 		Get the variable's name with the given format.
 		@returns Nothing.
 		@param result The variable to store the formatted name.
 		@param format The formatting flags.
 	*/
-	virtual void getNameFormatted(UnicodeString& result, unsigned int format=FMT_NAME_DEFAULT) const;
+	virtual void getNameFormatted(icu::UnicodeString& result, unsigned int format=FMT_NAME_DEFAULT) const;
 	/**
 		Set the variable's parent.
 		@returns The variable's parent.
@@ -278,7 +279,7 @@ public:
 		@returns 1 if the given variable was able to convert to 'true', 0 if the given variable was able to convert to 'false', or -1 if the variable was not able to convert to a boolean value.
 		@param source The string to test.
 	*/
-	static signed int stringToBool(const UnicodeString& source);
+	static signed int stringToBool(const icu::UnicodeString& source);
 	/**
 		Convert the given string into a ValueVariable.
 		If the given source string is empty, an empty StringVariable will be returned with the given variable name.
@@ -287,7 +288,7 @@ public:
 		@param varname The variable name for the resulting value.
 		@param type Optional type-shortcut. Possible values for base ValueVariable types can be found in the #VariableType enum.
 	*/
-	static ValueVariable* stringToValue(const UnicodeString& source, const UnicodeString& varname, unsigned int type=VARTYPE_NONE);
+	static ValueVariable* stringToValue(const icu::UnicodeString& source, const icu::UnicodeString& varname, unsigned int type=VARTYPE_NONE);
 	/**
 		Convert the given string into a ValueVariable.
 		If the given source string is empty, an empty StringVariable will be returned.
@@ -295,10 +296,10 @@ public:
 		@param source The string to convert.
 		@param type Optional type-shortcut. Possible values for base ValueVariable types can be found in the #VariableType enum.
 	*/
-	static ValueVariable* stringToValue(const UnicodeString& source, unsigned int type=VARTYPE_NONE);
+	static ValueVariable* stringToValue(const icu::UnicodeString& source, unsigned int type=VARTYPE_NONE);
 	
 protected:
-	UnicodeString _name;
+	icu::UnicodeString _name;
 	CollectionVariable* _parent;
 };
 
@@ -316,21 +317,21 @@ public:
 		@returns Nothing.
 		@param value The string to set the variable from.
 	*/
-	virtual void setFromString(const UnicodeString& source)=0;
+	virtual void setFromString(const icu::UnicodeString& source)=0;
 	/**
 		Get the variable's value as a string with the given format.
 		@returns Nothing.
 		@param result The variable to store the formatted value.
 		@param format The formatting flags.
 	*/
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const=0;
+	virtual void getValueFormatted(icu::UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const=0;
 	/**
 		Get an unformatted string conversion of the variable.
 		@returns The variable's value as an unformatted string.
 		@param result The variable to store the result.
 		@param append Whether to append or replace the result string. Default is false.
 	*/
-	virtual void valueAsString(UnicodeString& result, bool append=false) const=0;
+	virtual void valueAsString(icu::UnicodeString& result, bool append=false) const=0;
 };
 
 /**
@@ -355,7 +356,7 @@ public:
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	IntVariable(int value, const UnicodeString& name, CollectionVariable* parent=NULL);
+	IntVariable(int value, const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	/**
 		Set the variable's value.
 		@returns Nothing.
@@ -367,9 +368,9 @@ public:
 		@returns The variable's value.
 	*/
 	virtual int get() const;
-	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append=false) const;
+	virtual void setFromString(const icu::UnicodeString& source);
+	virtual void getValueFormatted(icu::UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(icu::UnicodeString& result, bool append=false) const;
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;
@@ -393,14 +394,14 @@ public:
 		@param value The value to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	StringVariable(const UnicodeString& value, CollectionVariable* parent=NULL);
+	StringVariable(const icu::UnicodeString& value, CollectionVariable* parent=NULL);
 	/**
 		Constructor with name, value and parent.
 		@param value The value to initialize with.
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	StringVariable(const UnicodeString& value, const UnicodeString& name, CollectionVariable* parent=NULL);
+	StringVariable(const icu::UnicodeString& value, const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	/**
 		Check if the string is numerical.
 		@returns True if the string is numerical.
@@ -412,21 +413,21 @@ public:
 		@returns Nothing.
 		@param value The new value.
 	*/
-	virtual void set(const UnicodeString& value);
+	virtual void set(const icu::UnicodeString& value);
 	/**
 		Get the variable's value.
 		@returns The variable's value.
 	*/
-	virtual const UnicodeString& get() const;
-	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append=false) const;
+	virtual const icu::UnicodeString& get() const;
+	virtual void setFromString(const icu::UnicodeString& source);
+	virtual void getValueFormatted(icu::UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(icu::UnicodeString& result, bool append=false) const;
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;
 	
 protected:
-	UnicodeString _value;
+	icu::UnicodeString _value;
 };
 
 /**
@@ -446,7 +447,7 @@ public:
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	FloatVariable(float value, const UnicodeString& name, CollectionVariable* parent=NULL);
+	FloatVariable(float value, const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	/**
 		Set the variable's value.
 		@returns Nothing.
@@ -458,9 +459,9 @@ public:
 		@returns The variable's value.
 	*/
 	virtual float get() const;
-	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append=false) const;
+	virtual void setFromString(const icu::UnicodeString& source);
+	virtual void getValueFormatted(icu::UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(icu::UnicodeString& result, bool append=false) const;
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;
@@ -486,7 +487,7 @@ public:
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	BoolVariable(bool value, const UnicodeString& name, CollectionVariable* parent=NULL);
+	BoolVariable(bool value, const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	/**
 		Set the variable's value.
 		@returns Nothing.
@@ -498,9 +499,9 @@ public:
 		@returns The variable's value.
 	*/
 	virtual bool get() const;
-	virtual void setFromString(const UnicodeString& source);
-	virtual void getValueFormatted(UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
-	virtual void valueAsString(UnicodeString& result, bool append=false) const;
+	virtual void setFromString(const icu::UnicodeString& source);
+	virtual void getValueFormatted(icu::UnicodeString& result, unsigned int format=FMT_ALL_DEFAULT) const;
+	virtual void valueAsString(icu::UnicodeString& result, bool append=false) const;
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;
@@ -593,8 +594,8 @@ public:
 		@param casesens Whether to use case-sensitive name comparison.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	VarList::iterator findWithName(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
-	VarList::const_iterator findWithName(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
+	VarList::iterator findWithName(const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
+	VarList::const_iterator findWithName(const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
 	/**
 		Find a variable with the given name and type, starting from iter.
 		@returns The iterator for the variable with the given name and type, or the end iterator if the variable was not found.
@@ -603,8 +604,8 @@ public:
 		@param casesens Whether to use case-sensitive name comparison.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	VarList::iterator findWithName(const UnicodeString& name, VarList::iterator iter, bool casesens=true, unsigned int type=VARTYPE_ANY);
-	VarList::const_iterator findWithName(const UnicodeString& name, VarList::const_iterator iter, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
+	VarList::iterator findWithName(const icu::UnicodeString& name, VarList::iterator iter, bool casesens=true, unsigned int type=VARTYPE_ANY);
+	VarList::const_iterator findWithName(const icu::UnicodeString& name, VarList::const_iterator iter, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
 	/**
 		Remove the given iterator and delete its variable.
 		@returns Nothing.
@@ -681,7 +682,7 @@ public:
 		@param casesens Whether to use case-sensitive name comparison.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	bool remove(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
+	bool remove(const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
 	/**
 		Get a variable with the given name and type.
 		@returns The first matching variable, or NULL if no children matched the parameters.
@@ -689,8 +690,8 @@ public:
 		@param casesens Whether to use case-sensitive name comparison.
 		@param type Optional variable-type to search for. VARTYPE_ANY is the default.
 	*/
-	Variable* get(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
-	const Variable* get(const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
+	Variable* get(const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY);
+	const Variable* get(const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_ANY) const;
 	/**
 		Get the variable at the given index.
 		@returns The variable at the given index, or NULL if either the given index was out of bounds or the variable at the given index did not match the given variable type.
@@ -712,8 +713,8 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	IntVariable* getInt(const UnicodeString& name, bool casesens=true);
-	const IntVariable* getInt(const UnicodeString& name, bool casesens=true) const;
+	IntVariable* getInt(const icu::UnicodeString& name, bool casesens=true);
+	const IntVariable* getInt(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the integer value at the given index.
 		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
@@ -728,7 +729,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	bool getIntValue(int& result, const UnicodeString& name, bool casesens=true) const;
+	bool getIntValue(int& result, const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the string at the given index.
 		@returns The StringVariable at the index, or NULL if either the index was invalid or the variable at the index wasn't the correct type.
@@ -742,22 +743,22 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	StringVariable* getString(const UnicodeString& name, bool casesens=true);
-	const StringVariable* getString(const UnicodeString& name, bool casesens=true) const;
+	StringVariable* getString(const icu::UnicodeString& name, bool casesens=true);
+	const StringVariable* getString(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the string value at the given index.
 		The returned string should not be destroyed.
 		@returns The string at the index, or NULL if either the index was invalid or the variable at the index wasn't the correct type.
 		@param index The index to retrieve.
 	*/
-	const UnicodeString* getStringValue(int index) const;
+	const icu::UnicodeString* getStringValue(int index) const;
 	/**
 		Get the string value at the given index.
 		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
-	bool getStringValue(UnicodeString& result, int index) const;
+	bool getStringValue(icu::UnicodeString& result, int index) const;
 	/**
 		Get the string value matching the given name.
 		The returned string should not be destroyed.
@@ -765,7 +766,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	const UnicodeString* getStringValue(const UnicodeString& name, bool casesens=true) const;
+	const icu::UnicodeString* getStringValue(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the string value matching the given name.
 		@returns true on success, or false if no children matched the parameters.
@@ -773,7 +774,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	bool getStringValue(UnicodeString& result, const UnicodeString& name, bool casesens=true) const;
+	bool getStringValue(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the float at the given index.
 		@returns The FloatVariable at the index, or NULL if either the index was invalid or the variable at the index wasn't the correct type.
@@ -787,8 +788,8 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	FloatVariable* getFloat(const UnicodeString& name, bool casesens=true);
-	const FloatVariable* getFloat(const UnicodeString& name, bool casesens=true) const;
+	FloatVariable* getFloat(const icu::UnicodeString& name, bool casesens=true);
+	const FloatVariable* getFloat(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the float value at the given index.
 		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
@@ -803,7 +804,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	bool getFloatValue(float& result, const UnicodeString& name, bool casesens=true) const;
+	bool getFloatValue(float& result, const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the bool at the given index.
 		@returns The BoolVariable at the index, or NULL if either the index was invalid or the variable at the index wasn't the correct type.
@@ -817,8 +818,8 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	BoolVariable* getBool(const UnicodeString& name, bool casesens=true);
-	const BoolVariable* getBool(const UnicodeString& name, bool casesens=true) const;
+	BoolVariable* getBool(const icu::UnicodeString& name, bool casesens=true);
+	const BoolVariable* getBool(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the bool value at the given index.
 		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
@@ -833,7 +834,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	bool getBoolValue(bool& result, const UnicodeString& name, bool casesens=true);
+	bool getBoolValue(bool& result, const icu::UnicodeString& name, bool casesens=true);
 	/**
 		Get the variable at the given index as a string.
 		@returns true on success, or false if either the index was invalid or the variable at the index wasn't the correct type.
@@ -841,7 +842,7 @@ public:
 		@param index The index to retrieve.
 		@param type Optional type. Since this is only for ValueVariables, the format is masked with VARTYPE_VALUE before searching.
 	*/
-	bool getAsString(UnicodeString& result, int index, unsigned int type=VARTYPE_VALUE) const;
+	bool getAsString(icu::UnicodeString& result, int index, unsigned int type=VARTYPE_VALUE) const;
 	/**
 		Get the variable matching the given parameters.
 		@returns true on success, or false if no variables matched the parameters.
@@ -849,7 +850,7 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	bool getAsString(UnicodeString& result, const UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_VALUE) const;
+	bool getAsString(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens=true, unsigned int type=VARTYPE_VALUE) const;
 	/**
 		Get the identifier at the given index.
 		@returns The identifier at the index, or NULL if either index was invalid or the variable at the index was not an identifier.
@@ -863,8 +864,8 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	Identifier* getIdentifier(const UnicodeString& name, bool casesens=true);
-	const Identifier* getIdentifier(const UnicodeString& name, bool casesens=true) const;
+	Identifier* getIdentifier(const icu::UnicodeString& name, bool casesens=true);
+	const Identifier* getIdentifier(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Get the node at the given index.
 		@returns The node at the index, or NULL if either index was invalid or the variable at the index was not a node.
@@ -878,8 +879,8 @@ public:
 		@param name The name to search for.
 		@param casesens Whether to use case-sensitive name comparison.
 	*/
-	Node* getNode(const UnicodeString& name, bool casesens=true);
-	const Node* getNode(const UnicodeString& name, bool casesens=true) const;
+	Node* getNode(const icu::UnicodeString& name, bool casesens=true);
+	const Node* getNode(const icu::UnicodeString& name, bool casesens=true) const;
 	/**
 		Add a clone of every variable in this collection to the given collection.
 		Deriving classes should call this after cloning.
@@ -907,7 +908,7 @@ public:
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	Identifier(const UnicodeString& name, CollectionVariable* parent=NULL);
+	Identifier(const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;
@@ -929,7 +930,7 @@ public:
 		@param name The name to initialize with.
 		@param parent The parent to initialize with.
 	*/
-	Node(const UnicodeString& name, CollectionVariable* parent=NULL);
+	Node(const icu::UnicodeString& name, CollectionVariable* parent=NULL);
 	virtual unsigned int getType() const;
 	virtual const char* getTypeName() const;
 	virtual Variable* clone() const;

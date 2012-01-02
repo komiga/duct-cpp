@@ -1,13 +1,14 @@
 
-#include "duct/filesystem.hpp"
-#include <unicode/ustream.h>
+#include <duct/filesystem.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustream.h>
 
 using namespace std;
 using namespace duct;
 
-void testFile(const UnicodeString& path) {
+void testFile(const icu::UnicodeString& path) {
 	cout<<"(file) \""<<path<<'\"';
 	if (FileSystem::fileExists(path)) {
 		cout<<" exists"<<endl;
@@ -16,7 +17,7 @@ void testFile(const UnicodeString& path) {
 	}
 }
 
-void testDir(const UnicodeString& path) {
+void testDir(const icu::UnicodeString& path) {
 	cout<<"(dir) \""<<path<<'\"';
 	if (FileSystem::dirExists(path)) {
 		cout<<" exists"<<endl;
@@ -26,8 +27,8 @@ void testDir(const UnicodeString& path) {
 }
 
 int main() {
-	UnicodeString dirname("うううう");
-	UnicodeString filename=dirname+"/ああああ.foobar";
+	icu::UnicodeString dirname("うううう");
+	icu::UnicodeString filename=dirname+"/ああああ.foobar";
 	testDir(dirname);
 	testFile(filename);
 	printf("createDir:%d\n", FileSystem::createDir(dirname));
@@ -37,7 +38,7 @@ int main() {
 	
 	DirStream ds(dirname);
 	if (ds.isOpen()) {
-		UnicodeString name;
+		icu::UnicodeString name;
 		while (ds.nextEntry(name)) {
 			printf("entry type:%d entry name:\"", ds.entryType());
 			cout<<name<<'\"'<<endl;

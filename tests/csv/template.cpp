@@ -1,9 +1,10 @@
 
+#include <duct/csv.hpp>
+#include <duct/csvtemplate.hpp>
+
 #include <stdio.h>
 #include <iostream>
 #include <unicode/ustream.h>
-#include <duct/csv.hpp>
-#include <duct/csvtemplate.hpp>
 
 using namespace duct;
 
@@ -24,7 +25,7 @@ CSVTemplate tpl2(5, NULL); // only requires a count of 5
 
 void printRow(const CSVRow& row) {
 	printf("{%s, %s} [%d:%lu] ", tpl.validate(row) ? "true " : "false", tpl2.validate(row) ? "true " : "false", row.getIndex(), row.getCount(true));
-	UnicodeString temp;
+	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);
 	std::cout<<temp<<std::endl;
 }

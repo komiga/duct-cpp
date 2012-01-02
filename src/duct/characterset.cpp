@@ -62,7 +62,7 @@ bool CharacterRange::contains(UChar32 c) const {
 	return (_start==c || (c>=_start && c<=_end));
 }
 
-int CharacterRange::findInString(const UnicodeString& str, unsigned int from) const {
+int CharacterRange::findInString(const icu::UnicodeString& str, unsigned int from) const {
 	if (from>=(unsigned int)str.length()) {
 		return -1;
 	}
@@ -74,7 +74,7 @@ int CharacterRange::findInString(const UnicodeString& str, unsigned int from) co
 	return -1;
 }
 
-int CharacterRange::findLastInString(const UnicodeString& str, int from) const {
+int CharacterRange::findLastInString(const icu::UnicodeString& str, int from) const {
 	if (from==-1) {
 		from=(unsigned int)str.length()-1;
 	}
@@ -119,12 +119,12 @@ bool CharacterRange::intersects(const CharacterRange& other) const {
 CharacterSet::CharacterSet() {
 }
 
-CharacterSet::CharacterSet(const UnicodeString& str) {
+CharacterSet::CharacterSet(const icu::UnicodeString& str) {
 	addRangesWithString(str);
 }
 
 CharacterSet::CharacterSet(const char* str) {
-	UnicodeString ustr(str);
+	icu::UnicodeString ustr(str);
 	addRangesWithString(ustr);
 }
 
@@ -174,7 +174,7 @@ bool CharacterSet::contains(const CharacterRange& range) const {
 	return false;
 }
 
-int CharacterSet::findInString(const UnicodeString& str, unsigned int from) const {
+int CharacterSet::findInString(const icu::UnicodeString& str, unsigned int from) const {
 	if (from>(unsigned int)str.length()) {
 		return -1;
 	}
@@ -188,7 +188,7 @@ int CharacterSet::findInString(const UnicodeString& str, unsigned int from) cons
 	return -1;
 }
 
-int CharacterSet::findLastInString(const UnicodeString& str, int from) const {
+int CharacterSet::findLastInString(const icu::UnicodeString& str, int from) const {
 	if (from==-1) {
 		from=str.length()-1;
 	}
@@ -206,7 +206,7 @@ void CharacterSet::clear() {
 	_ranges.clear();
 }
 
-void CharacterSet::addRangesWithString(const UnicodeString& str) {
+void CharacterSet::addRangesWithString(const icu::UnicodeString& str) {
 	int lastchar=-1;
 	int chr;
 	bool isrange=false;

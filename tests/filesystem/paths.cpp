@@ -1,13 +1,14 @@
 
+#include <duct/filesystem.hpp>
+
 #include <string.h>
 #include <stdio.h>
 #include <iostream>
 #include <unicode/unistr.h>
 #include <unicode/ustream.h>
-#include <duct/filesystem.hpp>
 
 std::string std_path, std_result;
-UnicodeString icu_path, icu_result;
+icu::UnicodeString icu_path, icu_result;
 bool std_success=false, icu_success=false;
 
 char const* cs_orig="";
@@ -24,7 +25,7 @@ void assign(char const* value) {
 	cs_orig=value;
 	cs_orig_size=strlen(cs_orig);
 	std_path.assign(value);
-	icu_path=UnicodeString(value);
+	icu_path=icu::UnicodeString(value);
 	clear();
 	printf("assign: '%s'\n", cs_orig);
 }
@@ -129,12 +130,12 @@ int main(int argc, char** argv) {
 		}
 		
 		// ICU tests
-		UnicodeString icu_arg(argv[i]);
+		icu::UnicodeString icu_arg(argv[i]);
 		duct::FileSystem::normalizePath(icu_arg);
-		UnicodeString icu_absolute;
+		icu::UnicodeString icu_absolute;
 		duct::FileSystem::getAbsolutePath(icu_arg, icu_absolute);
 		std::cout<<"icu_absolute: "<<icu_absolute<<std::endl;
-		UnicodeString icu_resolved;
+		icu::UnicodeString icu_resolved;
 		if (duct::FileSystem::resolvePath(icu_arg, icu_resolved)) {
 			std::cout<<"icu_resolved: "<<icu_resolved<<std::endl;
 		} else {

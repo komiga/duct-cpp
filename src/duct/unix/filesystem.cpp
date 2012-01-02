@@ -24,12 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <duct/debug.hpp>
+#include <duct/filesystem.hpp>
+
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <duct/debug.hpp>
-#include <duct/filesystem.hpp>
 
 namespace duct {
 
@@ -47,7 +48,7 @@ DirStream::DirStream(const std::string& path) {
 	init();
 }
 
-DirStream::DirStream(const UnicodeString& path) {
+DirStream::DirStream(const icu::UnicodeString& path) {
 	path.toUTF8String(_path);
 	init();
 }
@@ -65,18 +66,18 @@ bool DirStream::nextEntry() {
 	return _entry!=NULL;
 }
 
-bool DirStream::nextEntry(UnicodeString& result) {
+bool DirStream::nextEntry(icu::UnicodeString& result) {
 	_entry=readdir(_dir);
 	if (_entry) {
-		result.setTo(UnicodeString(_entry->d_name));
+		result.setTo(icu::UnicodeString(_entry->d_name));
 		return true;
 	}
 	return false;
 }
 
-bool DirStream::entryName(UnicodeString& result) const {
+bool DirStream::entryName(icu::UnicodeString& result) const {
 	if (_entry) {
-		result.setTo(UnicodeString(_entry->d_name));
+		result.setTo(icu::UnicodeString(_entry->d_name));
 		return true;
 	}
 	return false;
@@ -139,7 +140,7 @@ bool statPath(const std::string& path, struct stat* s) {
 	return stat(path.c_str(), s)==0;
 }
 
-bool statPath(const UnicodeString& path, struct stat* s) {
+bool statPath(const icu::UnicodeString& path, struct stat* s) {
 	std::string str;
 	path.toUTF8String(str);
 	return stat(str.c_str(), s)==0;
@@ -163,7 +164,7 @@ PathType pathType(const std::string& path) {
 	}
 }
 
-PathType pathType(const UnicodeString& path) {
+PathType pathType(const icu::UnicodeString& path) {
 	struct stat s;
 	if (statPath(path, &s)) {
 		return S_ISREG(s.st_mode) ? PATHTYPE_FILE : (S_ISDIR(s.st_mode) ? PATHTYPE_DIR : PATHTYPE_NONE);
@@ -183,7 +184,7 @@ bool changeDir(const std::string& path) {
 	return changeDir(path.c_str());
 }
 
-bool changeDir(const UnicodeString& path) {
+bool changeDir(const icu::UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
 	return changeDir(str.c_str());
@@ -199,10 +200,10 @@ bool getWorkingDir(std::string& result) {
 	return false;
 }
 
-bool getWorkingDir(UnicodeString& result) {
+bool getWorkingDir(icu::UnicodeString& result) {
 	char* buffer=getcwd(NULL, 0);
 	if (buffer!=NULL) {
-		UnicodeString temp(buffer);
+		icu::UnicodeString temp(buffer);
 		result.setTo(temp);
 		free(buffer);
 		return true;
@@ -225,10 +226,10 @@ void getAbsolutePath(const std::string& path, std::string& result) {
 	}
 }
 
-void getAbsolutePath(const UnicodeString& path, UnicodeString& result) {
+void getAbsolutePath(const icu::UnicodeString& path, icu::UnicodeString& result) {
 	if (0!=path.length()) {
 		if ('/'!=path[0]) {
-			UnicodeString build;
+			icu::UnicodeString build;
 			if (!getWorkingDir(build, true)) {
 				return;
 			}
@@ -250,12 +251,12 @@ bool resolvePath(const std::string& path, std::string& result) {
 	return false;
 }
 
-bool resolvePath(const UnicodeString& path, UnicodeString& result) {
+bool resolvePath(const icu::UnicodeString& path, icu::UnicodeString& result) {
 	std::string str;
 	path.toUTF8String(str);
 	char* buffer=realpath(str.c_str(), NULL);
 	if (buffer!=NULL) {
-		UnicodeString temp(buffer);
+		icu::UnicodeString temp(buffer);
 		result.setTo(temp);
 		free(buffer);
 		return true;
@@ -279,7 +280,7 @@ uint64_t getFileSize(const std::string& path) {
 	return 0;
 }
 
-uint64_t getFileSize(const UnicodeString& path) {
+uint64_t getFileSize(const icu::UnicodeString& path) {
 	struct stat s;
 	if (statPath(path, &s)) {
 		return s.st_size;
@@ -305,7 +306,7 @@ bool dirExists(const std::string& path) {
 	}
 }
 
-bool dirExists(const UnicodeString& path) {
+bool dirExists(const icu::UnicodeString& path) {
 	struct stat s;
 	if (statPath(path, &s)) {
 		return S_ISDIR(s.st_mode);
@@ -332,7 +333,7 @@ bool fileExists(const std::string& path) {
 	}
 }
 
-bool fileExists(const UnicodeString& path) {
+bool fileExists(const icu::UnicodeString& path) {
 	struct stat s;
 	if (statPath(path, &s)) {
 		return S_ISREG(s.st_mode);
@@ -350,7 +351,7 @@ bool createDir(const std::string& path, bool structure) {
 	return createDir(path.c_str(), false);
 }
 
-bool createDir(const UnicodeString& path, bool structure) {
+bool createDir(const icu::UnicodeString& path, bool structure) {
 	std::string str;
 	path.toUTF8String(str);
 	return createDir(str.c_str(), false);
@@ -373,7 +374,7 @@ bool createFile(const std::string& path, bool createpath) {
 	return createFile(path.c_str(), createpath);
 }
 
-bool createFile(const UnicodeString& path, bool createpath) {
+bool createFile(const icu::UnicodeString& path, bool createpath) {
 	std::string str;
 	path.toUTF8String(str);
 	return createFile(str.c_str(), createpath);
@@ -387,7 +388,7 @@ bool deleteFile(const std::string& path) {
 	return remove(path.c_str())==0;
 }
 
-bool deleteFile(const UnicodeString& path) {
+bool deleteFile(const icu::UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
 	return remove(str.c_str())==0;
@@ -401,7 +402,7 @@ bool deleteDir(const std::string& path) {
 	return rmdir(path.c_str())==0;
 }
 
-bool deleteDir(const UnicodeString& path) {
+bool deleteDir(const icu::UnicodeString& path) {
 	std::string str;
 	path.toUTF8String(str);
 	return rmdir(str.c_str())==0;

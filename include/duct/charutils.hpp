@@ -31,9 +31,10 @@ Character enum and character utils.
 #ifndef _DUCT_CHARUTILS_HPP
 #define _DUCT_CHARUTILS_HPP
 
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
 #include <duct/variables.hpp>
+
+#include <unicode/unistr.h>
 
 namespace duct {
 
@@ -137,7 +138,7 @@ DUCT_API UChar32 getEscapeChar(UChar32 c);
 	@param str The string to escape.
 	@param format The format to use. Only FMT_STRING_ESCAPE_* formats are relevant.
 */
-DUCT_API void escapeString(UnicodeString& result, const UnicodeString& str, unsigned int format=FMT_STRING_ESCAPE_OTHER);
+DUCT_API void escapeString(icu::UnicodeString& result, const icu::UnicodeString& str, unsigned int format=FMT_STRING_ESCAPE_OTHER);
 
 } // namespace CharUtils
 

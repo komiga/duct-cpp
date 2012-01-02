@@ -31,10 +31,11 @@ duct++ argument handling.
 #ifndef _DUCT_ARGHANDLING_HPP
 #define _DUCT_ARGHANDLING_HPP
 
-#include <list>
 #include <duct/config.hpp>
 #include <duct/variables.hpp>
 #include <duct/unistrarray.hpp>
+
+#include <list>
 
 namespace duct {
 
@@ -105,8 +106,8 @@ public:
 		@returns The iterator for the implementation with the given alias, or end() if the given alias was not found.
 		@param alias The alias to search for.
 	*/
-	ArgImplList::iterator find(const UnicodeString& alias);
-	ArgImplList::const_iterator find(const UnicodeString& alias) const;
+	ArgImplList::iterator find(const icu::UnicodeString& alias);
+	ArgImplList::const_iterator find(const icu::UnicodeString& alias) const;
 	/**
 		Add an implementation to the handler.
 		The handler takes ownership of the given pointer.
@@ -119,7 +120,7 @@ public:
 		@returns The argument implementation with the given alias, or NULL if there is no argument implementation with the given alias.
 		@param alias The alias to search for.
 	*/
-	ArgImpl* getImpl(const UnicodeString& alias);
+	ArgImpl* getImpl(const icu::UnicodeString& alias);
 	/**
 		Clear the handler.
 		This will free all argument implementations in the handler.
@@ -177,7 +178,7 @@ public:
 		@returns true if the implementation has the given alias, or false if it does not.
 		@param alias The alias to search for.
 	*/
-	bool hasAlias(const UnicodeString& alias) const;
+	bool hasAlias(const icu::UnicodeString& alias) const;
 	/**
 		Check the current arguments for errors.
 		@returns 0 on success, or some error code on failure.
@@ -192,7 +193,7 @@ public:
 		Get the implementation's usage string.
 		@returns The implementation's usage string.
 	*/
-	virtual const UnicodeString& getUsage() const=0;
+	virtual const icu::UnicodeString& getUsage() const=0;
 	
 protected:
 	unsigned int _calltype;

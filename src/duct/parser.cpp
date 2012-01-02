@@ -84,11 +84,11 @@ bool Token::compare(const CharacterSet& charset) const {
 	return _buffer.compare(charset);
 }
 
-bool Token::toString(UnicodeString& str) {
+bool Token::toString(icu::UnicodeString& str) {
 	return _buffer.toString(str);
 }
 
-const UnicodeString& Token::toString() {
+const icu::UnicodeString& Token::toString() {
 	return _buffer.toString();
 }
 

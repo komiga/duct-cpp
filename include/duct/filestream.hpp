@@ -59,7 +59,7 @@ public:
 	*/
 	FileStream(const char* path, const char* encoding="utf8");
 	FileStream(const std::string& path, const char* encoding="utf8");
-	FileStream(const UnicodeString& path, const char* encoding="utf8");
+	FileStream(const icu::UnicodeString& path, const char* encoding="utf8");
 	/**
 		Constructor with path and modes.
 		isOpen() should be called to check if the file was opened successfully.
@@ -70,7 +70,7 @@ public:
 	*/
 	FileStream(const char* path, bool readable, bool writeable, const char* encoding="utf8");
 	FileStream(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
-	FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
+	FileStream(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
 	/**
 		Constructor with path and flags.
 		isOpen() should be called to check if the file was opened successfully.
@@ -80,7 +80,7 @@ public:
 	*/
 	FileStream(const char* path, unsigned int flags, const char* encoding="utf8");
 	FileStream(const std::string& path, unsigned int flags, const char* encoding="utf8");
-	FileStream(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
+	FileStream(const icu::UnicodeString& path, unsigned int flags, const char* encoding="utf8");
 	/**
 		Destructor.
 		The stream will be closed at deconstruction, though this should not be relied upon.
@@ -127,7 +127,7 @@ public:
 	*/
 	static FileStream* openFile(const char* path, bool readable, bool writeable, const char* encoding="utf8");
 	static FileStream* openFile(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
-	static FileStream* openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
+	static FileStream* openFile(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
 	/**
 		Open the given file with the flags.
 		@returns A new FileStream, or NULL if an error occurred.
@@ -137,7 +137,7 @@ public:
 	*/
 	static FileStream* openFile(const char* path, unsigned int flags, const char* encoding="utf8");
 	static FileStream* openFile(const std::string& path, unsigned int flags, const char* encoding="utf8");
-	static FileStream* openFile(const UnicodeString& path, unsigned int flags, const char* encoding="utf8");
+	static FileStream* openFile(const icu::UnicodeString& path, unsigned int flags, const char* encoding="utf8");
 	/**
 		Open the given file as readable.
 		@returns A new FileStream, or NULL if an error occurred.
@@ -146,7 +146,7 @@ public:
 	*/
 	static FileStream* readFile(const char* path, const char* encoding="utf8");
 	static FileStream* readFile(const std::string& path, const char* encoding="utf8");
-	static FileStream* readFile(const UnicodeString& path, const char* encoding="utf8");
+	static FileStream* readFile(const icu::UnicodeString& path, const char* encoding="utf8");
 	/**
 		Open the given file as writeable.
 		@returns A new FileStream, or NULL if an error occurred.
@@ -155,7 +155,7 @@ public:
 	*/
 	static FileStream* writeFile(const char* path, const char* encoding="utf8");
 	static FileStream* writeFile(const std::string& path, const char* encoding="utf8");
-	static FileStream* writeFile(const UnicodeString& path, const char* encoding="utf8");
+	static FileStream* writeFile(const icu::UnicodeString& path, const char* encoding="utf8");
 	
 protected:
 	FILE* _file;			// C FILE pointer

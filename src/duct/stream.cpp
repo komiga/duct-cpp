@@ -24,10 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <stdlib.h>
-#include <string.h>
 #include <duct/debug.hpp>
 #include <duct/stream.hpp>
+
+#include <stdlib.h>
+#include <string.h>
 
 namespace duct {
 
@@ -131,7 +132,7 @@ UChar32 Stream::readChar() {
 	return c;
 }
 
-size_t Stream::readString(UnicodeString& str, size_t length) {
+size_t Stream::readString(icu::UnicodeString& str, size_t length) {
 	str.remove(); // make sure the string is empty
 	if (length>0) {
 		UChar32 buf[512];
@@ -139,20 +140,20 @@ size_t Stream::readString(UnicodeString& str, size_t length) {
 		unsigned int count=0;
 		for (unsigned int i=0; i<length; ++i) {
 			if (count==512) {
-				str+=UnicodeString::fromUTF32(buf, count);
+				str+=icu::UnicodeString::fromUTF32(buf, count);
 				count=0;
 			}
 			buf[count++]=readChar();
 		}
 		if (count>0) {
-			str+=UnicodeString::fromUTF32(buf, count);
+			str+=icu::UnicodeString::fromUTF32(buf, count);
 		}
 		return (size_t)(pos()-bpos);
 	}
 	return 0;
 }
 
-size_t Stream::readLine(UnicodeString& str) {
+size_t Stream::readLine(icu::UnicodeString& str) {
 	unsigned long bpos=pos();
 	str.remove();
 	UChar32 c=readChar();
@@ -162,7 +163,7 @@ size_t Stream::readLine(UnicodeString& str) {
 		size_t count=1;
 		while (c!='\n' && !eof()) {
 			if (count==512) {
-				str+=UnicodeString::fromUTF32(buf, count);
+				str+=icu::UnicodeString::fromUTF32(buf, count);
 				count=0;
 			}
 			c=readChar();
@@ -170,13 +171,13 @@ size_t Stream::readLine(UnicodeString& str) {
 				buf[count++]=c;
 		}
 		if (count>0 && !(count==1 && c=='\n')) {
-			str+=UnicodeString::fromUTF32(buf, count+(c=='\n' ? -1 : 0));
+			str+=icu::UnicodeString::fromUTF32(buf, count+(c=='\n' ? -1 : 0));
 		}
 	}
 	return (size_t)(pos()-bpos);
 }
 
-size_t Stream::readCString(UnicodeString& str, size_t maxlength) {
+size_t Stream::readCString(icu::UnicodeString& str, size_t maxlength) {
 	unsigned long bpos=pos();
 	str.remove();
 	UChar32 c=readChar();
@@ -187,7 +188,7 @@ size_t Stream::readCString(UnicodeString& str, size_t maxlength) {
 		size_t tcount=1;
 		while (c!='\0' && tcount<maxlength && !eof()) {
 			if (count==512) {
-				str+=UnicodeString::fromUTF32(buf, count);
+				str+=icu::UnicodeString::fromUTF32(buf, count);
 				count=0;
 			}
 			c=readChar();
@@ -195,7 +196,7 @@ size_t Stream::readCString(UnicodeString& str, size_t maxlength) {
 			tcount++;
 		}
 		if (count>0 && !(count==1 && c=='\0')) {
-			str+=UnicodeString::fromUTF32(buf, count+(c=='\0' ? -1 : 0));
+			str+=icu::UnicodeString::fromUTF32(buf, count+(c=='\0' ? -1 : 0));
 		}
 	}
 	return (size_t)(pos()-bpos);
@@ -242,7 +243,7 @@ size_t Stream::writeDouble(double value) {
 }
 
 size_t Stream::writeChar16(UChar value) {
-	UnicodeString tempstr(value);
+	icu::UnicodeString tempstr(value);
 	char out[8];
 	const UChar* in=tempstr.getBuffer();
 	UErrorCode err=U_ZERO_ERROR;
@@ -257,7 +258,7 @@ size_t Stream::writeChar16(UChar value) {
 }
 
 size_t Stream::writeChar32(UChar32 value) {
-	UnicodeString tempstr(value);
+	icu::UnicodeString tempstr(value);
 	char out[16];
 	const UChar* in=tempstr.getBuffer();
 	UErrorCode err=U_ZERO_ERROR;
@@ -270,7 +271,7 @@ size_t Stream::writeChar32(UChar32 value) {
 	return size;
 }
 
-size_t Stream::writeString(const UnicodeString& str) {
+size_t Stream::writeString(const icu::UnicodeString& str) {
 	size_t count=0;
 	const UChar* in=str.getBuffer();
 	if (str.length()>0 && in) {
@@ -306,32 +307,32 @@ size_t Stream::writeString(const UnicodeString& str) {
 	return count;
 }
 
-size_t Stream::writeLine(const UnicodeString& str) {
+size_t Stream::writeLine(const icu::UnicodeString& str) {
 	size_t size=writeString(str);
 	size+=writeChar16('\n');
 	return size;
 }
 
-size_t Stream::writeCString(const UnicodeString& str) {
+size_t Stream::writeCString(const icu::UnicodeString& str) {
 	size_t size=writeString(str);
 	size+=writeChar16('\0');
 	return size;
 }
 
-bool Stream::readAndMatchCString(const UnicodeString& checkstr, size_t maxlength) {
+bool Stream::readAndMatchCString(const icu::UnicodeString& checkstr, size_t maxlength) {
 	maxlength=(maxlength==0) ? (checkstr.length()+1) : (maxlength);
-	UnicodeString rstr;
+	icu::UnicodeString rstr;
 	readCString(rstr, maxlength);
 	return checkstr.compare(rstr)==0;
 }
 
-void Stream::readReservedCString(UnicodeString& result, size_t size) {
+void Stream::readReservedCString(icu::UnicodeString& result, size_t size) {
 	size_t readcount=readCString(result, size);
 	skip(size-readcount);
 }
 
-bool Stream::readAndMatchReservedCString(const UnicodeString& checkstr, size_t size) {
-	UnicodeString rstr;
+bool Stream::readAndMatchReservedCString(const icu::UnicodeString& checkstr, size_t size) {
+	icu::UnicodeString rstr;
 	size_t readcount=readCString(rstr, size);
 	skip(size-readcount);
 	return checkstr.compare(rstr)==0;
@@ -345,7 +346,7 @@ void Stream::writeReservedData(size_t size, unsigned char padvalue) {
 	free(data);
 }
 
-void Stream::writeReservedCString(const UnicodeString& str, size_t size, unsigned char padvalue) {
+void Stream::writeReservedCString(const icu::UnicodeString& str, size_t size, unsigned char padvalue) {
 	if ((unsigned int)str.length()<size) { // string is smaller, null and padding needed
 		size_t bytes=writeCString(str);
 		if (bytes<size) {
@@ -354,7 +355,7 @@ void Stream::writeReservedCString(const UnicodeString& str, size_t size, unsigne
 	} else if ((unsigned int)str.length()==size) { // matching sizes, no null needed
 		writeString(str);
 	} else { // string is larger than reserved space, truncation and no null needed
-		UnicodeString out(str, 0, size);
+		icu::UnicodeString out(str, 0, size);
 		writeString(str);
 	}
 }
@@ -382,9 +383,9 @@ bool Stream::setEncoding(const char* codepage) {
 	return false;
 }
 
-bool Stream::setEncoding(const UnicodeString& encoding) {
+bool Stream::setEncoding(const icu::UnicodeString& encoding) {
 	UErrorCode err=U_ZERO_ERROR;
-	UnicodeString temp(encoding);
+	icu::UnicodeString temp(encoding);
 	UConverter* conv=ucnv_openU(temp.getTerminatedBuffer(), &err);
 	if (U_SUCCESS(err)) {
 		closeConv();

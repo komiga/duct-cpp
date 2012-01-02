@@ -1,21 +1,20 @@
 
-#include "duct/debug.hpp"
-#include "duct/filesystem.hpp"
-#include "duct/filestream.hpp"
-#include "duct/endianstream.hpp"
-#include "duct/streamwrapper.hpp"
+#include <duct/debug.hpp>
+#include <duct/filesystem.hpp>
+#include <duct/filestream.hpp>
+#include <duct/endianstream.hpp>
+#include <duct/streamwrapper.hpp>
+
+#include <iostream>
 #include <unicode/ustream.h>
 #include <unicode/ucnv.h>
-#include <iostream>
-
-// 
 
 int main(int argc, char* argv[]) {
 	const char* data="あa";
 	if (argc>1) {
 		data=argv[1];
 	}
-	UnicodeString str(data);
+	icu::UnicodeString str(data);
 	const char* encoding="utf-8";
 	if (argc>2) {
 		encoding=argv[2];

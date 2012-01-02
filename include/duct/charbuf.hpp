@@ -31,9 +31,10 @@ duct++ CharBuf class.
 #ifndef _DUCT_CHARBUF_HPP
 #define _DUCT_CHARBUF_HPP
 
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
 #include <duct/characterset.hpp>
+
+#include <unicode/unistr.h>
 
 namespace duct {
 
@@ -58,7 +59,7 @@ public:
 		Cache the character buffer as a string.
 		@returns The cached string.
 	*/
-	const UnicodeString& cacheString();
+	const icu::UnicodeString& cacheString();
 	/**
 		Reset the buffer.
 		The internal memory buffer will not be freed, but the position and cached string will be reset.
@@ -83,13 +84,13 @@ public:
 		@returns true if the string was converted, or false on cache failure (likely because of an invalid surrogate pair).
 		@param str The string to store the result in.
 	*/
-	bool toString(UnicodeString& str);
+	bool toString(icu::UnicodeString& str);
 	/**
 		Convert the buffer to a string.
 		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
 		@returns A reference to the cached string (which will be bogus if conversion failed).
 	*/
-	const UnicodeString& toString();
+	const icu::UnicodeString& toString();
 	/**
 		Convert the buffer to a 32-bit integer.
 		@returns The buffer as an integer, or 0 if the cached string was not a numeric value.
@@ -143,7 +144,7 @@ protected:
 	UChar32* _buffer;
 	size_t _bufsize;
 	size_t _buflength;
-	UnicodeString _bufstring;
+	icu::UnicodeString _bufstring;
 	bool _cached;
 };
 

@@ -32,7 +32,11 @@ duct++ configuration header.
 #define _DUCT_CONFIG_HPP
 
 #include <assert.h>
-#include <stdint.h> // TODO: windows?
+#include <stdint.h>
+
+// Prevent ICU from auto-using the icu namespace
+#define U_USING_ICU_NAMESPACE 0
+#include <unicode/uversion.h>
 
 namespace duct {
 

@@ -24,9 +24,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <list>
 #include <duct/debug.hpp>
 #include <duct/template.hpp>
+
+#include <list>
 
 namespace duct {
 
@@ -94,11 +95,11 @@ bool _checkVariable(unsigned int type, const Variable* variable) {
 	return false;
 }
 
-bool _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, unsigned int i=0) {
+bool _checkIden(const StringArray* iden, const icu::UnicodeString& a, bool casesens, unsigned int i=0) {
 	//printf("duct::_checkIden iden:%p\n", (void*)iden);
 	if (iden) {
 		//printf("duct::_checkIden count:%u i:%d\n", iden->getCount(), i);
-		const UnicodeString* b;
+		const icu::UnicodeString* b;
 		for (; i<iden->size(); ++i) {
 			b=(*iden)[i];
 			//printf("duct::_checkIden b:%p\n", (void*)b);
@@ -113,7 +114,7 @@ bool _checkIden(const StringArray* iden, const UnicodeString& a, bool casesens, 
 	}
 }
 
-bool _compareNames(const UnicodeString& a, const UnicodeString& b, bool casesens) {
+bool _compareNames(const icu::UnicodeString& a, const icu::UnicodeString& b, bool casesens) {
 	if (a.length()==0 && b.length()==0) {
 		return true;
 	} else {
@@ -121,7 +122,7 @@ bool _compareNames(const UnicodeString& a, const UnicodeString& b, bool casesens
 	}
 }
 
-bool __matchname(const unsigned int& mc, const StringArray* iden, const UnicodeString& name, const bool& casesens, const unsigned int& infinitism) {
+bool __matchname(const unsigned int& mc, const StringArray* iden, const icu::UnicodeString& name, const bool& casesens, const unsigned int& infinitism) {
 	unsigned int count=iden->size();
 	if (count==0) {
 		return true;
@@ -154,7 +155,7 @@ public:
 
 typedef std::list<_IteratorVariablePair*> _PairList;
 
-void __add(CollectionVariable* collection, _PairList& pairs, const UnicodeString& name, unsigned int& addcount) {
+void __add(CollectionVariable* collection, _PairList& pairs, const icu::UnicodeString& name, unsigned int& addcount) {
 	if (pairs.size()>0) {
 		const _IteratorVariablePair* pair;
 		bool first=true;
@@ -231,7 +232,7 @@ bool Template::validateIdentity(const Variable* variable) const {
 	return false;
 }
 
-unsigned int Template::compactCollection(CollectionVariable* collection, const UnicodeString& name, bool sequential) const {
+unsigned int Template::compactCollection(CollectionVariable* collection, const icu::UnicodeString& name, bool sequential) const {
 	unsigned int addcount=0;
 	if (collection && collection->getChildCount()>0) {
 		_PairList pairs;
@@ -288,7 +289,7 @@ unsigned int Template::compactCollection(CollectionVariable* collection, const U
 	return addcount;
 }
 
-unsigned int Template::renameIdentifiers(CollectionVariable* collection, const UnicodeString& name) const {
+unsigned int Template::renameIdentifiers(CollectionVariable* collection, const icu::UnicodeString& name) const {
 	unsigned int count=0;
 	if (collection) {
 		Identifier* identifier;
@@ -303,7 +304,7 @@ unsigned int Template::renameIdentifiers(CollectionVariable* collection, const U
 	return count;
 }
 
-unsigned int Template::renameValues(CollectionVariable* collection, const UnicodeString& name) const {
+unsigned int Template::renameValues(CollectionVariable* collection, const icu::UnicodeString& name) const {
 	unsigned int count=0;
 	if (collection) {
 		ValueVariable* value;

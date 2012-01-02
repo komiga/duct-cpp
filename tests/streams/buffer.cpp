@@ -1,6 +1,6 @@
 
-#include "duct/debug.hpp"
-#include "duct/bufferstream.hpp"
+#include <duct/debug.hpp>
+#include <duct/bufferstream.hpp>
 
 using namespace std;
 using namespace duct;

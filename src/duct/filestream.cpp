@@ -24,11 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <duct/debug.hpp>
+#include <duct/filestream.hpp>
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
-#include <duct/debug.hpp>
-#include <duct/filestream.hpp>
 
 namespace duct {
 
@@ -46,7 +47,7 @@ FileStream::FileStream(const std::string& path, const char* encoding) {
 	init(path.c_str(), STREAM_WRITEABLE|STREAM_READABLE);
 }
 
-FileStream::FileStream(const UnicodeString& path, const char* encoding) {
+FileStream::FileStream(const icu::UnicodeString& path, const char* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
@@ -63,7 +64,7 @@ FileStream::FileStream(const std::string& path, bool readable, bool writeable, c
 	init(path.c_str(), (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
 }
 
-FileStream::FileStream(const UnicodeString& path, bool readable, bool writeable, const char* encoding) {
+FileStream::FileStream(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
@@ -80,7 +81,7 @@ FileStream::FileStream(const std::string& path, unsigned int flags, const char* 
 	init(path.c_str(), flags);
 }
 
-FileStream::FileStream(const UnicodeString& path, unsigned int flags, const char* encoding) {
+FileStream::FileStream(const icu::UnicodeString& path, unsigned int flags, const char* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
@@ -226,7 +227,7 @@ FileStream* FileStream::openFile(const std::string& path, bool readable, bool wr
 	}
 }
 
-FileStream* FileStream::openFile(const UnicodeString& path, bool readable, bool writeable, const char* encoding) {
+FileStream* FileStream::openFile(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding) {
 	FileStream* fs=new FileStream(path, readable, writeable, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -256,7 +257,7 @@ FileStream* FileStream::openFile(const std::string& path, unsigned int flags, co
 	}
 }
 
-FileStream* FileStream::openFile(const UnicodeString& path, unsigned int flags, const char* encoding) {
+FileStream* FileStream::openFile(const icu::UnicodeString& path, unsigned int flags, const char* encoding) {
 	FileStream* fs=new FileStream(path, flags, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -286,7 +287,7 @@ FileStream* FileStream::readFile(const std::string& path, const char* encoding) 
 	}
 }
 
-FileStream* FileStream::readFile(const UnicodeString& path, const char* encoding) {
+FileStream* FileStream::readFile(const icu::UnicodeString& path, const char* encoding) {
 	FileStream* fs=new FileStream(path, true, false, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -316,7 +317,7 @@ FileStream* FileStream::writeFile(const std::string& path, const char* encoding)
 	}
 }
 
-FileStream* FileStream::writeFile(const UnicodeString& path, const char* encoding) {
+FileStream* FileStream::writeFile(const icu::UnicodeString& path, const char* encoding) {
 	FileStream* fs=new FileStream(path, false, true, encoding);
 	if (fs->isOpen()) {
 		return fs;

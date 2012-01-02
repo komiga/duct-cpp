@@ -31,11 +31,12 @@ duct++ debug functions.
 #ifndef _DUCT_DEBUG_HPP
 #define _DUCT_DEBUG_HPP
 
+#include <duct/config.hpp>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <duct/config.hpp>
 
 #ifdef NDEBUG
 	#define debug_print(mesg)

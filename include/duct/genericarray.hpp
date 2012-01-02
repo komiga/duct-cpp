@@ -31,9 +31,10 @@ duct++ GArray class.
 #ifndef _DUCT_GENERICARRAY_HPP
 #define _DUCT_GENERICARRAY_HPP
 
-#include <stdarg.h>
 #include <duct/config.hpp>
 #include <duct/debug.hpp>
+
+#include <stdarg.h>
 
 namespace duct {
 

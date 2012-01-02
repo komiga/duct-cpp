@@ -1,15 +1,16 @@
 
-#include "duct/variables.hpp"
-#include <unicode/ustdio.h>
-#include <unicode/ustream.h>
+#include <duct/variables.hpp>
+
 #include <stdio.h>
 #include <iostream>
+#include <unicode/ustdio.h>
+#include <unicode/ustream.h>
 
 using namespace duct;
 using namespace std;
 
 void printValue(ValueVariable* var) {
-	UnicodeString str;
+	icu::UnicodeString str;
 	cout<<var->getType()<<"; ";
 	var->getValueFormatted(str, FMT_ALL_DEFAULT);
 	cout<<str<<", ";
@@ -18,7 +19,7 @@ void printValue(ValueVariable* var) {
 }
 
 int main() {
-	UnicodeString source="1.0";
+	icu::UnicodeString source="1.0";
 	ValueVariable* var=Variable::stringToValue(source);
 	printValue(var);
 	delete var;

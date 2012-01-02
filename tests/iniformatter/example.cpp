@@ -1,6 +1,6 @@
 
-#include "duct/debug.hpp"
-#include "duct/iniformatter.hpp"
+#include <duct/debug.hpp>
+#include <duct/iniformatter.hpp>
 
 using namespace duct;
 

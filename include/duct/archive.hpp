@@ -38,10 +38,11 @@ Implements component parts:
 #ifndef _DUCT_ARCHIVE_HPP
 #define _DUCT_ARCHIVE_HPP
 
-#include <string.h>
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
 #include <duct/filestream.hpp>
+
+#include <string.h>
+#include <unicode/unistr.h>
 
 namespace duct {
 

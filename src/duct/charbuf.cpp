@@ -24,12 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#include <duct/debug.hpp>
+#include <duct/charbuf.hpp>
+
 #include <math.h>
 #include <stdlib.h>
 #include <unicode/numfmt.h>
 #include <unicode/ustring.h>
-#include <duct/debug.hpp>
-#include <duct/charbuf.hpp>
 
 namespace duct {
 
@@ -67,10 +68,10 @@ void CharBuf::addChar(UChar32 c) {
 	_cached=false;
 }
 
-const UnicodeString& CharBuf::cacheString() {
+const icu::UnicodeString& CharBuf::cacheString() {
 	if (!_cached) {
 		if (_buffer && _buflength>0) {
-			//_bufstring=UnicodeString::fromUTF32(_buffer, _buflength);
+			//_bufstring=icu::UnicodeString::fromUTF32(_buffer, _buflength);
 			int32_t capacity;
 			if (_buflength<=16) { // assumed upper size for small-sized buffers
 				capacity=16;
@@ -124,7 +125,7 @@ bool CharBuf::compare(const CharacterSet& charset) const {
 	return true;
 }
 
-bool CharBuf::toString(UnicodeString& str) {
+bool CharBuf::toString(icu::UnicodeString& str) {
 	cacheString();
 	if (!_bufstring.isBogus()) {
 		str.setTo(_bufstring);
@@ -133,7 +134,7 @@ bool CharBuf::toString(UnicodeString& str) {
 	return false;
 }
 
-const UnicodeString& CharBuf::toString() {
+const icu::UnicodeString& CharBuf::toString() {
 	return cacheString();
 }
 
@@ -148,8 +149,8 @@ bool CharBuf::toInt(int32_t& value) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat* nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
@@ -172,8 +173,8 @@ bool CharBuf::toLong(int64_t& value) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat* nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
@@ -196,8 +197,8 @@ bool CharBuf::toFloat(float& value) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat* nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
@@ -220,8 +221,8 @@ bool CharBuf::toDouble(double& value) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
-	NumberFormat* nf=NumberFormat::createInstance(status);
-	Formattable formattable;
+	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
+	icu::Formattable formattable;
 	nf->parse(_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {

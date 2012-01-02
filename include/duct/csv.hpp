@@ -34,14 +34,15 @@ Implements component parts:
 #ifndef _DUCT_CSV_HPP
 #define _DUCT_CSV_HPP
 
-#include <map>
-#include <string>
-#include <exception>
 #include <duct/config.hpp>
 #include <duct/parser.hpp>
 #include <duct/variables.hpp>
 #include <duct/characterset.hpp>
 #include <duct/stream.hpp>
+
+#include <map>
+#include <string>
+#include <exception>
 
 namespace duct {
 
@@ -162,14 +163,14 @@ public:
 		@returns The string at the position, or NULL if either the index was invalid or the variable at the position wasn't the correct type.
 		@param index The index to retrieve.
 	*/
-	const UnicodeString* getStringValue(int index) const;
+	const icu::UnicodeString* getStringValue(int index) const;
 	/**
 		Get the string value at the given position.
 		@returns true on success, or false if either the index was invalid or the variable at the position wasn't the correct type.
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
-	bool getStringValue(UnicodeString& result, int index) const;
+	bool getStringValue(icu::UnicodeString& result, int index) const;
 	/**
 		Get the float at the given position.
 		@returns The FloatVariable at the position, or NULL if either the index was invalid or the variable at the position wasn't the correct type.
@@ -204,7 +205,7 @@ public:
 		@param result The result. This is not modified if the retrieval failed.
 		@param index The index to retrieve.
 	*/
-	bool getAsString(UnicodeString& result, int index) const;
+	bool getAsString(icu::UnicodeString& result, int index) const;
 	/**
 		Remove the record at the given index.
 		If the record at the index was removed, its value is destroyed.
@@ -412,7 +413,7 @@ public:
 		@param row The row to retrieve from.
 		@param column The column to retrieve.
 	*/
-	const UnicodeString* getStringValue(int row, int column) const;
+	const icu::UnicodeString* getStringValue(int row, int column) const;
 	/**
 		Get the string value at the given position.
 		@returns true on success, or false if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -420,7 +421,7 @@ public:
 		@param row The row to retrieve from.
 		@param column The column to retrieve.
 	*/
-	bool getStringValue(UnicodeString& result, int row, int column) const;
+	bool getStringValue(icu::UnicodeString& result, int row, int column) const;
 	/**
 		Get the float at the given position.
 		@returns The FloatVariable at the position, or NULL if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -460,7 +461,7 @@ public:
 		@param row The row to retrieve from.
 		@param column The column to retrieve.
 	*/
-	bool getAsString(UnicodeString& result, int row, int column) const;
+	bool getAsString(icu::UnicodeString& result, int row, int column) const;
 	/**
 		Remove the value at the given position.
 		@returns true on success, or false if either the row index was empty or the column was empty.
@@ -707,7 +708,7 @@ public:
 		@param sepchar The separator character.
 		@param varformat The format for records.
 	*/
-	static void formatRow(const CSVRow& row, UnicodeString& result, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
+	static void formatRow(const CSVRow& row, icu::UnicodeString& result, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Load the given file path as a CSVMap.
 		The user owns the returned map.
@@ -720,7 +721,7 @@ public:
 	*/
 	static CSVMap* loadFromFile(const char* path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
 	static CSVMap* loadFromFile(const std::string& path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
-	static CSVMap* loadFromFile(const UnicodeString& path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
+	static CSVMap* loadFromFile(const icu::UnicodeString& path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
 	/**
 		Load the given stream as a CSVMap.
 		The user owns the returned map.
@@ -742,7 +743,7 @@ public:
 	*/
 	static bool writeToFile(const CSVMap* map, const char* path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
 	static bool writeToFile(const CSVMap* map, const std::string& path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const CSVMap* map, const UnicodeString& path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(const CSVMap* map, const icu::UnicodeString& path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Write the given map to the given stream.
 		@returns true on success, or false if either the map or stream was NULL.

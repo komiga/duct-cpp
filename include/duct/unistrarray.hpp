@@ -25,24 +25,25 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-duct++ UnicodeString* array class.
+duct++ icu::UnicodeString* array class.
 */
 
 #ifndef _DUCT_UNISTRARRAY_HPP
 #define _DUCT_UNISTRARRAY_HPP
 
-#include <stdarg.h>
-#include <unicode/unistr.h>
 #include <duct/config.hpp>
 #include <duct/genericarray.hpp>
+
+#include <stdarg.h>
+#include <unicode/unistr.h>
 
 namespace duct {
 
 /**
-	UnicodeString* array.
+	icu::UnicodeString* array.
 	All data (except for C-string arguments and C-string data pointers) given to the class is owned by the class.
 */
-class DUCT_API StringArray : public GPArray<UnicodeString*> {
+class DUCT_API StringArray : public GPArray<icu::UnicodeString*> {
 public:
 	/**
 		Constructor.
@@ -60,7 +61,7 @@ public:
 	*/
 	StringArray(const char** data, int size=-1);
 	/**
-		Variadic constructor with UnicodeString elements.
+		Variadic constructor with icu::UnicodeString elements.
 		@param num The number of arguments.
 		@param ... The elements of type T to initialize with.
 	*/

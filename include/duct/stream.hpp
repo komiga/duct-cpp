@@ -31,10 +31,11 @@ duct++ Stream class.
 #ifndef _DUCT_STREAM_HPP
 #define _DUCT_STREAM_HPP
 
+#include <duct/config.hpp>
+
 #include <unicode/utf.h>
 #include <unicode/unistr.h>
 #include <unicode/ucnv.h>
-#include <duct/config.hpp>
 
 namespace duct {
 
@@ -151,7 +152,7 @@ public:
 		@param str The output string.
 		@param length The length of the string to read.
 	*/
-	virtual size_t readString(UnicodeString& str, size_t length);
+	virtual size_t readString(icu::UnicodeString& str, size_t length);
 	/**
 		Read a line from the stream (variable-length string ending in '\\n').
 		The CR character is ignored, and the output will not contain any if they are encountered.
@@ -159,7 +160,7 @@ public:
 		@returns The number of bytes read.
 		@param str The output string.
 	*/
-	virtual size_t readLine(UnicodeString& str);
+	virtual size_t readLine(icu::UnicodeString& str);
 	/**
 		Read a null-terminated string from the stream.
 		The number of bytes read will depend on the stream's encoding.
@@ -167,7 +168,7 @@ public:
 		@param str The output string.
 		@param maxlength The maximum length of the string to read.
 	*/
-	virtual size_t readCString(UnicodeString& str, size_t maxlength);
+	virtual size_t readCString(icu::UnicodeString& str, size_t maxlength);
 	
 	/**
 		Write an 8-bit integer to the stream.
@@ -262,14 +263,14 @@ public:
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeString(const UnicodeString& str);
+	virtual size_t writeString(const icu::UnicodeString& str);
 	/**
 		Write the the given string as a line (appends '\\n').
 		The number of bytes written will depend on the stream's encoding.
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeLine(const UnicodeString& str);
+	virtual size_t writeLine(const icu::UnicodeString& str);
 	/**
 		Write the given string to the stream as a null-terminated string.
 		This will basically write str+'\\0' to the stream.
@@ -277,7 +278,7 @@ public:
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeCString(const UnicodeString& str);
+	virtual size_t writeCString(const icu::UnicodeString& str);
 	
 	/**
 		Read a null-terminated string and compare the given string against it.
@@ -285,21 +286,21 @@ public:
 		@param checkstr The string to compare with.
 		@param maxlength Optional max-length for reading the C string. If maxlength is greater than 0, it will be used as the maximum length for reading the C string, otherwise the given string's length will be used (plus one for the null character).
 	*/
-	bool readAndMatchCString(const UnicodeString& checkstr, size_t maxlength=0);
+	bool readAndMatchCString(const icu::UnicodeString& checkstr, size_t maxlength=0);
 	/**
 		Read a reserved-space null-terminated string.
 		@returns Nothing.
 		@param result The result string.
 		@param size The size of the reserved space.
 	*/
-	void readReservedCString(UnicodeString& result, size_t size);
+	void readReservedCString(icu::UnicodeString& result, size_t size);
 	/**
 		Read a reserved-space null-terminated string (limited size string) and compare the given string against it.
 		@returns true if the given string matched the read string, or false if they did not match.
 		@param checkstr The string to match with.
 		@param size The size of the reserved space.
 	*/
-	bool readAndMatchReservedCString(const UnicodeString& checkstr, size_t size);
+	bool readAndMatchReservedCString(const icu::UnicodeString& checkstr, size_t size);
 	/**
 		Write reserved-area data.
 		@returns Nothing.
@@ -314,7 +315,7 @@ public:
 		@param size The size of the reserved space.
 		@param padvalue The value with which to pad the space.
 	*/
-	void writeReservedCString(const UnicodeString& str, size_t size, unsigned char padvalue);
+	void writeReservedCString(const icu::UnicodeString& str, size_t size, unsigned char padvalue);
 	
 	/**
 		Flush the stream.
@@ -376,7 +377,7 @@ public:
 		@see getEncoding()
 	*/
 	virtual bool setEncoding(const char* encoding);
-	virtual bool setEncoding(const UnicodeString& encoding);
+	virtual bool setEncoding(const icu::UnicodeString& encoding);
 	/**
 		Get the stream's character encoding.
 		@returns The stream's character encoding. This may be NULL if the character converter has not been opened.
