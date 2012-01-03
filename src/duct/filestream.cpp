@@ -35,53 +35,53 @@ namespace duct {
 
 // class FileStream implementation
 
-FileStream::FileStream() { /* Do nothing. */ }
+FileStream::FileStream() {/* Do nothing */}
 
-FileStream::FileStream(const char* path, const char* encoding) {
+FileStream::FileStream(char const* path, char const* encoding) {
 	setEncoding(encoding);
 	init(path, STREAM_WRITEABLE|STREAM_READABLE);
 }
 
-FileStream::FileStream(const std::string& path, const char* encoding) {
+FileStream::FileStream(std::string const& path, char const* encoding) {
 	setEncoding(encoding);
 	init(path.c_str(), STREAM_WRITEABLE|STREAM_READABLE);
 }
 
-FileStream::FileStream(const icu::UnicodeString& path, const char* encoding) {
+FileStream::FileStream(icu::UnicodeString const& path, char const* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
 	init(temp.c_str(), STREAM_WRITEABLE|STREAM_READABLE);
 }
 
-FileStream::FileStream(const char* path, bool readable, bool writeable, const char* encoding) {
+FileStream::FileStream(char const* path, bool readable, bool writeable, char const* encoding) {
 	setEncoding(encoding);
 	init(path, (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
 }
 
-FileStream::FileStream(const std::string& path, bool readable, bool writeable, const char* encoding) {
+FileStream::FileStream(std::string const& path, bool readable, bool writeable, char const* encoding) {
 	setEncoding(encoding);
 	init(path.c_str(), (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
 }
 
-FileStream::FileStream(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding) {
+FileStream::FileStream(icu::UnicodeString const& path, bool readable, bool writeable, char const* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
 	init(temp.c_str(), (readable ? STREAM_READABLE : 0)|(writeable ? STREAM_WRITEABLE : 0));
 }
 
-FileStream::FileStream(const char* path, unsigned int flags, const char* encoding) {
+FileStream::FileStream(char const* path, unsigned int flags, char const* encoding) {
 	setEncoding(encoding);
 	init(path, flags);
 }
 
-FileStream::FileStream(const std::string& path, unsigned int flags, const char* encoding) {
+FileStream::FileStream(std::string const& path, unsigned int flags, char const* encoding) {
 	setEncoding(encoding);
 	init(path.c_str(), flags);
 }
 
-FileStream::FileStream(const icu::UnicodeString& path, unsigned int flags, const char* encoding) {
+FileStream::FileStream(icu::UnicodeString const& path, unsigned int flags, char const* encoding) {
 	setEncoding(encoding);
 	std::string temp;
 	path.toUTF8String(temp);
@@ -94,78 +94,78 @@ FileStream::~FileStream() {
 }
 
 bool FileStream::isOpen() const {
-	return _file!=NULL;
+	return m_file!=NULL;
 }
 
 size_t FileStream::read(void* data, size_t size) {
-	debug_assertp(_file!=NULL, this, "Cannot read from closed stream");
-	debug_assertp(_flags&STREAM_READABLE, this, "Stream is not readable");
-	debug_assertp(_pos<_size, this, "Cannot read past the eof");
-	size_t size_read=fread(data, 1, size, _file);
+	debug_assertp(m_file!=NULL, this, "Cannot read from closed stream");
+	debug_assertp(m_flags&STREAM_READABLE, this, "Stream is not readable");
+	debug_assertp(m_pos<m_size, this, "Cannot read past the eof");
+	size_t size_read=fread(data, 1, size, m_file);
 	debug_assertp(size_read==size, this, "Error reading from stream");
-	_pos+=size_read;
+	m_pos+=size_read;
 	return size;
 }
 
-size_t FileStream::write(const void* data, size_t size) {
-	debug_assertp(_file!=NULL, this, "Cannot write to closed stream");
-	debug_assertp(_flags&STREAM_WRITEABLE, this, "Stream is not writeable");
-	size_t size_written=fwrite(data, 1, size, _file);
+size_t FileStream::write(void const* data, size_t size) {
+	debug_assertp(m_file!=NULL, this, "Cannot write to closed stream");
+	debug_assertp(m_flags&STREAM_WRITEABLE, this, "Stream is not writeable");
+	size_t size_written=fwrite(data, 1, size, m_file);
 	debug_assertp(size_written==size, this, "Error writing to stream");
-	_pos+=size_written;
-	if (_pos>_size)
-		_size=_pos;
+	m_pos+=size_written;
+	if (m_pos>m_size)
+		m_size=m_pos;
 	return size_written;
 }
 
 void FileStream::flush() {
-	debug_assertp(_file!=NULL, this, "Cannot flush closed stream");
-	fflush(_file);
+	debug_assertp(m_file!=NULL, this, "Cannot flush closed stream");
+	fflush(m_file);
 }
 
 bool FileStream::eof() const {
-	if (_file)
-		return _pos==_size;
+	if (m_file)
+		return m_pos==m_size;
 	return true;
 }
 
 size_t FileStream::size() const {
-	return _size;
+	return m_size;
 }
 
 unsigned long FileStream::pos() const {
-	return _pos;
+	return m_pos;
 }
 
 unsigned long FileStream::seek(unsigned long pos) {
-	debug_assertp(_file!=NULL, this, "Cannot seek closed stream");
-	if (fseek(_file, pos, SEEK_SET)==0)
-		_pos=pos;
-	return _pos;
+	debug_assertp(m_file!=NULL, this, "Cannot seek closed stream");
+	if (fseek(m_file, pos, SEEK_SET)==0)
+		m_pos=pos;
+	return m_pos;
 }
 
 void FileStream::close() {
 	//debug_calledp(this);
-	if (_file!=NULL) {
-		if (_flags&STREAM_WRITEABLE)
+	if (m_file!=NULL) {
+		if (m_flags&STREAM_WRITEABLE)
 			flush();
-		fclose(_file);
-		_file=NULL;
-		_pos=0;
-		_size=0;
+		fclose(m_file);
+		m_file=NULL;
+		m_pos=0;
+		m_size=0;
 	}
 }
 
-/*int FileStream::scanf(const char* format, ...) {
+/*int FileStream::scanf(char const* format, ...) {
 	va_list vl;
 	va_start(vl, format);
 	#ifdef DUCT_PLATFORM_WINDOWS
 	// TODO
 	#else
-	int ni=vfscanf(_file, format, vl);
+	int ni=vfscanf(m_file, format, vl);
 	#endif
 	va_end(vl);
-	_pos=ftell(_file);
+	m_pos=ftell(m_file);
 	return ni;
 }*/
 
@@ -174,11 +174,11 @@ void FileStream::setFlags(unsigned int) {
 	/* Do not set flags after stream has opened. Unless the file is reopened... */
 }
 
-void FileStream::init(const char* path, unsigned int flags) {
+void FileStream::init(char const* path, unsigned int flags) {
 	if ((flags&FILESTREAM_APPEND))
 		flags |= STREAM_WRITEABLE;
 	debug_assertp((flags&STREAM_WRITEABLE) || (flags&STREAM_READABLE), this, "Stream must be writeable, readable, or both");
-	const char* mode=NULL;
+	char const* mode=NULL;
 	if ((flags&FILESTREAM_APPEND) && (flags&STREAM_READABLE)) {
 		mode="ab+";
 	} else if ((flags&STREAM_WRITEABLE) && (flags&STREAM_READABLE)) {
@@ -196,18 +196,18 @@ void FileStream::init(const char* path, unsigned int flags) {
 
 void FileStream::init(FILE* file, unsigned int flags) {
 	//debug_assertp(file!=NULL, this, "Cannot initialize on null pointer");
-	_file=file;
-	_pos=0;
-	_flags=flags;
+	m_file=file;
+	m_pos=0;
+	m_flags=flags;
 	// Determine size by seeking to the end of the file, and then back to the beginning
-	if (_file) {
-		fseek(_file, 0L, SEEK_END);
-		_size=ftell(_file);
-		fseek(_file, 0L, SEEK_SET);
+	if (m_file) {
+		fseek(m_file, 0L, SEEK_END);
+		m_size=ftell(m_file);
+		fseek(m_file, 0L, SEEK_SET);
 	}
 }
 
-FileStream* FileStream::openFile(const char* path, bool readable, bool writeable, const char* encoding) {
+FileStream* FileStream::openFile(char const* path, bool readable, bool writeable, char const* encoding) {
 	FileStream* fs=new FileStream(path, readable, writeable, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -217,7 +217,7 @@ FileStream* FileStream::openFile(const char* path, bool readable, bool writeable
 	}
 }
 
-FileStream* FileStream::openFile(const std::string& path, bool readable, bool writeable, const char* encoding) {
+FileStream* FileStream::openFile(std::string const& path, bool readable, bool writeable, char const* encoding) {
 	FileStream* fs=new FileStream(path.c_str(), readable, writeable, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -227,7 +227,7 @@ FileStream* FileStream::openFile(const std::string& path, bool readable, bool wr
 	}
 }
 
-FileStream* FileStream::openFile(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding) {
+FileStream* FileStream::openFile(icu::UnicodeString const& path, bool readable, bool writeable, char const* encoding) {
 	FileStream* fs=new FileStream(path, readable, writeable, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -237,7 +237,7 @@ FileStream* FileStream::openFile(const icu::UnicodeString& path, bool readable, 
 	}
 }
 
-FileStream* FileStream::openFile(const char* path, unsigned int flags, const char* encoding) {
+FileStream* FileStream::openFile(char const* path, unsigned int flags, char const* encoding) {
 	FileStream* fs=new FileStream(path, flags, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -247,7 +247,7 @@ FileStream* FileStream::openFile(const char* path, unsigned int flags, const cha
 	}
 }
 
-FileStream* FileStream::openFile(const std::string& path, unsigned int flags, const char* encoding) {
+FileStream* FileStream::openFile(std::string const& path, unsigned int flags, char const* encoding) {
 	FileStream* fs=new FileStream(path.c_str(), flags, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -257,7 +257,7 @@ FileStream* FileStream::openFile(const std::string& path, unsigned int flags, co
 	}
 }
 
-FileStream* FileStream::openFile(const icu::UnicodeString& path, unsigned int flags, const char* encoding) {
+FileStream* FileStream::openFile(icu::UnicodeString const& path, unsigned int flags, char const* encoding) {
 	FileStream* fs=new FileStream(path, flags, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -267,7 +267,7 @@ FileStream* FileStream::openFile(const icu::UnicodeString& path, unsigned int fl
 	}
 }
 
-FileStream* FileStream::readFile(const char* path, const char* encoding) {
+FileStream* FileStream::readFile(char const* path, char const* encoding) {
 	FileStream* fs=new FileStream(path, true, false, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -277,7 +277,7 @@ FileStream* FileStream::readFile(const char* path, const char* encoding) {
 	}
 }
 
-FileStream* FileStream::readFile(const std::string& path, const char* encoding) {
+FileStream* FileStream::readFile(std::string const& path, char const* encoding) {
 	FileStream* fs=new FileStream(path.c_str(), true, false, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -287,7 +287,7 @@ FileStream* FileStream::readFile(const std::string& path, const char* encoding) 
 	}
 }
 
-FileStream* FileStream::readFile(const icu::UnicodeString& path, const char* encoding) {
+FileStream* FileStream::readFile(icu::UnicodeString const& path, char const* encoding) {
 	FileStream* fs=new FileStream(path, true, false, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -297,7 +297,7 @@ FileStream* FileStream::readFile(const icu::UnicodeString& path, const char* enc
 	}
 }
 
-FileStream* FileStream::writeFile(const char* path, const char* encoding) {
+FileStream* FileStream::writeFile(char const* path, char const* encoding) {
 	FileStream* fs=new FileStream(path, false, true, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -307,7 +307,7 @@ FileStream* FileStream::writeFile(const char* path, const char* encoding) {
 	}
 }
 
-FileStream* FileStream::writeFile(const std::string& path, const char* encoding) {
+FileStream* FileStream::writeFile(std::string const& path, char const* encoding) {
 	FileStream* fs=new FileStream(path.c_str(), false, true, encoding);
 	if (fs->isOpen()) {
 		return fs;
@@ -317,7 +317,7 @@ FileStream* FileStream::writeFile(const std::string& path, const char* encoding)
 	}
 }
 
-FileStream* FileStream::writeFile(const icu::UnicodeString& path, const char* encoding) {
+FileStream* FileStream::writeFile(icu::UnicodeString const& path, char const* encoding) {
 	FileStream* fs=new FileStream(path, false, true, encoding);
 	if (fs->isOpen()) {
 		return fs;

@@ -9,7 +9,7 @@
 using namespace duct;
 using namespace std;
 
-void printValues(const Identifier& iden) {
+void printValues(Identifier const& iden) {
 	printf("Variable count: %lu\n", iden.getChildCount());
 	icu::UnicodeString str;
 	for (VarList::const_iterator iter=iden.begin(); iter!=iden.end(); ++iter) {

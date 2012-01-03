@@ -32,123 +32,124 @@ namespace duct {
 
 // class Token implementation
 
-Token::Token(int type) : _type(type) {
-}
+Token::Token(int type)
+	: m_type(type), m_line(-1), m_column(-1), m_buffer()
+{/* Do nothing */}
 
-Token::~Token() {
-}
+Token::~Token() {/* Do nothing */}
 
 void Token::setType(int type) {
-	_type=type;
+	m_type=type;
 }
 
 int Token::getType() const {
-	return _type;
+	return m_type;
 }
 
 void Token::setLine(int line) {
-	_line=line;
+	m_line=line;
 }
 
 int Token::getLine() const {
-	return _line;
+	return m_line;
 }
 
 void Token::setColumn(int column) {
-	_column=column;
+	m_column=column;
 }
 
 int Token::getColumn() const {
-	return _column;
+	return m_column;
 }
 
 void Token::setPosition(int line, int column) {
-	_line=line;
-	_column=column;
+	m_line=line;
+	m_column=column;
 }
 
 void Token::addChar(UChar32 c) {
-	_buffer.addChar(c);
+	m_buffer.addChar(c);
 }
 
 void Token::reset(int type) {
-	_type=type;
-	_buffer.reset();
+	m_type=type;
+	m_buffer.reset();
 }
 
 bool Token::compare(UChar32 c) const {
-	return _buffer.compare(c);
+	return m_buffer.compare(c);
 }
 
-bool Token::compare(const CharacterSet& charset) const {
-	return _buffer.compare(charset);
+bool Token::compare(CharacterSet const& charset) const {
+	return m_buffer.compare(charset);
 }
 
 bool Token::toString(icu::UnicodeString& str) {
-	return _buffer.toString(str);
+	return m_buffer.toString(str);
 }
 
-const icu::UnicodeString& Token::toString() {
-	return _buffer.toString();
+icu::UnicodeString const& Token::toString() {
+	return m_buffer.toString();
 }
 
 int32_t Token::toInt() {
-	return _buffer.toInt();
+	return m_buffer.toInt();
 }
 
 bool Token::toInt(int32_t& value) {
-	return _buffer.toInt(value);
+	return m_buffer.toInt(value);
 }
 
 int64_t Token::toLong() {
-	return _buffer.toLong();
+	return m_buffer.toLong();
 }
 
 bool Token::toLong(int64_t& value) {
-	return _buffer.toLong(value);
+	return m_buffer.toLong(value);
 }
 
 float Token::toFloat() {
-	return _buffer.toFloat();
+	return m_buffer.toFloat();
 }
 
 bool Token::toFloat(float& value) {
-	return _buffer.toFloat(value);
+	return m_buffer.toFloat(value);
 }
 
 double Token::toDouble() {
-	return _buffer.toDouble();
+	return m_buffer.toDouble();
 }
 
 bool Token::toDouble(double& value) {
-	return _buffer.toDouble(value);
+	return m_buffer.toDouble(value);
 }
 
 // class Parser implementation
 
-Parser::Parser() : _line(1), _column(1), _curchar(-1), _peekchar(-1), _peeked(false), _stream(NULL) {
-}
+Parser::Parser()
+	: m_line(1), m_column(1), m_curchar(-1), m_peekchar(-1), m_peeked(false), m_stream(NULL)
+{/* Do nothing */}
 
 Parser::~Parser() {/* Do nothing */}
 
 int Parser::getLine() const {
-	return _line;
+	return m_line;
 }
 
 int Parser::getColumn() const {
-	return _column;
+	return m_column;
 }
 
 Token& Parser::getToken() {
-	return _token;
+	return m_token;
 }
 
-const Token& Parser::getToken() const {
-	return _token;
+Token const& Parser::getToken() const {
+	return m_token;
 }
 
 Stream* Parser::getStream() {
-	return _stream;
+	return m_stream;
 }
 
 bool Parser::initWithStream(Stream* stream) {
@@ -156,63 +157,63 @@ bool Parser::initWithStream(Stream* stream) {
 	if (!stream) {
 		return false;
 	}
-	_stream=stream;
+	m_stream=stream;
 	nextChar(); // get the first character
 	return true;
 }
 
 void Parser::reset() {
-	_token.reset(NULL_TOKEN);
-	_line=1;
-	_column=1;
-	_stream=NULL;
-	_curchar=CHAR_EOF;
-	_peekchar=CHAR_EOF;
-	_peeked=false;
+	m_token.reset(NULL_TOKEN);
+	m_line=1;
+	m_column=1;
+	m_stream=NULL;
+	m_curchar=CHAR_EOF;
+	m_peekchar=CHAR_EOF;
+	m_peeked=false;
 }
 
 UChar32 Parser::nextChar() {
-	if (_curchar==CHAR_NEWLINE) {
-		_line++;
-		_column=1;
+	if (m_curchar==CHAR_NEWLINE) {
+		m_line++;
+		m_column=1;
 	}
-	if (_peeked) {
-		_curchar=_peekchar;
-		_peeked=false;
-	} else if (!_stream->eof()) {
-		_curchar=_stream->readChar();
+	if (m_peeked) {
+		m_curchar=m_peekchar;
+		m_peeked=false;
+	} else if (!m_stream->eof()) {
+		m_curchar=m_stream->readChar();
 	} else {
-		_curchar=CHAR_EOF;
+		m_curchar=CHAR_EOF;
 	}
-	if (_curchar==CHAR_CARRIAGERETURN) {
+	if (m_curchar==CHAR_CARRIAGERETURN) {
 		nextChar();
-	} else if (_curchar!=CHAR_EOF) {
-		_column++;
+	} else if (m_curchar!=CHAR_EOF) {
+		m_column++;
 	}
-	return _curchar;
+	return m_curchar;
 }
 
 UChar32 Parser::peekChar() {
-	if (!_peeked) {
-		if (!_stream->eof())
-			_peekchar=_stream->readChar();
+	if (!m_peeked) {
+		if (!m_stream->eof())
+			m_peekchar=m_stream->readChar();
 		else
-			_peekchar=CHAR_EOF;
-		_peeked=true;
+			m_peekchar=CHAR_EOF;
+		m_peeked=true;
 	}
-	return _peekchar;
+	return m_peekchar;
 }
 
 bool Parser::skipToChar(UChar32 c) {
-	while (_curchar!=CHAR_EOF && _curchar!=c)
+	while (m_curchar!=CHAR_EOF && m_curchar!=c)
 		nextChar();
-	return _curchar==c;
+	return m_curchar==c;
 }
 
 bool Parser::skipToEOL() {
-	while (_curchar!=CHAR_EOF && _curchar!=CHAR_NEWLINE)
+	while (m_curchar!=CHAR_EOF && m_curchar!=CHAR_NEWLINE)
 		nextChar();
-	return _curchar==CHAR_NEWLINE;
+	return m_curchar==CHAR_NEWLINE;
 }
 
 // class ParserHandler implementation

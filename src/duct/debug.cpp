@@ -30,37 +30,37 @@ namespace duct {
 
 #ifndef NDEBUG
 
-void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
-	fprintf(stderr, "assertion failure: %s\n", __mesg);
-	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
+void debug_assert__(char const* assertion__, char const* file__, int line__, char const* function__, char const* mesg__) {
+	fprintf(stderr, "assertion failure: %s\n", mesg__);
+	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", file__, line__, function__, assertion__);
 	abort();
 }
 
-void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
-	fprintf(stderr, "assertion failure: [%p] %s\n", __p, __mesg);
-	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", __file, __line, __function, __assertion);
+void debug_assertp__(char const* assertion__, char const* file__, int line__, char const* function__, void const* p__, char const* mesg__) {
+	fprintf(stderr, "assertion failure: [%p] %s\n", p__, mesg__);
+	fprintf(stderr, " in %s:%d: %s: Assertion: `%s`\n", file__, line__, function__, assertion__);
 	abort();
 }
 
 #else
 
-void __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg) {
-	(void)__assertion;
-	(void)__function;
-	(void)__file;
-	(void)__line;
-	(void)__function;
-	(void)__mesg;
+void debug_assert__(char const* assertion__, char const* file__, int line__, char const* function__, char const* mesg__) {
+	(void)assertion__;
+	(void)function__;
+	(void)file__;
+	(void)line__;
+	(void)function__;
+	(void)mesg__;
 }
 
-void __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg) {
-	(void)__assertion;
-	(void)__function;
-	(void)__file;
-	(void)__line;
-	(void)__function;
-	(void)__p;
-	(void)__mesg;
+void debug_assertp__(char const* assertion__, char const* file__, int line__, char const* function__, void const* p__, char const* mesg__) {
+	(void)assertion__;
+	(void)function__;
+	(void)file__;
+	(void)line__;
+	(void)function__;
+	(void)p__;
+	(void)mesg__;
 }
 
 #endif // if !NDEBUG

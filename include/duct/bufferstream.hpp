@@ -75,9 +75,9 @@ public:
 	virtual void close();
 	
 protected:
-	void* _buffer;			// Buffer
-	unsigned long _pos;		// Stream position
-	size_t _size;			// Stream size
+	void* m_buffer;			// Buffer
+	unsigned long m_pos;	// Stream position
+	size_t m_size;			// Stream size
 	
 private:
 	BufferStream();
@@ -122,9 +122,9 @@ public:
 	virtual void setFlags(unsigned int flags);
 	
 protected:
-	void const* _buffer;	// Buffer
-	unsigned long _pos;		// Stream position
-	size_t _size;			// Stream size
+	void const* m_buffer;	// Buffer
+	unsigned long m_pos;	// Stream position
+	size_t m_size;			// Stream size
 	
 private:
 	ReadOnlyBufferStream();

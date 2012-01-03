@@ -12,10 +12,10 @@ typedef std::list<MyEntry*> MyEntryList;
 
 class MyArchive : public duct::Archive {
 public:
-	MyArchive(const icu::UnicodeString& path);
+	MyArchive(icu::UnicodeString const& path);
 	~MyArchive();
 	
-	const char* getIdentifier() const;
+	char const* getIdentifier() const;
 	size_t getMetadataSize() const;
 	size_t getHeaderSize() const;
 	unsigned int getCount() const;
@@ -29,14 +29,14 @@ public:
 	void add(MyEntry* e);
 	
 private:
-	MyEntryList _list;
+	MyEntryList m_list;
 };
 
 // This'll handle its own data
 class MyEntry : public duct::Entry {
 public:
 	MyEntry();
-	MyEntry(const icu::UnicodeString& path);
+	MyEntry(icu::UnicodeString const& path);
 	~MyEntry();
 	
 	void freeData();
@@ -50,11 +50,11 @@ public:
 	bool serializeUserspace(duct::Stream* stream);
 	bool read(duct::Stream* stream);
 	bool write(duct::Stream* stream);
-	void load(const icu::UnicodeString& path);
+	void load(icu::UnicodeString const& path);
 	void save();
 	
 private:
-	icu::UnicodeString _path;
-	char* _data;
+	icu::UnicodeString m_path;
+	char* m_data;
 };
 

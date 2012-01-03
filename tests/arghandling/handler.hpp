@@ -11,7 +11,7 @@ public:
 	HelpImpl();
 	int checkErrors();
 	int execute();
-	const icu::UnicodeString& getUsage() const;
+	icu::UnicodeString const& getUsage() const;
 };
 
 class TestImpl : public ArgImpl {
@@ -19,7 +19,7 @@ public:
 	TestImpl();
 	int checkErrors();
 	int execute();
-	const icu::UnicodeString& getUsage() const;
+	icu::UnicodeString const& getUsage() const;
 };
 
 #endif // __TESTS_HANDLER_HPP__

@@ -10,16 +10,16 @@
 #include <unicode/ucnv.h>
 
 int main(int argc, char* argv[]) {
-	const char* data="あa";
+	char const* data="あa";
 	if (argc>1) {
 		data=argv[1];
 	}
 	icu::UnicodeString str(data);
-	const char* encoding="utf-8";
+	char const* encoding="utf-8";
 	if (argc>2) {
 		encoding=argv[2];
 	}
-	const char* path="data/utf8";
+	char const* path="data/utf8";
 	if (argc>3) {
 		path=argv[3];
 	}

@@ -35,10 +35,10 @@ namespace duct {
 
 namespace FileSystem {
 
-static const icu::UnicodeString g_ustr_dos_slash('\\');
-static const icu::UnicodeString g_ustr_nix_slash('/');
+static icu::UnicodeString const g_ustr_dos_slash('\\');
+static icu::UnicodeString const g_ustr_nix_slash('/');
 
-/*bool hasLeadingPeriod(const std::string& path) {
+/*bool hasLeadingPeriod(std::string const& path) {
 	size_t sla_pos=path.find_last_of('/');
 	if (std::string::npos==sla_pos) {
 		return 0==path.find_first_of('.');
@@ -47,7 +47,7 @@ static const icu::UnicodeString g_ustr_nix_slash('/');
 	}
 }
 
-bool hasLeadingPeriod(const icu::UnicodeString& path) {
+bool hasLeadingPeriod(icu::UnicodeString const& path) {
 	int32_t sla_pos=path.lastIndexOf('/');
 	if (-1==sla_pos) {
 		return 0==path.indexOf('.');
@@ -56,7 +56,7 @@ bool hasLeadingPeriod(const icu::UnicodeString& path) {
 	}
 }*/
 
-size_t getPartSplitPos_(const std::string& path, bool allow_leading, size_t& beg_pos) {
+size_t getPartSplitPos_(std::string const& path, bool allow_leading, size_t& beg_pos) {
 	size_t sla_pos=path.find_last_of('/');
 	beg_pos=(std::string::npos!=sla_pos) ? sla_pos+1 : 0;
 	sla_pos=(std::string::npos!=sla_pos) ? sla_pos : 0;
@@ -70,7 +70,7 @@ size_t getPartSplitPos_(const std::string& path, bool allow_leading, size_t& beg
 	return dot_pos;
 }
 
-int32_t getPartSplitPos_(const icu::UnicodeString& path, bool allow_leading, int32_t& beg_pos) {
+int32_t getPartSplitPos_(icu::UnicodeString const& path, bool allow_leading, int32_t& beg_pos) {
 	int32_t sla_pos=path.lastIndexOf('/');
 	beg_pos=(-1!=sla_pos) ? sla_pos+1 : 0;
 	sla_pos=(-1!=sla_pos) ? sla_pos : 0;
@@ -84,7 +84,7 @@ int32_t getPartSplitPos_(const icu::UnicodeString& path, bool allow_leading, int
 	return dot_pos;
 }
 
-size_t getExtensionPos_(const std::string& path) {
+size_t getExtensionPos_(std::string const& path) {
 	size_t dot_pos=path.find_last_of('.');
 	if (std::string::npos!=dot_pos) {
 		size_t sla_pos=path.find_last_of('/');
@@ -95,7 +95,7 @@ size_t getExtensionPos_(const std::string& path) {
 	return std::string::npos;
 }
 
-int32_t getExtensionPos_(const icu::UnicodeString& path) {
+int32_t getExtensionPos_(icu::UnicodeString const& path) {
 	int32_t dot_pos=path.lastIndexOf('.');
 	if (-1!=dot_pos) {
 		int32_t sla_pos=path.lastIndexOf('/');
@@ -144,7 +144,7 @@ void normalizePath(icu::UnicodeString& path, bool trailing_slash) {
 	}
 }
 
-void normalizePath(const std::string& path, std::string& result) {
+void normalizePath(std::string const& path, std::string& result) {
 	if (!path.empty()) {
 		result.reserve(path.size()+1);
 		result.assign(path);
@@ -154,7 +154,7 @@ void normalizePath(const std::string& path, std::string& result) {
 	}
 }
 
-void normalizePath(const icu::UnicodeString& path, icu::UnicodeString& result) {
+void normalizePath(icu::UnicodeString const& path, icu::UnicodeString& result) {
 	if (!path.isEmpty()) {
 		result.setTo(path);
 		normalizePath(result);
@@ -163,17 +163,17 @@ void normalizePath(const icu::UnicodeString& path, icu::UnicodeString& result) {
 	}
 }
 
-void normalizePath(const std::string& path, std::string& result, bool trailing_slash) {
+void normalizePath(std::string const& path, std::string& result, bool trailing_slash) {
 	result.assign(path);
 	normalizePath(result, trailing_slash);
 }
 
-void normalizePath(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash) {
+void normalizePath(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash) {
 	result.setTo(path);
 	normalizePath(result, trailing_slash);
 }
 
-bool pathHasTrailingSlash(const std::string& path) {
+bool pathHasTrailingSlash(std::string const& path) {
 	std::string::const_reverse_iterator it=path.rbegin();
 	if (path.rend()!=it && '/'==(*it)) {
 		return true;
@@ -181,14 +181,14 @@ bool pathHasTrailingSlash(const std::string& path) {
 	return false;
 }
 
-bool pathHasTrailingSlash(const icu::UnicodeString& path) {
+bool pathHasTrailingSlash(icu::UnicodeString const& path) {
 	if (!path.isEmpty() && '/'==path[path.length()-1]) {
 		return true;
 	}
 	return false;
 }
 
-bool pathHasFilename(const std::string& path) {
+bool pathHasFilename(std::string const& path) {
 	if (!path.empty()) {
 		size_t sla_pos=path.find_last_of('/');
 		if (path.size()-1!=sla_pos) {
@@ -198,7 +198,7 @@ bool pathHasFilename(const std::string& path) {
 	return false;
 }
 
-bool pathHasFilename(const icu::UnicodeString& path) {
+bool pathHasFilename(icu::UnicodeString const& path) {
 	if (!path.isEmpty()) {
 		int32_t sla_pos=path.lastIndexOf('/');
 		if (path.length()-1!=sla_pos) {
@@ -208,7 +208,7 @@ bool pathHasFilename(const icu::UnicodeString& path) {
 	return false;
 }
 
-bool pathHasExtension(const std::string& path) {
+bool pathHasExtension(std::string const& path) {
 	if (!path.empty()) {
 		size_t dot_pos=getExtensionPos_(path);
 		return std::string::npos!=dot_pos;
@@ -216,7 +216,7 @@ bool pathHasExtension(const std::string& path) {
 	return false;
 }
 
-bool pathHasExtension(const icu::UnicodeString& path) {
+bool pathHasExtension(icu::UnicodeString const& path) {
 	if (!path.isEmpty()) {
 		int32_t dot_pos=getExtensionPos_(path);
 		return -1!=dot_pos;
@@ -224,7 +224,7 @@ bool pathHasExtension(const icu::UnicodeString& path) {
 	return false;
 }
 
-bool pathHasLeftPart(const std::string& path, bool allow_leading) {
+bool pathHasLeftPart(std::string const& path, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
 		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -237,7 +237,7 @@ bool pathHasLeftPart(const std::string& path, bool allow_leading) {
 	return false;
 }
 
-bool pathHasLeftPart(const icu::UnicodeString& path, bool allow_leading) {
+bool pathHasLeftPart(icu::UnicodeString const& path, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
 		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -250,7 +250,7 @@ bool pathHasLeftPart(const icu::UnicodeString& path, bool allow_leading) {
 	return false;
 }
 
-bool pathHasRightPart(const std::string& path, bool allow_leading) {
+bool pathHasRightPart(std::string const& path, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
 		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -259,7 +259,7 @@ bool pathHasRightPart(const std::string& path, bool allow_leading) {
 	return false;
 }
 
-bool pathHasRightPart(const icu::UnicodeString& path, bool allow_leading) {
+bool pathHasRightPart(icu::UnicodeString const& path, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
 		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -268,7 +268,7 @@ bool pathHasRightPart(const icu::UnicodeString& path, bool allow_leading) {
 	return false;
 }
 
-bool pathHasDirectory(const std::string& path) {
+bool pathHasDirectory(std::string const& path) {
 	if (!path.empty()) {
 		size_t sla_pos=path.find_last_of('/');
 		if (std::string::npos!=sla_pos) {
@@ -278,7 +278,7 @@ bool pathHasDirectory(const std::string& path) {
 	return false;
 }
 
-bool pathHasDirectory(const icu::UnicodeString& path) {
+bool pathHasDirectory(icu::UnicodeString const& path) {
 	if (!path.isEmpty()) {
 		int32_t sla_pos=path.lastIndexOf('/');
 		if (-1!=sla_pos) {
@@ -288,7 +288,7 @@ bool pathHasDirectory(const icu::UnicodeString& path) {
 	return false;
 }
 
-bool extractFileExtension(const std::string& path, std::string& result, bool include_period) {
+bool extractFileExtension(std::string const& path, std::string& result, bool include_period) {
 	if (pathHasExtension(path)) {
 		size_t dot_pos=path.find_last_of('.');
 		result.assign(path, include_period ? dot_pos : dot_pos+1, std::string::npos);
@@ -297,7 +297,7 @@ bool extractFileExtension(const std::string& path, std::string& result, bool inc
 	return false;
 }
 
-bool extractFileExtension(const icu::UnicodeString& path, icu::UnicodeString& result, bool include_period) {
+bool extractFileExtension(icu::UnicodeString const& path, icu::UnicodeString& result, bool include_period) {
 	if (pathHasExtension(path)) {
 		int32_t dot_pos=path.lastIndexOf('.');
 		result.setTo(path, include_period ? dot_pos : dot_pos+1);
@@ -306,7 +306,7 @@ bool extractFileExtension(const icu::UnicodeString& path, icu::UnicodeString& re
 	return false;
 }
 
-bool extractFileDirectory(const std::string& path, std::string& result, bool trailing_slash) {
+bool extractFileDirectory(std::string const& path, std::string& result, bool trailing_slash) {
 	if (pathHasDirectory(path)) {
 		size_t sla_pos=path.find_last_of('/');
 		result.assign(path, 0, (trailing_slash || sla_pos==0) ? sla_pos+1 : sla_pos);
@@ -315,7 +315,7 @@ bool extractFileDirectory(const std::string& path, std::string& result, bool tra
 	return false;
 }
 
-bool extractFileDirectory(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash) {
+bool extractFileDirectory(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash) {
 	if (pathHasDirectory(path)) {
 		int32_t sla_pos=path.lastIndexOf('/');
 		result.setTo(path, 0, (trailing_slash || sla_pos==0) ? sla_pos+1 : sla_pos);
@@ -324,7 +324,7 @@ bool extractFileDirectory(const icu::UnicodeString& path, icu::UnicodeString& re
 	return false;
 }
 
-bool extractFilename(const std::string& path, std::string& result, bool with_extension) {
+bool extractFilename(std::string const& path, std::string& result, bool with_extension) {
 	if (pathHasFilename(path)) {
 		size_t sla_pos=path.find_last_of('/');
 		size_t dot_pos=with_extension ? std::string::npos : getExtensionPos_(path);
@@ -335,7 +335,7 @@ bool extractFilename(const std::string& path, std::string& result, bool with_ext
 	return false;
 }
 
-bool extractFilename(const icu::UnicodeString& path, icu::UnicodeString& result, bool with_extension) {
+bool extractFilename(icu::UnicodeString const& path, icu::UnicodeString& result, bool with_extension) {
 	if (pathHasFilename(path)) {
 		int32_t sla_pos=path.lastIndexOf('/');
 		int32_t dot_pos=with_extension ? INT32_MAX : getExtensionPos_(path);
@@ -346,7 +346,7 @@ bool extractFilename(const icu::UnicodeString& path, icu::UnicodeString& result,
 	return false;
 }
 
-bool extractFileLeftPart(const std::string& path, std::string& result, bool allow_leading) {
+bool extractFileLeftPart(std::string const& path, std::string& result, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
 		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -365,7 +365,7 @@ bool extractFileLeftPart(const std::string& path, std::string& result, bool allo
 	return false;
 }
 
-bool extractFileLeftPart(const icu::UnicodeString& path, icu::UnicodeString& result, bool allow_leading) {
+bool extractFileLeftPart(icu::UnicodeString const& path, icu::UnicodeString& result, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
 		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -384,7 +384,7 @@ bool extractFileLeftPart(const icu::UnicodeString& path, icu::UnicodeString& res
 	return false;
 }
 
-bool extractFileRightPart(const std::string& path, std::string& result, bool include_period, bool allow_leading) {
+bool extractFileRightPart(std::string const& path, std::string& result, bool include_period, bool allow_leading) {
 	if (!path.empty()) {
 		size_t beg_pos;
 		size_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -396,7 +396,7 @@ bool extractFileRightPart(const std::string& path, std::string& result, bool inc
 	return false;
 }
 
-bool extractFileRightPart(const icu::UnicodeString& path, icu::UnicodeString& result, bool include_period, bool allow_leading) {
+bool extractFileRightPart(icu::UnicodeString const& path, icu::UnicodeString& result, bool include_period, bool allow_leading) {
 	if (!path.isEmpty()) {
 		int32_t beg_pos;
 		int32_t dot_pos=getPartSplitPos_(path, allow_leading, beg_pos);
@@ -434,22 +434,22 @@ void getAbsolutePath(icu::UnicodeString& path) {
 }
 
 // - normalized
-void getAbsolutePathNormalized(const std::string& path, std::string& result) {
+void getAbsolutePathNormalized(std::string const& path, std::string& result) {
 	getAbsolutePath(path, result);
 	normalizePath(result);
 }
 
-void getAbsolutePathNormalized(const icu::UnicodeString& path, icu::UnicodeString& result) {
+void getAbsolutePathNormalized(icu::UnicodeString const& path, icu::UnicodeString& result) {
 	getAbsolutePath(path, result);
 	normalizePath(result);
 }
 
-void getAbsolutePathNormalized(const std::string& path, std::string& result, bool trailing_slash) {
+void getAbsolutePathNormalized(std::string const& path, std::string& result, bool trailing_slash) {
 	getAbsolutePath(path, result);
 	normalizePath(result, trailing_slash);
 }
 
-void getAbsolutePathNormalized(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash) {
+void getAbsolutePathNormalized(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash) {
 	getAbsolutePath(path, result);
 	normalizePath(result, trailing_slash);
 }
@@ -484,7 +484,7 @@ bool resolvePath(icu::UnicodeString& path) {
 }
 
 // - normalized
-bool resolvePathNormalized(const std::string& path, std::string& result) {
+bool resolvePathNormalized(std::string const& path, std::string& result) {
 	if (resolvePath(path, result)) {
 		normalizePath(result);
 		return true;
@@ -492,7 +492,7 @@ bool resolvePathNormalized(const std::string& path, std::string& result) {
 	return false;
 }
 
-bool resolvePathNormalized(const icu::UnicodeString& path, icu::UnicodeString& result) {
+bool resolvePathNormalized(icu::UnicodeString const& path, icu::UnicodeString& result) {
 	if (resolvePath(path, result)) {
 		normalizePath(result);
 		return true;
@@ -500,7 +500,7 @@ bool resolvePathNormalized(const icu::UnicodeString& path, icu::UnicodeString& r
 	return false;
 }
 
-bool resolvePathNormalized(const std::string& path, std::string& result, bool trailing_slash) {
+bool resolvePathNormalized(std::string const& path, std::string& result, bool trailing_slash) {
 	if (resolvePath(path, result)) {
 		normalizePath(result, trailing_slash);
 		return true;
@@ -508,7 +508,7 @@ bool resolvePathNormalized(const std::string& path, std::string& result, bool tr
 	return false;
 }
 
-bool resolvePathNormalized(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash) {
+bool resolvePathNormalized(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash) {
 	if (resolvePath(path, result)) {
 		normalizePath(result, trailing_slash);
 		return true;

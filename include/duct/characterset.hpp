@@ -62,7 +62,7 @@ public:
 		Copy constructor.
 		@param range The range to copy from.
 	*/
-	CharacterRange(const CharacterRange& range);
+	CharacterRange(CharacterRange const& range);
 	/**
 		Set the start of the range.
 		@returns Nothing.
@@ -97,30 +97,30 @@ public:
 		@param str The string to search.
 		@param from Optional start index.
 	*/
-	int findInString(const icu::UnicodeString& str, unsigned int from=0) const;
+	int findInString(icu::UnicodeString const& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional start index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const icu::UnicodeString& str, int from=-1) const;
+	int findLastInString(icu::UnicodeString const& str, int from=-1) const;
 	/**
 		Compare the given range with this range.
 		@returns -1 if the given range is greater than this, 1 if this range is greater than the given, or 0 if they are the same.
 		@param other The range to test.
 	*/
-	int compare(const CharacterRange& other) const;
+	int compare(CharacterRange const& other) const;
 	/**
 		Check if the given range intersects with this range.
 		@returns true if the ranges intersect, or false if they do not.
 		@param other The range to test.
 	*/
-	bool intersects(const CharacterRange& other) const;
+	bool intersects(CharacterRange const& other) const;
 	
 protected:
-	UChar32 _start;
-	UChar32 _end;
+	UChar32 m_start;
+	UChar32 m_end;
 };
 
 /**
@@ -143,8 +143,8 @@ public:
 		Constructor with string ranges.
 		@param str The ranges.
 	*/
-	CharacterSet(const icu::UnicodeString& str);
-	CharacterSet(const char* str);
+	CharacterSet(icu::UnicodeString const& str);
+	CharacterSet(char const* str);
 	/**
 		Constructor with single range.
 		@param start The start character.
@@ -160,7 +160,7 @@ public:
 		Copy constructor.
 		@param set The source set.
 	*/
-	CharacterSet(const CharacterSet& set);
+	CharacterSet(CharacterSet const& set);
 	/**
 		Begin range iterator.
 		@returns The beginning iterator for the set's ranges.
@@ -192,21 +192,21 @@ public:
 		@returns true if the character was in the set's ranges, or false if it was not.
 		@param range The range to test.
 	*/
-	bool contains(const CharacterRange& range) const;
+	bool contains(CharacterRange const& range) const;
 	/**
 		Find the first matching character in the given string.
 		@returns The index of the first matching character in the string, or -1 if either <i>from</i> was greater than or equal to the string's length or there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional begin index.
 	*/
-	int findInString(const icu::UnicodeString& str, unsigned int from=0) const;
+	int findInString(icu::UnicodeString const& str, unsigned int from=0) const;
 	/**
 		Find the last matching character in the given string.
 		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
 		@param str The string to search.
 		@param from Optional begin index. If -1, the last index will be used. Iteration is backwards.
 	*/
-	int findLastInString(const icu::UnicodeString& str, int from=-1) const;
+	int findLastInString(icu::UnicodeString const& str, int from=-1) const;
 	/**
 		Remove all ranges from the set.
 		@returns Nothing.
@@ -217,7 +217,7 @@ public:
 		@returns Nothing.
 		@param str The string ranges to add.
 	*/
-	void addRangesWithString(const icu::UnicodeString& str);
+	void addRangesWithString(icu::UnicodeString const& str);
 	/**
 		Add the given integer range.
 		@returns Nothing.
@@ -257,7 +257,7 @@ public:
 	void addNumbers();
 	
 protected:
-	RangeVec _ranges;
+	RangeVec m_ranges;
 };
 
 } // namespace duct

@@ -62,19 +62,19 @@ public:
 		@param count The number of records in the layout.
 		@param layout The template's layout.
 	*/
-	CSVTemplate(size_t count, const CSVTRecord* layout);
+	CSVTemplate(size_t count, CSVTRecord const* layout);
 	/**
 		Set the template's layout.
 		@returns Nothing.
 		@param count The number of records in the layout.
 		@param layout The new layout.
 	*/
-	void setLayout(size_t count, const CSVTRecord* layout);
+	void setLayout(size_t count, CSVTRecord const* layout);
 	/**
 		Get the template's layout.
 		@returns The template's layout.
 	*/
-	const CSVTRecord* getLayout() const;
+	CSVTRecord const* getLayout() const;
 	/**
 		Get the number of records in the layout.
 		@returns The number of records in the layout.
@@ -88,7 +88,7 @@ public:
 		@param row The row to validate.
 		@param startindex The index to start from.
 	*/
-	bool validate(const CSVRow& row, int startindex=0) const;
+	bool validate(CSVRow const& row, int startindex=0) const;
 	/**
 		Remove matching or non-matching rows from the given map.
 		@returns The number of removed rows.
@@ -98,8 +98,8 @@ public:
 	size_t removeRows(CSVMap& map, bool matching=false) const;
 	
 protected:
-	size_t _count;
-	const CSVTRecord* _layout;
+	size_t m_count;
+	CSVTRecord const* m_layout;
 };
 
 } // namespace duct

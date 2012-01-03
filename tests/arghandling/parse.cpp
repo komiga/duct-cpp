@@ -7,14 +7,14 @@
 
 using namespace duct;
 
-void argsToString(const Identifier* root, icu::UnicodeString& out) {
+void argsToString(Identifier const* root, icu::UnicodeString& out) {
 	out.append("\"").append(root->getName()).append("\": [");
 	int count=0;
 	VarList::const_iterator iter;
 	for (iter=root->begin(); iter!=root->end(); ++iter) {
 		const Variable* variable=*iter;
 		if (variable->getType()==VARTYPE_IDENTIFIER) {
-			argsToString((const Identifier*)variable, out);
+			argsToString((Identifier const*)variable, out);
 			out.append(", ");
 		} else if (variable->getType()&VARTYPE_VALUE) {
 			const ValueVariable* vv=(ValueVariable*)variable;
@@ -30,7 +30,7 @@ void argsToString(const Identifier* root, icu::UnicodeString& out) {
 	out.append(']');
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, char const** argv) {
 	Identifier* root=parseArgs(argc, argv, true, 1);
 	if (root!=NULL) {
 		icu::UnicodeString out;

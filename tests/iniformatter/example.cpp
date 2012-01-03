@@ -5,12 +5,12 @@
 using namespace duct;
 
 int main() {
-	int exitcode = 1;
-	Node* root = IniFormatter::loadFromFile("in.ini");
+	int exitcode=1;
+	Node* root=IniFormatter::loadFromFile("in.ini");
 	if (root) {
 		if (IniFormatter::writeToFile(root, "out.ini")) {
 			printf("Wrote out.ini\n");
-			exitcode = 0;
+			exitcode=0;
 		} else {
 			printf("Failed to write out.ini\n");
 		}

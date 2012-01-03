@@ -83,7 +83,7 @@ public:
 	bool getAutoClose() const;
 	
 	virtual size_t read(void* data, size_t size)=0;
-	virtual size_t write(const void* data, size_t size)=0;
+	virtual size_t write(void const* data, size_t size)=0;
 	
 	// Base functions passing down to the covered stream
 	virtual void flush();
@@ -96,9 +96,9 @@ public:
 	
 protected:
 	/** The covered stream. */
-	Stream* _stream;
+	Stream* m_stream;
 	/** Used to tell the destructor to close the covered stream. */
-	bool _autoclose;
+	bool m_autoclose;
 	
 };
 

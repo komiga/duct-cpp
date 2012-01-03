@@ -33,86 +33,88 @@ THE SOFTWARE.
 
 namespace duct {
 
-const char* __csv_tokenName(const Token& token) {
+char const* csvm_tokenName__(Token const& token) {
 	switch (token.getType()) {
-		case NULL_TOKEN:
-			return "NULLToken";
-		case StringToken:
-			return "StringToken";
-		case QuotedStringToken:
-			return "QuotedStringToken";
-		case NumberToken:
-			return "NumberToken";
-		case DoubleToken:
-			return "DoubleToken";
-		case SeparatorToken:
-			return "SeparatorToken";
-		case EOFToken:
-			return "EOFToken";
-		case EOLToken:
-			return "EOLToken";
+	case NULL_TOKEN:
+		return "NULLToken";
+	case StringToken:
+		return "StringToken";
+	case QuotedStringToken:
+		return "QuotedStringToken";
+	case NumberToken:
+		return "NumberToken";
+	case DoubleToken:
+		return "DoubleToken";
+	case SeparatorToken:
+		return "SeparatorToken";
+	case EOFToken:
+		return "EOFToken";
+	case EOLToken:
+		return "EOLToken";
 	}
 	return "UNKNOWNToken";
 }
 
 // class CSVRow implementation
-	
-CSVRow::CSVRow(int index) : _index(index) {
-}
 
-CSVRow::CSVRow() : _index(0) {
-}
+CSVRow::CSVRow(int index)
+	: m_index(index)
+{/* Do nothing */}
+
+CSVRow::CSVRow()
+	: m_index(0)
+{/* Do nothing */}
 
 CSVRow::~CSVRow() {
 	clear();
 }
 
 void CSVRow::setIndex(int index) {
-	_index=index;
+	m_index=index;
 }
 
 int CSVRow::getIndex() const {
-	return _index;
+	return m_index;
 }
 
 CSVRecordMap::iterator CSVRow::begin() {
-	return _values.begin();
+	return m_values.begin();
 }
 
 CSVRecordMap::const_iterator CSVRow::begin() const {
-	return _values.begin();
+	return m_values.begin();
 }
 
 CSVRecordMap::iterator CSVRow::end() {
-	return _values.end();
+	return m_values.end();
 }
 
 CSVRecordMap::const_iterator CSVRow::end() const {
-	return _values.end();
+	return m_values.end();
 }
 
 CSVRecordMap::reverse_iterator CSVRow::rbegin() {
-	return _values.rbegin();
+	return m_values.rbegin();
 }
 
 CSVRecordMap::const_reverse_iterator CSVRow::rbegin() const {
-	return _values.rbegin();
+	return m_values.rbegin();
 }
 
 CSVRecordMap::reverse_iterator CSVRow::rend() {
-	return _values.rend();
+	return m_values.rend();
 }
 
 CSVRecordMap::const_reverse_iterator CSVRow::rend() const {
-	return _values.rend();
+	return m_values.rend();
 }
 
 CSVRecordMap::iterator CSVRow::find(int index) {
-	return _values.find(index);
+	return m_values.find(index);
 }
 
 CSVRecordMap::const_iterator CSVRow::find(int index) const {
-	return _values.find(index);
+	return m_values.find(index);
 }
 
 void CSVRow::erase(CSVRecordMap::iterator iter) {
@@ -120,7 +122,7 @@ void CSVRow::erase(CSVRecordMap::iterator iter) {
 		if (iter->second) {
 			delete iter->second;
 		}
-		_values.erase(iter);
+		m_values.erase(iter);
 	}
 }
 
@@ -129,7 +131,7 @@ void CSVRow::erase(CSVRecordMap::reverse_iterator iter) {
 		if (iter->second) {
 			delete iter->second;
 		}
-		_values.erase(--(iter.base()));
+		m_values.erase(--(iter.base()));
 	}
 }
 
@@ -141,7 +143,7 @@ void CSVRow::set(int index, ValueVariable* value) {
 		}
 		iter->second=value;
 	} else {
-		_values[index]=value;
+		m_values[index]=value;
 	}
 }
 
@@ -153,7 +155,7 @@ ValueVariable* CSVRow::get(int index) {
 	return NULL;
 }
 
-const ValueVariable* CSVRow::get(int index) const {
+ValueVariable const* CSVRow::get(int index) const {
 	CSVRecordMap::const_iterator iter=find(index);
 	if (iter!=end()) {
 		return iter->second;
@@ -169,8 +171,8 @@ IntVariable* CSVRow::getInt(int index) {
 	return NULL;
 }
 
-const IntVariable* CSVRow::getInt(int index) const {
-	const ValueVariable* v=get(index);
+IntVariable const* CSVRow::getInt(int index) const {
+	ValueVariable const* v=get(index);
 	if (v && (VARTYPE_INTEGER&v->getType())) {
 		return (IntVariable*)v;
 	}
@@ -178,7 +180,7 @@ const IntVariable* CSVRow::getInt(int index) const {
 }
 
 bool CSVRow::getIntValue(int& result, int index) const {
-	const IntVariable* v=getInt(index);
+	IntVariable const* v=getInt(index);
 	if (v) {
 		result=v->get();
 		return true;
@@ -194,16 +196,16 @@ StringVariable* CSVRow::getString(int index) {
 	return NULL;
 }
 
-const StringVariable* CSVRow::getString(int index) const {
-	const ValueVariable* v=get(index);
+StringVariable const* CSVRow::getString(int index) const {
+	ValueVariable const* v=get(index);
 	if (v && (VARTYPE_STRING&v->getType())) {
 		return (StringVariable*)v;
 	}
 	return NULL;
 }
 
-const icu::UnicodeString* CSVRow::getStringValue(int index) const {
-	const StringVariable* v=getString(index);
+icu::UnicodeString const* CSVRow::getStringValue(int index) const {
+	StringVariable const* v=getString(index);
 	if (v) {
 		return &v->get();
 	}
@@ -211,7 +213,7 @@ const icu::UnicodeString* CSVRow::getStringValue(int index) const {
 }
 
 bool CSVRow::getStringValue(icu::UnicodeString& result, int index) const {
-	const StringVariable* v=getString(index);
+	StringVariable const* v=getString(index);
 	if (v) {
 		result.setTo(v->get());
 		return true;
@@ -227,8 +229,8 @@ FloatVariable* CSVRow::getFloat(int index) {
 	return NULL;
 }
 
-const FloatVariable* CSVRow::getFloat(int index) const {
-	const ValueVariable* v=get(index);
+FloatVariable const* CSVRow::getFloat(int index) const {
+	ValueVariable const* v=get(index);
 	if (v && (VARTYPE_FLOAT&v->getType())) {
 		return (FloatVariable*)v;
 	}
@@ -236,7 +238,7 @@ const FloatVariable* CSVRow::getFloat(int index) const {
 }
 
 bool CSVRow::getFloatValue(float& result, int index) const {
-	const FloatVariable* v=getFloat(index);
+	FloatVariable const* v=getFloat(index);
 	if (v) {
 		result=v->get();
 		return true;
@@ -252,8 +254,8 @@ BoolVariable* CSVRow::getBool(int index) {
 	return NULL;
 }
 
-const BoolVariable* CSVRow::getBool(int index) const {
-	const ValueVariable* v=get(index);
+BoolVariable const* CSVRow::getBool(int index) const {
+	ValueVariable const* v=get(index);
 	if (v && (VARTYPE_BOOL&v->getType())) {
 		return (BoolVariable*)v;
 	}
@@ -261,7 +263,7 @@ const BoolVariable* CSVRow::getBool(int index) const {
 }
 
 bool CSVRow::getBoolValue(bool& result, int index) const {
-	const BoolVariable* v=getBool(index);
+	BoolVariable const* v=getBool(index);
 	if (v) {
 		result=v->get();
 		return true;
@@ -270,7 +272,7 @@ bool CSVRow::getBoolValue(bool& result, int index) const {
 }
 
 bool CSVRow::getAsString(icu::UnicodeString& result, int index) const {
-	const ValueVariable* v=get(index);
+	ValueVariable const* v=get(index);
 	if (v) {
 		v->valueAsString(result, false);
 		return true;
@@ -284,7 +286,7 @@ bool CSVRow::remove(int index) {
 		if (iter->second) {
 			delete iter->second;
 		}
-		_values.erase(iter);
+		m_values.erase(iter);
 		return true;
 	}
 	return false;
@@ -297,7 +299,7 @@ void CSVRow::clear() {
 			delete iter->second;
 		}
 	}
-	_values.clear();
+	m_values.clear();
 }
 
 bool CSVRow::has(int index) const {
@@ -310,7 +312,7 @@ bool CSVRow::has(int index) const {
 
 size_t CSVRow::getCount(bool nulls) const {
 	if (nulls) {
-		return _values.size();
+		return m_values.size();
 	} else {
 		size_t size=0;
 		CSVRecordMap::const_iterator iter;
@@ -340,15 +342,15 @@ size_t CSVRow::inRange(int start, int end, bool nulls) const {
 
 // class CSVMap
 
-CSVMap::CSVMap() {
-}
+CSVMap::CSVMap()
+{/* Do nothing */}
 
 CSVMap::~CSVMap() {
 	clear();
 }
 
 size_t CSVMap::getRowCount() const {
-	return _rows.size();
+	return m_rows.size();
 }
 
 size_t CSVMap::getHeaderCount(int index, bool nulls) const {
@@ -369,56 +371,56 @@ size_t CSVMap::getValueCount() const {
 }
 
 CSVRowMap::iterator CSVMap::begin() {
-	return _rows.begin();
+	return m_rows.begin();
 }
 
 CSVRowMap::const_iterator CSVMap::begin() const {
-	return _rows.begin();
+	return m_rows.begin();
 }
 
 CSVRowMap::iterator CSVMap::end() {
-	return _rows.end();
+	return m_rows.end();
 }
 
 CSVRowMap::const_iterator CSVMap::end() const {
-	return _rows.end();
+	return m_rows.end();
 }
 
 CSVRowMap::reverse_iterator CSVMap::rbegin() {
-	return _rows.rbegin();
+	return m_rows.rbegin();
 }
 
 CSVRowMap::const_reverse_iterator CSVMap::rbegin() const {
-	return _rows.rbegin();
+	return m_rows.rbegin();
 }
 
 CSVRowMap::reverse_iterator CSVMap::rend() {
-	return _rows.rend();
+	return m_rows.rend();
 }
 
 CSVRowMap::const_reverse_iterator CSVMap::rend() const {
-	return _rows.rend();
+	return m_rows.rend();
 }
 
 CSVRowMap::iterator CSVMap::find(int index) {
-	return _rows.find(index);
+	return m_rows.find(index);
 }
 
 CSVRowMap::const_iterator CSVMap::find(int index) const {
-	return _rows.find(index);
+	return m_rows.find(index);
 }
 
 void CSVMap::erase(CSVRowMap::iterator iter) {
 	if (iter!=end()) {
 		delete iter->second;
-		_rows.erase(iter);
+		m_rows.erase(iter);
 	}
 }
 
 void CSVMap::erase(CSVRowMap::reverse_iterator iter) {
 	if (iter!=rend()) {
 		delete iter->second;
-		_rows.erase(--(iter.base()));
+		m_rows.erase(--(iter.base()));
 	}
 }
 
@@ -433,7 +435,7 @@ bool CSVMap::set(int index, CSVRow* row) {
 			delete iter->second;
 			iter->second=row;
 		} else {
-			_rows[index]=row;
+			m_rows[index]=row;
 		}
 		row->setIndex(index);
 		return true;
@@ -449,7 +451,7 @@ CSVRow* CSVMap::get(int index) {
 	return NULL;
 }
 
-const CSVRow* CSVMap::get(int index) const {
+CSVRow const* CSVMap::get(int index) const {
 	CSVRowMap::const_iterator iter=find(index);
 	if (iter!=end()) {
 		return iter->second;
@@ -474,7 +476,7 @@ bool CSVMap::moveRow(int src, int dest, bool swap) {
 				return true;
 			}
 		}
-		_rows.erase(si);
+		m_rows.erase(si);
 		return set(dest, srow);
 	}
 	return false;
@@ -484,7 +486,7 @@ bool CSVMap::remove(int index) {
 	CSVRowMap::iterator iter=find(index);
 	if (iter!=end()) {
 		delete iter->second;
-		_rows.erase(iter);
+		m_rows.erase(iter);
 		return true;
 	}
 	return false;
@@ -503,7 +505,7 @@ void CSVMap::clear() {
 	for (iter=begin(); iter!=end(); ++iter) {
 		delete iter->second;
 	}
-	_rows.clear();
+	m_rows.clear();
 }
 
 bool CSVMap::setValue(int row, int column, ValueVariable* value, bool autocreate) {
@@ -527,8 +529,8 @@ ValueVariable* CSVMap::getValue(int row, int column) {
 	return NULL;
 }
 
-const ValueVariable* CSVMap::getValue(int row, int column) const {
-	const CSVRow* r=get(row);
+ValueVariable const* CSVMap::getValue(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->get(column);
 	}
@@ -543,8 +545,8 @@ IntVariable* CSVMap::getInt(int row, int column) {
 	return NULL;
 }
 
-const IntVariable* CSVMap::getInt(int row, int column) const {
-	const CSVRow* r=get(row);
+IntVariable const* CSVMap::getInt(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		r->getInt(column);
 	}
@@ -552,7 +554,7 @@ const IntVariable* CSVMap::getInt(int row, int column) const {
 }
 
 bool CSVMap::getIntValue(int& result, int row, int column) const {
-	const CSVRow* r=get(row);
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getIntValue(result, column);
 	}
@@ -567,16 +569,16 @@ StringVariable* CSVMap::getString(int row, int column) {
 	return NULL;
 }
 
-const StringVariable* CSVMap::getString(int row, int column) const {
-	const CSVRow* r=get(row);
+StringVariable const* CSVMap::getString(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getString(column);
 	}
 	return NULL;
 }
 
-const icu::UnicodeString* CSVMap::getStringValue(int row, int column) const {
-	const CSVRow* r=get(row);
+icu::UnicodeString const* CSVMap::getStringValue(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getStringValue(column);
 	}
@@ -584,7 +586,7 @@ const icu::UnicodeString* CSVMap::getStringValue(int row, int column) const {
 }
 
 bool CSVMap::getStringValue(icu::UnicodeString& result, int row, int column) const {
-	const CSVRow* r=get(row);
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getStringValue(result, column);
 	}
@@ -599,8 +601,8 @@ FloatVariable* CSVMap::getFloat(int row, int column) {
 	return NULL;
 }
 
-const FloatVariable* CSVMap::getFloat(int row, int column) const {
-	const CSVRow* r=get(row);
+FloatVariable const* CSVMap::getFloat(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getFloat(column);
 	}
@@ -608,7 +610,7 @@ const FloatVariable* CSVMap::getFloat(int row, int column) const {
 }
 
 bool CSVMap::getFloatValue(float& result, int row, int column) const {
-	const CSVRow* r=get(row);
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getFloatValue(result, column);
 	}
@@ -623,8 +625,8 @@ BoolVariable* CSVMap::getBool(int row, int column) {
 	return NULL;
 }
 
-const BoolVariable* CSVMap::getBool(int row, int column) const {
-	const CSVRow* r=get(row);
+BoolVariable const* CSVMap::getBool(int row, int column) const {
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getBool(column);
 	}
@@ -632,7 +634,7 @@ const BoolVariable* CSVMap::getBool(int row, int column) const {
 }
 
 bool CSVMap::getBoolValue(bool& result, int row, int column) const {
-	const CSVRow* r=get(row);
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getBoolValue(result, column);
 	}
@@ -640,7 +642,7 @@ bool CSVMap::getBoolValue(bool& result, int row, int column) const {
 }
 
 bool CSVMap::getAsString(icu::UnicodeString& result, int row, int column) const {
-	const CSVRow* r=get(row);
+	CSVRow const* r=get(row);
 	if (r) {
 		return r->getAsString(result, column);
 	}
@@ -672,152 +674,155 @@ void CSVMap::clearValues() {
 
 // class CSVParser implementation
 
-CharacterSet CSVParser::_numberset=CharacterSet("0-9\\-+");
-CharacterSet CSVParser::_numeralset=CharacterSet("0-9");
-CharacterSet CSVParser::_signset=CharacterSet("\\-+");
-CharacterSet CSVParser::_whitespaceset=CharacterSet();
+CharacterSet CSVParser::s_numberset=CharacterSet("0-9\\-+");
+CharacterSet CSVParser::s_numeralset=CharacterSet("0-9");
+CharacterSet CSVParser::s_signset=CharacterSet("\\-+");
+CharacterSet CSVParser::s_whitespaceset=CharacterSet();
 
-CSVParser::CSVParser() : _handler(NULL) {
+CSVParser::CSVParser()
+	: m_handler(NULL)
+{
 	reset();
 }
 
-CSVParser::CSVParser(Stream* stream) {
+CSVParser::CSVParser(Stream* stream)
+	: m_handler(NULL)
+{
 	initWithStream(stream);
 }
 
-CSVParser::~CSVParser() {
-}
+CSVParser::~CSVParser() {/* Do nothing */}
 
 void CSVParser::setSeparator(UChar32 c) {
-	_sepchar=c;
-	_whitespaceset.clear();
-	if (_sepchar!='\t') {
-		_whitespaceset.addRange('\t');
+	m_sepchar=c;
+	s_whitespaceset.clear();
+	if (m_sepchar!='\t') {
+		s_whitespaceset.addRange('\t');
 	}
-	if (_sepchar!=' ') {
-		_whitespaceset.addRange(' ');
+	if (m_sepchar!=' ') {
+		s_whitespaceset.addRange(' ');
 	}
 }
 
 UChar32 CSVParser::getSeparator() const {
-	return _sepchar;
+	return m_sepchar;
 }
 
 void CSVParser::setHandler(ParserHandler* handler) {
-	_handler=(CSVParserHandler*)handler;
+	m_handler=(CSVParserHandler*)handler;
 }
 
 ParserHandler* CSVParser::getHandler() {
-	return _handler;
+	return m_handler;
 }
 
 Token& CSVParser::nextToken() {
-	_token.reset(NULL_TOKEN);
-	_token.setPosition(_line, _column);
-	switch (_curchar) {
-		case CHAR_QUOTE:
-			_token.setType(QuotedStringToken);
-			break;
-		case CHAR_EOF:
-			_token.setType(EOFToken);
-			break;
-		case CHAR_NEWLINE:
-			_token.setType(EOLToken);
-			break;
-		case CHAR_DECIMALPOINT:
-			_token.setType(DoubleToken);
-			_token.addChar(_curchar); // add the decimal
-			break;
-		default:
-			if (_curchar==_sepchar) {
-				_token.setType(SeparatorToken);
-			} else if (_numberset.contains(_curchar)) {
-				_token.setType(NumberToken);
-				_token.addChar(_curchar); // add the number/sign
-			} else {
-				_token.setType(StringToken);
-			}
-			break;
+	m_token.reset(NULL_TOKEN);
+	m_token.setPosition(m_line, m_column);
+	switch (m_curchar) {
+	case CHAR_QUOTE:
+		m_token.setType(QuotedStringToken);
+		break;
+	case CHAR_EOF:
+		m_token.setType(EOFToken);
+		break;
+	case CHAR_NEWLINE:
+		m_token.setType(EOLToken);
+		break;
+	case CHAR_DECIMALPOINT:
+		m_token.setType(DoubleToken);
+		m_token.addChar(m_curchar); // add the decimal
+		break;
+	default:
+		if (m_curchar==m_sepchar) {
+			m_token.setType(SeparatorToken);
+		} else if (s_numberset.contains(m_curchar)) {
+			m_token.setType(NumberToken);
+			m_token.addChar(m_curchar); // add the number/sign
+		} else {
+			m_token.setType(StringToken);
+		}
+		break;
 	}
-	return _token;
+	return m_token;
 }
 
 void CSVParser::readToken() {
-	switch (_token.getType()) {
-		case QuotedStringToken:
-			readQuotedStringToken();
-			nextChar();
-			break;
-		case StringToken:
-			readStringToken();
-			break;
-		case NumberToken:
-			nextChar();
-			readNumberToken();
-			break;
-		case DoubleToken:
-			nextChar();
-			readDoubleToken();
-			break;
-		case SeparatorToken:
-			nextChar();
-			break;
-		case EOLToken:
-			nextChar();
-			break;
-		case EOFToken:
-			// Do nothing
-			break;
-		default:
-			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readToken", NULL, this, "Unhandled token: %s", __csv_tokenName(_token));
-			break;
+	switch (m_token.getType()) {
+	case QuotedStringToken:
+		readQuotedStringToken();
+		nextChar();
+		break;
+	case StringToken:
+		readStringToken();
+		break;
+	case NumberToken:
+		nextChar();
+		readNumberToken();
+		break;
+	case DoubleToken:
+		nextChar();
+		readDoubleToken();
+		break;
+	case SeparatorToken:
+		nextChar();
+		break;
+	case EOLToken:
+		nextChar();
+		break;
+	case EOFToken:
+		// Do nothing
+		break;
+	default:
+		throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readToken", NULL, this, "Unhandled token: %s", csvm_tokenName__(m_token));
+		break;
 	}
 	// Special resolve when Number and Double tokens only contain signs or periods
-	switch (_token.getType()) {
-		case NumberToken:
-			if (_token.compare(_signset))
-				_token.setType(StringToken);
-			break;
-		case DoubleToken:
-			if (_token.compare(_signset) || _token.compare(CHAR_DECIMALPOINT))
-				_token.setType(StringToken);
-			break;
-		default:
-			break;
+	switch (m_token.getType()) {
+	case NumberToken:
+		if (m_token.compare(s_signset))
+			m_token.setType(StringToken);
+		break;
+	case DoubleToken:
+		if (m_token.compare(s_signset) || m_token.compare(CHAR_DECIMALPOINT))
+			m_token.setType(StringToken);
+		break;
+	default:
+		break;
 	}
-	_handler->handleToken(_token);
+	m_handler->handleToken(m_token);
 }
 
 bool CSVParser::parse() {
 	//skipWhitespace();
 	nextToken();
 	readToken();
-	if (_curchar==CHAR_EOF) {
-		_token.reset(EOFToken);
-		_handler->handleToken(_token);
+	if (m_curchar==CHAR_EOF) {
+		m_token.reset(EOFToken);
+		m_handler->handleToken(m_token);
 		return false;
-	} else if (_token.getType()==EOFToken) {
+	} else if (m_token.getType()==EOFToken) {
 		return false;
 	}
 	return true;
 }
 
 void CSVParser::readNumberToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readNumberToken", &_token, this, "Unexpected quote");
-		} else if (_curchar==CHAR_NEWLINE || _curchar==_sepchar) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readNumberToken", &m_token, this, "Unexpected quote");
+		} else if (m_curchar==CHAR_NEWLINE || m_curchar==m_sepchar) {
 			break;
-		} else if (_numeralset.contains(_curchar)) {
-			_token.addChar(_curchar);
-		} else if (_curchar==CHAR_DECIMALPOINT) {
-			_token.addChar(_curchar);
+		} else if (s_numeralset.contains(m_curchar)) {
+			m_token.addChar(m_curchar);
+		} else if (m_curchar==CHAR_DECIMALPOINT) {
+			m_token.addChar(m_curchar);
 			nextChar();
-			_token.setType(DoubleToken);
+			m_token.setType(DoubleToken);
 			readDoubleToken();
 			return;
 		} else {
-			_token.setType(StringToken);
+			m_token.setType(StringToken);
 			readStringToken();
 			return;
 		}
@@ -826,16 +831,16 @@ void CSVParser::readNumberToken() {
 }
 
 void CSVParser::readDoubleToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readDoubleToken", &_token, this, "Unexpected quote");
-		} else if (_curchar==CHAR_NEWLINE || _curchar==_sepchar) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readDoubleToken", &m_token, this, "Unexpected quote");
+		} else if (m_curchar==CHAR_NEWLINE || m_curchar==m_sepchar) {
 			break;
-		} else if (_numeralset.contains(_curchar)) {
-			_token.addChar(_curchar);
-		} else { // (_curchar==CHAR_DECIMALPOINT)
+		} else if (s_numeralset.contains(m_curchar)) {
+			m_token.addChar(m_curchar);
+		} else { // (m_curchar==CHAR_DECIMALPOINT)
 			// the token should've already contained a decimal point, so it must be a string.
-			_token.setType(StringToken);
+			m_token.setType(StringToken);
 			readStringToken();
 			return;
 		}
@@ -844,28 +849,28 @@ void CSVParser::readDoubleToken() {
 }
 
 void CSVParser::readStringToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			if (_token.compare(_whitespaceset)) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			if (m_token.compare(s_whitespaceset)) {
 				// valid; whitespace before a quoted string is thrown away
-				_token.reset(QuotedStringToken);
+				m_token.reset(QuotedStringToken);
 				readQuotedStringToken();
 				nextChar(); // skip ending quote
 				return;
 			} else {
-				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readStringToken", &_token, this, "Unexpected quote");
+				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readStringToken", &m_token, this, "Unexpected quote");
 			}
-		} else if (_curchar==CHAR_BACKSLASH) {
+		} else if (m_curchar==CHAR_BACKSLASH) {
 			UChar32 c=CharUtils::getEscapeChar(nextChar());
 			if (c!=CHAR_EOF) {
-				_token.addChar(c);
+				m_token.addChar(c);
 			} else {
-				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readStringToken", &_token, this, "Unknown escape sequence: %c", _curchar);
+				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readStringToken", &m_token, this, "Unknown escape sequence: %c", m_curchar);
 			}
-		} else if (_curchar==_sepchar || _curchar==CHAR_NEWLINE) {
+		} else if (m_curchar==m_sepchar || m_curchar==CHAR_NEWLINE) {
 			break;
 		} else {
-			_token.addChar(_curchar);
+			m_token.addChar(m_curchar);
 		}
 		nextChar();
 	}
@@ -874,25 +879,25 @@ void CSVParser::readStringToken() {
 void CSVParser::readQuotedStringToken() {
 	bool eolreached=false;
 	nextChar(); // skip the first character (it will be the initial quote)
-	while (_curchar!=CHAR_QUOTE) {
-		if (_curchar==CHAR_EOF) {
-			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readQuotedStringToken", &_token, this, "Encountered EOF whilst reading quoted string");
-		} else if (_curchar==CHAR_BACKSLASH) {
+	while (m_curchar!=CHAR_QUOTE) {
+		if (m_curchar==CHAR_EOF) {
+			throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readQuotedStringToken", &m_token, this, "Encountered EOF whilst reading quoted string");
+		} else if (m_curchar==CHAR_BACKSLASH) {
 			UChar32 c=CharUtils::getEscapeChar(nextChar());
 			if (c!=CHAR_EOF) {
-				_token.addChar(c);
+				m_token.addChar(c);
 			} else {
-				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readQuotedStringToken", &_token, this, "Unknown escape sequence: %c", _curchar);
+				throw CSVParserException(PARSERERROR_PARSER, "CSVParser::readQuotedStringToken", &m_token, this, "Unknown escape sequence: %c", m_curchar);
 			}
 		} else {
 			if (!eolreached) {
-				_token.addChar(_curchar);
+				m_token.addChar(m_curchar);
 			}
-			if (_curchar==CHAR_NEWLINE) {
+			if (m_curchar==CHAR_NEWLINE) {
 				eolreached=true;
-			} else if (eolreached && !_whitespaceset.contains(_curchar)) {
+			} else if (eolreached && !s_whitespaceset.contains(m_curchar)) {
 				eolreached=false;
-				_token.addChar(_curchar);
+				m_token.addChar(m_curchar);
 			}
 		}
 		nextChar();
@@ -901,37 +906,35 @@ void CSVParser::readQuotedStringToken() {
 
 // class CSVParserException implementation
 
-CSVParserException::CSVParserException(CSVParserError error, const char* reporter, const Token* token, const CSVParser* parser, const char* fmt, ...) {
-	_error=error;
-	_reporter=reporter;
-	_token=token;
-	_parser=parser;
+CSVParserException::CSVParserException(CSVParserError error, char const* reporter, Token const* token, CSVParser const* parser, char const* fmt, ...)
+	: m_error(error), m_reporter(reporter), m_token(token), m_parser(parser)
+{
 	char temp[256];
 	va_list args;
 	va_start(args, fmt);
 	vsprintf(temp, fmt, args);
 	va_end(args);
 	temp[255]='\0';
-	if (_parser && !_token) {
-		_token=&_parser->getToken();
+	if (m_parser && !m_token) {
+		m_token=&m_parser->getToken();
 	}
-	if (_token && _parser) {
-		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), _parser->getLine(), _parser->getColumn(), temp);
-	} else if (_token) {
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), temp);
-	} else if (_parser) {
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->getLine(), _parser->getColumn(), temp);
+	if (m_token && m_parser) {
+		sprintf(m_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_token->getLine(), m_token->getColumn(), m_parser->getLine(), m_parser->getColumn(), temp);
+	} else if (m_token) {
+		sprintf(m_message, "(%s) [%s] at line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_token->getLine(), m_token->getColumn(), temp);
+	} else if (m_parser) {
+		sprintf(m_message, "(%s) [%s] at line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_parser->getLine(), m_parser->getColumn(), temp);
 	} else {
-		sprintf(_message, "(%s) [%s]: %s", _reporter, errorToString(_error), temp);
+		sprintf(m_message, "(%s) [%s]: %s", m_reporter, errorToString(m_error), temp);
 	}
-	_message[511]='\0';
+	m_message[511]='\0';
 }
 
-const char* CSVParserException::what() const throw() {
-	return _message;
+char const* CSVParserException::what() const throw() {
+	return m_message;
 }
 
-const char* CSVParserException::errorToString(CSVParserError error) {
+char const* CSVParserException::errorToString(CSVParserError error) {
 	switch (error) {
 		case PARSERERROR_PARSER:
 			return "ERROR_PARSER";
@@ -944,17 +947,19 @@ const char* CSVParserException::errorToString(CSVParserError error) {
 
 // class CSVParserHandler implementation
 
-CSVParserHandler::CSVParserHandler(CSVParser& parser) : _parser(parser), _map(NULL), _currentrow(NULL), _strow(0), _row(0), _column(0), _gtoken(false) {
-	_parser.setHandler(this);
+CSVParserHandler::CSVParserHandler(CSVParser& parser)
+	: m_parser(parser), m_map(NULL), m_currentrow(NULL), m_strow(0), m_row(0), m_column(0), m_gtoken(false)
+{
+	m_parser.setHandler(this);
 }
 
 void CSVParserHandler::setParser(Parser& parser) {
-	_parser=(CSVParser&)parser;
-	_parser.setHandler(this);
+	m_parser=(CSVParser&)parser;
+	m_parser.setHandler(this);
 }
 
 Parser& CSVParserHandler::getParser() {
-	return _parser;
+	return m_parser;
 }
 
 void CSVParserHandler::throwex(CSVParserException e) {
@@ -963,17 +968,16 @@ void CSVParserHandler::throwex(CSVParserException e) {
 }
 
 void CSVParserHandler::clean() {
-	_currentrow=NULL;
-	_row=_strow;
-	_column=0;
-	_gtoken=false;
+	m_currentrow=NULL;
+	m_row=m_strow;
+	m_column=0;
+	m_gtoken=false;
 }
 
 bool CSVParserHandler::process() {
-	_map=new CSVMap();
-	_currentrow=new CSVRow();
-	while (_parser.parse()) {
-	}
+	m_map=new CSVMap();
+	m_currentrow=new CSVRow();
+	while (m_parser.parse()) {}
 	finish();
 	return true;
 }
@@ -981,15 +985,15 @@ bool CSVParserHandler::process() {
 void CSVParserHandler::handleToken(Token& token) {
 	switch (token.getType()) {
 	case StringToken: {
-		if (_gtoken) {
-			if (token.compare(CSVParser::_whitespaceset)) {
+		if (m_gtoken) {
+			if (token.compare(CSVParser::s_whitespaceset)) {
 				return; // ignore whitespace
 			} else {
-				throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &_parser,
+				throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &m_parser,
 					"Unexpected non-whitespace StringToken"));
 			}
 		}
-		const icu::UnicodeString& str=token.toString();
+		icu::UnicodeString const& str=token.toString();
 		int bv=Variable::stringToBool(str);
 		if (bv!=-1) {
 			addToRow(new BoolVariable(bv==1 ? true : false));
@@ -999,32 +1003,32 @@ void CSVParserHandler::handleToken(Token& token) {
 		}
 		break;
 	case QuotedStringToken:
-		if (_gtoken) {
-			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &_parser,
+		if (m_gtoken) {
+			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &m_parser,
 				"Unexpected QuotedStringToken"));
 		}
 		addToRow(new StringVariable(token.toString()));
 		break;
 	case NumberToken:
-		if (_gtoken) {
-			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &_parser,
+		if (m_gtoken) {
+			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &m_parser,
 				"Unexpected NumberToken"));
 		}
 		addToRow(new IntVariable(token.toInt()));
 		break;
 	case DoubleToken:
-		if (_gtoken) {
-			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &_parser,
+		if (m_gtoken) {
+			throwex(CSVParserException(PARSERERROR_PARSER, "CSVParserHandler::handleToken", &token, &m_parser,
 				"Unexpected DoubleToken"));
 		}
 		addToRow(new FloatVariable(token.toFloat()));
 		break;
 	case SeparatorToken:
-		if (!_gtoken) {
+		if (!m_gtoken) {
 			addToRow(NULL);
 		}
-		_gtoken=false;
-		_column++;
+		m_gtoken=false;
+		m_column++;
 		break;
 	case EOLToken:
 		newRow();
@@ -1038,56 +1042,56 @@ void CSVParserHandler::finish() {
 }
 
 CSVMap* CSVParserHandler::processFromStream(Stream* stream) {
-	_parser.initWithStream(stream);
+	m_parser.initWithStream(stream);
 	clean(); // make sure the row index is reset
 	process();
-	CSVMap* map=_map; // store before cleaning
+	CSVMap* map=m_map; // store before cleaning
 	clean();
-	_parser.reset();
+	m_parser.reset();
 	return map;
 }
 
 void CSVParserHandler::setup(UChar32 sepchar, unsigned int headercount) {
-	_parser.setSeparator(sepchar);
-	_strow=-(int)headercount;
+	m_parser.setSeparator(sepchar);
+	m_strow=-(int)headercount;
 }
 
 void CSVParserHandler::freeData() {
-	if (_currentrow) {
-		delete _currentrow;
+	if (m_currentrow) {
+		delete m_currentrow;
 	}
-	if (_map) {
-		delete _map;
+	if (m_map) {
+		delete m_map;
 	}
 	clean();
 }
 
 void CSVParserHandler::addToRow(ValueVariable* val) {
-	if (_currentrow==NULL) {
+	if (m_currentrow==NULL) {
 		newRow();
 	}
-	_currentrow->set(_column, val);
-	_gtoken=(val!=NULL);
+	m_currentrow->set(m_column, val);
+	m_gtoken=(val!=NULL);
 }
 
 void CSVParserHandler::newRow() {
-	if (_currentrow!=NULL) {
-		if (!_gtoken) {
+	if (m_currentrow!=NULL) {
+		if (!m_gtoken) {
 			addToRow(NULL);
 		}
-		_map->set(_row++, _currentrow);
+		m_map->set(m_row++, m_currentrow);
 	}
-	_currentrow=new CSVRow(_row);
-	_column=0;
-	_gtoken=false;
+	m_currentrow=new CSVRow(m_row);
+	m_column=0;
+	m_gtoken=false;
 }
 
 // class CSVFormatter implementation
 
-CSVParser CSVFormatter::_parser=CSVParser();
-CSVParserHandler CSVFormatter::_handler=CSVParserHandler(CSVFormatter::_parser);
+CSVParser CSVFormatter::s_parser=CSVParser();
+CSVParserHandler CSVFormatter::s_handler=CSVParserHandler(CSVFormatter::s_parser);
 
-void CSVFormatter::formatRow(const CSVRow& row, icu::UnicodeString& result, UChar32 sepchar, unsigned int varformat) {
+void CSVFormatter::formatRow(CSVRow const& row, icu::UnicodeString& result, UChar32 sepchar, unsigned int varformat) {
 	result.remove();
 	icu::UnicodeString formatted;
 	int lastcolumn=0;
@@ -1107,11 +1111,11 @@ void CSVFormatter::formatRow(const CSVRow& row, icu::UnicodeString& result, UCha
 	}
 }
 
-CSVMap* CSVFormatter::loadFromFile(const char* path, UChar32 sepchar, unsigned int headercount, const char* encoding) {
+CSVMap* CSVFormatter::loadFromFile(char const* path, UChar32 sepchar, unsigned int headercount, char const* encoding) {
 	Stream* stream=FileStream::readFile(path, encoding);
 	if (stream) {
-		_handler.setup(sepchar, headercount);
-		CSVMap* map=_handler.processFromStream(stream);
+		s_handler.setup(sepchar, headercount);
+		CSVMap* map=s_handler.processFromStream(stream);
 		stream->close();
 		delete stream;
 		return map;
@@ -1119,11 +1123,11 @@ CSVMap* CSVFormatter::loadFromFile(const char* path, UChar32 sepchar, unsigned i
 	return NULL;
 }
 
-CSVMap* CSVFormatter::loadFromFile(const std::string& path, UChar32 sepchar, unsigned int headercount, const char* encoding) {
+CSVMap* CSVFormatter::loadFromFile(std::string const& path, UChar32 sepchar, unsigned int headercount, char const* encoding) {
 	return loadFromFile(path.c_str(), sepchar, headercount, encoding);
 }
 
-CSVMap* CSVFormatter::loadFromFile(const icu::UnicodeString& path, UChar32 sepchar, unsigned int headercount, const char* encoding) {
+CSVMap* CSVFormatter::loadFromFile(icu::UnicodeString const& path, UChar32 sepchar, unsigned int headercount, char const* encoding) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return loadFromFile(temp.c_str(), sepchar, headercount, encoding);
@@ -1131,13 +1135,13 @@ CSVMap* CSVFormatter::loadFromFile(const icu::UnicodeString& path, UChar32 sepch
 
 CSVMap* CSVFormatter::loadFromStream(Stream* stream, UChar32 sepchar, unsigned int headercount) {
 	if (stream) {
-		_handler.setup(sepchar, headercount);
-		return _handler.processFromStream(stream);
+		s_handler.setup(sepchar, headercount);
+		return s_handler.processFromStream(stream);
 	}
 	return NULL;
 }
 
-bool CSVFormatter::writeToFile(const CSVMap* map, const char* path, UChar32 sepchar, const char* encoding, unsigned int varformat) {
+bool CSVFormatter::writeToFile(CSVMap const* map, char const* path, UChar32 sepchar, char const* encoding, unsigned int varformat) {
 	Stream* stream=FileStream::writeFile(path, encoding);
 	if (stream) {
 		writeToStream(map, stream, sepchar, varformat);
@@ -1147,17 +1151,17 @@ bool CSVFormatter::writeToFile(const CSVMap* map, const char* path, UChar32 sepc
 	return false;
 }
 
-bool CSVFormatter::writeToFile(const CSVMap* map, const std::string& path, UChar32 sepchar, const char* encoding, unsigned int varformat) {
+bool CSVFormatter::writeToFile(CSVMap const* map, std::string const& path, UChar32 sepchar, char const* encoding, unsigned int varformat) {
 	return writeToFile(map, path.c_str(), sepchar, encoding, varformat);
 }
 
-bool CSVFormatter::writeToFile(const CSVMap* map, const icu::UnicodeString& path, UChar32 sepchar, const char* encoding, unsigned int varformat) {
+bool CSVFormatter::writeToFile(CSVMap const* map, icu::UnicodeString const& path, UChar32 sepchar, char const* encoding, unsigned int varformat) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return writeToFile(map, temp.c_str(), sepchar, encoding, varformat);
 }
 
-bool CSVFormatter::writeToStream(const CSVMap* map, Stream* stream, UChar32 sepchar, unsigned int varformat) {
+bool CSVFormatter::writeToStream(CSVMap const* map, Stream* stream, UChar32 sepchar, unsigned int varformat) {
 	if (map!=NULL && stream!=NULL) {
 		icu::UnicodeString temp;
 		bool first=false;

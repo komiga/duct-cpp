@@ -23,10 +23,10 @@ int main() {
 		Node* root=ScriptFormatter::loadFromFile("templates.script");
 		if (root) {
 			icu::UnicodeString temp;
-			const Identifier* identifier;
+			Identifier const* identifier;
 			bool pass=false;
 			for (VarList::const_iterator iter=root->begin(); iter!=root->end(); ++iter) {
-				identifier=dynamic_cast<const Identifier*>(*iter);
+				identifier=dynamic_cast<Identifier const*>(*iter);
 				if (identifier) {
 					temp.setTo(identifier->getName());
 					temp.toLower();

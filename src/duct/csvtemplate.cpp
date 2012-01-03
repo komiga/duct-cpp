@@ -31,43 +31,43 @@ THE SOFTWARE.
 
 namespace duct {
 
-CSVTemplate::CSVTemplate(size_t count, const CSVTRecord* layout) {
+CSVTemplate::CSVTemplate(size_t count, CSVTRecord const* layout) {
 	setLayout(count, layout);
 }
 
-void CSVTemplate::setLayout(size_t count, const CSVTRecord* layout) {
-	_count=count;
-	_layout=layout;
+void CSVTemplate::setLayout(size_t count, CSVTRecord const* layout) {
+	m_count=count;
+	m_layout=layout;
 }
 
-const CSVTRecord* CSVTemplate::getLayout() const {
-	return _layout;
+CSVTRecord const* CSVTemplate::getLayout() const {
+	return m_layout;
 }
 
 size_t CSVTemplate::getCount() const {
-	return _count;
+	return m_count;
 }
 
-bool CSVTemplate::validate(const CSVRow& row, int startindex) const {
-	if (!_layout && _count!=row.inRange(startindex, startindex+_count)) {
-		//printf("%s: count mismatch; _c: %lu inr: %lu\n", __PRETTY_FUNCTION__, _count, row.inRange(startindex, startindex+_count));
+bool CSVTemplate::validate(CSVRow const& row, int startindex) const {
+	if (!m_layout && m_count!=row.inRange(startindex, startindex+m_count)) {
+		//printf("%s: count mismatch; _c: %lu inr: %lu\n", __PRETTY_FUNCTION__, m_count, row.inRange(startindex, startindex+m_count));
 		return false;
 	}
-	if (_layout) {
+	if (m_layout) {
 		int index=startindex;
 		CSVRecordMap::const_iterator iter;
 		CSVRecordMap::const_iterator end=row.end();
-		while ((size_t)index<_count) {
+		while ((size_t)index<m_count) {
 			iter=row.find(index);
 			if (iter!=end) {
-				if (iter->second && !(_layout[index].type&iter->second->getType())) {
+				if (iter->second && !(m_layout[index].type&iter->second->getType())) {
 					//printf("debug: %s: [%d] non-matching type\n", __PRETTY_FUNCTION__, index);
 					return false;
-				} else if (!iter->second && !_layout[index].nullable) { // not nullable; is null
+				} else if (!iter->second && !m_layout[index].nullable) { // not nullable; is null
 					//printf("debug: %s: [%d] not nullable; null\n", __PRETTY_FUNCTION__, index);
 					return false;
 				}
-			} else if (!_layout[index].nullable) { // not nullable; is unset
+			} else if (!m_layout[index].nullable) { // not nullable; is unset
 				//printf("debug: %s: [%d] not nullable; unset\n", __PRETTY_FUNCTION__, index);
 				return false;
 			}

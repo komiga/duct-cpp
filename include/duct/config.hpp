@@ -43,7 +43,7 @@ namespace duct {
 /*
 	duct++ version.
 */
-//const char* VERSION="0.01"; // TODO: multiple definition errors with this line; use extern, you imbecile
+//char const* VERSION="0.01"; // TODO: multiple definition errors with this line; use extern, you imbecile
 
 // TODO: DUCT_PLATFORM_* not showing up on doxygen (defined, but to void)
 /** 

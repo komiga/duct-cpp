@@ -31,261 +31,262 @@ namespace duct {
 
 // class StreamWrapper implementation
 
-StreamWrapper::StreamWrapper() : _stream(NULL), _autoclose(false) {
-}
+StreamWrapper::StreamWrapper()
+	: m_stream(NULL), m_autoclose(false)
+{}
 
 StreamWrapper::~StreamWrapper() {
 	//debug_calledp(this);
-	if (_autoclose && _stream) {
+	if (m_autoclose && m_stream) {
 		close();
 	}
 }
 
 void StreamWrapper::setStream(Stream* stream) {
-	if (_autoclose && _stream) {
+	if (m_autoclose && m_stream) {
 		close();
 	}
-	_stream=stream;
+	m_stream=stream;
 }
 
 Stream* StreamWrapper::getStream() const {
-	return _stream;
+	return m_stream;
 }
 
 void StreamWrapper::setAutoClose(bool autoclose) {
-	_autoclose=autoclose;
+	m_autoclose=autoclose;
 }
 
 bool StreamWrapper::getAutoClose() const {
-	return _autoclose;
+	return m_autoclose;
 }
 
 // Base functions passing down to the wrapped stream
 size_t StreamWrapper::read(void* data, size_t size) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->read(data, size);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->read(data, size);
 }
 
-size_t StreamWrapper::write(const void* data, size_t size) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->write(data, size);
+size_t StreamWrapper::write(void const* data, size_t size) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->write(data, size);
 }
 
 int8_t StreamWrapper::readInt8() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readInt8();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readInt8();
 }
 
 uint8_t StreamWrapper::readUInt8() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readUInt8();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readUInt8();
 }
 
 int16_t StreamWrapper::readInt16() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readInt16();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readInt16();
 }
 
 uint16_t StreamWrapper::readUInt16() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readUInt16();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readUInt16();
 }
 
 int32_t StreamWrapper::readInt32() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readInt32();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readInt32();
 }
 
 uint32_t StreamWrapper::readUInt32() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readUInt32();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readUInt32();
 }
 
 int64_t StreamWrapper::readInt64() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readInt64();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readInt64();
 }
 
 uint64_t StreamWrapper::readUInt64() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readUInt64();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readUInt64();
 }
 
 float StreamWrapper::readFloat() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readFloat();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readFloat();
 }
 
 double StreamWrapper::readDouble() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readDouble();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readDouble();
 }
 
 UChar32 StreamWrapper::readChar() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readChar();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readChar();
 }
 
 size_t StreamWrapper::readString(icu::UnicodeString& str, size_t length) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readString(str, length);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readString(str, length);
 }
 
 size_t StreamWrapper::readLine(icu::UnicodeString& str) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readLine(str);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readLine(str);
 }
 
 size_t StreamWrapper::readCString(icu::UnicodeString& str, size_t maxlength) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->readCString(str, maxlength);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->readCString(str, maxlength);
 }
 
 size_t StreamWrapper::writeInt8(int8_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeInt8(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeInt8(value);
 }
 
 size_t StreamWrapper::writeUInt8(uint8_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeUInt8(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeUInt8(value);
 }
 
 size_t StreamWrapper::writeInt16(int16_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeInt16(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeInt16(value);
 }
 
 size_t StreamWrapper::writeUInt16(uint16_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeUInt16(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeUInt16(value);
 }
 
 size_t StreamWrapper::writeInt32(int32_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeInt32(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeInt32(value);
 }
 
 size_t StreamWrapper::writeUInt32(uint32_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeUInt32(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeUInt32(value);
 }
 
 size_t StreamWrapper::writeInt64(int64_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeInt64(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeInt64(value);
 }
 
 size_t StreamWrapper::writeUInt64(uint64_t value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeUInt64(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeUInt64(value);
 }
 
 size_t StreamWrapper::writeFloat(float value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeFloat(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeFloat(value);
 }
 
 size_t StreamWrapper::writeDouble(double value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeDouble(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeDouble(value);
 }
 
 size_t StreamWrapper::writeChar16(UChar value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeChar16(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeChar16(value);
 }
 
 size_t StreamWrapper::writeChar32(UChar32 value) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeChar32(value);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeChar32(value);
 }
 
-size_t StreamWrapper::writeString(const icu::UnicodeString& str) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeString(str);
+size_t StreamWrapper::writeString(icu::UnicodeString const& str) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeString(str);
 }
 
-size_t StreamWrapper::writeLine(const icu::UnicodeString& str) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeLine(str);
+size_t StreamWrapper::writeLine(icu::UnicodeString const& str) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeLine(str);
 }
 
-size_t StreamWrapper::writeCString(const icu::UnicodeString& str) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->writeCString(str);
+size_t StreamWrapper::writeCString(icu::UnicodeString const& str) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->writeCString(str);
 }
 
 void StreamWrapper::flush() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	_stream->flush();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	m_stream->flush();
 }
 
 bool StreamWrapper::eof() const {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->eof();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->eof();
 }
 
 size_t StreamWrapper::size() const {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->size();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->size();
 }
 
 unsigned long StreamWrapper::pos() const {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->pos();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->pos();
 }
 
 unsigned long StreamWrapper::seek(unsigned long pos) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->seek(pos);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->seek(pos);
 }
 
 unsigned long StreamWrapper::skip(long change) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->skip(change);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->skip(change);
 }
 
 void StreamWrapper::close() {
-	if (_stream) {
-		_stream->close();
-		_stream=NULL;
+	if (m_stream) {
+		m_stream->close();
+		m_stream=NULL;
 	}
 }
 
 void StreamWrapper::setFlags(unsigned int flags) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	_stream->setFlags(flags);
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	m_stream->setFlags(flags);
 }
 
 unsigned int StreamWrapper::getFlags() const {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->getFlags();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->getFlags();
 }
 
-bool StreamWrapper::setEncoding(const char* encoding) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->setEncoding(encoding);
+bool StreamWrapper::setEncoding(char const* encoding) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->setEncoding(encoding);
 }
 
-bool StreamWrapper::setEncoding(const icu::UnicodeString& encoding) {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->setEncoding(encoding);
+bool StreamWrapper::setEncoding(icu::UnicodeString const& encoding) {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->setEncoding(encoding);
 }
 
-const char* StreamWrapper::getEncoding() const {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->getEncoding();
+char const* StreamWrapper::getEncoding() const {
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->getEncoding();
 }
 
 UConverter* StreamWrapper::getConv() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	return _stream->getConv();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	return m_stream->getConv();
 }
 
 void StreamWrapper::closeConv() {
-	debug_assertp(_stream, this, "Wrapped stream cannot be NULL");
-	_stream->closeConv();
+	debug_assertp(m_stream, this, "Wrapped stream cannot be NULL");
+	m_stream->closeConv();
 }
 
 } // namespace duct

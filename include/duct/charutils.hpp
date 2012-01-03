@@ -138,7 +138,7 @@ DUCT_API UChar32 getEscapeChar(UChar32 c);
 	@param str The string to escape.
 	@param format The format to use. Only FMT_STRING_ESCAPE_* formats are relevant.
 */
-DUCT_API void escapeString(icu::UnicodeString& result, const icu::UnicodeString& str, unsigned int format=FMT_STRING_ESCAPE_OTHER);
+DUCT_API void escapeString(icu::UnicodeString& result, icu::UnicodeString const& str, unsigned int format=FMT_STRING_ESCAPE_OTHER);
 
 } // namespace CharUtils
 

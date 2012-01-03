@@ -59,7 +59,7 @@ public:
 		Cache the character buffer as a string.
 		@returns The cached string.
 	*/
-	const icu::UnicodeString& cacheString();
+	icu::UnicodeString const& cacheString();
 	/**
 		Reset the buffer.
 		The internal memory buffer will not be freed, but the position and cached string will be reset.
@@ -77,7 +77,7 @@ public:
 		@returns true if all characters match a character in the set, or false otherwise.
 		@param charset The character set to compare against.
 	*/
-	bool compare(const CharacterSet& charset) const;
+	bool compare(CharacterSet const& charset) const;
 	/**
 		Convert the buffer to a string.
 		If conversion fails, <em>str</em> is unmodified.
@@ -90,7 +90,7 @@ public:
 		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
 		@returns A reference to the cached string (which will be bogus if conversion failed).
 	*/
-	const icu::UnicodeString& toString();
+	icu::UnicodeString const& toString();
 	/**
 		Convert the buffer to a 32-bit integer.
 		@returns The buffer as an integer, or 0 if the cached string was not a numeric value.
@@ -141,11 +141,11 @@ public:
 	bool toDouble(double& value);
 	
 protected:
-	UChar32* _buffer;
-	size_t _bufsize;
-	size_t _buflength;
-	icu::UnicodeString _bufstring;
-	bool _cached;
+	UChar32* m_buffer;
+	size_t m_bufsize;
+	size_t m_buflength;
+	icu::UnicodeString m_bufstring;
+	bool m_cached;
 };
 
 } // namespace duct

@@ -33,54 +33,54 @@ THE SOFTWARE.
 
 namespace duct {
 
-const UChar __uchar_1[]={'1', '\0'};
-const UChar __uchar_0[]={'0', '\0'};
-const UChar __uchar_true[]={'t', 'r', 'u', 'e', '\0'};
-const UChar __uchar_false[]={'f', 'a', 'l', 's', 'e', '\0'};
+UChar const __uchar_1[]={'1', '\0'};
+UChar const __uchar_0[]={'0', '\0'};
+UChar const __uchar_true[]={'t', 'r', 'u', 'e', '\0'};
+UChar const __uchar_false[]={'f', 'a', 'l', 's', 'e', '\0'};
 
-const UChar __uchar_quotedempty[]={'\"', '\"', '\0'};
+UChar const __uchar_quotedempty[]={'\"', '\"', '\0'};
 
 // class Variable implementation
 
-Variable::~Variable() { /* Do nothing */ }
+Variable::~Variable() {/* Do nothing */}
 
-void Variable::setName(const icu::UnicodeString& name) {
-	_name.setTo(name);
+void Variable::setName(icu::UnicodeString const& name) {
+	m_name.setTo(name);
 }
 
-const icu::UnicodeString& Variable::getName() const {
-	return _name;
+icu::UnicodeString const& Variable::getName() const {
+	return m_name;
 }
 
 void Variable::getNameFormatted(icu::UnicodeString& result, unsigned int format) const {
 	icu::UnicodeString temp;
 	if (format&FMT_VALUE_QUOTE_ALWAYS) {
-		temp.setTo('\"'+_name+'\"');
-	} else if (_name.isEmpty() && format&FMT_STRING_QUOTE_EMPTY) {
+		temp.setTo('\"'+m_name+'\"');
+	} else if (m_name.isEmpty() && format&FMT_STRING_QUOTE_EMPTY) {
 		temp.setTo("\"\"");
-	} else if (format&FMT_STRING_QUOTE_WHITESPACE && (_name.indexOf('\t')>-1 || _name.indexOf(' ')>-1 || _name.indexOf('\n')>-1)) {
-		temp.setTo('\"'+_name+'\"');
-	} else if ((format&FMT_STRING_QUOTE_CONTROL)!=0 && (_name.indexOf(CHAR_OPENBRACE)>-1 || _name.indexOf(CHAR_CLOSEBRACE)>-1 || _name.indexOf(CHAR_EQUALSIGN)>-1)) {
-		temp.setTo('\"'+_name+'\"');
+	} else if (format&FMT_STRING_QUOTE_WHITESPACE && (m_name.indexOf('\t')>-1 || m_name.indexOf(' ')>-1 || m_name.indexOf('\n')>-1)) {
+		temp.setTo('\"'+m_name+'\"');
+	} else if ((format&FMT_STRING_QUOTE_CONTROL)!=0 && (m_name.indexOf(CHAR_OPENBRACE)>-1 || m_name.indexOf(CHAR_CLOSEBRACE)>-1 || m_name.indexOf(CHAR_EQUALSIGN)>-1)) {
+		temp.setTo('\"'+m_name+'\"');
 	} else {
-		temp.setTo(_name);
+		temp.setTo(m_name);
 	}
 	CharUtils::escapeString(result, temp, format);
 }
 
 void Variable::setParent(CollectionVariable* parent) {
-	_parent=parent;
+	m_parent=parent;
 }
 
 CollectionVariable* Variable::getParent() const {
-	return _parent;
+	return m_parent;
 }
 
 signed int Variable::variableToBool(Variable* source) {
 	if (source->getType()==VARTYPE_BOOL) {
 		return ((BoolVariable*)source)->get();
 	} else if (source->getType()==VARTYPE_STRING) {
-		const icu::UnicodeString& str=((StringVariable*)source)->get();
+		icu::UnicodeString const& str=((StringVariable*)source)->get();
 		if (str.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || str.compare(__uchar_1, 1)==0) {
 			return 1;
 		} else if (str.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || str.compare(__uchar_0, 1)==0) {
@@ -97,7 +97,7 @@ signed int Variable::variableToBool(Variable* source) {
 	return -1;
 }
 
-signed int Variable::stringToBool(const icu::UnicodeString& source) {
+signed int Variable::stringToBool(icu::UnicodeString const& source) {
 	if (source.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_1, 1)==0) {
 		return 1;
 	} else if (source.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_0, 1)==0) {
@@ -106,7 +106,7 @@ signed int Variable::stringToBool(const icu::UnicodeString& source) {
 	return -1;
 }
 
-ValueVariable* Variable::stringToValue(const icu::UnicodeString& source, const icu::UnicodeString& varname, unsigned int type) {
+ValueVariable* Variable::stringToValue(icu::UnicodeString const& source, icu::UnicodeString const& varname, unsigned int type) {
 	if (source.isEmpty()) {
 		return new StringVariable(source, varname, NULL);
 	}
@@ -132,35 +132,35 @@ ValueVariable* Variable::stringToValue(const icu::UnicodeString& source, const i
 	}
 	ValueVariable* var;
 	switch (type) {
-		case VARTYPE_INTEGER:
-			var=new IntVariable(0, varname);
-			break;
-		case VARTYPE_FLOAT:
-			var=new FloatVariable(0.0, varname, NULL);
-			break;
-		case VARTYPE_BOOL:
-			var=new BoolVariable(false, varname, NULL);
-			break;
-		default: // NOTE: VARTYPE_STRING results the same as an unrecognized variable type
-			int b=stringToBool(source);
-			if (b>-1) {
-				return new BoolVariable(b==1, varname, NULL);
-			} else {
-				return new StringVariable(source, varname, NULL);
-			}
+	case VARTYPE_INTEGER:
+		var=new IntVariable(0, varname);
+		break;
+	case VARTYPE_FLOAT:
+		var=new FloatVariable(0.0, varname, NULL);
+		break;
+	case VARTYPE_BOOL:
+		var=new BoolVariable(false, varname, NULL);
+		break;
+	default: // NOTE: VARTYPE_STRING results the same as an unrecognized variable type
+		int b=stringToBool(source);
+		if (b>-1) {
+			return new BoolVariable(b==1, varname, NULL);
+		} else {
+			return new StringVariable(source, varname, NULL);
+		}
 	}
 	var->setFromString(source);
 	return var;
 }
 
-ValueVariable* Variable::stringToValue(const icu::UnicodeString& source, unsigned int type) {
+ValueVariable* Variable::stringToValue(icu::UnicodeString const& source, unsigned int type) {
 	icu::UnicodeString varname;
 	return stringToValue(source, varname, type);
 }
 
 // class ValueVariable implementation
 
-ValueVariable::~ValueVariable() { /* Do nothing */ }
+ValueVariable::~ValueVariable() {/* Do nothing */}
 
 // class IntVariable implementation
 
@@ -169,30 +169,30 @@ IntVariable::IntVariable(int value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-IntVariable::IntVariable(int value, const icu::UnicodeString& name, CollectionVariable* parent) {
+IntVariable::IntVariable(int value, icu::UnicodeString const& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
 }
 
 void IntVariable::set(int value) {
-	_value=value;
+	m_value=value;
 }
 
 int IntVariable::get() const {
-	return _value;
+	return m_value;
 }
 
-void IntVariable::setFromString(const icu::UnicodeString& source) {
+void IntVariable::setFromString(icu::UnicodeString const& source) {
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
 	nf->parse(source, formattable, status);
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
-		_value=0;
+		m_value=0;
 	} else {
-		_value=formattable.getLong();
+		m_value=formattable.getLong();
 	}
 	delete nf;
 }
@@ -214,7 +214,7 @@ void IntVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	nf->setParseIntegerOnly(true);
 	if (!append)
 		result.remove();
-	nf->format(_value, result);
+	nf->format(m_value, result);
 	delete nf;
 }
 
@@ -222,12 +222,12 @@ unsigned int IntVariable::getType() const {
 	return VARTYPE_INTEGER;
 }
 
-const char* IntVariable::getTypeName() const {
+char const* IntVariable::getTypeName() const {
 	return "int";
 }
 
 Variable* IntVariable::clone() const {
-	IntVariable* x=new IntVariable(_value, _name, NULL);
+	IntVariable* x=new IntVariable(m_value, m_name, NULL);
 	return x;
 }
 
@@ -237,12 +237,12 @@ StringVariable::StringVariable(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-StringVariable::StringVariable(const icu::UnicodeString& value, CollectionVariable* parent) {
+StringVariable::StringVariable(icu::UnicodeString const& value, CollectionVariable* parent) {
 	set(value);
 	setParent(parent);
 }
 
-StringVariable::StringVariable(const icu::UnicodeString& value, const icu::UnicodeString& name, CollectionVariable* parent) {
+StringVariable::StringVariable(icu::UnicodeString const& value, icu::UnicodeString const& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
@@ -251,8 +251,8 @@ StringVariable::StringVariable(const icu::UnicodeString& value, const icu::Unico
 bool StringVariable::isNumeric(bool allowdecimal) const {
 	UChar c;
 	bool result=false, decimal=false;
-	for (int i=0; i<_value.length(); ++i) {
-		c=_value[i];
+	for (int i=0; i<m_value.length(); ++i) {
+		c=m_value[i];
 		if (c=='.') {
 			if (allowdecimal) {
 				if (decimal) { // already got decimal
@@ -283,57 +283,57 @@ bool StringVariable::isNumeric(bool allowdecimal) const {
 	return result;
 }
 
-void StringVariable::set(const icu::UnicodeString& value) {
-	_value=value;
+void StringVariable::set(icu::UnicodeString const& value) {
+	m_value=value;
 }
 
-void StringVariable::setFromString(const icu::UnicodeString& source) {
-	_name.setTo(source);
+void StringVariable::setFromString(icu::UnicodeString const& source) {
+	m_name.setTo(source);
 }
 
 void StringVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
 	icu::UnicodeString temp;
 	if (format&FMT_VALUE_QUOTE_ALWAYS || format&FMT_STRING_QUOTE_ALWAYS) {
-		temp.setTo('\"'); temp.append(_value); temp+='\"';
-	} else if (format&FMT_STRING_QUOTE_EMPTY && _value.isEmpty()) {
+		temp.setTo('\"'); temp.append(m_value); temp+='\"';
+	} else if (format&FMT_STRING_QUOTE_EMPTY && m_value.isEmpty()) {
 		temp.setTo(__uchar_quotedempty, 2);
-	} else if (format&FMT_STRING_QUOTE_WHITESPACE && (_value.indexOf('\t')>-1 || _value.indexOf(' ')>-1 || _value.indexOf('\n')>-1)) {
-		temp.setTo('\"'); temp.append(_value); temp+='\"';
+	} else if (format&FMT_STRING_QUOTE_WHITESPACE && (m_value.indexOf('\t')>-1 || m_value.indexOf(' ')>-1 || m_value.indexOf('\n')>-1)) {
+		temp.setTo('\"'); temp.append(m_value); temp+='\"';
 	} else if (format&FMT_STRING_SAFE_BOOL && Variable::variableToBool((Variable*)this)!=-1) {
-		temp.setTo('\"'); temp.append(_value); temp+='\"';
+		temp.setTo('\"'); temp.append(m_value); temp+='\"';
 	} else if (format&FMT_STRING_SAFE_NUMBER && isNumeric(true)) {
-		temp.setTo('\"'); temp.append(_value); temp+='\"';
-	} else if ((format&FMT_STRING_QUOTE_CONTROL)!=0 && (_value.indexOf(CHAR_OPENBRACE)>-1
-		|| _value.indexOf(CHAR_CLOSEBRACE)>-1 || _value.indexOf(CHAR_EQUALSIGN)>-1)) {
-		temp.setTo('\"'); temp.append(_value); temp+='\"';
+		temp.setTo('\"'); temp.append(m_value); temp+='\"';
+	} else if ((format&FMT_STRING_QUOTE_CONTROL)!=0 && (m_value.indexOf(CHAR_OPENBRACE)>-1
+		|| m_value.indexOf(CHAR_CLOSEBRACE)>-1 || m_value.indexOf(CHAR_EQUALSIGN)>-1)) {
+		temp.setTo('\"'); temp.append(m_value); temp+='\"';
 	} else {
-		temp.setTo(_value);
+		temp.setTo(m_value);
 	}
 	CharUtils::escapeString(result, temp, format);
 }
 
 void StringVariable::valueAsString(icu::UnicodeString& result, bool append) const {
 	if (append) {
-		result+=_value;
+		result+=m_value;
 	} else {
-		result.setTo(_value);
+		result.setTo(m_value);
 	}
 }
 
-const icu::UnicodeString& StringVariable::get() const {
-	return _value;
+icu::UnicodeString const& StringVariable::get() const {
+	return m_value;
 }
 
 unsigned int StringVariable::getType() const {
 	return VARTYPE_STRING;
 }
 
-const char* StringVariable::getTypeName() const {
+char const* StringVariable::getTypeName() const {
 	return "string";
 }
 
 Variable* StringVariable::clone() const {
-	StringVariable* x=new StringVariable(_value, _name, NULL);
+	StringVariable* x=new StringVariable(m_value, m_name, NULL);
 	return x;
 }
 
@@ -344,31 +344,31 @@ FloatVariable::FloatVariable(float value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-FloatVariable::FloatVariable(float value, const icu::UnicodeString& name, CollectionVariable* parent) {
+FloatVariable::FloatVariable(float value, icu::UnicodeString const& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
 }
 
 void FloatVariable::set(float value) {
-	_value=value;
+	m_value=value;
 }
 
 float FloatVariable::get() const {
-	return _value;
+	return m_value;
 }
 
-void FloatVariable::setFromString(const icu::UnicodeString& source) {
+void FloatVariable::setFromString(icu::UnicodeString const& source) {
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
 	nf->parse(source, formattable, status);
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
-		_value=0.0;
+		m_value=0.0;
 	} else {
-		_value=(float)formattable.getDouble(status);
-		//printf("FloatVariable::setFromString formattable _value:%f\n", _value);
+		m_value=(float)formattable.getDouble(status);
+		//printf("FloatVariable::setFromString formattable m_value:%f\n", m_value);
 	}
 	delete nf;
 }
@@ -391,7 +391,7 @@ void FloatVariable::valueAsString(icu::UnicodeString& result, bool append) const
 	nf->setMinimumFractionDigits(1);
 	if (!append)
 		result.remove();
-	nf->format(_value, result);
+	nf->format(m_value, result);
 	delete nf;
 }
 
@@ -399,12 +399,12 @@ unsigned int FloatVariable::getType() const {
 	return VARTYPE_FLOAT;
 }
 
-const char* FloatVariable::getTypeName() const {
+char const* FloatVariable::getTypeName() const {
 	return "float";
 }
 
 Variable* FloatVariable::clone() const {
-	FloatVariable* x=new FloatVariable(_value, _name, NULL);
+	FloatVariable* x=new FloatVariable(m_value, m_name, NULL);
 	return x;
 }
 
@@ -415,37 +415,37 @@ BoolVariable::BoolVariable(bool value, CollectionVariable* parent) {
 	setParent(parent);
 }
 
-BoolVariable::BoolVariable(bool value, const icu::UnicodeString& name, CollectionVariable* parent) {
+BoolVariable::BoolVariable(bool value, icu::UnicodeString const& name, CollectionVariable* parent) {
 	set(value);
 	setName(name);
 	setParent(parent);
 }
 
 void BoolVariable::set(bool value) {
-	_value=value;
+	m_value=value;
 }
 
 bool BoolVariable::get() const {
-	return _value;
+	return m_value;
 }
 
-void BoolVariable::setFromString(const icu::UnicodeString& source) {
+void BoolVariable::setFromString(icu::UnicodeString const& source) {
 	if (source.caseCompare(__uchar_true, 4, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_1, 1)==0) {
-		_value=true;
+		m_value=true;
 	//} else if (source.caseCompare(__uchar_false, 5, U_FOLD_CASE_DEFAULT)==0 || source.compare(__uchar_0, 1)==0) {
-	//	_value=false;
+	//	m_value=false;
 	} else {
-		_value=false;
+		m_value=false;
 	}
 }
 
 void BoolVariable::getValueFormatted(icu::UnicodeString& result, unsigned int format) const {
 	if (format&FMT_BOOL_QUOTE || format&FMT_VALUE_QUOTE_ALWAYS) {
 		result.setTo('\"');
-		(_value) ? result.append(__uchar_true, 4) : result.append(__uchar_false, 5);
+		(m_value) ? result.append(__uchar_true, 4) : result.append(__uchar_false, 5);
 		result.append('\"');
 	} else {
-		(_value) ? result.setTo(__uchar_true, 4) : result.setTo(__uchar_false, 5);
+		(m_value) ? result.setTo(__uchar_true, 4) : result.setTo(__uchar_false, 5);
 	}
 }
 
@@ -453,19 +453,19 @@ void BoolVariable::valueAsString(icu::UnicodeString& result, bool append) const 
 	if (!append) {
 		result.remove(); // Clear the string
 	}
-	(_value) ? result.append(__uchar_true, 4) : result.append(__uchar_false, 5);
+	(m_value) ? result.append(__uchar_true, 4) : result.append(__uchar_false, 5);
 }
 
 unsigned int BoolVariable::getType() const {
 	return VARTYPE_BOOL;
 }
 
-const char* BoolVariable::getTypeName() const {
+char const* BoolVariable::getTypeName() const {
 	return "bool";
 }
 
 Variable* BoolVariable::clone() const {
-	BoolVariable* x=new BoolVariable(_value, _name, NULL);
+	BoolVariable* x=new BoolVariable(m_value, m_name, NULL);
 	return x;
 }
 
@@ -476,42 +476,42 @@ CollectionVariable::~CollectionVariable() {
 }
 
 VarList& CollectionVariable::getChildren() {
-	return _children;
+	return m_children;
 }
 
-const VarList& CollectionVariable::getChildren() const {
-	return _children;
+VarList const& CollectionVariable::getChildren() const {
+	return m_children;
 }
 
 size_t CollectionVariable::getChildCount() const {
-	return _children.size();
+	return m_children.size();
 }
 
 VarList::iterator CollectionVariable::begin() {
-	return _children.begin();
+	return m_children.begin();
 }
 
 VarList::const_iterator CollectionVariable::begin() const {
-	return _children.begin();
+	return m_children.begin();
 }
 
 VarList::iterator CollectionVariable::end() {
-	return _children.end();
+	return m_children.end();
 }
 
 VarList::const_iterator CollectionVariable::end() const {
-	return _children.end();
+	return m_children.end();
 }
 
-VarList::iterator CollectionVariable::find(const Variable* variable) {
+VarList::iterator CollectionVariable::find(Variable const* variable) {
 	return find(variable, begin());
 }
 
-VarList::const_iterator CollectionVariable::find(const Variable* variable) const {
+VarList::const_iterator CollectionVariable::find(Variable const* variable) const {
 	return find(variable, begin());
 }
 
-VarList::iterator CollectionVariable::find(const Variable* variable, VarList::iterator iter) {
+VarList::iterator CollectionVariable::find(Variable const* variable, VarList::iterator iter) {
 	VarList::iterator ei=end();
 	while (iter!=ei) {
 		if ((*iter)==variable) {
@@ -522,7 +522,7 @@ VarList::iterator CollectionVariable::find(const Variable* variable, VarList::it
 	return ei;
 }
 
-VarList::const_iterator CollectionVariable::find(const Variable* variable, VarList::const_iterator iter) const {
+VarList::const_iterator CollectionVariable::find(Variable const* variable, VarList::const_iterator iter) const {
 	VarList::const_iterator ei=end();
 	while (iter!=ei) {
 		if ((*iter)==variable) {
@@ -534,7 +534,7 @@ VarList::const_iterator CollectionVariable::find(const Variable* variable, VarLi
 }
 
 VarList::iterator CollectionVariable::findAt(int index, unsigned int type) {
-	if (index<0 || (size_t)index>=_children.size()) {
+	if (index<0 || (size_t)index>=m_children.size()) {
 		return end();
 	}
 	int i=0;
@@ -549,7 +549,7 @@ VarList::iterator CollectionVariable::findAt(int index, unsigned int type) {
 }
 
 VarList::const_iterator CollectionVariable::findAt(int index, unsigned int type) const {
-	if (index<0 || (size_t)index>=_children.size()) {
+	if (index<0 || (size_t)index>=m_children.size()) {
 		return end();
 	}
 	int i=0;
@@ -593,17 +593,17 @@ VarList::const_iterator CollectionVariable::findWithType(unsigned int type, VarL
 	return ei;
 }
 
-VarList::iterator CollectionVariable::findWithName(const icu::UnicodeString& name, bool casesens, unsigned int type) {
+VarList::iterator CollectionVariable::findWithName(icu::UnicodeString const& name, bool casesens, unsigned int type) {
 	return findWithName(name, begin(), casesens, type);
 }
 
-VarList::const_iterator CollectionVariable::findWithName(const icu::UnicodeString& name, bool casesens, unsigned int type) const {
+VarList::const_iterator CollectionVariable::findWithName(icu::UnicodeString const& name, bool casesens, unsigned int type) const {
 	return findWithName(name, begin(), casesens, type);
 }
 
-VarList::iterator CollectionVariable::findWithName(const icu::UnicodeString& name, VarList::iterator iter, bool casesens, unsigned int type) {
+VarList::iterator CollectionVariable::findWithName(icu::UnicodeString const& name, VarList::iterator iter, bool casesens, unsigned int type) {
 	VarList::iterator ei=end();
-	const Variable* variable;
+	Variable const* variable;
 	while (iter!=ei) {
 		variable=*iter;
 		if (type&variable->getType()) {
@@ -616,9 +616,9 @@ VarList::iterator CollectionVariable::findWithName(const icu::UnicodeString& nam
 	return ei;
 }
 
-VarList::const_iterator CollectionVariable::findWithName(const icu::UnicodeString& name, VarList::const_iterator iter, bool casesens, unsigned int type) const {
+VarList::const_iterator CollectionVariable::findWithName(icu::UnicodeString const& name, VarList::const_iterator iter, bool casesens, unsigned int type) const {
 	VarList::const_iterator ei=end();
-	const Variable* variable;
+	Variable const* variable;
 	while (iter!=ei) {
 		variable=*iter;
 		if (type&variable->getType()) {
@@ -633,7 +633,7 @@ VarList::const_iterator CollectionVariable::findWithName(const icu::UnicodeStrin
 
 void CollectionVariable::erase(VarList::iterator position) {
 	delete (*position);
-	_children.erase(position);
+	m_children.erase(position);
 }
 
 void CollectionVariable::clear() {
@@ -642,13 +642,13 @@ void CollectionVariable::clear() {
 		//printf("Deleting %p\n", (void*)(*iter));
 		delete (*iter);
 	}
-	_children.clear();
+	m_children.clear();
 }
 
 bool CollectionVariable::add(Variable* variable) {
 	if (variable) {
 		variable->setParent(this);
-		_children.push_back(variable);
+		m_children.push_back(variable);
 		return true;
 	}
 	return false;
@@ -658,7 +658,7 @@ bool CollectionVariable::insertBefore(int index, Variable* variable) {
 	if (variable) {
 		VarList::iterator iter=findAt(index, VARTYPE_ANY);
 		if (iter!=end()) {
-			_children.insert(iter, variable);
+			m_children.insert(iter, variable);
 			return true;
 		}
 	}
@@ -669,7 +669,7 @@ bool CollectionVariable::insertBefore(Variable* variable, Variable* target) {
 	if (variable) {
 		VarList::iterator iter=find(target);
 		if (iter!=end()) {
-			_children.insert(iter, variable);
+			m_children.insert(iter, variable);
 			return true;
 		}
 	}
@@ -682,9 +682,9 @@ bool CollectionVariable::insertAfter(int index, Variable* variable) {
 		if (iter!=end()) {
 			iter++; // get the next position, since insert() inserts before, not after
 			if (iter!=end()) {
-				_children.insert(iter, variable);
+				m_children.insert(iter, variable);
 			} else {
-				_children.push_back(variable);
+				m_children.push_back(variable);
 			}
 			return true;
 		}
@@ -698,9 +698,9 @@ bool CollectionVariable::insertAfter(Variable* variable, Variable* target) {
 		if (iter!=end()) {
 			iter++; // get the next position, since insert() inserts before, not after
 			if (iter!=end()) {
-				_children.insert(iter, variable);
+				m_children.insert(iter, variable);
 			} else {
-				_children.push_back(variable);
+				m_children.push_back(variable);
 			}
 			return true;
 		}
@@ -717,7 +717,7 @@ bool CollectionVariable::remove(int index, unsigned int type) {
 	return false;
 }
 
-bool CollectionVariable::remove(const Variable* variable) {
+bool CollectionVariable::remove(Variable const* variable) {
 	if (variable) {
 		VarList::iterator iter=find(variable);
 		if (iter!=end()) {
@@ -737,7 +737,7 @@ bool CollectionVariable::remove(unsigned int type) {
 	return false;
 }
 
-bool CollectionVariable::remove(const icu::UnicodeString& name, bool casesens, unsigned int type) {
+bool CollectionVariable::remove(icu::UnicodeString const& name, bool casesens, unsigned int type) {
 	VarList::iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		erase(iter);
@@ -746,7 +746,7 @@ bool CollectionVariable::remove(const icu::UnicodeString& name, bool casesens, u
 	return false;
 }
 
-Variable* CollectionVariable::get(const icu::UnicodeString& name, bool casesens, unsigned int type) {
+Variable* CollectionVariable::get(icu::UnicodeString const& name, bool casesens, unsigned int type) {
 	VarList::iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		return (*iter);
@@ -754,7 +754,7 @@ Variable* CollectionVariable::get(const icu::UnicodeString& name, bool casesens,
 	return NULL;
 }
 
-const Variable* CollectionVariable::get(const icu::UnicodeString& name, bool casesens, unsigned int type) const {
+Variable const* CollectionVariable::get(icu::UnicodeString const& name, bool casesens, unsigned int type) const {
 	VarList::const_iterator iter=findWithName(name, casesens, type);
 	if (iter!=end()) {
 		return (*iter);
@@ -770,7 +770,7 @@ Variable* CollectionVariable::get(int index, unsigned int type) {
 	return NULL;
 }
 
-const Variable* CollectionVariable::get(int index, unsigned int type) const {
+Variable const* CollectionVariable::get(int index, unsigned int type) const {
 	VarList::const_iterator iter=findAt(index, type);
 	if (iter!=end()) {
 		return (*iter);
@@ -786,15 +786,15 @@ IntVariable* CollectionVariable::getInt(int index) {
 	return NULL;
 }
 
-const IntVariable* CollectionVariable::getInt(int index) const {
-	const Variable* var=get(index, VARTYPE_INTEGER);
+IntVariable const* CollectionVariable::getInt(int index) const {
+	Variable const* var=get(index, VARTYPE_INTEGER);
 	if (var) {
 		return (IntVariable*)var;
 	}
 	return NULL;
 }
 
-IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bool casesens) {
+IntVariable* CollectionVariable::getInt(icu::UnicodeString const& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_INTEGER);
 	if (var) {
 		return (IntVariable*)var;
@@ -802,8 +802,8 @@ IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bool cas
 	return NULL;
 }
 
-const IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_INTEGER);
+IntVariable const* CollectionVariable::getInt(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_INTEGER);
 	if (var) {
 		return (IntVariable*)var;
 	}
@@ -811,7 +811,7 @@ const IntVariable* CollectionVariable::getInt(const icu::UnicodeString& name, bo
 }
 
 bool CollectionVariable::getIntValue(int& result, int index) const {
-	const IntVariable* var=getInt(index);
+	IntVariable const* var=getInt(index);
 	if (var) {
 		result=var->get();
 		return true;
@@ -819,8 +819,8 @@ bool CollectionVariable::getIntValue(int& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getIntValue(int& result, const icu::UnicodeString& name, bool casesens) const {
-	const IntVariable* var=getInt(name, casesens);
+bool CollectionVariable::getIntValue(int& result, icu::UnicodeString const& name, bool casesens) const {
+	IntVariable const* var=getInt(name, casesens);
 	if (var) {
 		result=var->get();
 	}
@@ -835,15 +835,15 @@ StringVariable* CollectionVariable::getString(int index) {
 	return NULL;
 }
 
-const StringVariable* CollectionVariable::getString(int index) const {
-	const Variable* var=get(index, VARTYPE_STRING);
+StringVariable const* CollectionVariable::getString(int index) const {
+	Variable const* var=get(index, VARTYPE_STRING);
 	if (var) {
 		return (StringVariable*)var;
 	}
 	return NULL;
 }
 
-StringVariable* CollectionVariable::getString(const icu::UnicodeString& name, bool casesens) {
+StringVariable* CollectionVariable::getString(icu::UnicodeString const& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_STRING);
 	if (var) {
 		return (StringVariable*)var;
@@ -851,16 +851,16 @@ StringVariable* CollectionVariable::getString(const icu::UnicodeString& name, bo
 	return NULL;
 }
 
-const StringVariable* CollectionVariable::getString(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_STRING);
+StringVariable const* CollectionVariable::getString(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_STRING);
 	if (var) {
 		return (StringVariable*)var;
 	}
 	return NULL;
 }
 
-const icu::UnicodeString* CollectionVariable::getStringValue(int index) const {
-	const StringVariable* var=getString(index);
+icu::UnicodeString const* CollectionVariable::getStringValue(int index) const {
+	StringVariable const* var=getString(index);
 	if (var) {
 		return &(var->get());
 	}
@@ -868,7 +868,7 @@ const icu::UnicodeString* CollectionVariable::getStringValue(int index) const {
 }
 
 bool CollectionVariable::getStringValue(icu::UnicodeString& result, int index) const {
-	const icu::UnicodeString* ptr=getStringValue(index);
+	icu::UnicodeString const* ptr=getStringValue(index);
 	if (ptr) {
 		result.setTo(*ptr);
 		return true;
@@ -876,16 +876,16 @@ bool CollectionVariable::getStringValue(icu::UnicodeString& result, int index) c
 	return false;
 }
 
-const icu::UnicodeString* CollectionVariable::getStringValue(const icu::UnicodeString& name, bool casesens) const {
-	const StringVariable* var=getString(name, casesens);
+icu::UnicodeString const* CollectionVariable::getStringValue(icu::UnicodeString const& name, bool casesens) const {
+	StringVariable const* var=getString(name, casesens);
 	if (var) {
 		return &(var->get());
 	}
 	return NULL;
 }
 
-bool CollectionVariable::getStringValue(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens) const {
-	const icu::UnicodeString* ptr=getStringValue(name, casesens);
+bool CollectionVariable::getStringValue(icu::UnicodeString& result, icu::UnicodeString const& name, bool casesens) const {
+	icu::UnicodeString const* ptr=getStringValue(name, casesens);
 	if (ptr) {
 		result.setTo(*ptr);
 		return true;
@@ -901,15 +901,15 @@ FloatVariable* CollectionVariable::getFloat(int index) {
 	return NULL;
 }
 
-const FloatVariable* CollectionVariable::getFloat(int index) const {
-	const Variable* var=get(index, VARTYPE_FLOAT);
+FloatVariable const* CollectionVariable::getFloat(int index) const {
+	Variable const* var=get(index, VARTYPE_FLOAT);
 	if (var) {
 		return (FloatVariable*)var;
 	}
 	return NULL;
 }
 
-FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name, bool casesens) {
+FloatVariable* CollectionVariable::getFloat(icu::UnicodeString const& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_FLOAT);
 	if (var) {
 		return (FloatVariable*)var;
@@ -917,8 +917,8 @@ FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name, bool
 	return NULL;
 }
 
-const FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_FLOAT);
+FloatVariable const* CollectionVariable::getFloat(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_FLOAT);
 	if (var) {
 		return (FloatVariable*)var;
 	}
@@ -926,7 +926,7 @@ const FloatVariable* CollectionVariable::getFloat(const icu::UnicodeString& name
 }
 
 bool CollectionVariable::getFloatValue(float& result, int index) const {
-	const FloatVariable* var=getFloat(index);
+	FloatVariable const* var=getFloat(index);
 	if (var) {
 		result=var->get();
 		return true;
@@ -934,8 +934,8 @@ bool CollectionVariable::getFloatValue(float& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getFloatValue(float& result, const icu::UnicodeString& name, bool casesens) const {
-	const FloatVariable* var=getFloat(name, casesens);
+bool CollectionVariable::getFloatValue(float& result, icu::UnicodeString const& name, bool casesens) const {
+	FloatVariable const* var=getFloat(name, casesens);
 	if (var) {
 		result=var->get();
 		return true;
@@ -951,24 +951,24 @@ BoolVariable* CollectionVariable::getBool(int index) {
 	return NULL;
 }
 
-const BoolVariable* CollectionVariable::getBool(int index) const {
-	const Variable* var=get(index, VARTYPE_BOOL);
+BoolVariable const* CollectionVariable::getBool(int index) const {
+	Variable const* var=get(index, VARTYPE_BOOL);
 	if (var) {
 		return (BoolVariable*)var;
 	}
 	return NULL;
 }
 
-BoolVariable* CollectionVariable::getBool(const icu::UnicodeString& name, bool casesens) {
-	const Variable* var=get(name, casesens, VARTYPE_BOOL);
+BoolVariable* CollectionVariable::getBool(icu::UnicodeString const& name, bool casesens) {
+	Variable const* var=get(name, casesens, VARTYPE_BOOL);
 	if (var) {
 		return (BoolVariable*)var;
 	}
 	return NULL;
 }
 
-const BoolVariable* CollectionVariable::getBool(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_BOOL);
+BoolVariable const* CollectionVariable::getBool(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_BOOL);
 	if (var) {
 		return (BoolVariable*)var;
 	}
@@ -976,7 +976,7 @@ const BoolVariable* CollectionVariable::getBool(const icu::UnicodeString& name, 
 }
 
 bool CollectionVariable::getBoolValue(bool& result, int index) const {
-	const BoolVariable* var=getBool(index);
+	BoolVariable const* var=getBool(index);
 	if (var) {
 		result=var->get();
 		return true;
@@ -984,17 +984,17 @@ bool CollectionVariable::getBoolValue(bool& result, int index) const {
 	return false;
 }
 
-bool CollectionVariable::getBoolValue(bool& result, const icu::UnicodeString& name, bool casesens) {
-	const BoolVariable* var=getBool(name, casesens);
+bool CollectionVariable::getBoolValue(bool& result, icu::UnicodeString const& name, bool casesens) {
+	BoolVariable const* var=getBool(name, casesens);
 	if (var) {
 		result=var->get();
 		return true;
 	}
-	return false;	
+	return false;
 }
 
 bool CollectionVariable::getAsString(icu::UnicodeString& result, int index, unsigned int type) const {
-	const ValueVariable* var=(ValueVariable*)get(index, type);
+	ValueVariable const* var=(ValueVariable*)get(index, type);
 	if (var) {
 		var->valueAsString(result, false);
 		return true;
@@ -1002,8 +1002,8 @@ bool CollectionVariable::getAsString(icu::UnicodeString& result, int index, unsi
 	return false;
 }
 
-bool CollectionVariable::getAsString(icu::UnicodeString& result, const icu::UnicodeString& name, bool casesens, unsigned int type) const {
-	const ValueVariable* var=(ValueVariable*)get(name, casesens, type);
+bool CollectionVariable::getAsString(icu::UnicodeString& result, icu::UnicodeString const& name, bool casesens, unsigned int type) const {
+	ValueVariable const* var=(ValueVariable*)get(name, casesens, type);
 	if (var) {
 		var->valueAsString(result, false);
 		return true;
@@ -1019,15 +1019,15 @@ Identifier* CollectionVariable::getIdentifier(int index) {
 	return NULL;
 }
 
-const Identifier* CollectionVariable::getIdentifier(int index) const {
-	const Variable* var=get(index, VARTYPE_IDENTIFIER);
+Identifier const* CollectionVariable::getIdentifier(int index) const {
+	Variable const* var=get(index, VARTYPE_IDENTIFIER);
 	if (var) {
 		return (Identifier*)var;
 	}
 	return NULL;
 }
 
-Identifier* CollectionVariable::getIdentifier(const icu::UnicodeString& name, bool casesens) {
+Identifier* CollectionVariable::getIdentifier(icu::UnicodeString const& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_IDENTIFIER);
 	if (var) {
 		return (Identifier*)var;
@@ -1035,8 +1035,8 @@ Identifier* CollectionVariable::getIdentifier(const icu::UnicodeString& name, bo
 	return NULL;
 }
 
-const Identifier* CollectionVariable::getIdentifier(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_IDENTIFIER);
+Identifier const* CollectionVariable::getIdentifier(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_IDENTIFIER);
 	if (var) {
 		return (Identifier*)var;
 	}
@@ -1051,15 +1051,15 @@ Node* CollectionVariable::getNode(int index) {
 	return NULL;
 }
 
-const Node* CollectionVariable::getNode(int index) const {
-	const Variable* var=get(index, VARTYPE_NODE);
+Node const* CollectionVariable::getNode(int index) const {
+	Variable const* var=get(index, VARTYPE_NODE);
 	if (var) {
 		return (Node*)var;
 	}
 	return NULL;
 }
 
-Node* CollectionVariable::getNode(const icu::UnicodeString& name, bool casesens) {
+Node* CollectionVariable::getNode(icu::UnicodeString const& name, bool casesens) {
 	Variable* var=get(name, casesens, VARTYPE_NODE);
 	if (var) {
 		return (Node*)var;
@@ -1067,8 +1067,8 @@ Node* CollectionVariable::getNode(const icu::UnicodeString& name, bool casesens)
 	return NULL;
 }
 
-const Node* CollectionVariable::getNode(const icu::UnicodeString& name, bool casesens) const {
-	const Variable* var=get(name, casesens, VARTYPE_NODE);
+Node const* CollectionVariable::getNode(icu::UnicodeString const& name, bool casesens) const {
+	Variable const* var=get(name, casesens, VARTYPE_NODE);
 	if (var) {
 		return (Node*)var;
 	}
@@ -1088,7 +1088,7 @@ Identifier::Identifier(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-Identifier::Identifier(const icu::UnicodeString& name, CollectionVariable* parent) {
+Identifier::Identifier(icu::UnicodeString const& name, CollectionVariable* parent) {
 	setName(name);
 	setParent(parent);
 }
@@ -1097,12 +1097,12 @@ unsigned int Identifier::getType() const {
 	return VARTYPE_IDENTIFIER;
 }
 
-const char* Identifier::getTypeName() const {
+char const* Identifier::getTypeName() const {
 	return "identifier";
 }
 
 Variable* Identifier::clone() const {
-	Identifier* x=new Identifier(_name, NULL);
+	Identifier* x=new Identifier(m_name, NULL);
 	cloneChildren(*x);
 	return x;
 }
@@ -1113,7 +1113,7 @@ Node::Node(CollectionVariable* parent) {
 	setParent(parent);
 }
 
-Node::Node(const icu::UnicodeString& name, CollectionVariable* parent) {
+Node::Node(icu::UnicodeString const& name, CollectionVariable* parent) {
 	setName(name);
 	setParent(parent);
 }
@@ -1122,12 +1122,12 @@ unsigned int Node::getType() const {
 	return VARTYPE_NODE;
 }
 
-const char* Node::getTypeName() const {
+char const* Node::getTypeName() const {
 	return "node";
 }
 
 Variable* Node::clone() const {
-	Node* x=new Node(_name, NULL);
+	Node* x=new Node(m_name, NULL);
 	cloneChildren(*x);
 	return x;
 }

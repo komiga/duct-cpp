@@ -82,7 +82,7 @@ public:
 	
 	// Base functions passing down to the wrapped stream
 	virtual size_t read(void* data, size_t size);
-	virtual size_t write(const void* data, size_t size);
+	virtual size_t write(void const* data, size_t size);
 	
 	virtual int8_t readInt8();
 	virtual uint8_t readUInt8();
@@ -113,9 +113,9 @@ public:
 	
 	virtual size_t writeChar16(UChar value);
 	virtual size_t writeChar32(UChar32 value);
-	virtual size_t writeString(const icu::UnicodeString& str);
-	virtual size_t writeLine(const icu::UnicodeString& str);
-	virtual size_t writeCString(const icu::UnicodeString& str);
+	virtual size_t writeString(icu::UnicodeString const& str);
+	virtual size_t writeLine(icu::UnicodeString const& str);
+	virtual size_t writeCString(icu::UnicodeString const& str);
 	
 	virtual void flush();
 	virtual bool eof() const;
@@ -128,18 +128,18 @@ public:
 	virtual void setFlags(unsigned int flags);
 	virtual unsigned int getFlags() const;
 	
-	virtual bool setEncoding(const char* encoding);
-	virtual bool setEncoding(const icu::UnicodeString& encoding);
-	virtual const char* getEncoding() const;
+	virtual bool setEncoding(char const* encoding);
+	virtual bool setEncoding(icu::UnicodeString const& encoding);
+	virtual char const* getEncoding() const;
 	
 	virtual UConverter* getConv();
 	virtual void closeConv();
 	
 protected:
 	/** The wrapped stream. */
-	Stream* _stream;
+	Stream* m_stream;
 	/** Used to tell the destructor to close the wrapped stream. */
-	bool _autoclose;
+	bool m_autoclose;
 };
 
 } // namespace duct

@@ -39,65 +39,65 @@ namespace duct {
 const char* g_cstr_periods="..";
 
 DirStream::DirStream(const char* path) {
-	_path.append(path);
+	m_path.append(path);
 	init();
 }
 
 DirStream::DirStream(const std::string& path) {
-	_path.append(path);
+	m_path.append(path);
 	init();
 }
 
 DirStream::DirStream(const icu::UnicodeString& path) {
-	path.toUTF8String(_path);
+	path.toUTF8String(m_path);
 	init();
 }
 
 DirStream::~DirStream() {
-	if (_dir) {
-		closedir(_dir);
-		_dir=NULL;
-		_entry=NULL;
+	if (m_dir) {
+		closedir(m_dir);
+		m_dir=NULL;
+		m_entry=NULL;
 	}
 }
 
 bool DirStream::nextEntry() {
-	_entry=readdir(_dir);
-	return _entry!=NULL;
+	m_entry=readdir(m_dir);
+	return m_entry!=NULL;
 }
 
 bool DirStream::nextEntry(icu::UnicodeString& result) {
-	_entry=readdir(_dir);
-	if (_entry) {
-		result.setTo(icu::UnicodeString(_entry->d_name));
+	m_entry=readdir(m_dir);
+	if (m_entry) {
+		result.setTo(icu::UnicodeString(m_entry->d_name));
 		return true;
 	}
 	return false;
 }
 
 bool DirStream::entryName(icu::UnicodeString& result) const {
-	if (_entry) {
-		result.setTo(icu::UnicodeString(_entry->d_name));
+	if (m_entry) {
+		result.setTo(icu::UnicodeString(m_entry->d_name));
 		return true;
 	}
 	return false;
 }
 
 bool DirStream::isEntryParentOrRelative() const {
-	if (_entry) {
-		return (1==strlen(_entry->d_name) && 0==strncmp(g_cstr_periods, _entry->d_name, 1)) || 0==strcmp(g_cstr_periods, _entry->d_name);
+	if (m_entry) {
+		return (1==strlen(m_entry->d_name) && 0==strncmp(g_cstr_periods, m_entry->d_name, 1)) || 0==strcmp(g_cstr_periods, m_entry->d_name);
 	}
 	return false;
 }
 
 bool DirStream::hasEntry() const {
-	return NULL!=_entry;
+	return NULL!=m_entry;
 }
 
 PathType DirStream::entryType() const {
-	if (_entry) {
-		std::string temp(_path);
-		temp.append(_entry->d_name);
+	if (m_entry) {
+		std::string temp(m_path);
+		temp.append(m_entry->d_name);
 		return FileSystem::pathType(temp);
 	} else {
 		return PATHTYPE_NONE;
@@ -105,27 +105,27 @@ PathType DirStream::entryType() const {
 }
 
 bool DirStream::isOpen() const {
-	return _dir!=NULL;
+	return m_dir!=NULL;
 }
 
 bool DirStream::close() {
-	if (_dir) {
-		closedir(_dir);
-		_dir=NULL;
+	if (m_dir) {
+		closedir(m_dir);
+		m_dir=NULL;
 		return true;
 	}
 	return false;
 }
 
 void DirStream::init() {
-	char c=_path[_path.length()-1];
+	char c=m_path[m_path.length()-1];
 	if (c=='\\') {
-		_path.replace(_path.length()-1, 1, 1, '/');
+		m_path.replace(m_path.length()-1, 1, 1, '/');
 	} else if (c!='/') {
-		_path.append("/");
+		m_path.append("/");
 	}
-	_dir=opendir(_path.c_str());
-	_entry=NULL;
+	m_dir=opendir(m_path.c_str());
+	m_entry=NULL;
 }
 
 // FileSystem implementation

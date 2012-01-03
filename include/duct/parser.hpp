@@ -50,7 +50,7 @@ namespace duct {
 /**
 	NULL/reset token type constant.
 */
-const int NULL_TOKEN=0xCA11ACAB;
+int const NULL_TOKEN=0xCA11ACAB;
 
 /**
 	Generic token class.
@@ -130,7 +130,7 @@ public:
 		@returns true if every character in the token's buffer matches a character in the given set, or false otherwise.
 		@param charset The character set to compare against.
 	*/
-	bool compare(const CharacterSet& charset) const;
+	bool compare(CharacterSet const& charset) const;
 	/**
 		Convert the token's buffer to a string.
 		If conversion fails, <em>str</em> is unmodified.
@@ -143,7 +143,7 @@ public:
 		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
 		@returns A reference to the cached string (which will be bogus if conversion failed).
 	*/
-	const icu::UnicodeString& toString();
+	icu::UnicodeString const& toString();
 	/**
 		Convert the token's buffer to a 32-bit integer.
 		@returns The buffer as an integer, or 0 if the buffer was not a numeric value.
@@ -194,9 +194,9 @@ public:
 	bool toDouble(double& value);
 	
 protected:
-	int _type;
-	int _line, _column;
-	CharBuf _buffer;
+	int m_type;
+	int m_line, m_column;
+	CharBuf m_buffer;
 };
 
 // forward declaration
@@ -245,7 +245,7 @@ public:
 		Get the parser's token (const).
 		@returns The parser's token.
 	*/
-	virtual const Token& getToken() const;
+	virtual Token const& getToken() const;
 	/**
 		Get the parser's stream.
 		@returns The parser's stream (which may be NULL).
@@ -272,8 +272,8 @@ public:
 	virtual UChar32 nextChar();
 	/**
 		Peek the next character in the stream, without advancing the parser's position.
-		This does not set _curchar, and does not advance the parser, but will advance the stream.
-		If the next character has already been peeked (peek state not cleared by a call to nextChar(), the _peekchar will be returned).
+		This does not set m_curchar, and does not advance the parser, but will advance the stream.
+		If the next character has already been peeked (peek state not cleared by a call to nextChar(), the m_peekchar will be returned).
 		@returns The next character in the stream.
 	*/
 	virtual UChar32 peekChar();
@@ -306,11 +306,11 @@ public:
 	virtual bool parse()=0;
 	
 protected:
-	int _line, _column;
-	UChar32 _curchar, _peekchar;
-	bool _peeked;
-	Token _token;
-	Stream* _stream;
+	int m_line, m_column;
+	UChar32 m_curchar, m_peekchar;
+	bool m_peeked;
+	Token m_token;
+	Stream* m_stream;
 };
 
 /**

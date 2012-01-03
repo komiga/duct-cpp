@@ -51,8 +51,8 @@ duct++ debug functions.
 	namespace duct {
 		
 		// Debug functions
-		void DUCT_API __debug_assert(const char* __assertion, const char* __file, int __line, const char* __function, const char* __mesg);
-		void DUCT_API __debug_assertp(const char* __assertion, const char* __file, int __line, const char* __function, const void* __p, const char* __mesg);
+		void DUCT_API debug_assert__(char const* assertion__, char const* file__, int line__, char const* function__, char const* mesg__);
+		void DUCT_API debug_assertp__(char const* assertion__, char const* file__, int line__, char const* function__, void const* p__, char const* mesg__);
 		
 	} // namespace duct
 	
@@ -79,7 +79,7 @@ duct++ debug functions.
 		@param mesg Message to print.
 	*/
 	#define debug_printp(p, mesg)	\
-		(printf("debug: [%p] %s\n", (const void*)p, mesg))
+		(printf("debug: [%p] %s\n", (void const*)p, mesg))
 	
 	/**
 		@def debug_print_source(mesg)
@@ -110,10 +110,10 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_printp_source(p, mesg)	\
-			(printf("debug: [%p] from %s: %s\n", (const void*)p, __FUNCTION__, mesg))
+			(printf("debug: [%p] from %s: %s\n", (void const*)p, __FUNCTION__, mesg))
 	#else
 		#define debug_printp_source(p, mesg)	\
-			(printf("debug: [%p] from %s: %s\n", (const void*)p, __PRETTY_FUNCTION__, mesg))
+			(printf("debug: [%p] from %s: %s\n", (void const*)p, __PRETTY_FUNCTION__, mesg))
 	#endif
 	
 	/**
@@ -145,10 +145,10 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_calledp(p)	\
-			(printf("debug_calledp: [%p] %s\n", (const void*)p, __FUNCTION__))
+			(printf("debug_calledp: [%p] %s\n", (void const*)p, __FUNCTION__))
 	#else
 		#define debug_calledp(p)	\
-			(printf("debug_calledp: [%p] %s\n", (const void*)p, __PRETTY_FUNCTION__))
+			(printf("debug_calledp: [%p] %s\n", (void const*)p, __PRETTY_FUNCTION__))
 	#endif
 	
 	/**
@@ -163,10 +163,10 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_assert(expr, mesg)	\
-			((expr) ? void(0) : duct::__debug_assert(#expr, __FILE__, __LINE__, __FUNCTION__, mesg))
+			((expr) ? void(0) : duct::debug_assert__(#expr, __FILE__, __LINE__, __FUNCTION__, mesg))
 	#else
 		#define debug_assert(expr, mesg)	\
-			((expr) ? void(0) : duct::__debug_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, mesg))
+			((expr) ? void(0) : duct::debug_assert__(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, mesg))
 	#endif
 	
 	/**
@@ -183,10 +183,10 @@ duct++ debug functions.
 	*/
 	#ifdef DUCT_PLATFORM_WINDOWS
 		#define debug_assertp(expr, p, mesg)	\
-			((expr) ? void(0) : duct::__debug_assertp(#expr, __FILE__, __LINE__, __FUNCTION__, p, mesg))
+			((expr) ? void(0) : duct::debug_assertp__(#expr, __FILE__, __LINE__, __FUNCTION__, p, mesg))
 	#else
 		#define debug_assertp(expr, p, mesg)	\
-			((expr) ? void(0) : duct::__debug_assertp(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, p, mesg))
+			((expr) ? void(0) : duct::debug_assertp__(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, p, mesg))
 	#endif
 	
 #endif // if NDEBUG -> else
