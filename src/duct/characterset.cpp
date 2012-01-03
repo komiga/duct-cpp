@@ -32,37 +32,35 @@ namespace duct {
 
 // class CharacterRange implementation
 
-CharacterRange::CharacterRange(UChar32 start, unsigned int length) {
-	_start=start;
-	_end=start+length;
-}
+CharacterRange::CharacterRange(UChar32 start, unsigned int length)
+	: m_start(start), m_end(start+length)
+{/* Do nothing*/}
 
-CharacterRange::CharacterRange(const CharacterRange& range) {
-	_start=range._start;
-	_end=range._end;
-}
+CharacterRange::CharacterRange(CharacterRange const& range)
+	: m_start(range.m_start), m_end(range.m_end)
+{/* Do nothing*/}
 
 void CharacterRange::setStart(UChar32 start) {
-	_start=start;
+	m_start=start;
 }
 
 UChar32 CharacterRange::start() const {
-	return _start;
+	return m_start;
 }
 
 void CharacterRange::setEnd(UChar32 end) {
-	_end=end;
+	m_end=end;
 }
 
 UChar32 CharacterRange::end() const {
-	return _end;
+	return m_end;
 }
 
 bool CharacterRange::contains(UChar32 c) const {
-	return (_start==c || (c>=_start && c<=_end));
+	return (m_start==c || (c>=m_start && c<=m_end));
 }
 
-int CharacterRange::findInString(const icu::UnicodeString& str, unsigned int from) const {
+int CharacterRange::findInString(icu::UnicodeString const& str, unsigned int from) const {
 	if (from>=(unsigned int)str.length()) {
 		return -1;
 	}
@@ -74,7 +72,7 @@ int CharacterRange::findInString(const icu::UnicodeString& str, unsigned int fro
 	return -1;
 }
 
-int CharacterRange::findLastInString(const icu::UnicodeString& str, int from) const {
+int CharacterRange::findLastInString(icu::UnicodeString const& str, int from) const {
 	if (from==-1) {
 		from=(unsigned int)str.length()-1;
 	}
@@ -86,74 +84,85 @@ int CharacterRange::findLastInString(const icu::UnicodeString& str, int from) co
 	return -1;
 }
 
-int CharacterRange::compare(const CharacterRange& other) const {
-	int sd=_end-_start;
-	int od=other._end-other._start;
+int CharacterRange::compare(CharacterRange const& other) const {
+	int sd=m_end-m_start;
+	int od=other.m_end-other.m_start;
 	if (sd<od) {
 		return -1;
 	} else if (sd>od) {
 		return 1;
 	}
-	if (_start<other._start) {
+	if (m_start<other.m_start) {
 		return -1;
-	} else if (_start>other._start) {
+	} else if (m_start>other.m_start) {
 		return 1;
 	}
 	return 0;
 }
 
-bool CharacterRange::intersects(const CharacterRange& other) const {
+bool CharacterRange::intersects(CharacterRange const& other) const {
 	if (compare(other)==0) {
 		return true;
 	}
-	if (_end==(other._start-1)) {
+	if (m_end==(other.m_start-1)) {
 		return true;
-	} else if ((_start-1)==other._end) {
+	} else if ((m_start-1)==other.m_end) {
 		return true;
 	}
-	return !(_start>other._end || _end<other._start);
+	return !(m_start>other.m_end || m_end<other.m_start);
 }
 
 // class CharacterSet implementation
 
-CharacterSet::CharacterSet() {
-}
+CharacterSet::CharacterSet()
+	: m_ranges()
+{/* Do nothing*/}
 
-CharacterSet::CharacterSet(const icu::UnicodeString& str) {
+CharacterSet::CharacterSet(icu::UnicodeString const& str)
+	: m_ranges()
+{
 	addRangesWithString(str);
 }
 
-CharacterSet::CharacterSet(const char* str) {
+CharacterSet::CharacterSet(const char* str)
+	: m_ranges()
+{
 	icu::UnicodeString ustr(str);
 	addRangesWithString(ustr);
 }
 
-CharacterSet::CharacterSet(UChar32 start, unsigned int length) {
+CharacterSet::CharacterSet(UChar32 start, unsigned int length)
+	: m_ranges()
+{
 	addRange(start, length);
 }
 
-CharacterSet::CharacterSet(UChar32 character) {
+CharacterSet::CharacterSet(UChar32 character)
+	: m_ranges()
+{
 	addRange(character, 0);
 }
 
-CharacterSet::CharacterSet(const CharacterSet& set) {
-	_ranges=set._ranges;
+CharacterSet::CharacterSet(const CharacterSet& set)
+	: m_ranges()
+{
+	m_ranges=set.m_ranges;
 }
 
 RangeVec::iterator CharacterSet::begin() {
-	return _ranges.begin();
+	return m_ranges.begin();
 }
 
 RangeVec::iterator CharacterSet::end() {
-	return _ranges.end();
+	return m_ranges.end();
 }
 
 RangeVec::const_iterator CharacterSet::begin() const {
-	return _ranges.begin();
+	return m_ranges.begin();
 }
 
 RangeVec::const_iterator CharacterSet::end() const {
-	return _ranges.end();
+	return m_ranges.end();
 }
 
 bool CharacterSet::contains(UChar32 c) const {
@@ -165,7 +174,7 @@ bool CharacterSet::contains(UChar32 c) const {
 	return false;
 }
 
-bool CharacterSet::contains(const CharacterRange& range) const {
+bool CharacterSet::contains(CharacterRange const& range) const {
 	for (RangeVec::const_iterator iter=begin(); iter!=end(); ++iter) {
 		if (range.compare((*iter))==0) {
 			return true;
@@ -174,7 +183,7 @@ bool CharacterSet::contains(const CharacterRange& range) const {
 	return false;
 }
 
-int CharacterSet::findInString(const icu::UnicodeString& str, unsigned int from) const {
+int CharacterSet::findInString(icu::UnicodeString const& str, unsigned int from) const {
 	if (from>(unsigned int)str.length()) {
 		return -1;
 	}
@@ -188,7 +197,7 @@ int CharacterSet::findInString(const icu::UnicodeString& str, unsigned int from)
 	return -1;
 }
 
-int CharacterSet::findLastInString(const icu::UnicodeString& str, int from) const {
+int CharacterSet::findLastInString(icu::UnicodeString const& str, int from) const {
 	if (from==-1) {
 		from=str.length()-1;
 	}
@@ -203,10 +212,10 @@ int CharacterSet::findLastInString(const icu::UnicodeString& str, int from) cons
 }
 
 void CharacterSet::clear() {
-	_ranges.clear();
+	m_ranges.clear();
 }
 
-void CharacterSet::addRangesWithString(const icu::UnicodeString& str) {
+void CharacterSet::addRangesWithString(icu::UnicodeString const& str) {
 	int lastchar=-1;
 	int chr;
 	bool isrange=false;
@@ -251,7 +260,7 @@ void CharacterSet::addRangesWithString(const icu::UnicodeString& str) {
 }
 
 void CharacterSet::addRange(UChar32 start, unsigned int length) {
-	bool empty=_ranges.empty();
+	bool empty=m_ranges.empty();
 	CharacterRange range(start, length);
 	if (empty || !contains(range)) { // try to avoid adding the same range twice
 		if (!empty) {
@@ -268,7 +277,7 @@ void CharacterSet::addRange(UChar32 start, unsigned int length) {
 				}
 			}
 		}
-		_ranges.push_back(range);
+		m_ranges.push_back(range);
 	}
 }
 

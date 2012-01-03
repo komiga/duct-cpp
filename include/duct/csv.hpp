@@ -136,14 +136,14 @@ public:
 		@param index The index to retrieve.
 	*/
 	ValueVariable* get(int index);
-	const ValueVariable* get(int index) const;
+	ValueVariable const* get(int index) const;
 	/**
 		Get the integer at the given position.
 		@returns The IntVariable at the position, or NULL if either the index was invalid or the variable at the position wasn't the correct type.
 		@param index The index to retrieve.
 	*/
 	IntVariable* getInt(int index);
-	const IntVariable* getInt(int index) const;
+	IntVariable const* getInt(int index) const;
 	/**
 		Get the integer value at the given position.
 		@returns true on success, or false if either the index was invalid or the variable at the position wasn't the correct type.
@@ -157,13 +157,13 @@ public:
 		@param index The index to retrieve.
 	*/
 	StringVariable* getString(int index);
-	const StringVariable* getString(int index) const;
+	StringVariable const* getString(int index) const;
 	/**
 		Get the string value at the given position.
 		@returns The string at the position, or NULL if either the index was invalid or the variable at the position wasn't the correct type.
 		@param index The index to retrieve.
 	*/
-	const icu::UnicodeString* getStringValue(int index) const;
+	icu::UnicodeString const* getStringValue(int index) const;
 	/**
 		Get the string value at the given position.
 		@returns true on success, or false if either the index was invalid or the variable at the position wasn't the correct type.
@@ -177,7 +177,7 @@ public:
 		@param index The index to retrieve.
 	*/
 	FloatVariable* getFloat(int index);
-	const FloatVariable* getFloat(int index) const;
+	FloatVariable const* getFloat(int index) const;
 	/**
 		Get the float value at the given position.
 		@returns true on success, or false if either the index was invalid or the variable at the position wasn't the correct type.
@@ -191,7 +191,7 @@ public:
 		@param index The index to retrieve.
 	*/
 	BoolVariable* getBool(int index);
-	const BoolVariable* getBool(int index) const;
+	BoolVariable const* getBool(int index) const;
 	/**
 		Get the bool value at the given position.
 		@returns true on success, or false if either the index was invalid or the variable at the position wasn't the correct type.
@@ -238,8 +238,8 @@ public:
 	size_t inRange(int start, int end, bool nulls=true) const;
 	
 protected:
-	int _index;
-	CSVRecordMap _values;
+	int m_index;
+	CSVRecordMap m_values;
 };
 
 /**
@@ -338,7 +338,7 @@ public:
 		@param index The index to retrieve.
 	*/
 	CSVRow* get(int index);
-	const CSVRow* get(int index) const;
+	CSVRow const* get(int index) const;
 	/**
 		Move the row at the given index.
 		If <em>swap</em> is false, the destination row is destroyed and replaced with the row at the source index.
@@ -382,7 +382,7 @@ public:
 		@param column The column index.
 	*/
 	ValueVariable* getValue(int row, int column);
-	const ValueVariable* getValue(int row, int column) const;
+	ValueVariable const* getValue(int row, int column) const;
 	/**
 		Get the integer at the given position.
 		@returns The IntVariable at the position, or NULL if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -390,7 +390,7 @@ public:
 		@param column The column to retrieve.
 	*/
 	IntVariable* getInt(int row, int column);
-	const IntVariable* getInt(int row, int column) const;
+	IntVariable const* getInt(int row, int column) const;
 	/**
 		Get the integer value at the given position.
 		@returns true on success, or false if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -406,14 +406,14 @@ public:
 		@param column The column to retrieve.
 	*/
 	StringVariable* getString(int row, int column);
-	const StringVariable* getString(int row, int column) const;
+	StringVariable const* getString(int row, int column) const;
 	/**
 		Get the string value at the given position.
 		@returns The string at the position, or NULL if either the row or column was invalid or the variable at the position wasn't the correct type.
 		@param row The row to retrieve from.
 		@param column The column to retrieve.
 	*/
-	const icu::UnicodeString* getStringValue(int row, int column) const;
+	icu::UnicodeString const* getStringValue(int row, int column) const;
 	/**
 		Get the string value at the given position.
 		@returns true on success, or false if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -429,7 +429,7 @@ public:
 		@param column The column to retrieve.
 	*/
 	FloatVariable* getFloat(int row, int column);
-	const FloatVariable* getFloat(int row, int column) const;
+	FloatVariable const* getFloat(int row, int column) const;
 	/**
 		Get the float value at the given position.
 		@returns true on success, or false if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -445,7 +445,7 @@ public:
 		@param column The column to retrieve.
 	*/
 	BoolVariable* getBool(int row, int column);
-	const BoolVariable* getBool(int row, int column) const;
+	BoolVariable const* getBool(int row, int column) const;
 	/**
 		Get the bool value at the given position.
 		@returns true on success, or false if either the row or column was invalid or the variable at the position wasn't the correct type.
@@ -484,7 +484,7 @@ public:
 	void clearValues();
 	
 protected:
-	CSVRowMap _rows;
+	CSVRowMap m_rows;
 };
 
 /**
@@ -564,14 +564,14 @@ public:
 	void readQuotedStringToken();
 	
 protected:
-	static CharacterSet _numberset;
-	static CharacterSet _numeralset;
-	static CharacterSet _signset;
-	static CharacterSet _whitespaceset;
+	static CharacterSet s_numberset;
+	static CharacterSet s_numeralset;
+	static CharacterSet s_signset;
+	static CharacterSet s_whitespaceset;
 	
-	CSVParserHandler* _handler;
-	unsigned int _rowbegin;
-	UChar32 _sepchar;
+	CSVParserHandler* m_handler;
+	unsigned int m_rowbegin;
+	UChar32 m_sepchar;
 };
 
 /**
@@ -594,25 +594,25 @@ public:
 	/**
 		Constructor with values.
 	*/
-	CSVParserException(CSVParserError error, const char* reporter, const Token* token, const CSVParser* parser, const char* fmt, ...);
+	CSVParserException(CSVParserError error, char const* reporter, Token const* token, CSVParser const* parser, char const* fmt, ...);
 	/**
 		Get the exception's message.
 		@returns The exception's message.
 	*/
-	virtual const char* what() const throw();
+	virtual char const* what() const throw();
 	/**
 		Convert an exception error to a NUL-terminated string.
 		@returns The error as a string.
 		@param error The error to convert.
 	*/
-	static const char* errorToString(CSVParserError error);
+	static char const* errorToString(CSVParserError error);
 	
 protected:
-	char _message[512];
-	CSVParserError _error;
-	const char* _reporter;
-	const Token* _token;
-	const CSVParser* _parser;
+	char m_message[512];
+	CSVParserError m_error;
+	char const* m_reporter;
+	Token const* m_token;
+	CSVParser const* m_parser;
 };
 
 /**
@@ -675,7 +675,7 @@ public:
 	void freeData();
 	/**
 		Add the given value to the current row.
-		NOTE: This does not increment _columnindex.
+		NOTE: This does not increment m_columnindex.
 		@returns Nothing.
 		@param val The value to add to the row.
 	*/
@@ -688,11 +688,11 @@ public:
 	void newRow();
 	
 protected:
-	CSVParser& _parser;
-	CSVMap* _map;
-	CSVRow* _currentrow;
-	int _strow, _row, _column;
-	bool _gtoken;
+	CSVParser& m_parser;
+	CSVMap* m_map;
+	CSVRow* m_currentrow;
+	int m_strow, m_row, m_column;
+	bool m_gtoken;
 };
 
 /**
@@ -708,7 +708,7 @@ public:
 		@param sepchar The separator character.
 		@param varformat The format for records.
 	*/
-	static void formatRow(const CSVRow& row, icu::UnicodeString& result, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
+	static void formatRow(CSVRow const& row, icu::UnicodeString& result, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Load the given file path as a CSVMap.
 		The user owns the returned map.
@@ -719,9 +719,9 @@ public:
 		@param headercount The number of header rows.
 		@param encoding File character encoding.
 	*/
-	static CSVMap* loadFromFile(const char* path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
-	static CSVMap* loadFromFile(const std::string& path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
-	static CSVMap* loadFromFile(const icu::UnicodeString& path, UChar32 sepchar=',', unsigned int headercount=0, const char* encoding="utf8");
+	static CSVMap* loadFromFile(char const* path, UChar32 sepchar=',', unsigned int headercount=0, char const* encoding="utf8");
+	static CSVMap* loadFromFile(std::string const& path, UChar32 sepchar=',', unsigned int headercount=0, char const* encoding="utf8");
+	static CSVMap* loadFromFile(icu::UnicodeString const& path, UChar32 sepchar=',', unsigned int headercount=0, char const* encoding="utf8");
 	/**
 		Load the given stream as a CSVMap.
 		The user owns the returned map.
@@ -741,9 +741,9 @@ public:
 		@param encoding The character encoding to use.
 		@param varformat The format for values.
 	*/
-	static bool writeToFile(const CSVMap* map, const char* path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const CSVMap* map, const std::string& path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const CSVMap* map, const icu::UnicodeString& path, UChar32 sepchar=',', const char* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(CSVMap const* map, char const* path, UChar32 sepchar=',', char const* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(CSVMap const* map, std::string const& path, UChar32 sepchar=',', char const* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(CSVMap const* map, icu::UnicodeString const& path, UChar32 sepchar=',', char const* encoding="utf8", unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Write the given map to the given stream.
 		@returns true on success, or false if either the map or stream was NULL.
@@ -752,11 +752,11 @@ public:
 		@param sepchar The separator character.
 		@param varformat The format for values.
 	*/
-	static bool writeToStream(const CSVMap* map, Stream* stream, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToStream(CSVMap const* map, Stream* stream, UChar32 sepchar=',', unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
-	static CSVParser _parser;
-	static CSVParserHandler _handler;
+	static CSVParser s_parser;
+	static CSVParserHandler s_handler;
 };
 
 } // namespace duct

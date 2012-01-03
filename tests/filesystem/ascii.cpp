@@ -8,7 +8,7 @@
 using namespace std;
 using namespace duct;
 
-void testFile(const icu::UnicodeString& path) {
+void testFile(icu::UnicodeString const& path) {
 	cout<<"(file) \""<<path<<'\"';
 	if (FileSystem::fileExists(path)) {
 		cout<<" exists"<<endl;
@@ -17,7 +17,7 @@ void testFile(const icu::UnicodeString& path) {
 	}
 }
 
-void testDir(const icu::UnicodeString& path) {
+void testDir(icu::UnicodeString const& path) {
 	cout<<"(dir) \""<<path<<'\"';
 	if (FileSystem::dirExists(path)) {
 		cout<<" exists"<<endl;

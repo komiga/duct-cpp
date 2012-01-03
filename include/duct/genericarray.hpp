@@ -49,14 +49,17 @@ public:
 	/**
 		Constructor.
 	*/
-	GArray() : _size(0), _data(NULL), _static(false) {
-	};
+	GArray()
+		: m_size(0), m_data(NULL), m_static(false)
+	{/* Do nothing*/};
 	/**
 		Constructor with single element.
 		@param element The single element to initialize with.
 	*/
-	GArray(T element) : _size(1), _data(new T[1]), _static(false) {
-		_data[0]=element;
+	GArray(T element)
+		: m_size(1), m_data(new T[1]), m_static(false)
+	{
+		m_data[0]=element;
 	};
 	/**
 		Array data constructor.
@@ -64,7 +67,9 @@ public:
 		@param size The number of elements in the data pointer. If -1, the pointer must be NULL-terminated.
 		@param isstatic Whether the given data pointer is a static array. If true, the given pointer will not be freed.
 	*/
-	GArray(T* data, int size=-1, bool isstatic=false) : _size(0), _data(NULL), _static(false) {
+	GArray(T* data, int size=-1, bool isstatic=false)
+		: m_size(0), m_data(NULL), m_static(false)
+	{
 		set(data, size, isstatic);
 	};
 	/**
@@ -72,7 +77,9 @@ public:
 		@param num The number of arguments.
 		@param ... The elements of type T to initialize with.
 	*/
-	GArray(size_t num, ...) : _size(0), _data(NULL), _static(false) {
+	GArray(size_t num, ...)
+		: m_size(0), m_data(NULL), m_static(false)
+	{
 		va_list ap;
 		va_start(ap, num);
 		setVL(num, ap);
@@ -89,17 +96,17 @@ public:
 		@returns The array's size.
 	*/
 	size_t size() const {
-		return _size;
+		return m_size;
 	};
 	/**
 		Get the array's data pointer.
 		@returns The array's data pointer.
 	*/
 	T* data() {
-		return _data;
+		return m_data;
 	};
-	const T* data() const {
-		return _data;
+	T const* data() const {
+		return m_data;
 	};
 	/**
 		Set the array to the given element.
@@ -108,9 +115,9 @@ public:
 	*/
 	void set(T element) {
 		release();
-		_data=new T[_size=1];
-		_data[0]=element;
-		_static=false;
+		m_data=new T[m_size=1];
+		m_data[0]=element;
+		m_static=false;
 	};
 	/**
 		Set the array data.
@@ -128,9 +135,9 @@ public:
 			}
 			size=i;
 		}
-		_size=size;
-		_data=data;
-		_static=false;
+		m_size=size;
+		m_data=data;
+		m_static=false;
 	};
 	/**
 		Set the array data to the given static-array data pointer.
@@ -148,9 +155,9 @@ public:
 			}
 			size=i;
 		}
-		_size=size;
-		_data=data;
-		_static=true;
+		m_size=size;
+		m_data=data;
+		m_static=true;
 	};
 	/**
 		Set the array's data from the given va_list.
@@ -160,12 +167,12 @@ public:
 	*/
 	void setVL(size_t num, va_list ap) {
 		release();
-		_size=num;
-		_data=new T[_size];
+		m_size=num;
+		m_data=new T[m_size];
 		for (unsigned int i=0; i<num; ++i) {
-			_data[i]=va_arg(ap, T);
+			m_data[i]=va_arg(ap, T);
 		}
-		_static=false;
+		m_static=false;
 	};
 	/**
 		Set the array's data from the given arugments.
@@ -184,11 +191,11 @@ public:
 		@returns Nothing.
 	*/
 	virtual void release() {
-		if (_data && !_static) {
-			delete[] _data;
+		if (m_data && !m_static) {
+			delete[] m_data;
 		}
-		_data=NULL;
-		_size=0;
+		m_data=NULL;
+		m_size=0;
 	};
 	/**
 		Subscript operator.
@@ -196,27 +203,27 @@ public:
 		@returns Reference to the element at the given index.
 		@param index The index to retrieve.
 	*/
-	T& operator[](const int index) {
-		debug_assertp(_data!=NULL, this, "_data==NULL");
-		return _data[index];
+	T& operator[](int const index) {
+		debug_assertp(m_data!=NULL, this, "m_data==NULL");
+		return m_data[index];
 	};
-	const T& operator[](const int index) const {
-		debug_assertp(_data!=NULL, this, "_data==NULL");
-		return _data[index];
+	T const& operator[](int const index) const {
+		debug_assertp(m_data!=NULL, this, "m_data==NULL");
+		return m_data[index];
 	};
-	T& operator[](const unsigned int index) {
-		debug_assertp(_data!=NULL, this, "_data==NULL");
-		return _data[index];
+	T& operator[](unsigned int const index) {
+		debug_assertp(m_data!=NULL, this, "m_data==NULL");
+		return m_data[index];
 	};
-	const T& operator[](const unsigned int index) const {
-		debug_assertp(_data!=NULL, this, "_data==NULL");
-		return _data[index];
+	T const& operator[](unsigned int const index) const {
+		debug_assertp(m_data!=NULL, this, "m_data==NULL");
+		return m_data[index];
 	};
 	
 protected:
-	size_t _size;
-	T* _data;
-	bool _static;
+	size_t m_size;
+	T* m_data;
+	bool m_static;
 };
 
 /**
@@ -229,29 +236,29 @@ template <class T>
 class DUCT_API GPArray : public GArray<T> {
 public:
 	virtual ~GPArray() {
-		if (this->_data) {
-			for (unsigned int i=0; i<this->_size; ++i) {
-				if (this->_data[i]) {
-					delete this->_data[i];
-					this->_data[i]=NULL;
+		if (this->m_data) {
+			for (unsigned int i=0; i<this->m_size; ++i) {
+				if (this->m_data[i]) {
+					delete this->m_data[i];
+					this->m_data[i]=NULL;
 				}
 			}
 		}
 	};
 	virtual void release() {
-		if (this->_data) {
-			for (unsigned int i=0; i<this->_size; ++i) {
-				if (this->_data[i]) {
-					delete this->_data[i];
-					this->_data[i]=NULL;
+		if (this->m_data) {
+			for (unsigned int i=0; i<this->m_size; ++i) {
+				if (this->m_data[i]) {
+					delete this->m_data[i];
+					this->m_data[i]=NULL;
 				}
 			}
-			if (!this->_static) {
-				delete[] this->_data;
+			if (!this->m_static) {
+				delete[] this->m_data;
 			}
 		}
-		this->_data=NULL;
-		this->_size=0;
+		this->m_data=NULL;
+		this->m_size=0;
 	};
 };
 

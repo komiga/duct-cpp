@@ -8,12 +8,12 @@
 
 using namespace duct;
 
-ArgumentHandler __handler;
+ArgumentHandler g_handler;
 
 // class HelpImpl implementation
 
 HelpImpl::HelpImpl() {
-	_aliases.set("help"); // single alias
+	m_aliases.set("help"); // single alias
 }
 
 int HelpImpl::checkErrors() {
@@ -21,13 +21,13 @@ int HelpImpl::checkErrors() {
 }
 
 int HelpImpl::execute() {
-	if (_args->getChildCount()>0) {
+	if (m_args->getChildCount()>0) {
 		ArgImpl* impl=NULL;
 		VarList::const_iterator iter;
-		for (iter=_args->begin(); iter!=_args->end(); ++iter) {
+		for (iter=m_args->begin(); iter!=m_args->end(); ++iter) {
 			if ((*iter)->getType()&VARTYPE_STRING) {
 				StringVariable* sv=(StringVariable*)*iter;
-				if ((impl=__handler.getImpl(sv->get()))) {
+				if ((impl=g_handler.getImpl(sv->get()))) {
 					std::cout<<"usage: "<<impl->getUsage()<<std::endl;
 				} else {
 					std::cout<<"unknown cmd/arg: "<<sv->get()<<std::endl;
@@ -37,14 +37,14 @@ int HelpImpl::execute() {
 	} else {
 		printf("arguments:\n");
 		ArgImplList::iterator iter;
-		for (iter=__handler.begin(); iter!=__handler.end(); ++iter) {
+		for (iter=g_handler.begin(); iter!=g_handler.end(); ++iter) {
 			std::cout<<"usage: "<<(*iter)->getUsage()<<std::endl;
 		}
 	}
 	return 0;
 }
 
-const icu::UnicodeString& HelpImpl::getUsage() const {
+icu::UnicodeString const& HelpImpl::getUsage() const {
 	static icu::UnicodeString help_text("help <command>");
 	return help_text;
 }
@@ -52,11 +52,11 @@ const icu::UnicodeString& HelpImpl::getUsage() const {
 // class TestImpl implementation
 
 TestImpl::TestImpl() {
-	_aliases.setVCStrings(2, "test", "--test"); // Can run as both a command and an option, for testing purposes
+	m_aliases.setVCStrings(2, "test", "--test"); // Can run as both a command and an option, for testing purposes
 }
 
 int TestImpl::checkErrors() {
-	if (_args->getChildCount()==0) { // Requires a value
+	if (m_args->getChildCount()==0) { // Requires a value
 		std::cout<<"error: missing value"<<std::endl<<"usage: "<<getUsage()<<std::endl;
 		return -1;
 	}
@@ -65,29 +65,29 @@ int TestImpl::checkErrors() {
 
 int TestImpl::execute() {
 	icu::UnicodeString str;
-	_args->getAsString(str, 0);
+	m_args->getAsString(str, 0);
 	std::cout<<"test: "<<str<<std::endl;
 	return 0;
 }
 
-const icu::UnicodeString& TestImpl::getUsage() const {
+icu::UnicodeString const& TestImpl::getUsage() const {
 	static icu::UnicodeString __usage("test|--test <blah>");
 	return __usage;
 }
 
 // other
 
-void argsToString(const Identifier* root, icu::UnicodeString& out) {
+void argsToString(Identifier const* root, icu::UnicodeString& out) {
 	out.append("\"").append(root->getName()).append("\": [");
 	int count=0;
 	VarList::const_iterator iter;
 	for (iter=root->begin(); iter!=root->end(); ++iter) {
-		const Variable* variable=*iter;
+		Variable const* variable=*iter;
 		if (variable->getType()==VARTYPE_IDENTIFIER) {
-			argsToString((const Identifier*)variable, out);
+			argsToString((Identifier const*)variable, out);
 			out.append(", ");
 		} else if (variable->getType()&VARTYPE_VALUE) {
-			const ValueVariable* vv=(ValueVariable*)variable;
+			ValueVariable const* vv=(ValueVariable*)variable;
 			out.append(icu::UnicodeString(vv->getTypeName())).append(": \"");
 			vv->valueAsString(out, true);
 			out.append("\", ");
@@ -100,14 +100,14 @@ void argsToString(const Identifier* root, icu::UnicodeString& out) {
 	out.append(']');
 }
 
-void runArgs(const Identifier* root) {
+void runArgs(Identifier const* root) {
 	static UChar __uchar_dashes[]={'-', '-'};
 	ArgImpl* impl=NULL;
 	VarList::const_iterator iter;
 	for (iter=root->begin(); iter!=root->end(); ++iter) {
 		if ((*iter)->getType()&VARTYPE_IDENTIFIER) {
-			const icu::UnicodeString& name=(*iter)->getName();
-			if ((impl=__handler.getImpl(name))) {
+			icu::UnicodeString const& name=(*iter)->getName();
+			if ((impl=g_handler.getImpl(name))) {
 				impl->setCallType(
 					name.startsWith(__uchar_dashes, 1) ? CALLTYPE_SWITCH
 					: (name.startsWith(__uchar_dashes, 2) ? CALLTYPE_OPTION
@@ -122,9 +122,9 @@ void runArgs(const Identifier* root) {
 	}
 }
 
-int main(int argc, const char** argv) {
-	__handler.addImpl(new HelpImpl());
-	__handler.addImpl(new TestImpl());
+int main(int argc, char const** argv) {
+	g_handler.addImpl(new HelpImpl());
+	g_handler.addImpl(new TestImpl());
 	Identifier* root=parseArgs(argc, argv, true, 1);
 	if (root!=NULL) {
 		icu::UnicodeString out;

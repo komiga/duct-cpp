@@ -127,12 +127,12 @@ public:
 	void readCommentBlockToken();
 	
 protected:
-	static CharacterSet _whitespaceset;
-	//static CharacterSet _eolset;
-	static CharacterSet _numberset;
-	static CharacterSet _signset;
+	static CharacterSet s_whitespaceset;
+	//static CharacterSet s_eolset;
+	static CharacterSet s_numberset;
+	static CharacterSet s_signset;
 	
-	ScriptParserHandler* _handler;
+	ScriptParserHandler* m_handler;
 };
 
 /**
@@ -165,25 +165,25 @@ public:
 	/**
 		Constructor with values.
 	*/
-	ScriptParserException(ScriptParserError error, const char* reporter, const Token* token, const ScriptParser* parser, const char* fmt, ...);
+	ScriptParserException(ScriptParserError error, char const* reporter, Token const* token, ScriptParser const* parser, char const* fmt, ...);
 	/**
 		Get the exception's message.
 		@returns The exception's message.
 	*/
-	virtual const char* what() const throw();
+	virtual char const* what() const throw();
 	/**
 		Convert an exception error to a NUL-terminated string.
 		@returns The error as a string.
 		@param error The error to convert.
 	*/
-	static const char* errorToString(ScriptParserError error);
+	static char const* errorToString(ScriptParserError error);
 	
 protected:
-	char _message[512];
-	ScriptParserError _error;
-	const char* _reporter;
-	const Token* _token;
-	const ScriptParser* _parser;
+	char m_message[512];
+	ScriptParserError m_error;
+	char const* m_reporter;
+	Token const* m_token;
+	ScriptParser const* m_parser;
 };
 
 /**
@@ -266,16 +266,16 @@ public:
 		@param resetvalue Whether to reset the current value.
 		@param force Whether to force creation (create even if the handler has a current identifier).
 	*/
-	void makeIdentifier(const Token* token=NULL, bool resetiden=false, bool resetvalue=false, bool force=false);
+	void makeIdentifier(Token const* token=NULL, bool resetiden=false, bool resetvalue=false, bool force=false);
 	
 protected:
-	ScriptParser& _parser;
-	icu::UnicodeString _varname;
-	bool _equals;
-	Identifier* _currentiden;
-	ValueVariable* _currentvalue;
-	Node* _rootnode;
-	Node* _currentnode;
+	ScriptParser& m_parser;
+	icu::UnicodeString m_varname;
+	bool m_equals;
+	Identifier* m_currentiden;
+	ValueVariable* m_currentvalue;
+	Node* m_rootnode;
+	Node* m_currentnode;
 };
 
 /**
@@ -291,7 +291,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatIdentifier(const Identifier& iden, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool formatIdentifier(Identifier const& iden, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Format the given value as a script value.
 		@returns true if the value was formatted, or false if the given value did not have a name (script values require a name).
@@ -300,7 +300,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool formatValue(ValueVariable const& value, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Load a node from the given file path.
 		The user owns the returned node.
@@ -309,9 +309,9 @@ public:
 		@param path The file path to read.
 		@param encoding File character encoding.
 	*/
-	static Node* loadFromFile(const char* path, const char* encoding="utf8");
-	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
-	static Node* loadFromFile(const icu::UnicodeString& path, const char* encoding="utf8");
+	static Node* loadFromFile(char const* path, char const* encoding="utf8");
+	static Node* loadFromFile(std::string const& path, char const* encoding="utf8");
+	static Node* loadFromFile(icu::UnicodeString const& path, char const* encoding="utf8");
 	/**
 		Load a node from the given stream.
 		The user owns the returned node.
@@ -329,9 +329,9 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool writeToFile(const Node* root, const char* path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const std::string& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, char const* path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, std::string const& path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, icu::UnicodeString const& path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Write the given node to the given stream.
 		@returns true if the node was written to the stream, or false if the given node or stream was NULL.
@@ -341,11 +341,11 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToStream(Node const* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
-	static ScriptParser _parser;
-	static ScriptParserHandler _handler;
+	static ScriptParser s_parser;
+	static ScriptParserHandler s_handler;
 	
 private:
 	static void writeTabs(Stream* stream, unsigned int count, bool newline=false);

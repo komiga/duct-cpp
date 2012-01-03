@@ -33,48 +33,52 @@ THE SOFTWARE.
 
 namespace duct {
 
-const char* __script_tokenName(const Token& token) {
+char const* script_tokenName__(Token const& token) {
 	switch (token.getType()) {
-		case NULL_TOKEN:
-			return "NULLToken";
-		case StringToken:
-			return "StringToken";
-		case QuotedStringToken:
-			return "QuotedStringToken";
-		case NumberToken:
-			return "NumberToken";
-		case DoubleToken:
-			return "DoubleToken";
-		case EqualsToken:
-			return "EqualsToken";
-		case OpenBraceToken:
-			return "OpenBraceToken";
-		case CloseBraceToken:
-			return "CloseBraceToken";
-		case CommentToken:
-			return "CommentToken";
-		case CommentBlockToken:
-			return "CommentBlockToken";
-		case EOFToken:
-			return "EOFToken";
-		case EOLToken:
-			return "EOLToken";
+	case NULL_TOKEN:
+		return "NULLToken";
+	case StringToken:
+		return "StringToken";
+	case QuotedStringToken:
+		return "QuotedStringToken";
+	case NumberToken:
+		return "NumberToken";
+	case DoubleToken:
+		return "DoubleToken";
+	case EqualsToken:
+		return "EqualsToken";
+	case OpenBraceToken:
+		return "OpenBraceToken";
+	case CloseBraceToken:
+		return "CloseBraceToken";
+	case CommentToken:
+		return "CommentToken";
+	case CommentBlockToken:
+		return "CommentBlockToken";
+	case EOFToken:
+		return "EOFToken";
+	case EOLToken:
+		return "EOLToken";
 	}
 	return "UNKNOWNToken";
 }
 
 // class ScriptParser implementation
 
-CharacterSet ScriptParser::_whitespaceset=CharacterSet("\t ");
-//CharacterSet ScriptParser::_eolset=CharacterSet('\n');
-CharacterSet ScriptParser::_numberset=CharacterSet("0-9\\-+");
-CharacterSet ScriptParser::_signset=CharacterSet("\\-+");
+CharacterSet ScriptParser::s_whitespaceset=CharacterSet("\t ");
+//CharacterSet ScriptParser::s_eolset=CharacterSet('\n');
+CharacterSet ScriptParser::s_numberset=CharacterSet("0-9\\-+");
+CharacterSet ScriptParser::s_signset=CharacterSet("\\-+");
 
-ScriptParser::ScriptParser() : _handler(NULL) {
+ScriptParser::ScriptParser()
+	: m_handler(NULL)
+{
 	reset();
 }
 
-ScriptParser::ScriptParser(Stream* stream) {
+ScriptParser::ScriptParser(Stream* stream)
+	: m_handler(NULL)
+{
 	initWithStream(stream);
 }
 
@@ -83,11 +87,11 @@ ScriptParser::~ScriptParser() {
 }
 
 void ScriptParser::setHandler(ParserHandler* handler) {
-	_handler=(ScriptParserHandler*)handler;
+	m_handler=(ScriptParserHandler*)handler;
 }
 
 ParserHandler* ScriptParser::getHandler() {
-	return _handler;
+	return m_handler;
 }
 
 bool ScriptParser::parse() {
@@ -95,150 +99,150 @@ bool ScriptParser::parse() {
 	skipWhitespace();
 	nextToken();
 	readToken();
-	if (_curchar==CHAR_EOF) {
-		_token.reset(EOFToken);
-		_handler->handleToken(_token); // Just to make sure the EOF gets handled (data might not end with a newline, causing an EOFToken)
+	if (m_curchar==CHAR_EOF) {
+		m_token.reset(EOFToken);
+		m_handler->handleToken(m_token); // Just to make sure the EOF gets handled (data might not end with a newline, causing an EOFToken)
 		return false;
-	} else if (_token.getType()==EOFToken) {
+	} else if (m_token.getType()==EOFToken) {
 		return false;
 	}
 	return true;
 }
 
 void ScriptParser::skipWhitespace() {
-	while (_curchar!=CHAR_EOF && _whitespaceset.contains(_curchar))
+	while (m_curchar!=CHAR_EOF && s_whitespaceset.contains(m_curchar))
 		nextChar();
 }
 
 Token& ScriptParser::nextToken() {
-	_token.reset(NULL_TOKEN);
-	_token.setPosition(_line, _column);
-	switch (_curchar) {
-		case CHAR_QUOTE:
-			_token.setType(QuotedStringToken);
-			break;
-		case CHAR_ASTERISK:
-			if (peekChar()==CHAR_SLASH)
-				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::nextToken", &_token, this, "Encountered unexpected end of block comment");
-			_token.setType(StringToken);
-			break;
-		case CHAR_SLASH:
-			if (peekChar()==CHAR_SLASH)
-				_token.setType(CommentToken);
-			else if (_peekchar==CHAR_ASTERISK)
-				_token.setType(CommentBlockToken);
-			else
-				_token.setType(StringToken);
-			break;
-		case CHAR_EOF:
-			_token.setType(EOFToken);
-			break;
-		case CHAR_NEWLINE:
-			_token.setType(EOLToken);
-			break;
-		case CHAR_DECIMALPOINT:
-			_token.setType(DoubleToken);
-			_token.addChar(_curchar); // Add the decimal
-			break;
-		case CHAR_EQUALSIGN:
-			_token.setType(EqualsToken);
-			break;
-		case CHAR_OPENBRACE:
-			_token.setType(OpenBraceToken);
-			break;
-		case CHAR_CLOSEBRACE:
-			_token.setType(CloseBraceToken);
-			break;
-		default:
-			_token.setType((_numberset.contains(_curchar)) ? NumberToken : StringToken);
-			break;
+	m_token.reset(NULL_TOKEN);
+	m_token.setPosition(m_line, m_column);
+	switch (m_curchar) {
+	case CHAR_QUOTE:
+		m_token.setType(QuotedStringToken);
+		break;
+	case CHAR_ASTERISK:
+		if (peekChar()==CHAR_SLASH)
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::nextToken", &m_token, this, "Encountered unexpected end of block comment");
+		m_token.setType(StringToken);
+		break;
+	case CHAR_SLASH:
+		if (peekChar()==CHAR_SLASH)
+			m_token.setType(CommentToken);
+		else if (m_peekchar==CHAR_ASTERISK)
+			m_token.setType(CommentBlockToken);
+		else
+			m_token.setType(StringToken);
+		break;
+	case CHAR_EOF:
+		m_token.setType(EOFToken);
+		break;
+	case CHAR_NEWLINE:
+		m_token.setType(EOLToken);
+		break;
+	case CHAR_DECIMALPOINT:
+		m_token.setType(DoubleToken);
+		m_token.addChar(m_curchar); // Add the decimal
+		break;
+	case CHAR_EQUALSIGN:
+		m_token.setType(EqualsToken);
+		break;
+	case CHAR_OPENBRACE:
+		m_token.setType(OpenBraceToken);
+		break;
+	case CHAR_CLOSEBRACE:
+		m_token.setType(CloseBraceToken);
+		break;
+	default:
+		m_token.setType((s_numberset.contains(m_curchar)) ? NumberToken : StringToken);
+		break;
 	}
-	return _token;
+	return m_token;
 }
 
 void ScriptParser::readToken() {
-	//printf("(ScriptParser::readToken) token-type:%s line:%d, col:%d\n", __script_tokenName(_token), _token.getLine(), _token.getColumn());
-	switch (_token.getType()) {
-		case QuotedStringToken:
-			readQuotedStringToken();
-			nextChar();
-			break;
-		case StringToken:
-			readStringToken();
-			break;
-		case NumberToken:
-			readNumberToken();
-			break;
-		case DoubleToken:
-			nextChar();
-			readDoubleToken();
-			break;
-		case EqualsToken:
-			nextChar();
-			break;
-		case CommentToken:
-			skipToEOL();
-			//nextChar(); // Bad to get the next char, as it could be the EOL needed to terminate the current identifier
-			break;
-		case CommentBlockToken:
-			readCommentBlockToken();
-			break;
-		case OpenBraceToken:
-		case CloseBraceToken:
-			nextChar();
-			break;
-		case EOLToken:
-			nextChar();
-			break;
-		case EOFToken:
-			// Do nothing
-			break;
-		default:
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readToken", NULL, this, "Unhandled token: %s", __script_tokenName(_token));
-			break;
+	//printf("(ScriptParser::readToken) token-type:%s line:%d, col:%d\n", script_tokenName__(m_token), m_token.getLine(), m_token.getColumn());
+	switch (m_token.getType()) {
+	case QuotedStringToken:
+		readQuotedStringToken();
+		nextChar();
+		break;
+	case StringToken:
+		readStringToken();
+		break;
+	case NumberToken:
+		readNumberToken();
+		break;
+	case DoubleToken:
+		nextChar();
+		readDoubleToken();
+		break;
+	case EqualsToken:
+		nextChar();
+		break;
+	case CommentToken:
+		skipToEOL();
+		//nextChar(); // Bad to get the next char, as it could be the EOL needed to terminate the current identifier
+		break;
+	case CommentBlockToken:
+		readCommentBlockToken();
+		break;
+	case OpenBraceToken:
+	case CloseBraceToken:
+		nextChar();
+		break;
+	case EOLToken:
+		nextChar();
+		break;
+	case EOFToken:
+		// Do nothing
+		break;
+	default:
+		throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readToken", NULL, this, "Unhandled token: %s", script_tokenName__(m_token));
+		break;
 	}
 	// Special resolve when Number and Double tokens only contain signs or periods
-	switch (_token.getType()) {
-		case NumberToken:
-			if (_token.compare(_signset))
-				_token.setType(StringToken);
-			break;
-		case DoubleToken:
-			if (_token.compare(_signset) || _token.compare(CHAR_DECIMALPOINT))
-				_token.setType(StringToken);
-			break;
-		default:
-			break;
+	switch (m_token.getType()) {
+	case NumberToken:
+		if (m_token.compare(s_signset))
+			m_token.setType(StringToken);
+		break;
+	case DoubleToken:
+		if (m_token.compare(s_signset) || m_token.compare(CHAR_DECIMALPOINT))
+			m_token.setType(StringToken);
+		break;
+	default:
+		break;
 	}
-	_handler->handleToken(_token);
+	m_handler->handleToken(m_token);
 }
 
 void ScriptParser::readNumberToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readNumberToken", &_token, this, "Unexpected quote");
-		} else if (_curchar==CHAR_SLASH) {
-			if (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readNumberToken", &m_token, this, "Unexpected quote");
+		} else if (m_curchar==CHAR_SLASH) {
+			if (peekChar()==CHAR_SLASH || m_peekchar==CHAR_ASTERISK) {
 				break;
 			} else {
-				_token.setType(StringToken);
+				m_token.setType(StringToken);
 				readStringToken();
 				return;
 			}
-		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
-				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE
-				|| _curchar==CHAR_EQUALSIGN) {
+		} else if (m_curchar==CHAR_NEWLINE || s_whitespaceset.contains(m_curchar)
+				|| m_curchar==CHAR_OPENBRACE || m_curchar==CHAR_CLOSEBRACE
+				|| m_curchar==CHAR_EQUALSIGN) {
 			break;
-		} else if (_numberset.contains(_curchar)) {
-			_token.addChar(_curchar);
-		} else if (_curchar==CHAR_DECIMALPOINT) {
-			_token.addChar(_curchar);
+		} else if (s_numberset.contains(m_curchar)) {
+			m_token.addChar(m_curchar);
+		} else if (m_curchar==CHAR_DECIMALPOINT) {
+			m_token.addChar(m_curchar);
 			nextChar();
-			_token.setType(DoubleToken);
+			m_token.setType(DoubleToken);
 			readDoubleToken();
 			return;
 		} else {
-			_token.setType(StringToken);
+			m_token.setType(StringToken);
 			readStringToken();
 			return;
 		}
@@ -247,26 +251,26 @@ void ScriptParser::readNumberToken() {
 }
 
 void ScriptParser::readDoubleToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readDoubleToken", &_token, this, "Unexpected quote");
-		} else if (_curchar==CHAR_SLASH) {
-			if (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readDoubleToken", &m_token, this, "Unexpected quote");
+		} else if (m_curchar==CHAR_SLASH) {
+			if (peekChar()==CHAR_SLASH || m_peekchar==CHAR_ASTERISK) {
 				break;
 			} else {
-				_token.setType(StringToken);
+				m_token.setType(StringToken);
 				readStringToken();
 				return;
 			}
-		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
-				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE
-				|| _curchar==CHAR_EQUALSIGN) {
+		} else if (m_curchar==CHAR_NEWLINE || s_whitespaceset.contains(m_curchar)
+				|| m_curchar==CHAR_OPENBRACE || m_curchar==CHAR_CLOSEBRACE
+				|| m_curchar==CHAR_EQUALSIGN) {
 			break;
-		} else if (_numberset.contains(_curchar)) {
-			_token.addChar(_curchar);
-		} else { // (_curchar==CHAR_DECIMALPOINT)
+		} else if (s_numberset.contains(m_curchar)) {
+			m_token.addChar(m_curchar);
+		} else { // (m_curchar==CHAR_DECIMALPOINT)
 			// The token should've already contained a decimal point, so it must be a string.
-			_token.setType(StringToken);
+			m_token.setType(StringToken);
 			readStringToken();
 			return;
 		}
@@ -275,22 +279,22 @@ void ScriptParser::readDoubleToken() {
 }
 
 void ScriptParser::readStringToken() {
-	while (_curchar!=CHAR_EOF) {
-		if (_curchar==CHAR_QUOTE) {
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected quote");
-		} else if (_curchar==CHAR_BACKSLASH) {
+	while (m_curchar!=CHAR_EOF) {
+		if (m_curchar==CHAR_QUOTE) {
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &m_token, this, "Unexpected quote");
+		} else if (m_curchar==CHAR_BACKSLASH) {
 			UChar32 c=CharUtils::getEscapeChar(nextChar());
 			if (c!=CHAR_EOF) {
-				_token.addChar(c);
+				m_token.addChar(c);
 			} else {
-				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected escape sequence: %c", _curchar);
+				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &m_token, this, "Unexpected escape sequence: %c", m_curchar);
 			}
-		} else if (_curchar==CHAR_NEWLINE || _whitespaceset.contains(_curchar)
-				|| (_curchar==CHAR_SLASH && (peekChar()==CHAR_SLASH || _peekchar==CHAR_ASTERISK))
-				|| _curchar==CHAR_OPENBRACE || _curchar==CHAR_CLOSEBRACE || _curchar==CHAR_EQUALSIGN) {
+		} else if (m_curchar==CHAR_NEWLINE || s_whitespaceset.contains(m_curchar)
+				|| (m_curchar==CHAR_SLASH && (peekChar()==CHAR_SLASH || m_peekchar==CHAR_ASTERISK))
+				|| m_curchar==CHAR_OPENBRACE || m_curchar==CHAR_CLOSEBRACE || m_curchar==CHAR_EQUALSIGN) {
 			break;
 		} else {
-			_token.addChar(_curchar);
+			m_token.addChar(m_curchar);
 		}
 		nextChar();
 	}
@@ -299,25 +303,25 @@ void ScriptParser::readStringToken() {
 void ScriptParser::readQuotedStringToken() {
 	bool eolreached=false;
 	nextChar(); // Skip the first character (it will be the initial quote)
-	while (_curchar!=CHAR_QUOTE) {
-		if (_curchar==CHAR_EOF) {
-			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readQuotedStringToken", &_token, this, "Encountered EOF whilst reading quoted string");
-		} else if (_curchar==CHAR_BACKSLASH) {
+	while (m_curchar!=CHAR_QUOTE) {
+		if (m_curchar==CHAR_EOF) {
+			throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readQuotedStringToken", &m_token, this, "Encountered EOF whilst reading quoted string");
+		} else if (m_curchar==CHAR_BACKSLASH) {
 			UChar32 c=CharUtils::getEscapeChar(nextChar());
 			if (c!=CHAR_EOF) {
-				_token.addChar(c);
+				m_token.addChar(c);
 			} else {
-				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &_token, this, "Unexpected escape sequence: %c", _curchar);
+				throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readStringToken", &m_token, this, "Unexpected escape sequence: %c", m_curchar);
 			}
 		} else {
 			if (!eolreached)
-				_token.addChar(_curchar);
-			if (_curchar==CHAR_NEWLINE) {
-				//throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readQuotedStringToken", &_token, this, "Unclosed quote (met EOL character)");
+				m_token.addChar(m_curchar);
+			if (m_curchar==CHAR_NEWLINE) {
+				//throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readQuotedStringToken", &m_token, this, "Unclosed quote (met EOL character)");
 				eolreached=true;
-			} else if (eolreached && !_whitespaceset.contains(_curchar)) {
+			} else if (eolreached && !s_whitespaceset.contains(m_curchar)) {
 				eolreached=false;
-				_token.addChar(_curchar);
+				m_token.addChar(m_curchar);
 			}
 		}
 		nextChar();
@@ -326,7 +330,7 @@ void ScriptParser::readQuotedStringToken() {
 
 void ScriptParser::readCommentBlockToken() {
 	nextChar(); // Skip the first character (it will be an asterisk)
-	if (_curchar!=CHAR_EOF) {
+	if (m_curchar!=CHAR_EOF) {
 		while (skipToChar(CHAR_ASTERISK)) {
 			if (nextChar()==CHAR_SLASH) {
 				nextChar(); // Get the next character, otherwise the nextToken() call will try to handle the slash
@@ -334,70 +338,70 @@ void ScriptParser::readCommentBlockToken() {
 			}
 		}
 	}
-	throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readCommentBlock", &_token, this, "Unexpected EOF");
+	throw ScriptParserException(PARSERERROR_PARSER, "ScriptParser::readCommentBlock", &m_token, this, "Unexpected EOF");
 }
 
 // class ScriptParserException implementation
 
-ScriptParserException::ScriptParserException(ScriptParserError error, const char* reporter, const Token* token, const ScriptParser* parser, const char* fmt, ...) {
-	_error=error;
-	_reporter=reporter;
-	_token=token;
-	_parser=parser;
+ScriptParserException::ScriptParserException(ScriptParserError error, char const* reporter, Token const* token, ScriptParser const* parser, char const* fmt, ...)
+	: m_error(error), m_reporter(reporter), m_token(token), m_parser(parser)
+{
 	char temp[256];
 	va_list args;
 	va_start(args, fmt);
 	vsprintf(temp, fmt, args);
 	va_end(args);
 	temp[255]='\0';
-	if (_parser && !_token) {
-		_token=&_parser->getToken();
+	if (m_parser && !m_token) {
+		m_token=&m_parser->getToken();
 	}
-	if (_token && _parser) {
-		sprintf(_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), _parser->getLine(), _parser->getColumn(), temp);
-	} else if (_token) {
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _token->getLine(), _token->getColumn(), temp);
-	} else if (_parser) {
-		sprintf(_message, "(%s) [%s] at line: %d, col: %d: %s", _reporter, errorToString(_error), _parser->getLine(), _parser->getColumn(), temp);
+	if (m_token && m_parser) {
+		sprintf(m_message, "(%s) [%s] from line: %d, col: %d to line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_token->getLine(), m_token->getColumn(), m_parser->getLine(), m_parser->getColumn(), temp);
+	} else if (m_token) {
+		sprintf(m_message, "(%s) [%s] at line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_token->getLine(), m_token->getColumn(), temp);
+	} else if (m_parser) {
+		sprintf(m_message, "(%s) [%s] at line: %d, col: %d: %s", m_reporter, errorToString(m_error), m_parser->getLine(), m_parser->getColumn(), temp);
 	} else {
-		sprintf(_message, "(%s) [%s]: %s", _reporter, errorToString(_error), temp);
+		sprintf(m_message, "(%s) [%s]: %s", m_reporter, errorToString(m_error), temp);
 	}
-	_message[511]='\0';
+	m_message[511]='\0';
 }
 
-const char* ScriptParserException::what() const throw() {
-	return _message;
+char const* ScriptParserException::what() const throw() {
+	return m_message;
 }
 
-const char* ScriptParserException::errorToString(ScriptParserError error) {
+char const* ScriptParserException::errorToString(ScriptParserError error) {
 	switch (error) {
-		case PARSERERROR_PARSER:
-			return "ERROR_PARSER";
-		case PARSERERROR_HIERARCHY:
-			return "ERROR_HIERARCHY";
-		case PARSERERROR_MEMALLOC:
-			return "ERROR_MEMALLOC";
-		default:
-			return "ERROR_UNKNOWN";
+	case PARSERERROR_PARSER:
+		return "ERROR_PARSER";
+	case PARSERERROR_HIERARCHY:
+		return "ERROR_HIERARCHY";
+	case PARSERERROR_MEMALLOC:
+		return "ERROR_MEMALLOC";
+	default:
+		return "ERROR_UNKNOWN";
 	}
 }
 
 // class ScriptParserHandler implementation
 
-ScriptParserHandler::ScriptParserHandler(ScriptParser& parser) : _parser(parser), _equals(false), _currentiden(NULL), _currentvalue(NULL), _rootnode(NULL), _currentnode(NULL) {
-	_parser.setHandler(this);
+ScriptParserHandler::ScriptParserHandler(ScriptParser& parser)
+	: m_parser(parser), m_equals(false), m_currentiden(NULL), m_currentvalue(NULL), m_rootnode(NULL), m_currentnode(NULL)
+{
+	m_parser.setHandler(this);
 }
 
 ScriptParserHandler::~ScriptParserHandler() {
 }
 
 void ScriptParserHandler::setParser(Parser& parser) {
-	_parser=(ScriptParser&)parser;
-	_parser.setHandler(this);
+	m_parser=(ScriptParser&)parser;
+	m_parser.setHandler(this);
 }
 
 Parser& ScriptParserHandler::getParser() {
-	return _parser;
+	return m_parser;
 }
 
 void ScriptParserHandler::throwex(ScriptParserException e) {
@@ -406,19 +410,19 @@ void ScriptParserHandler::throwex(ScriptParserException e) {
 }
 
 void ScriptParserHandler::clean() {
-	_varname.remove();
-	_equals=false;
-	_currentvalue=NULL;
-	_currentiden=NULL;
+	m_varname.remove();
+	m_equals=false;
+	m_currentvalue=NULL;
+	m_currentiden=NULL;
 }
 
 bool ScriptParserHandler::process() {
-	_rootnode=new Node(NULL);
-	_currentnode=_rootnode;
-	while (_parser.parse()) {
+	m_rootnode=new Node(NULL);
+	m_currentnode=m_rootnode;
+	while (m_parser.parse()) {
 	}
 	finish();
-	if (_currentnode!=_rootnode) {
+	if (m_currentnode!=m_rootnode) {
 		//throwex(ScriptParserException(PARSERERROR_HIERARCHY, "ScriptParserHandler::process", NULL, NULL, "The current node does not match the root node"));
 		return false;
 	}
@@ -427,114 +431,114 @@ bool ScriptParserHandler::process() {
 
 void ScriptParserHandler::handleToken(Token& token) {
 	switch (token.getType()) {
-		case StringToken: {
-			if (_varname.length()>0 && _equals) {
-				int bv=Variable::stringToBool(token.toString());
-				if (bv!=-1) {
-					addVariableAndReset(_currentnode, new BoolVariable(bv!=0, _varname), false, false);
-					return;
-				} else {
-					addVariableAndReset(_currentnode, new StringVariable(token.toString(), _varname), false, false);
-				}
-			} else if ((_varname.length()>0 || _currentiden) && !_equals) {
-				makeIdentifier(&token);
-				int bv=Variable::stringToBool(token.toString());
-				if (bv!=-1) {
-					addVariableAndReset(_currentiden, new BoolVariable(bv!=0), false, false);
-					return;
-				}
-				addVariableAndReset(_currentiden, new StringVariable(token.toString()), false, false);
-			} else {// if (!_varname.length()>0 && !_equals) {
-				_varname=token.toString();
-			}
-			}
-			break;
-		case QuotedStringToken:
-			if (_varname.length()>0 && _equals) {
-				addVariableAndReset(_currentnode, new StringVariable(token.toString(), _varname), false, false);
-			} else if ((_varname.length()>0 || _currentiden) && !_equals) {
-				makeIdentifier(&token);
-				addVariableAndReset(_currentiden, new StringVariable(token.toString()), false, false);
-			} else {// if (!_varname.length()>0 && !_equals) {
-				_varname=token.toString();
-			}
-			break;
-		case NumberToken:
-			if (_varname.length()>0 && _equals) {
-				_currentvalue=new IntVariable(token.toInt(), _varname);
-				addVariableAndReset(_currentnode, _currentvalue, false, false);
-			} else if ((_varname.length()>0 || _currentiden) && !_equals) {
-				makeIdentifier(&token);
-				addVariableAndReset(_currentiden, new IntVariable(token.toInt()), false, false);
+	case StringToken: {
+		if (m_varname.length()>0 && m_equals) {
+			int bv=Variable::stringToBool(token.toString());
+			if (bv!=-1) {
+				addVariableAndReset(m_currentnode, new BoolVariable(bv!=0, m_varname), false, false);
+				return;
 			} else {
-				//throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
-				_varname.setTo(token.toString());
+				addVariableAndReset(m_currentnode, new StringVariable(token.toString(), m_varname), false, false);
 			}
-			break;
-		case DoubleToken:
-			if (_varname.length()>0 && _equals) {
-				_currentvalue=new FloatVariable((float)token.toDouble(), _varname);
-				addVariableAndReset(_currentnode, _currentvalue, false, false);
-			} else if ((_varname.length()>0 || _currentiden) && !_equals) {
-				makeIdentifier(&token);
-				addVariableAndReset(_currentiden, new FloatVariable((float)token.toDouble()), false, false);
-			} else {
-				//throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "A number cannot be an identifier"));
-				_varname.setTo(token.toString());
+		} else if ((m_varname.length()>0 || m_currentiden) && !m_equals) {
+			makeIdentifier(&token);
+			int bv=Variable::stringToBool(token.toString());
+			if (bv!=-1) {
+				addVariableAndReset(m_currentiden, new BoolVariable(bv!=0), false, false);
+				return;
 			}
-			break;
-		case EqualsToken:
-			if (_currentiden) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Unexpected equality sign after identifier declaration"));
-			} else if (_varname.length()==0) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Expected string, got equality sign"));
-			} else if (_equals) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Expected value, got equality sign"));
-			} else {
-				_equals=true;
+			addVariableAndReset(m_currentiden, new StringVariable(token.toString()), false, false);
+		} else {// if (!m_varname.length()>0 && !m_equals) {
+			m_varname=token.toString();
+		}
+		}
+		break;
+	case QuotedStringToken:
+		if (m_varname.length()>0 && m_equals) {
+			addVariableAndReset(m_currentnode, new StringVariable(token.toString(), m_varname), false, false);
+		} else if ((m_varname.length()>0 || m_currentiden) && !m_equals) {
+			makeIdentifier(&token);
+			addVariableAndReset(m_currentiden, new StringVariable(token.toString()), false, false);
+		} else {// if (!m_varname.length()>0 && !m_equals) {
+			m_varname=token.toString();
+		}
+		break;
+	case NumberToken:
+		if (m_varname.length()>0 && m_equals) {
+			m_currentvalue=new IntVariable(token.toInt(), m_varname);
+			addVariableAndReset(m_currentnode, m_currentvalue, false, false);
+		} else if ((m_varname.length()>0 || m_currentiden) && !m_equals) {
+			makeIdentifier(&token);
+			addVariableAndReset(m_currentiden, new IntVariable(token.toInt()), false, false);
+		} else {
+			//throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "A number cannot be an identifier"));
+			m_varname.setTo(token.toString());
+		}
+		break;
+	case DoubleToken:
+		if (m_varname.length()>0 && m_equals) {
+			m_currentvalue=new FloatVariable((float)token.toDouble(), m_varname);
+			addVariableAndReset(m_currentnode, m_currentvalue, false, false);
+		} else if ((m_varname.length()>0 || m_currentiden) && !m_equals) {
+			makeIdentifier(&token);
+			addVariableAndReset(m_currentiden, new FloatVariable((float)token.toDouble()), false, false);
+		} else {
+			//throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "A number cannot be an identifier"));
+			m_varname.setTo(token.toString());
+		}
+		break;
+	case EqualsToken:
+		if (m_currentiden) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Unexpected equality sign after identifier declaration"));
+		} else if (m_varname.length()==0) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Expected string, got equality sign"));
+		} else if (m_equals) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Expected value, got equality sign"));
+		} else {
+			m_equals=true;
+		}
+		break;
+	case OpenBraceToken: {
+		if (m_currentiden) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Node cannot contain values (possible openbrace typo)"));
+		}
+		Node* tempnode=new Node(m_varname, m_currentnode);
+		addVariableAndReset(m_currentnode, tempnode, false, false);
+		m_currentnode=tempnode;
+		}
+		break;
+	case CloseBraceToken:
+		if (!m_currentnode->getParent()) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Mismatched node brace"));
+		} else if (m_equals) {
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &m_parser, "Expected value, got close-brace"));
+		} else {
+			if (m_currentiden) {
+				reset(true, true);
+			} else if (m_varname.length()>0) { // brace acts terminatively on a yet-realized identifier
+				makeIdentifier(NULL, true, true, true);
 			}
-			break;
-		case OpenBraceToken: {
-			if (_currentiden) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Node cannot contain values (possible openbrace typo)"));
-			}
-			Node* tempnode=new Node(_varname, _currentnode);
-			addVariableAndReset(_currentnode, tempnode, false, false);
-			_currentnode=tempnode;
-			}
-			break;
-		case CloseBraceToken:
-			if (!_currentnode->getParent()) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Mismatched node brace"));
-			} else if (_equals) {
-				throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::handleToken", &token, &_parser, "Expected value, got close-brace"));
-			} else {
-				if (_currentiden) {
-					reset(true, true);
-				} else if (_varname.length()>0) { // brace acts terminatively on a yet-realized identifier
-					makeIdentifier(NULL, true, true, true);
-				}
-				_currentnode=(Node*)_currentnode->getParent();
-			}
-			break;
-		case CommentToken:
-		case CommentBlockToken:
-			// Do nothing
-			break;
-		case EOLToken:
-		case EOFToken:
-			finish();
-			break;
-		default:
-			//printf("(ScriptParserHandler::handleToken) Unhandled token of type "+__script_tokenName(token))
-			break;
+			m_currentnode=(Node*)m_currentnode->getParent();
+		}
+		break;
+	case CommentToken:
+	case CommentBlockToken:
+		// Do nothing
+		break;
+	case EOLToken:
+	case EOFToken:
+		finish();
+		break;
+	default:
+		//printf("(ScriptParserHandler::handleToken) Unhandled token of type "+script_tokenName__(token))
+		break;
 	}
 }
 
 void ScriptParserHandler::finish() {
-	if (_parser.getToken().getType()==EOLToken && _equals) {
-		throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::finish", &_parser.getToken(), &_parser, "Expected value, got EOL/EOF"));
-	} else if (_varname.length()>0) { // no-value identifier
+	if (m_parser.getToken().getType()==EOLToken && m_equals) {
+		throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::finish", &m_parser.getToken(), &m_parser, "Expected value, got EOL/EOF"));
+	} else if (m_varname.length()>0) { // no-value identifier
 		makeIdentifier(NULL, true, true, true);
 	} else {
 		reset(true, true);
@@ -542,42 +546,42 @@ void ScriptParserHandler::finish() {
 }
 
 Node* ScriptParserHandler::processFromStream(Stream* stream) {
-	_parser.initWithStream(stream);
+	m_parser.initWithStream(stream);
 	process();
-	Node* node=_rootnode; // Store before cleaning
+	Node* node=m_rootnode; // Store before cleaning
 	clean();
-	_parser.reset();
+	m_parser.reset();
 	return node;
 }
 
 void ScriptParserHandler::freeData() {
-	if (_currentvalue) {
-		delete _currentvalue;
+	if (m_currentvalue) {
+		delete m_currentvalue;
 	}
-	if (_currentiden) {
-		delete _currentiden;
+	if (m_currentiden) {
+		delete m_currentiden;
 	}
-	if (_currentnode) {
-		if (_rootnode==_currentnode || _currentnode->getParent()!=_rootnode) { // delete the root if the root and the current node are the same or if the current node has been parented
-			delete _rootnode;
-		} else if (_currentnode->getParent()==NULL) { // delete the root and the current node if the current node has not been parented
-			delete _rootnode;
-			delete _currentnode;
+	if (m_currentnode) {
+		if (m_rootnode==m_currentnode || m_currentnode->getParent()!=m_rootnode) { // delete the root if the root and the current node are the same or if the current node has been parented
+			delete m_rootnode;
+		} else if (m_currentnode->getParent()==NULL) { // delete the root and the current node if the current node has not been parented
+			delete m_rootnode;
+			delete m_currentnode;
 		}
-	} else if (_rootnode) {
-		delete _rootnode;
+	} else if (m_rootnode) {
+		delete m_rootnode;
 	}
 	clean();
 }
 
 void ScriptParserHandler::reset(bool iden, bool value) {
-	_varname.remove();
-	_equals=false;
+	m_varname.remove();
+	m_equals=false;
 	if (value) {
-		_currentvalue=NULL;
+		m_currentvalue=NULL;
 	}
 	if (iden) {
-		_currentiden=NULL;
+		m_currentiden=NULL;
 	}
 }
 
@@ -586,16 +590,16 @@ void ScriptParserHandler::addVariableAndReset(CollectionVariable* collection, Va
 	reset(iden, value);
 }
 
-void ScriptParserHandler::makeIdentifier(const Token* /*token*/, bool resetiden, bool resetvalue, bool force) {
-	//if (_currentvalue) {
+void ScriptParserHandler::makeIdentifier(Token const* /*token*/, bool resetiden, bool resetvalue, bool force) {
+	//if (m_currentvalue) {
 	//	throw ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::makeIdentifier", token, NULL, "Value already defined on line");
-	if (!_currentiden || force) {
-		/*int bv=Variable::stringToBool(_varname);
+	if (!m_currentiden || force) {
+		/*int bv=Variable::stringToBool(m_varname);
 		if (bv!=-1) {
-			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::makeIdentifier", token, _parser, "Identifier name cannot be boolean value"));
+			throwex(ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::makeIdentifier", token, m_parser, "Identifier name cannot be boolean value"));
 		}*/
-		_currentiden=new Identifier(_varname);
-		addVariableAndReset(_currentnode, _currentiden, resetiden, resetvalue);
+		m_currentiden=new Identifier(m_varname);
+		addVariableAndReset(m_currentnode, m_currentiden, resetiden, resetvalue);
 	//} else {
 		//throw ScriptParserException(PARSERERROR_PARSER, "ScriptParserHandler::makeIdentifier", token, NULL, "Unknown error")
 	}
@@ -603,10 +607,10 @@ void ScriptParserHandler::makeIdentifier(const Token* /*token*/, bool resetiden,
 
 // class ScriptFormatter implementation
 
-ScriptParser ScriptFormatter::_parser=ScriptParser();
-ScriptParserHandler ScriptFormatter::_handler=ScriptParserHandler(ScriptFormatter::_parser);
+ScriptParser ScriptFormatter::s_parser=ScriptParser();
+ScriptParserHandler ScriptFormatter::s_handler=ScriptParserHandler(ScriptFormatter::s_parser);
 
-bool ScriptFormatter::formatIdentifier(const Identifier& iden, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::formatIdentifier(Identifier const& iden, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (iden.getName().length()>0) {
 		icu::UnicodeString temp;
 		iden.getNameFormatted(temp, nameformat);
@@ -631,7 +635,7 @@ bool ScriptFormatter::formatIdentifier(const Identifier& iden, icu::UnicodeStrin
 	return false;
 }
 
-bool ScriptFormatter::formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::formatValue(ValueVariable const& value, icu::UnicodeString& result, unsigned int nameformat, unsigned int varformat) {
 	if (value.getName().length()>0) {
 		value.getNameFormatted(result, nameformat);
 		icu::UnicodeString temp;
@@ -645,10 +649,10 @@ bool ScriptFormatter::formatValue(const ValueVariable& value, icu::UnicodeString
 	return false;
 }
 
-Node* ScriptFormatter::loadFromFile(const char* path, const char* encoding) {
+Node* ScriptFormatter::loadFromFile(char const* path, char const* encoding) {
 	Stream* stream=FileStream::readFile(path, encoding);
 	if (stream) {
-		Node* root=_handler.processFromStream(stream);
+		Node* root=s_handler.processFromStream(stream);
 		stream->close();
 		delete stream;
 		return root;
@@ -656,11 +660,11 @@ Node* ScriptFormatter::loadFromFile(const char* path, const char* encoding) {
 	return NULL;
 }
 
-Node* ScriptFormatter::loadFromFile(const std::string& path, const char* encoding) {
+Node* ScriptFormatter::loadFromFile(std::string const& path, char const* encoding) {
 	return loadFromFile(path.c_str(), encoding);
 }
 
-Node* ScriptFormatter::loadFromFile(const icu::UnicodeString& path, const char* encoding) {
+Node* ScriptFormatter::loadFromFile(icu::UnicodeString const& path, char const* encoding) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return loadFromFile(temp.c_str(), encoding);
@@ -668,12 +672,12 @@ Node* ScriptFormatter::loadFromFile(const icu::UnicodeString& path, const char* 
 
 Node* ScriptFormatter::loadFromStream(Stream* stream) {
 	if (stream) {
-		return _handler.processFromStream(stream);
+		return s_handler.processFromStream(stream);
 	}
 	return NULL;
 }
 
-bool ScriptFormatter::writeToFile(const Node* root, const char* path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::writeToFile(Node const* root, char const* path, char const* encoding, unsigned int nameformat, unsigned int varformat) {
 	Stream* stream=FileStream::writeFile(path, encoding);
 	if (stream) {
 		writeToStream(root, stream, 0, nameformat, varformat);
@@ -683,17 +687,17 @@ bool ScriptFormatter::writeToFile(const Node* root, const char* path, const char
 	return false;
 }
 
-bool ScriptFormatter::writeToFile(const Node* root, const std::string& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::writeToFile(Node const* root, std::string const& path, char const* encoding, unsigned int nameformat, unsigned int varformat) {
 	return writeToFile(root, path.c_str(), encoding, nameformat, varformat);
 }
 
-bool ScriptFormatter::writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::writeToFile(Node const* root, icu::UnicodeString const& path, char const* encoding, unsigned int nameformat, unsigned int varformat) {
 	std::string temp;
 	path.toUTF8String(temp);
 	return writeToFile(root, temp.c_str(), encoding, nameformat, varformat);
 }
 
-bool ScriptFormatter::writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat, unsigned int varformat) {
+bool ScriptFormatter::writeToStream(Node const* root, Stream* stream, unsigned int tcount, unsigned int nameformat, unsigned int varformat) {
 	if (root && stream) {
 		icu::UnicodeString temp;
 		unsigned int tcountd=tcount;

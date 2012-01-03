@@ -32,15 +32,15 @@ namespace duct {
 
 bool Archive::open(bool deserialize_, bool readable, bool writeable) {
 	close();
-	if ((!readable && !writeable) || _path.isEmpty()) {
+	if ((!readable && !writeable) || m_path.isEmpty()) {
 		return false;
 	}
-	_stream=FileStream::openFile(_path, readable, writeable);
-	if (!_stream) {
+	m_stream=FileStream::openFile(m_path, readable, writeable);
+	if (!m_stream) {
 		return false;
 	}
-	_readable=readable;
-	_writeable=writeable;
+	m_readable=readable;
+	m_writeable=writeable;
 	if (deserialize_) {
 		if (!deserialize()) {
 			return false;
@@ -50,20 +50,20 @@ bool Archive::open(bool deserialize_, bool readable, bool writeable) {
 }
 
 void Archive::close() {
-	if (_stream!=NULL) {
-		_stream->close();
-		delete _stream;
-		_stream=NULL;
+	if (m_stream!=NULL) {
+		m_stream->close();
+		delete m_stream;
+		m_stream=NULL;
 	}
-	_readable=false;
-	_writeable=false;
+	m_readable=false;
+	m_writeable=false;
 }
 
 bool Archive::save() {
-	if (!_readable && _writeable) {
+	if (!m_readable && m_writeable) {
 		return save(true);
-	} else if (_readable || _writeable) {
-		bool readable=_readable, writeable=_writeable;
+	} else if (m_readable || m_writeable) {
+		bool readable=m_readable, writeable=m_writeable;
 		bool rc=save(false);
 		if (rc) {
 			return open(false, readable, writeable);
@@ -91,14 +91,14 @@ bool Archive::save(bool keepopen) {
 }
 
 bool Archive::deserialize() {
-	if (_readable) {
+	if (m_readable) {
 		clear();
-		_stream->seek(0);
-		if (_stream->size()<4) { // lowest possible size for a header
+		m_stream->seek(0);
+		if (m_stream->size()<4) { // lowest possible size for a header
 			return false;
 		}
 		char check[4];
-		_stream->read(check, 4);
+		m_stream->read(check, 4);
 		if (strncmp(check, getIdentifier(), 4)!=0) {
 			return false;
 		}
@@ -111,9 +111,9 @@ bool Archive::deserialize() {
 }
 
 bool Archive::serialize() {
-	if (_writeable) {
-		_stream->seek(0);
-		_stream->write(getIdentifier(), 4);
+	if (m_writeable) {
+		m_stream->seek(0);
+		m_stream->write(getIdentifier(), 4);
 		if (!serializeUserspace()) {
 			return false;
 		}
@@ -125,16 +125,16 @@ bool Archive::serialize() {
 // class Entry implementation
 
 bool Entry::deserialize(Stream* stream) {
-	_flags=stream->readUInt16();
-	_dataoffset=stream->readUInt64();
-	_datasize=stream->readUInt32();
+	m_flags=stream->readUInt16();
+	m_dataoffset=stream->readUInt64();
+	m_datasize=stream->readUInt32();
 	return deserializeUserspace(stream);
 }
 
 bool Entry::serialize(Stream* stream) {
-	stream->writeUInt16(_flags);
-	stream->writeUInt64(_dataoffset);
-	stream->writeUInt32(_datasize);
+	stream->writeUInt16(m_flags);
+	stream->writeUInt64(m_dataoffset);
+	stream->writeUInt32(m_datasize);
 	return serializeUserspace(stream);
 }
 

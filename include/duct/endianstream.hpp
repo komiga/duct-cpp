@@ -71,7 +71,7 @@ public:
 	
 protected:
 	/** Byte order. */
-	int _order;
+	int m_order;
 };
 
 } // namespace duct

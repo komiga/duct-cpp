@@ -76,21 +76,21 @@ public:
 		@param path The path to open.
 		@see isOpen()
 	*/
-	DirStream(const char* path);
+	DirStream(char const* path);
 	/**
 		Constructor with path.
 		isOpen() should be called to check if the stream was opened successfully.
 		@param path The path to open.
 		@see isOpen()
 	*/
-	DirStream(const std::string& path);
+	DirStream(std::string const& path);
 	/**
 		Constructor with path.
 		isOpen() should be called to check if the stream was opened successfully.
 		@param path The path to open.
 		@see isOpen()
 	*/
-	DirStream(const icu::UnicodeString& path);
+	DirStream(icu::UnicodeString const& path);
 	/**
 		Destructor.
 		Stream will be closed upon destruction.
@@ -149,9 +149,9 @@ private:
 	void init();
 	
 private:
-	std::string _path;
-	DIR* _dir;
-	dirent* _entry;
+	std::string m_path;
+	DIR* m_dir;
+	dirent* m_entry;
 };
 
 /**
@@ -167,21 +167,21 @@ namespace FileSystem {
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool DUCT_API statPath(const char* path, struct stat* s);
+//bool DUCT_API statPath(char const* path, struct stat* s);
 /*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool DUCT_API statPath(const std::string& path, struct stat* s);
+//bool DUCT_API statPath(std::string const& path, struct stat* s);
 /*
 	Get stats on the given path.
 	@returns true if the stat() function was successful, or false if it was not.
 	@param path The path to get stats on.
 	@param s The pointer to store the result.
 */
-//bool DUCT_API statPath(const icu::UnicodeString& path, struct stat* s);
+//bool DUCT_API statPath(icu::UnicodeString const& path, struct stat* s);
 
 /**
 	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
@@ -220,7 +220,7 @@ void DUCT_API normalizePath(icu::UnicodeString& path, bool trailing_slash);
 	@param path The path to normalize.
 	@param result The resulting string.
 */
-void DUCT_API normalizePath(const std::string& path, std::string& result);
+void DUCT_API normalizePath(std::string const& path, std::string& result);
 /**
 	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	Any trailing slashes are kept as-is.
@@ -228,7 +228,7 @@ void DUCT_API normalizePath(const std::string& path, std::string& result);
 	@param path The path to normalize.
 	@param result The resulting string.
 */
-void DUCT_API normalizePath(const icu::UnicodeString& path, icu::UnicodeString& result);
+void DUCT_API normalizePath(icu::UnicodeString const& path, icu::UnicodeString& result);
 
 /**
 	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
@@ -237,7 +237,7 @@ void DUCT_API normalizePath(const icu::UnicodeString& path, icu::UnicodeString& 
 	@param result The resulting string.
 	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
 */
-void DUCT_API normalizePath(const std::string& path, std::string& result, bool trailing_slash);
+void DUCT_API normalizePath(std::string const& path, std::string& result, bool trailing_slash);
 /**
 	Normalize the given path. This will replace all occurrences of <em>'\\'</em> with <em>'/'</em>.
 	@returns Nothing.
@@ -245,46 +245,46 @@ void DUCT_API normalizePath(const std::string& path, std::string& result, bool t
 	@param result The resulting string.
 	@param trailing_slash Whether to force a trailing slash or to remove the existing one.
 */
-void DUCT_API normalizePath(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash);
+void DUCT_API normalizePath(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash);
 
 /**
 	Check if the given path has a trailing slash.
 	@returns true if the given path has a trailing slash, or false if the path does not have a trailing slash.
 	@param path The path to test.
 */
-bool DUCT_API pathHasTrailingSlash(const std::string& path);
+bool DUCT_API pathHasTrailingSlash(std::string const& path);
 /**
 	Check if the given path has a trailing slash.
 	@returns true if the given path has a trailing slash, or false if the path does not have a trailing slash.
 	@param path The path to test.
 */
-bool DUCT_API pathHasTrailingSlash(const icu::UnicodeString& path);
+bool DUCT_API pathHasTrailingSlash(icu::UnicodeString const& path);
 
 /**
 	Check if the given path has a file name.
 	@returns true if the given path appears to have a filename, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasFilename(const std::string& path);
+bool DUCT_API pathHasFilename(std::string const& path);
 /**
 	Check if the given path has a file name.
 	@returns true if the given path appears to have a filename, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasFilename(const icu::UnicodeString& path);
+bool DUCT_API pathHasFilename(icu::UnicodeString const& path);
 
 /**
 	Check if the given path has an extension.
 	@returns true if the given path has an extension, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasExtension(const std::string& path);
+bool DUCT_API pathHasExtension(std::string const& path);
 /**
 	Check if the given path has an extension.
 	@returns true if the given path has an extension, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasExtension(const icu::UnicodeString& path);
+bool DUCT_API pathHasExtension(icu::UnicodeString const& path);
 
 /**
 	Check if the given path has a left part.
@@ -292,14 +292,14 @@ bool DUCT_API pathHasExtension(const icu::UnicodeString& path);
 	@param path The path to test.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API pathHasLeftPart(const std::string& path, bool allow_leading=true);
+bool DUCT_API pathHasLeftPart(std::string const& path, bool allow_leading=true);
 /**
 	Check if the given path has a left part.
 	@returns true if the given path has a left part, or false if it does not.
 	@param path The path to test.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API pathHasLeftPart(const icu::UnicodeString& path, bool allow_leading=true);
+bool DUCT_API pathHasLeftPart(icu::UnicodeString const& path, bool allow_leading=true);
 
 /**
 	Check if the given path has a right part.
@@ -307,27 +307,27 @@ bool DUCT_API pathHasLeftPart(const icu::UnicodeString& path, bool allow_leading
 	@param path The path to test.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API pathHasRightPart(const std::string& path, bool allow_leading=true);
+bool DUCT_API pathHasRightPart(std::string const& path, bool allow_leading=true);
 /**
 	Check if the given path has a right part.
 	@returns true if the given path has a right part, or false if it does not.
 	@param path The path to test.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API pathHasRightPart(const icu::UnicodeString& path, bool allow_leading=true);
+bool DUCT_API pathHasRightPart(icu::UnicodeString const& path, bool allow_leading=true);
 
 /**
 	Check if the given path has a directory path.
 	@returns true if the given path has a directory path, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasDirectory(const std::string& path);
+bool DUCT_API pathHasDirectory(std::string const& path);
 /**
 	Check if the given path has a directory path.
 	@returns true if the given path has a directory path, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API pathHasDirectory(const icu::UnicodeString& path);
+bool DUCT_API pathHasDirectory(icu::UnicodeString const& path);
 
 /**
 	Extract the extension from the given file path.
@@ -336,7 +336,7 @@ bool DUCT_API pathHasDirectory(const icu::UnicodeString& path);
 	@param result This will be assigned to the extension if the path contains one.
 	@param include_period Whether to include the period in the extension (false by default).
 */
-bool DUCT_API extractFileExtension(const std::string& path, std::string& result, bool include_period=false);
+bool DUCT_API extractFileExtension(std::string const& path, std::string& result, bool include_period=false);
 /**
 	Extract the extension from the given file path.
 	@returns true if the extension was extracted, or false if the path doesn't have an extension.
@@ -344,7 +344,7 @@ bool DUCT_API extractFileExtension(const std::string& path, std::string& result,
 	@param result This will be assigned to the extension if the path contains one.
 	@param include_period Whether to include the period in the extension (false by default).
 */
-bool DUCT_API extractFileExtension(const icu::UnicodeString& path, icu::UnicodeString& result, bool include_period=false);
+bool DUCT_API extractFileExtension(icu::UnicodeString const& path, icu::UnicodeString& result, bool include_period=false);
 
 /**
 	Extract the directory path from the given file path.
@@ -353,7 +353,7 @@ bool DUCT_API extractFileExtension(const icu::UnicodeString& path, icu::UnicodeS
 	@param result This will be assigned to the directory if the path contains one.
 	@param trailing_slash Whether to append a trailing slash to the directory path.
 */
-bool DUCT_API extractFileDirectory(const std::string& path, std::string& result, bool trailing_slash=true);
+bool DUCT_API extractFileDirectory(std::string const& path, std::string& result, bool trailing_slash=true);
 /**
 	Extract the directory path from the given file path.
 	@returns true if the given file path has a directory path, or false if it does not.
@@ -361,7 +361,7 @@ bool DUCT_API extractFileDirectory(const std::string& path, std::string& result,
 	@param result This will be assigned to the directory if the path contains one.
 	@param trailing_slash Whether to append a trailing slash to the directory path.
 */
-bool DUCT_API extractFileDirectory(const icu::UnicodeString& path, icu::UnicodeString& result, bool trailing_slash=true);
+bool DUCT_API extractFileDirectory(icu::UnicodeString const& path, icu::UnicodeString& result, bool trailing_slash=true);
 
 /**
 	Extract the file name from the given file path.
@@ -370,7 +370,7 @@ bool DUCT_API extractFileDirectory(const icu::UnicodeString& path, icu::UnicodeS
 	@param result This will be assigned to the filename.
 	@param with_extension Whether to include the extension.
 */
-bool DUCT_API extractFilename(const std::string& path, std::string& result, bool with_extension);
+bool DUCT_API extractFilename(std::string const& path, std::string& result, bool with_extension);
 /**
 	Extract the file name from the given file path.
 	@returns true if the given path contains a file name, or false if it does not (for example, "/some/directory/path/").
@@ -378,7 +378,7 @@ bool DUCT_API extractFilename(const std::string& path, std::string& result, bool
 	@param result This will be assigned to the filename.
 	@param with_extension Whether to include the extension.
 */
-bool DUCT_API extractFilename(const icu::UnicodeString& path, icu::UnicodeString& result, bool with_extension);
+bool DUCT_API extractFilename(icu::UnicodeString const& path, icu::UnicodeString& result, bool with_extension);
 
 /**
 	Extract the file path part before the first period.
@@ -387,7 +387,7 @@ bool DUCT_API extractFilename(const icu::UnicodeString& path, icu::UnicodeString
 	@param result This will be assigned to the right half.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API extractFileLeftPart(const std::string& path, std::string& result, bool allow_leading=true);
+bool DUCT_API extractFileLeftPart(std::string const& path, std::string& result, bool allow_leading=true);
 /**
 	Extract the file path part before the first period.
 	@returns true if the part was extracted, or false otherwise.
@@ -395,7 +395,7 @@ bool DUCT_API extractFileLeftPart(const std::string& path, std::string& result, 
 	@param result This will be assigned to the right half.
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API extractFileLeftPart(const icu::UnicodeString& path, icu::UnicodeString& result, bool allow_leading=true);
+bool DUCT_API extractFileLeftPart(icu::UnicodeString const& path, icu::UnicodeString& result, bool allow_leading=true);
 
 /**
 	Extract the file path part after the first period.
@@ -405,7 +405,7 @@ bool DUCT_API extractFileLeftPart(const icu::UnicodeString& path, icu::UnicodeSt
 	@param include_period Whether to include the first period (true by default).
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API extractFileRightPart(const std::string& path, std::string& result, bool include_period=true, bool allow_leading=true);
+bool DUCT_API extractFileRightPart(std::string const& path, std::string& result, bool include_period=true, bool allow_leading=true);
 /**
 	Extract the file path part after the first period.
 	@returns true if the part was extracted, or false otherwise.
@@ -414,45 +414,45 @@ bool DUCT_API extractFileRightPart(const std::string& path, std::string& result,
 	@param include_period Whether to include the first period (true by default).
 	@param allow_leading Whether to allow a leading period in the path part, as in UNIX-style hidden files (true by default).
 */
-bool DUCT_API extractFileRightPart(const icu::UnicodeString& path, icu::UnicodeString& result, bool include_period=true, bool allow_leading=true);
+bool DUCT_API extractFileRightPart(icu::UnicodeString const& path, icu::UnicodeString& result, bool include_period=true, bool allow_leading=true);
 
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType DUCT_API pathType(const char* path);
+PathType DUCT_API pathType(char const* path);
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType DUCT_API pathType(const std::string& path);
+PathType DUCT_API pathType(std::string const& path);
 /**
 	Get the given path's type.
 	@returns The given path's type. PATHTYPE_NONE, PATHTYPE_FILE, or PATHTYPE_DIR.
 	@param path The path to test.
 */
-PathType DUCT_API pathType(const icu::UnicodeString& path);
+PathType DUCT_API pathType(icu::UnicodeString const& path);
 
 /**
 	Change the current working directory.
 	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
 	@param path The path to change to.
 */
-bool DUCT_API changeDir(const char* path);
+bool DUCT_API changeDir(char const* path);
 /**
 	Change the current working directory.
 	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
 	@param path The path to change to.
 */
-bool DUCT_API changeDir(const std::string& path);
+bool DUCT_API changeDir(std::string const& path);
 /**
 	Change the current working directory.
 	@returns true if the working directory was changed, or false if the working directory could not be changed to the given path.
 	@param path The path to change to.
 */
-bool DUCT_API changeDir(const icu::UnicodeString& path);
+bool DUCT_API changeDir(icu::UnicodeString const& path);
 
 /**
 	Get the current working directory.
@@ -715,57 +715,57 @@ bool DUCT_API resolvePathNormalized(icu::UnicodeString& path, bool trailing_slas
 	@returns The size of the given file.
 	@param path The file path.
 */
-uint64_t DUCT_API getFileSize(const char* path);
+uint64_t DUCT_API getFileSize(char const* path);
 /**
 	Get the filesize of the given file.
 	@returns The size of the given file.
 	@param path The file path.
 */
-uint64_t DUCT_API getFileSize(const std::string& path);
+uint64_t DUCT_API getFileSize(std::string const& path);
 /**
 	Get the filesize of the given file.
 	@returns The size of the given file.
 	@param path The file path.
 */
-uint64_t DUCT_API getFileSize(const icu::UnicodeString& path);
+uint64_t DUCT_API getFileSize(icu::UnicodeString const& path);
 
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API dirExists(const char* path);
+bool DUCT_API dirExists(char const* path);
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API dirExists(const std::string& path);
+bool DUCT_API dirExists(std::string const& path);
 /**
 	Check if the given directory exists.
 	@returns true if the directory exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API dirExists(const icu::UnicodeString& path);
+bool DUCT_API dirExists(icu::UnicodeString const& path);
 
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API fileExists(const char* path);
+bool DUCT_API fileExists(char const* path);
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API fileExists(const std::string& path);
+bool DUCT_API fileExists(std::string const& path);
 /**
 	Check if the given file exists.
 	@returns true if the file exists, or false if it does not.
 	@param path The path to test.
 */
-bool DUCT_API fileExists(const icu::UnicodeString& path);
+bool DUCT_API fileExists(icu::UnicodeString const& path);
 
 /**
 	Create the given directory path.
@@ -773,21 +773,21 @@ bool DUCT_API fileExists(const icu::UnicodeString& path);
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool DUCT_API createDir(const char* path, bool structure=false);
+bool DUCT_API createDir(char const* path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool DUCT_API createDir(const std::string& path, bool structure=false);
+bool DUCT_API createDir(std::string const& path, bool structure=false);
 /**
 	Create the given directory path.
 	@returns true if the directory path was created, or false if the directory path could not be created.
 	@param path The directory path to create.
 	@param structure Whether to create the entire path structure (e.g. if the directory 'foo' does not exist in the path 'foo/bar', it will be created if structure is true).
 */
-bool DUCT_API createDir(const icu::UnicodeString& path, bool structure=false);
+bool DUCT_API createDir(icu::UnicodeString const& path, bool structure=false);
 
 /**
 	Create the given file.
@@ -795,59 +795,59 @@ bool DUCT_API createDir(const icu::UnicodeString& path, bool structure=false);
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool DUCT_API createFile(const char* path, bool createpath=false);
+bool DUCT_API createFile(char const* path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool DUCT_API createFile(const std::string& path, bool createpath=false);
+bool DUCT_API createFile(std::string const& path, bool createpath=false);
 /**
 	Create the given file.
 	@returns true if the file was created, or false if the file could not be created.
 	@param path The file path to create.
 	@param createpath Whether to write the entire directory structure for the file path (e.g. if the directory 'foo' does not exist in the path 'foo/bar.bork', it will be created if structure is true).
 */
-bool DUCT_API createFile(const icu::UnicodeString& path, bool createpath=false);
+bool DUCT_API createFile(icu::UnicodeString const& path, bool createpath=false);
 
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool DUCT_API deleteFile(const char* path);
+bool DUCT_API deleteFile(char const* path);
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool DUCT_API deleteFile(const std::string& path);
+bool DUCT_API deleteFile(std::string const& path);
 /**
 	Delete the given file.
 	@returns true if the file was deleted, or false if it was not.
 	@param path The path of the file to remove.
 */
-bool DUCT_API deleteFile(const icu::UnicodeString& path);
+bool DUCT_API deleteFile(icu::UnicodeString const& path);
 
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool DUCT_API deleteDir(const char* path);
+bool DUCT_API deleteDir(char const* path);
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool DUCT_API deleteDir(const std::string& path);
+bool DUCT_API deleteDir(std::string const& path);
 /**
 	Delete the given directory.
 	@returns true if the directory was deleted, or false if it was not.
 	@param path The directory to remove.
 */
-bool DUCT_API deleteDir(const icu::UnicodeString& path);
+bool DUCT_API deleteDir(icu::UnicodeString const& path);
 
 } // namespace FileSystem
 

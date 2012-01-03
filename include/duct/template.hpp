@@ -78,7 +78,7 @@ public:
 		Get the template's variable-identity.
 		@returns The template's identity.
 	*/
-	const StringArray* getIdentity() const;
+	StringArray const* getIdentity() const;
 	/**
 		Set the variable type layout.
 		NOTE: The template owns the given pointer (it will be destroyed by the template upon destruction).
@@ -90,7 +90,7 @@ public:
 		Get the template's variable type layout.
 		@returns The template's layout.
 	*/
-	const VTypeLayout* getLayout() const;
+	VTypeLayout const* getLayout() const;
 	/**
 		Set the template's infinitism type (types for flexible-template matching).
 		Infinitism can be a combination of #VariableTypes, or equal to VARTYPE_ANY or VARTYPE_NONE (implying template flexibility is off).
@@ -102,7 +102,7 @@ public:
 		Get the template's infinitism variable type.
 		@returns The template's infinitism type.
 	*/
-	const unsigned int& getInfinitism() const;
+	unsigned int getInfinitism() const;
 	/**
 		Set the identifier matching case-sensitivity.
 		@returns Nothing.
@@ -119,19 +119,19 @@ public:
 		@returns true if the given identifier matched the template, or false if either it did not match or the given identifier was NULL.
 		@param identifier The identifier to test.
 	*/
-	bool validateIdentifier(const Identifier* identifier) const;
+	bool validateIdentifier(Identifier const* identifier) const;
 	/**
 		Validate the given value variable against the template.
 		@returns true if the given value matched the template, or false if either it did not match or the given value was NULL.
 		@param value The value to test.
 	*/
-	bool validateValue(const ValueVariable* value) const;
+	bool validateValue(ValueVariable const* value) const;
 	/**
 		Check if the given variable matches the template's identity.
 		@returns true if the given variable matched the template's identity, or false if either it did not match or the given variable was NULL.
 		@param variable The variable to validate.
 	*/
-	bool validateIdentity(const Variable* variable) const;
+	bool validateIdentity(Variable const* variable) const;
 	/**
 		Compact a sequence of value variables matching the template into identifiers.
 		@returns The number of identifiers created and added (0 if either the no matches were found, or the given collection is NULL or had no children).
@@ -139,21 +139,21 @@ public:
 		@param sequential Whether value sequence is sequential.
 		If true, the comparison will require the template's layout to be matched in sequence (false will allow non-matching values in a sequence).
 	*/
-	unsigned int compactCollection(CollectionVariable* collection, const icu::UnicodeString& name, bool sequential=true) const;
+	unsigned int compactCollection(CollectionVariable* collection, icu::UnicodeString const& name, bool sequential=true) const;
 	/**
 		Rename all matching identifiers to the given name.
 		@returns The number of identifiers that were renamed.
 		@param collection The collection to operate on.
 		@param name New name.
 	*/
-	unsigned int renameIdentifiers(CollectionVariable* collection, const icu::UnicodeString& name) const;
+	unsigned int renameIdentifiers(CollectionVariable* collection, icu::UnicodeString const& name) const;
 	/**
 		Rename all matching values to the given name.
 		@returns The number of values that were renamed.
 		@param collection The collection to operate on.
 		@param name New name.
 	*/
-	unsigned int renameValues(CollectionVariable* collection, const icu::UnicodeString& name) const;
+	unsigned int renameValues(CollectionVariable* collection, icu::UnicodeString const& name) const;
 	/**
 		Get the first matching variable from the given begin-end pair.
 		@returns The first matching variable, or NULL if a matching variable was not found.
@@ -189,7 +189,7 @@ public:
 		@param reverse Whether to start searching at the bottom of the collection.
 		@see validateIdentifier()
 	*/
-	Identifier* getMatchingIdentifier(const CollectionVariable* collection, bool reverse=false) const;
+	Identifier* getMatchingIdentifier(CollectionVariable const* collection, bool reverse=false) const;
 	/**
 		Get the first matching value variable from the given collection.
 		@returns The first matching value variable, or NULL if the given collection either was NULL or did not contain a matching value.
@@ -197,13 +197,13 @@ public:
 		@param reverse Whether to start searching at the bottom of the collection.
 		@see validateValue()
 	*/
-	ValueVariable* getMatchingValue(const CollectionVariable* collection, bool reverse=false) const;
+	ValueVariable* getMatchingValue(CollectionVariable const* collection, bool reverse=false) const;
 	
 protected:
-	StringArray* _iden;
-	VTypeLayout* _layout;
-	bool _casesens;
-	unsigned int _infinitism;
+	StringArray* m_iden;
+	VTypeLayout* m_layout;
+	bool m_casesens;
+	unsigned int m_infinitism;
 };
 
 } // namespace duct

@@ -34,11 +34,11 @@ namespace duct {
 StringArray::StringArray() {
 }
 
-StringArray::StringArray(const char* str) {
+StringArray::StringArray(char const* str) {
 	set(str);
 }
 
-StringArray::StringArray(const char** data, int size) {
+StringArray::StringArray(char const** data, int size) {
 	set(data, size);
 }
 
@@ -52,14 +52,14 @@ StringArray::StringArray(size_t num, ...) {
 StringArray::~StringArray() {
 }
 
-void StringArray::set(const char* str) {
+void StringArray::set(char const* str) {
 	release();
-	_data=new icu::UnicodeString*[_size=1];
-	_data[0]=new icu::UnicodeString(str);
-	_static=false;
+	m_data=new icu::UnicodeString*[m_size=1];
+	m_data[0]=new icu::UnicodeString(str);
+	m_static=false;
 }
 
-void StringArray::set(const char** data, int size) {
+void StringArray::set(char const** data, int size) {
 	release();
 	int i=0;
 	if (size<0) {
@@ -68,22 +68,22 @@ void StringArray::set(const char** data, int size) {
 		}
 		size=i;
 	}
-	_size=size;
-	_data=new icu::UnicodeString*[size];
+	m_size=size;
+	m_data=new icu::UnicodeString*[size];
 	for (i=0; i<size; ++i) {
-		_data[i]=new icu::UnicodeString(data[i]);
+		m_data[i]=new icu::UnicodeString(data[i]);
 	}
-	_static=false;
+	m_static=false;
 }
 
 void StringArray::setVLCStrings(unsigned int num, va_list ap) {
 	release();
-	_size=num;
-	_data=new icu::UnicodeString*[_size];
+	m_size=num;
+	m_data=new icu::UnicodeString*[m_size];
 	for (unsigned int i=0; i<num; ++i) {
-		_data[i]=new icu::UnicodeString(va_arg(ap, const char*));
+		m_data[i]=new icu::UnicodeString(va_arg(ap, char const*));
 	}
-	_static=false;
+	m_static=false;
 }
 
 void StringArray::setVCStrings(unsigned int num, ...) {

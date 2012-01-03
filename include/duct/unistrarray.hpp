@@ -53,13 +53,13 @@ public:
 		Constructor with single C-string.
 		@param str The string to initialize with.
 	*/
-	StringArray(const char* str);
+	StringArray(char const* str);
 	/**
 		Constructor with C-string array.
 		@param data The C-string array.
 		@param size The size of the array. If -1, the array must be NULL-terminated.
 	*/
-	StringArray(const char** data, int size=-1);
+	StringArray(char const** data, int size=-1);
 	/**
 		Variadic constructor with icu::UnicodeString elements.
 		@param num The number of arguments.
@@ -75,14 +75,14 @@ public:
 		@returns Nothing.
 		@param str The string to use.
 	*/
-	void set(const char* str);
+	void set(char const* str);
 	/**
 		Set the array data from the given C-string array.
 		@returns Nothing.
 		@param data The C-string array.
 		@param size The size of the array. If -1, the array must be NULL-terminated.
 	*/
-	void set(const char** data, int size=-1);
+	void set(char const** data, int size=-1);
 	/**
 		Set the array data from the const char* arguments in the given va_list.
 		@returns Nothing.

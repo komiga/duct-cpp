@@ -31,29 +31,29 @@ namespace duct {
 
 namespace CharUtils {
 
-const UChar __uchar_esc_quotation[]={'\\', '\"'};
+UChar const g_uchar_esc_quotation[]={'\\', '\"'};
 
 UChar32 getEscapeChar(UChar32 c) {
 	switch (c) {
-		case CHAR_N:
-			return CHAR_NEWLINE;
-		case CHAR_R:
-			return CHAR_CARRIAGERETURN;
-		case CHAR_T:
-			return CHAR_TAB;
-		case CHAR_APOSTROPHE:
-		case CHAR_QUOTE:
-		case CHAR_BACKSLASH:
-		case CHAR_OPENBRACE:
-		case CHAR_CLOSEBRACE:
-		case CHAR_EQUALSIGN:
-			return c;
-		default:
-			return CHAR_EOF;
+	case CHAR_N:
+		return CHAR_NEWLINE;
+	case CHAR_R:
+		return CHAR_CARRIAGERETURN;
+	case CHAR_T:
+		return CHAR_TAB;
+	case CHAR_APOSTROPHE:
+	case CHAR_QUOTE:
+	case CHAR_BACKSLASH:
+	case CHAR_OPENBRACE:
+	case CHAR_CLOSEBRACE:
+	case CHAR_EQUALSIGN:
+		return c;
+	default:
+		return CHAR_EOF;
 	}
 }
 
-void escapeString(icu::UnicodeString& result, const icu::UnicodeString& str, unsigned int format) {
+void escapeString(icu::UnicodeString& result, icu::UnicodeString const& str, unsigned int format) {
 	if (str.isEmpty()
 		|| ((format&FMT_STRING_ESCAPE_OTHER)==0
 		&& ( format&FMT_STRING_ESCAPE_CONTROL)==0
@@ -63,7 +63,7 @@ void escapeString(icu::UnicodeString& result, const icu::UnicodeString& str, uns
 	}
 	result.remove();
 	int32_t length=str.countChar32(0);
-	bool isquoted=(length>=2 && str.char32At(0)=='\"' && str.char32At(length-1)=='\"' && !str.endsWith(__uchar_esc_quotation, 2));
+	bool isquoted=(length>=2 && str.char32At(0)=='\"' && str.char32At(length-1)=='\"' && !str.endsWith(g_uchar_esc_quotation, 2));
 	for (int i=0; i<length; ++i) {
 		UChar32 c=str.char32At(i);
 		if ((format&FMT_STRING_ESCAPE_OTHER)!=0) {

@@ -34,96 +34,94 @@ namespace duct {
 // class BufferStream implementation
 
 BufferStream::BufferStream(void* buffer, size_t size, unsigned int flags, char const* encoding)
-	: _buffer(buffer), _pos(0), _size(size)
+	: m_buffer(buffer), m_pos(0), m_size(size)
 {
 	setFlags(flags);
 	setEncoding(encoding);
 }
 
 void BufferStream::setBuffer(void* buffer, size_t size) {
-	_buffer=buffer;
-	_size=size;
+	m_buffer=buffer;
+	m_size=size;
 }
 
 void* BufferStream::getBuffer() {
-	return _buffer;
+	return m_buffer;
 }
 
 size_t BufferStream::read(void* data, size_t size) {
-	debug_assertp(_buffer!=NULL, this, "Cannot read from closed stream");
-	debug_assertp(_flags&STREAM_READABLE, this, "Stream is not readable");
-	debug_assertp(_pos<_size, this, "Cannot read past the size of the buffer");
-	memcpy(data, (char*)_buffer+_pos, size);
-	_pos+=size;
+	debug_assertp(m_buffer!=NULL, this, "Cannot read from closed stream");
+	debug_assertp(m_flags&STREAM_READABLE, this, "Stream is not readable");
+	debug_assertp(m_pos<m_size, this, "Cannot read past the size of the buffer");
+	memcpy(data, (char*)m_buffer+m_pos, size);
+	m_pos+=size;
 	return size;
 }
 
 size_t BufferStream::write(void const* data, size_t size) {
-	debug_assertp(_buffer!=NULL, this, "Cannot write to closed stream");
-	debug_assertp(_flags&STREAM_WRITEABLE, this, "Stream is not writeable");
-	debug_assertp(_pos+size<=_size, this, "Cannot write past the size of the buffer");
-	memcpy((char*)_buffer+_pos, data, size);
-	_pos+=size;
+	debug_assertp(m_buffer!=NULL, this, "Cannot write to closed stream");
+	debug_assertp(m_flags&STREAM_WRITEABLE, this, "Stream is not writeable");
+	debug_assertp(m_pos+size<=m_size, this, "Cannot write past the size of the buffer");
+	memcpy((char*)m_buffer+m_pos, data, size);
+	m_pos+=size;
 	return size;
 }
 
-void BufferStream::flush() {
-	/* Do nothing. */
-}
+void BufferStream::flush() {/* Do nothing */}
 
 bool BufferStream::eof() const {
-	if (_buffer)
-		return _pos==_size;
+	if (m_buffer)
+		return m_pos==m_size;
 	return true;
 }
 
 size_t BufferStream::size() const {
-	return _size;
+	return m_size;
 }
 
 unsigned long BufferStream::pos() const {
-	return _pos;
+	return m_pos;
 }
 
 unsigned long BufferStream::seek(unsigned long pos) {
-	debug_assertp(_buffer!=NULL, this, "Cannot seek closed stream");
-	debug_assertp(pos<=_size, this, "Cannot seek past the size of the buffer");
-	_pos=pos;
-	return _pos;
+	debug_assertp(m_buffer!=NULL, this, "Cannot seek closed stream");
+	debug_assertp(pos<=m_size, this, "Cannot seek past the size of the buffer");
+	m_pos=pos;
+	return m_pos;
 }
 
 void BufferStream::close() {
-	if (_buffer!=NULL) {
-		_buffer=NULL;
-		_pos=0;
-		_size=0;
+	if (m_buffer!=NULL) {
+		m_buffer=NULL;
+		m_pos=0;
+		m_size=0;
 	}
 }
 
 // class ReadOnlyBufferStream implementation
 
 ReadOnlyBufferStream::ReadOnlyBufferStream(void const* buffer, size_t size, unsigned int flags, char const* encoding)
-	: _buffer(buffer), _pos(0), _size(size)
+	: m_buffer(buffer), m_pos(0), m_size(size)
 {
 	setFlags(flags);
 	setEncoding(encoding);
 }
 
 void ReadOnlyBufferStream::setBuffer(void const* buffer, size_t size) {
-	_buffer=buffer;
-	_size=size;
+	m_buffer=buffer;
+	m_size=size;
 }
 
 void const* ReadOnlyBufferStream::getBuffer() {
-	return _buffer;
+	return m_buffer;
 }
 
 size_t ReadOnlyBufferStream::read(void* data, size_t size) {
-	debug_assertp(_buffer!=NULL, this, "Cannot read from closed stream");
-	debug_assertp(_flags&STREAM_READABLE, this, "Stream is not readable");
-	debug_assertp(_pos<_size, this, "Cannot read past the size of the buffer");
-	memcpy(data, (char*)_buffer+_pos, size);
-	_pos+=size;
+	debug_assertp(m_buffer!=NULL, this, "Cannot read from closed stream");
+	debug_assertp(m_flags&STREAM_READABLE, this, "Stream is not readable");
+	debug_assertp(m_pos<m_size, this, "Cannot read past the size of the buffer");
+	memcpy(data, (char*)m_buffer+m_pos, size);
+	m_pos+=size;
 	return size;
 }
 
@@ -132,41 +130,39 @@ size_t ReadOnlyBufferStream::write(void const*, size_t) {
 	return 0;
 }
 
-void ReadOnlyBufferStream::flush() {
-	/* Do nothing. */
-}
+void ReadOnlyBufferStream::flush() {/* Do nothing */}
 
 bool ReadOnlyBufferStream::eof() const {
-	if (_buffer)
-		return _pos==_size;
+	if (m_buffer)
+		return m_pos==m_size;
 	return true;
 }
 
 size_t ReadOnlyBufferStream::size() const {
-	return _size;
+	return m_size;
 }
 
 unsigned long ReadOnlyBufferStream::pos() const {
-	return _pos;
+	return m_pos;
 }
 
 unsigned long ReadOnlyBufferStream::seek(unsigned long pos) {
-	debug_assertp(_buffer!=NULL, this, "Cannot seek closed stream");
-	debug_assertp(pos<=_size, this, "Cannot seek past the size of the buffer");
-	_pos=pos;
-	return _pos;
+	debug_assertp(m_buffer!=NULL, this, "Cannot seek closed stream");
+	debug_assertp(pos<=m_size, this, "Cannot seek past the size of the buffer");
+	m_pos=pos;
+	return m_pos;
 }
 
 void ReadOnlyBufferStream::close() {
-	if (_buffer!=NULL) {
-		_buffer=NULL;
-		_pos=0;
-		_size=0;
+	if (m_buffer!=NULL) {
+		m_buffer=NULL;
+		m_pos=0;
+		m_size=0;
 	}
 }
 
 void ReadOnlyBufferStream::setFlags(unsigned int flags) {
-	_flags=flags&~STREAM_WRITEABLE;
+	m_flags=flags&~STREAM_WRITEABLE;
 }
 
 } // namespace duct

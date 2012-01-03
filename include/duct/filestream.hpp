@@ -41,7 +41,7 @@ namespace duct {
 */
 enum FileStreamFlags {
 	/** Stream is opened with the append attribute. This flag implies STREAM_WRITEABLE. */
-	FILESTREAM_APPEND=__STREAM_RESERVED04
+	FILESTREAM_APPEND=STREAM_RESERVED04__
 };
 
 /**
@@ -57,9 +57,9 @@ public:
 		@param path The path to the file.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	FileStream(const char* path, const char* encoding="utf8");
-	FileStream(const std::string& path, const char* encoding="utf8");
-	FileStream(const icu::UnicodeString& path, const char* encoding="utf8");
+	FileStream(char const* path, char const* encoding="utf8");
+	FileStream(std::string const& path, char const* encoding="utf8");
+	FileStream(icu::UnicodeString const& path, char const* encoding="utf8");
 	/**
 		Constructor with path and modes.
 		isOpen() should be called to check if the file was opened successfully.
@@ -68,9 +68,9 @@ public:
 		@param readable Whether the stream can be read from.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	FileStream(const char* path, bool readable, bool writeable, const char* encoding="utf8");
-	FileStream(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
-	FileStream(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
+	FileStream(char const* path, bool readable, bool writeable, char const* encoding="utf8");
+	FileStream(std::string const& path, bool readable, bool writeable, char const* encoding="utf8");
+	FileStream(icu::UnicodeString const& path, bool readable, bool writeable, char const* encoding="utf8");
 	/**
 		Constructor with path and flags.
 		isOpen() should be called to check if the file was opened successfully.
@@ -78,9 +78,9 @@ public:
 		@param flags A combination of #Flags values.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	FileStream(const char* path, unsigned int flags, const char* encoding="utf8");
-	FileStream(const std::string& path, unsigned int flags, const char* encoding="utf8");
-	FileStream(const icu::UnicodeString& path, unsigned int flags, const char* encoding="utf8");
+	FileStream(char const* path, unsigned int flags, char const* encoding="utf8");
+	FileStream(std::string const& path, unsigned int flags, char const* encoding="utf8");
+	FileStream(icu::UnicodeString const& path, unsigned int flags, char const* encoding="utf8");
 	/**
 		Destructor.
 		The stream will be closed at deconstruction, though this should not be relied upon.
@@ -94,7 +94,7 @@ public:
 	bool isOpen() const;
 	
 	virtual size_t read(void* data, size_t size);
-	virtual size_t write(const void* data, size_t size);
+	virtual size_t write(void const* data, size_t size);
 	virtual void flush();
 	virtual bool eof() const;
 	virtual size_t size() const;
@@ -109,7 +109,7 @@ public:
 		@param format The format string.
 		@param ... Variadic arguments.
 	*/
-	//int scanf(const char* format, ...);
+	//int scanf(char const* format, ...);
 	/**
 		Set the stream's flags.
 		<em>NOTE: This function does nothing for FileStream. The flags cannot be changed after the stream is opened.</em>
@@ -125,9 +125,9 @@ public:
 		@param writeable Open as writeable.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	static FileStream* openFile(const char* path, bool readable, bool writeable, const char* encoding="utf8");
-	static FileStream* openFile(const std::string& path, bool readable, bool writeable, const char* encoding="utf8");
-	static FileStream* openFile(const icu::UnicodeString& path, bool readable, bool writeable, const char* encoding="utf8");
+	static FileStream* openFile(char const* path, bool readable, bool writeable, char const* encoding="utf8");
+	static FileStream* openFile(std::string const& path, bool readable, bool writeable, char const* encoding="utf8");
+	static FileStream* openFile(icu::UnicodeString const& path, bool readable, bool writeable, char const* encoding="utf8");
 	/**
 		Open the given file with the flags.
 		@returns A new FileStream, or NULL if an error occurred.
@@ -135,35 +135,35 @@ public:
 		@param flags The flags to open the stream with.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	static FileStream* openFile(const char* path, unsigned int flags, const char* encoding="utf8");
-	static FileStream* openFile(const std::string& path, unsigned int flags, const char* encoding="utf8");
-	static FileStream* openFile(const icu::UnicodeString& path, unsigned int flags, const char* encoding="utf8");
+	static FileStream* openFile(char const* path, unsigned int flags, char const* encoding="utf8");
+	static FileStream* openFile(std::string const& path, unsigned int flags, char const* encoding="utf8");
+	static FileStream* openFile(icu::UnicodeString const& path, unsigned int flags, char const* encoding="utf8");
 	/**
 		Open the given file as readable.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	static FileStream* readFile(const char* path, const char* encoding="utf8");
-	static FileStream* readFile(const std::string& path, const char* encoding="utf8");
-	static FileStream* readFile(const icu::UnicodeString& path, const char* encoding="utf8");
+	static FileStream* readFile(char const* path, char const* encoding="utf8");
+	static FileStream* readFile(std::string const& path, char const* encoding="utf8");
+	static FileStream* readFile(icu::UnicodeString const& path, char const* encoding="utf8");
 	/**
 		Open the given file as writeable.
 		@returns A new FileStream, or NULL if an error occurred.
 		@param path The file path to open.
 		@param encoding The character encoding to use. Default is UTF-8.
 	*/
-	static FileStream* writeFile(const char* path, const char* encoding="utf8");
-	static FileStream* writeFile(const std::string& path, const char* encoding="utf8");
-	static FileStream* writeFile(const icu::UnicodeString& path, const char* encoding="utf8");
+	static FileStream* writeFile(char const* path, char const* encoding="utf8");
+	static FileStream* writeFile(std::string const& path, char const* encoding="utf8");
+	static FileStream* writeFile(icu::UnicodeString const& path, char const* encoding="utf8");
 	
 protected:
-	FILE* _file;			// C FILE pointer
-	unsigned long _pos;		// Stream position (cached and handled internally)
-	size_t _size;			// Stream size (cached and handled internally)
+	FILE* m_file;			// C FILE pointer
+	unsigned long m_pos;		// Stream position (cached and handled internally)
+	size_t m_size;			// Stream size (cached and handled internally)
 	
 	/** Initialize the stream with a file path and flags. */
-	void init(const char* path, unsigned int flags);
+	void init(char const* path, unsigned int flags);
 	/** Initialize the stream with a FILE pointer and flags. */
 	virtual void init(FILE* file, unsigned int flags);
 	

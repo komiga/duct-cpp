@@ -8,7 +8,7 @@
 using namespace duct;
 
 int main() {
-	const char* file="data/foobar";
+	char const* file="data/foobar";
 	icu::UnicodeString str("abcd");
 	
 	{

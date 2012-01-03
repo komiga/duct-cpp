@@ -8,11 +8,11 @@
 
 using namespace duct;
 
-const char* inpath="tpl.csv";
-const UChar32 sepchar=',';
-const unsigned int headercount=0;
+char const* inpath="tpl.csv";
+UChar32 const sepchar=',';
+unsigned int const headercount=0;
 
-const CSVTRecord __tpl_layout[]={
+CSVTRecord const __tpl_layout[]={
 	{VARTYPE_BOOL, false},
 	{VARTYPE_BOOL, false},
 	{VARTYPE_INTEGER, true},
@@ -23,7 +23,7 @@ const CSVTRecord __tpl_layout[]={
 CSVTemplate tpl(5, __tpl_layout);
 CSVTemplate tpl2(5, NULL); // only requires a count of 5
 
-void printRow(const CSVRow& row) {
+void printRow(CSVRow const& row) {
 	printf("{%s, %s} [%d:%lu] ", tpl.validate(row) ? "true " : "false", tpl2.validate(row) ? "true " : "false", row.getIndex(), row.getCount(true));
 	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);

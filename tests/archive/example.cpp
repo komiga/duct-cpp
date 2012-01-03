@@ -9,15 +9,16 @@
 #include <iostream>
 #include <unicode/ustream.h>
 
-MyArchive::MyArchive(const icu::UnicodeString& path) : duct::Archive(path) {
-}
+MyArchive::MyArchive(icu::UnicodeString const& path)
+	: duct::Archive(path)
+{}
 
 MyArchive::~MyArchive() {
 	close();
 	clear();
 }
 
-const char* MyArchive::getIdentifier() const {
+char const* MyArchive::getIdentifier() const {
 	return "TEST";
 }
 
@@ -28,48 +29,48 @@ size_t MyArchive::getMetadataSize() const {
 size_t MyArchive::getHeaderSize() const {
 	size_t size=getMetadataSize();
 	MyEntryList::const_iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
 		size+=(*iter)->getMetadataSize();
 	}
 	return size;
 }
 
 unsigned int MyArchive::getCount() const {
-	return (unsigned int)_list.size();
+	return (unsigned int)m_list.size();
 }
 
 MyEntryList& MyArchive::getList() {
-	return _list;
+	return m_list;
 }
 
 void MyArchive::clear() {
 	MyEntryList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
 		delete *iter;
 	}
-	_list.clear();
+	m_list.clear();
 }
 
 bool MyArchive::deserializeUserspace() {
 	// no special data
-	unsigned int entrycount=_stream->readUInt32();
+	unsigned int entrycount=m_stream->readUInt32();
 	for (unsigned int i=0; i<entrycount; ++i) {
 		MyEntry* e=new MyEntry();
-		if (!e->deserialize(_stream)) {
+		if (!e->deserialize(m_stream)) {
 			delete e;
 			return false;
 		}
-		_list.push_back(e);
+		m_list.push_back(e);
 	}
 	return true;
 }
 
 bool MyArchive::serializeUserspace() {
 	// no special data
-	_stream->writeUInt32(getCount());
+	m_stream->writeUInt32(getCount());
 	MyEntryList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
-		if (!(*iter)->serialize(_stream)) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
+		if (!(*iter)->serialize(m_stream)) {
 			return false;
 		}
 	}
@@ -78,8 +79,8 @@ bool MyArchive::serializeUserspace() {
 
 bool MyArchive::readEntries() {
 	MyEntryList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
-		if (!(*iter)->read(_stream)) { // we don't need to seek to the dataoffset - Entry.read() is supposed to
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
+		if (!(*iter)->read(m_stream)) { // we don't need to seek to the dataoffset - Entry.read() is supposed to
 			return false;
 		}
 	}
@@ -87,10 +88,10 @@ bool MyArchive::readEntries() {
 }
 
 bool MyArchive::writeEntries() {
-	_stream->seek(getHeaderSize());
+	m_stream->seek(getHeaderSize());
 	MyEntryList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
-		if (!(*iter)->write(_stream)) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
+		if (!(*iter)->write(m_stream)) {
 			return false;
 		}
 	}
@@ -98,15 +99,18 @@ bool MyArchive::writeEntries() {
 }
 
 void MyArchive::add(MyEntry* e) {
-	_list.push_back(e);
+	m_list.push_back(e);
 }
 
 // class MyEntry implementation
 
-MyEntry::MyEntry() {
-}
+MyEntry::MyEntry()
+	: m_path(), m_data(NULL)
+{}
 
-MyEntry::MyEntry(const icu::UnicodeString& path) {
+MyEntry::MyEntry(icu::UnicodeString const& path)
+	: m_path(), m_data(NULL)
+{
 	load(path);
 }
 
@@ -115,23 +119,23 @@ MyEntry::~MyEntry() {
 };
 
 void MyEntry::freeData() {
-	if (_data) {
-		free(_data);
-		_data=NULL;
+	if (m_data) {
+		free(m_data);
+		m_data=NULL;
 	}
 }
 
 char* MyEntry::getData() {
-	return _data;
+	return m_data;
 }
 
 icu::UnicodeString& MyEntry::getPath() {
-	return _path;
+	return m_path;
 }
 
 unsigned int MyEntry::getMetadataSize() {
 	std::string temp;
-	_path.toUTF8String(temp);
+	m_path.toUTF8String(temp);
 	return duct::Entry::getMetadataSize()+2+(unsigned int)temp.size();
 }
 
@@ -148,53 +152,53 @@ bool MyEntry::deserializeUserspace(duct::Stream* stream) {
 	char* buf=(char*)malloc(len);
 	debug_assertp(buf, this, "unable to allocate string buffer");
 	stream->read(buf, len);
-	_path=icu::UnicodeString(buf, len, "utf8");
+	m_path=icu::UnicodeString(buf, len, "utf8");
 	free(buf);
 	return true;
 }
 
 bool MyEntry::serializeUserspace(duct::Stream* stream) {
 	std::string temp;
-	_path.toUTF8String(temp);
+	m_path.toUTF8String(temp);
 	stream->writeUInt16((uint16_t)temp.size());
 	stream->write(temp.data(), temp.size());
 	return true;
 }
 
 bool MyEntry::read(duct::Stream* stream) {
-	stream->seek(_dataoffset);
+	stream->seek(m_dataoffset);
 	freeData();
-	_data=(char*)malloc(_datasize);
-	stream->read(_data, _datasize);
+	m_data=(char*)malloc(m_datasize);
+	stream->read(m_data, m_datasize);
 	return true;
 }
 
 bool MyEntry::write(duct::Stream* stream) {
-	_dataoffset=stream->pos();
-	if (_data) {
-		stream->write(_data, _datasize);
+	m_dataoffset=stream->pos();
+	if (m_data) {
+		stream->write(m_data, m_datasize);
 	}
 	return true;
 }
 
 // load the entry's data from a file
-void MyEntry::load(const icu::UnicodeString& path) {
+void MyEntry::load(icu::UnicodeString const& path) {
 	freeData();
-	_path.setTo(path);
-	duct::FileStream* stream=duct::FileStream::openFile(_path, true, false);
+	m_path.setTo(path);
+	duct::FileStream* stream=duct::FileStream::openFile(m_path, true, false);
 	if (stream) {
-		_datasize=(uint32_t)stream->size();
-		_data=(char*)malloc(_datasize);
-		stream->read(_data, _datasize);
+		m_datasize=(uint32_t)stream->size();
+		m_data=(char*)malloc(m_datasize);
+		stream->read(m_data, m_datasize);
 		delete stream;
 	}
 }
 
 void MyEntry::save() {
-	duct::FileStream* stream=duct::FileStream::openFile(_path+".out", false, true);
+	duct::FileStream* stream=duct::FileStream::openFile(m_path+".out", false, true);
 	if (stream) {
-		if (_data!=NULL) {
-			stream->write(_data, _datasize);
+		if (m_data!=NULL) {
+			stream->write(m_data, m_datasize);
 		}
 		delete stream;
 	}

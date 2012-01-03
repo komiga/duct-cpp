@@ -49,11 +49,11 @@ enum StreamFlags {
 	/** Stream is writeable. */
 	STREAM_WRITEABLE=0x02,
 	/** Reserved flag 0x04. */
-	__STREAM_RESERVED04=0x04,
+	STREAM_RESERVED04__=0x04,
 	/** Reserved flag 0x08. */
-	__STREAM_RESERVED08=0x08,
+	STREAM_RESERVED08__=0x08,
 	/** Reserved flag 0x10. */
-	__STREAM_RESERVED10=0x10
+	STREAM_RESERVED10__=0x10
 };
 
 /** Abstract class for every stream. */
@@ -84,7 +84,7 @@ public:
 		@param data Data pointer.
 		@param size Number of bytes to write.
 	*/
-	virtual size_t write(const void* data, size_t size)=0;
+	virtual size_t write(void const* data, size_t size)=0;
 	
 	/**
 		Read an 8-bit integer from the stream.
@@ -263,14 +263,14 @@ public:
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeString(const icu::UnicodeString& str);
+	virtual size_t writeString(icu::UnicodeString const& str);
 	/**
 		Write the the given string as a line (appends '\\n').
 		The number of bytes written will depend on the stream's encoding.
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeLine(const icu::UnicodeString& str);
+	virtual size_t writeLine(icu::UnicodeString const& str);
 	/**
 		Write the given string to the stream as a null-terminated string.
 		This will basically write str+'\\0' to the stream.
@@ -278,7 +278,7 @@ public:
 		@returns The number of bytes written.
 		@param str The string to write to the stream.
 	*/
-	virtual size_t writeCString(const icu::UnicodeString& str);
+	virtual size_t writeCString(icu::UnicodeString const& str);
 	
 	/**
 		Read a null-terminated string and compare the given string against it.
@@ -286,7 +286,7 @@ public:
 		@param checkstr The string to compare with.
 		@param maxlength Optional max-length for reading the C string. If maxlength is greater than 0, it will be used as the maximum length for reading the C string, otherwise the given string's length will be used (plus one for the null character).
 	*/
-	bool readAndMatchCString(const icu::UnicodeString& checkstr, size_t maxlength=0);
+	bool readAndMatchCString(icu::UnicodeString const& checkstr, size_t maxlength=0);
 	/**
 		Read a reserved-space null-terminated string.
 		@returns Nothing.
@@ -300,7 +300,7 @@ public:
 		@param checkstr The string to match with.
 		@param size The size of the reserved space.
 	*/
-	bool readAndMatchReservedCString(const icu::UnicodeString& checkstr, size_t size);
+	bool readAndMatchReservedCString(icu::UnicodeString const& checkstr, size_t size);
 	/**
 		Write reserved-area data.
 		@returns Nothing.
@@ -315,7 +315,7 @@ public:
 		@param size The size of the reserved space.
 		@param padvalue The value with which to pad the space.
 	*/
-	void writeReservedCString(const icu::UnicodeString& str, size_t size, unsigned char padvalue);
+	void writeReservedCString(icu::UnicodeString const& str, size_t size, unsigned char padvalue);
 	
 	/**
 		Flush the stream.
@@ -376,20 +376,20 @@ public:
 		@param encoding The stream's new character encoding. See ICU documentation.
 		@see getEncoding()
 	*/
-	virtual bool setEncoding(const char* encoding);
-	virtual bool setEncoding(const icu::UnicodeString& encoding);
+	virtual bool setEncoding(char const* encoding);
+	virtual bool setEncoding(icu::UnicodeString const& encoding);
 	/**
 		Get the stream's character encoding.
 		@returns The stream's character encoding. This may be NULL if the character converter has not been opened.
 	*/
-	virtual const char* getEncoding() const;
+	virtual char const* getEncoding() const;
 	
 	/**
 		Get the stream's character converter.
 		@returns The stream's character converter. This may be NULL if the character converter has not been opened.
 	*/
 	virtual UConverter* getConv();
-	virtual const UConverter* getConv() const;
+	virtual UConverter const* getConv() const;
 	/**
 		Close the stream's character converter.
 		@returns Nothing.
@@ -399,36 +399,38 @@ public:
 private:
 	/**
 		Read an element by size.
-		This is an alias for read(&element, sizeof(_elem_t)).
+		This is an alias for read(&element, sizeof(elem_t_)).
 		If the return value is not the size of the element, then an error occurred (likely end-of-stream).
 		@returns The number of bytes read, which mightn't be the size of the element.
 		@param element Reference to the element to read into.
 	*/
-	template <typename _elem_t>
-	inline size_t read(_elem_t& element);
+	template <typename elemt_t_>
+	inline size_t read(elemt_t_& element) {
+		return read((void*)&element, sizeof(elemt_t_));
+	}
 	/**
 		Write the given element by size.
-		This is an alias for write(&element, sizeof(_elem_t)).
+		This is an alias for write(&element, sizeof(elem_t_)).
 		If the return value is not the size of the element, then an error occurred (likely end-of-stream).
 		@returns The number of bytes read, which mightn't be the size of the element.
 		@param element Reference to the element to write.
 	*/
-	template <typename _elem_t>
-	inline size_t write(const _elem_t& element);
+	template <typename elemt_t_>
+	inline size_t write(elemt_t_ const& element) {
+		return write((void const*)&element, sizeof(elemt_t_));
+	}
 	
 protected:
 	/**
 		Stream flags (readable, writeable, etc.)
 		Combination of Flags values (and possibly other enums for deriving classes).
 	*/
-	unsigned int _flags;
+	unsigned int m_flags;
 	/**
 		Character converter for string reading/writing.
 	*/
-	UConverter* _conv;
+	UConverter* m_conv;
 };
-
-#include <duct/inline/stream.inl>
 
 } // namespace duct
 

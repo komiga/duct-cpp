@@ -34,8 +34,9 @@ namespace duct {
 
 // class Stream implementation
 
-Stream::Stream() : _conv(NULL) {
-}
+Stream::Stream()
+	: m_conv(NULL)
+{}
 
 Stream::~Stream() {
 	closeConv();
@@ -102,13 +103,13 @@ double Stream::readDouble() {
 }
 
 UChar32 Stream::readChar() {
-	ucnv_resetToUnicode(_conv);
+	ucnv_resetToUnicode(m_conv);
 	char in[4];
 	char* inp;
 	UChar out[]={(UChar)U_SENTINEL, (UChar)U_SENTINEL};
 	UChar* outp=out;
 	int pending=1; // assume one UChar by default
-	int size=ucnv_getMinCharSize(_conv);
+	int size=ucnv_getMinCharSize(m_conv);
 	UErrorCode err=U_ZERO_ERROR;
 	while (pending>0) {
 		if (eof()) {
@@ -116,13 +117,13 @@ UChar32 Stream::readChar() {
 		}
 		inp=in; // reset inp
 		read(in, size);
-		ucnv_toUnicode(_conv, &outp, out+2, (const char**)&inp, (const char*)(in+size), NULL, false, &err);
+		ucnv_toUnicode(m_conv, &outp, out+2, (char const**)&inp, (char const*)(in+size), NULL, false, &err);
 		if (U_FAILURE(err)) {
 			printf("Stream::readString ERROR: %s\n", u_errorName(err));
 			debug_assertp(false, this, "Failed to convert character sequence");
 		}
 		err=U_ZERO_ERROR;
-		pending=ucnv_toUCountPending(_conv, &err);
+		pending=ucnv_toUCountPending(m_conv, &err);
 		//printf("outp:%p pending:%d size:%d\n", (void*)outp, pending, size);
 		size=1; // reset to byte size
 	}
@@ -245,9 +246,9 @@ size_t Stream::writeDouble(double value) {
 size_t Stream::writeChar16(UChar value) {
 	icu::UnicodeString tempstr(value);
 	char out[8];
-	const UChar* in=tempstr.getBuffer();
+	UChar const* in=tempstr.getBuffer();
 	UErrorCode err=U_ZERO_ERROR;
-	size_t size=ucnv_fromUChars(_conv, out, sizeof(out), in, 1, &err);
+	size_t size=ucnv_fromUChars(m_conv, out, sizeof(out), in, 1, &err);
 	if (U_FAILURE(err)) {
 		printf("Stream::writeChar16 ERROR: %s\n", u_errorName(err));
 		debug_assertp(false, this, "Failed to convert character");
@@ -260,9 +261,9 @@ size_t Stream::writeChar16(UChar value) {
 size_t Stream::writeChar32(UChar32 value) {
 	icu::UnicodeString tempstr(value);
 	char out[16];
-	const UChar* in=tempstr.getBuffer();
+	UChar const* in=tempstr.getBuffer();
 	UErrorCode err=U_ZERO_ERROR;
-	size_t size=ucnv_fromUChars(_conv, out, sizeof(out), in, tempstr.length(), &err);
+	size_t size=ucnv_fromUChars(m_conv, out, sizeof(out), in, tempstr.length(), &err);
 	if (U_FAILURE(err)) {
 		printf("Stream::writeChar32 ERROR: %s\n", u_errorName(err));
 		debug_assertp(false, this, "Failed to convert character");
@@ -271,20 +272,20 @@ size_t Stream::writeChar32(UChar32 value) {
 	return size;
 }
 
-size_t Stream::writeString(const icu::UnicodeString& str) {
+size_t Stream::writeString(icu::UnicodeString const& str) {
 	size_t count=0;
-	const UChar* in=str.getBuffer();
+	UChar const* in=str.getBuffer();
 	if (str.length()>0 && in) {
-		ucnv_resetFromUnicode(_conv);
+		ucnv_resetFromUnicode(m_conv);
 		UErrorCode err=U_ZERO_ERROR;
 		char out[512];
 		char* outp=out;
-		const char* out_limit=out+sizeof(out);
-		const UChar* inp=in;
-		const UChar* in_limit=in+str.length();
+		char const* out_limit=out+sizeof(out);
+		UChar const* inp=in;
+		UChar const* in_limit=in+str.length();
 		bool cont_writing=true;
 		while (cont_writing) {
-			ucnv_fromUnicode(_conv, &outp, out_limit, &inp, in_limit, NULL, false, &err);
+			ucnv_fromUnicode(m_conv, &outp, out_limit, &inp, in_limit, NULL, false, &err);
 			if (U_SUCCESS(err)) {
 				// target filled entirely with source
 				size_t size=(outp-out);
@@ -302,24 +303,23 @@ size_t Stream::writeString(const icu::UnicodeString& str) {
 				debug_assertp(false, this, "Failed to convert string");
 			}
 		}
-		
 	}
 	return count;
 }
 
-size_t Stream::writeLine(const icu::UnicodeString& str) {
+size_t Stream::writeLine(icu::UnicodeString const& str) {
 	size_t size=writeString(str);
 	size+=writeChar16('\n');
 	return size;
 }
 
-size_t Stream::writeCString(const icu::UnicodeString& str) {
+size_t Stream::writeCString(icu::UnicodeString const& str) {
 	size_t size=writeString(str);
 	size+=writeChar16('\0');
 	return size;
 }
 
-bool Stream::readAndMatchCString(const icu::UnicodeString& checkstr, size_t maxlength) {
+bool Stream::readAndMatchCString(icu::UnicodeString const& checkstr, size_t maxlength) {
 	maxlength=(maxlength==0) ? (checkstr.length()+1) : (maxlength);
 	icu::UnicodeString rstr;
 	readCString(rstr, maxlength);
@@ -331,7 +331,7 @@ void Stream::readReservedCString(icu::UnicodeString& result, size_t size) {
 	skip(size-readcount);
 }
 
-bool Stream::readAndMatchReservedCString(const icu::UnicodeString& checkstr, size_t size) {
+bool Stream::readAndMatchReservedCString(icu::UnicodeString const& checkstr, size_t size) {
 	icu::UnicodeString rstr;
 	size_t readcount=readCString(rstr, size);
 	skip(size-readcount);
@@ -346,7 +346,7 @@ void Stream::writeReservedData(size_t size, unsigned char padvalue) {
 	free(data);
 }
 
-void Stream::writeReservedCString(const icu::UnicodeString& str, size_t size, unsigned char padvalue) {
+void Stream::writeReservedCString(icu::UnicodeString const& str, size_t size, unsigned char padvalue) {
 	if ((unsigned int)str.length()<size) { // string is smaller, null and padding needed
 		size_t bytes=writeCString(str);
 		if (bytes<size) {
@@ -365,56 +365,56 @@ unsigned long Stream::skip(long change) {
 }
 
 void Stream::setFlags(unsigned int flags) {
-	_flags=flags;
+	m_flags=flags;
 }
 
 unsigned int Stream::getFlags() const {
-	return _flags;
+	return m_flags;
 }
 
-bool Stream::setEncoding(const char* codepage) {
+bool Stream::setEncoding(char const* codepage) {
 	UErrorCode err=U_ZERO_ERROR;
 	UConverter* conv=ucnv_open(codepage, &err);
 	if (U_SUCCESS(err)) {
 		closeConv();
-		_conv=conv;
+		m_conv=conv;
 		return true;
 	}
 	return false;
 }
 
-bool Stream::setEncoding(const icu::UnicodeString& encoding) {
+bool Stream::setEncoding(icu::UnicodeString const& encoding) {
 	UErrorCode err=U_ZERO_ERROR;
 	icu::UnicodeString temp(encoding);
 	UConverter* conv=ucnv_openU(temp.getTerminatedBuffer(), &err);
 	if (U_SUCCESS(err)) {
 		closeConv();
-		_conv=conv;
+		m_conv=conv;
 		return true;
 	}
 	return false;
 }
 
-const char* Stream::getEncoding() const {
-	if (_conv) {
+char const* Stream::getEncoding() const {
+	if (m_conv) {
 		UErrorCode err=U_ZERO_ERROR;
-		return ucnv_getName(_conv, &err);
+		return ucnv_getName(m_conv, &err);
 	}
 	return NULL;
 }
 
 UConverter* Stream::getConv() {
-	return _conv;
+	return m_conv;
 }
 
-const UConverter* Stream::getConv() const {
-	return _conv;
+UConverter const* Stream::getConv() const {
+	return m_conv;
 }
 
 void Stream::closeConv() {
-	if (_conv!=NULL) {
-		ucnv_close(_conv);
-		_conv=NULL;
+	if (m_conv!=NULL) {
+		ucnv_close(m_conv);
+		m_conv=NULL;
 	}
 }
 

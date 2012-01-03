@@ -47,7 +47,7 @@ namespace duct {
 	@param optarglimit Limits how many arguments can be given to an option (options start with "--" or "-"). If set to -1, there is no limit.
 	Single-dash options (e.g. "-a") are not parsed for arguments, whereas double-dash options (e.g. "--foo bar") will be.
 */
-DUCT_API Identifier* parseArgs(int argc, const char** argv, bool fullargs=true, int optarglimit=1);
+DUCT_API Identifier* parseArgs(int argc, char const** argv, bool fullargs=true, int optarglimit=1);
 
 /**
 	ArgImpl call type enum.
@@ -106,8 +106,8 @@ public:
 		@returns The iterator for the implementation with the given alias, or end() if the given alias was not found.
 		@param alias The alias to search for.
 	*/
-	ArgImplList::iterator find(const icu::UnicodeString& alias);
-	ArgImplList::const_iterator find(const icu::UnicodeString& alias) const;
+	ArgImplList::iterator find(icu::UnicodeString const& alias);
+	ArgImplList::const_iterator find(icu::UnicodeString const& alias) const;
 	/**
 		Add an implementation to the handler.
 		The handler takes ownership of the given pointer.
@@ -120,7 +120,7 @@ public:
 		@returns The argument implementation with the given alias, or NULL if there is no argument implementation with the given alias.
 		@param alias The alias to search for.
 	*/
-	ArgImpl* getImpl(const icu::UnicodeString& alias);
+	ArgImpl* getImpl(icu::UnicodeString const& alias);
 	/**
 		Clear the handler.
 		This will free all argument implementations in the handler.
@@ -129,7 +129,7 @@ public:
 	void clear();
 	
 protected:
-	ArgImplList _list;
+	ArgImplList m_list;
 };
 
 /**
@@ -178,7 +178,7 @@ public:
 		@returns true if the implementation has the given alias, or false if it does not.
 		@param alias The alias to search for.
 	*/
-	bool hasAlias(const icu::UnicodeString& alias) const;
+	bool hasAlias(icu::UnicodeString const& alias) const;
 	/**
 		Check the current arguments for errors.
 		@returns 0 on success, or some error code on failure.
@@ -193,12 +193,12 @@ public:
 		Get the implementation's usage string.
 		@returns The implementation's usage string.
 	*/
-	virtual const icu::UnicodeString& getUsage() const=0;
+	virtual icu::UnicodeString const& getUsage() const=0;
 	
 protected:
-	unsigned int _calltype;
-	StringArray _aliases;
-	Identifier* _args;
+	unsigned int m_calltype;
+	StringArray m_aliases;
+	Identifier* m_args;
 };
 
 } // namespace duct

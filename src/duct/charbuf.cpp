@@ -36,90 +36,91 @@ namespace duct {
 
 // class CharBuf implementation
 
-CharBuf::CharBuf() : _buffer(NULL), _bufsize(0), _buflength(0), _cached(false) {
-}
+CharBuf::CharBuf()
+	: m_buffer(NULL), m_bufsize(0), m_buflength(0), m_bufstring(), m_cached(false)
+{/* Do nothing */}
 
 CharBuf::~CharBuf() {
-	if (_buffer) {
-		free(_buffer);
-		_buffer=NULL;
+	if (m_buffer) {
+		free(m_buffer);
+		m_buffer=NULL;
 	}
 }
 
 void CharBuf::addChar(UChar32 c) {
 	const size_t BUFFER_INITIAL_SIZE=68;
 	const double BUFFER_MULTIPLIER=1.75;
-	if (!_buffer) {
-		_bufsize=BUFFER_INITIAL_SIZE;
-		_buffer=(UChar32*)malloc(_bufsize*4);
-		debug_assertp(_buffer, this, "Unable to allocate buffer");
-		_buflength=0;
-	} else if (_buflength>=_bufsize) {
-		size_t newsize=(size_t)ceil(_bufsize*BUFFER_MULTIPLIER);
-		if (newsize<_buflength) {
-			newsize=(size_t)ceil(_buflength*BUFFER_MULTIPLIER);
+	if (!m_buffer) {
+		m_bufsize=BUFFER_INITIAL_SIZE;
+		m_buffer=(UChar32*)malloc(m_bufsize*4);
+		debug_assertp(m_buffer, this, "Unable to allocate buffer");
+		m_buflength=0;
+	} else if (m_buflength>=m_bufsize) {
+		size_t newsize=(size_t)ceil(m_bufsize*BUFFER_MULTIPLIER);
+		if (newsize<m_buflength) {
+			newsize=(size_t)ceil(m_buflength*BUFFER_MULTIPLIER);
 		}
-		_bufsize=newsize;
-		void* temp=realloc(_buffer, newsize*4);
+		m_bufsize=newsize;
+		void* temp=realloc(m_buffer, newsize*4);
 		debug_assertp(temp, this, "Unable to allocate buffer");
-		_buffer=(UChar32*)temp;
+		m_buffer=(UChar32*)temp;
 	}
-	_buffer[_buflength++]=c;
-	_cached=false;
+	m_buffer[m_buflength++]=c;
+	m_cached=false;
 }
 
-const icu::UnicodeString& CharBuf::cacheString() {
-	if (!_cached) {
-		if (_buffer && _buflength>0) {
-			//_bufstring=icu::UnicodeString::fromUTF32(_buffer, _buflength);
+icu::UnicodeString const& CharBuf::cacheString() {
+	if (!m_cached) {
+		if (m_buffer && m_buflength>0) {
+			//m_bufstring=icu::UnicodeString::fromUTF32(m_buffer, m_buflength);
 			int32_t capacity;
-			if (_buflength<=16) { // assumed upper size for small-sized buffers
+			if (m_buflength<=16) { // assumed upper size for small-sized buffers
 				capacity=16;
 			} else {
-				capacity=_buflength+(_buflength>>4)+4;
+				capacity=m_buflength+(m_buflength>>4)+4;
 			}
 			UChar* strbuf;
 			int32_t newsize;
 			UErrorCode err;
 			do {
-				strbuf=_bufstring.getBuffer(capacity);
+				strbuf=m_bufstring.getBuffer(capacity);
 				err=U_ZERO_ERROR;
-				u_strFromUTF32WithSub(strbuf, _bufstring.getCapacity(), &newsize, _buffer, _buflength, 0xFFFD, NULL, &err);
-				_bufstring.releaseBuffer(newsize);
+				u_strFromUTF32WithSub(strbuf, m_bufstring.getCapacity(), &newsize, m_buffer, m_buflength, 0xFFFD, NULL, &err);
+				m_bufstring.releaseBuffer(newsize);
 				if (err==U_BUFFER_OVERFLOW_ERROR) {
 					capacity=newsize+1;  // for the terminating \n
 					continue; // repeat for the last char
 				} else if (U_FAILURE(err)) {
-					_bufstring.setToBogus();
+					m_bufstring.setToBogus();
 					debug_printp_source(this, "Failed to convert buffer to string; err:");
 					debug_print(u_errorName(err));
 				}
 				break;
 			} while (1);
 		} else {
-			_bufstring.remove();
+			m_bufstring.remove();
 		}
-		_cached=true;
+		m_cached=true;
 	}
-	return _bufstring;
+	return m_bufstring;
 }
 
 void CharBuf::reset() {
-	_buflength=0;
-	_cached=false;
+	m_buflength=0;
+	m_cached=false;
 }
 
 bool CharBuf::compare(UChar32 c) const {
-	for (unsigned int i=0; i<_buflength; ++i) {
-		if (_buffer[i]!=c)
+	for (unsigned int i=0; i<m_buflength; ++i) {
+		if (m_buffer[i]!=c)
 			return false;
 	}
 	return true;
 }
 
 bool CharBuf::compare(const CharacterSet& charset) const {
-	for (unsigned int i=0; i<_buflength; ++i) {
-		if (!charset.contains(_buffer[i]))
+	for (unsigned int i=0; i<m_buflength; ++i) {
+		if (!charset.contains(m_buffer[i]))
 			return false;
 	}
 	return true;
@@ -127,14 +128,14 @@ bool CharBuf::compare(const CharacterSet& charset) const {
 
 bool CharBuf::toString(icu::UnicodeString& str) {
 	cacheString();
-	if (!_bufstring.isBogus()) {
-		str.setTo(_bufstring);
+	if (!m_bufstring.isBogus()) {
+		str.setTo(m_bufstring);
 		return true;
 	}
 	return false;
 }
 
-const icu::UnicodeString& CharBuf::toString() {
+icu::UnicodeString const& CharBuf::toString() {
 	return cacheString();
 }
 
@@ -145,13 +146,13 @@ int32_t CharBuf::toInt() {
 }
 
 bool CharBuf::toInt(int32_t& value) {
-	if (!_cached) {
+	if (!m_cached) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
+	nf->parse(m_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
@@ -169,13 +170,13 @@ int64_t CharBuf::toLong() {
 }
 
 bool CharBuf::toLong(int64_t& value) {
-	if (!_cached) {
+	if (!m_cached) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
+	nf->parse(m_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
@@ -193,13 +194,13 @@ float CharBuf::toFloat() {
 }
 
 bool CharBuf::toFloat(float& value) {
-	if (!_cached) {
+	if (!m_cached) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
+	nf->parse(m_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));
@@ -217,13 +218,13 @@ double CharBuf::toDouble() {
 }
 
 bool CharBuf::toDouble(double& value) {
-	if (!_cached) {
+	if (!m_cached) {
 		cacheString();
 	}
 	UErrorCode status=U_ZERO_ERROR;
 	icu::NumberFormat* nf=icu::NumberFormat::createInstance(status);
 	icu::Formattable formattable;
-	nf->parse(_bufstring, formattable, status);
+	nf->parse(m_bufstring, formattable, status);
 	delete nf;
 	if (U_FAILURE(status)) {
 		debug_printp_source(this, u_errorName(status));

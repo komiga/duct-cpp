@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 namespace duct {
 
-Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimit) {
+Identifier* parseArgs(int argc, char const** argv, bool fullargs, int optarglimit) {
 	if (argc<1)
 		return NULL;
 	Identifier* root=new Identifier();
@@ -82,32 +82,33 @@ Identifier* parseArgs(int argc, const char** argv, bool fullargs, int optarglimi
 
 // class ArgumentHandler
 
-ArgumentHandler::ArgumentHandler() {
-}
+ArgumentHandler::ArgumentHandler()
+	: m_list()
+{/* Do nothing*/}
 
 ArgumentHandler::~ArgumentHandler() {
 	clear();
 }
 
 ArgImplList::iterator ArgumentHandler::begin() {
-	return _list.begin();
+	return m_list.begin();
 }
 
 ArgImplList::const_iterator ArgumentHandler::begin() const {
-	return _list.begin();
+	return m_list.begin();
 }
 
 ArgImplList::iterator ArgumentHandler::end() {
-	return _list.end();
+	return m_list.end();
 }
 
 ArgImplList::const_iterator ArgumentHandler::end() const {
-	return _list.end();
+	return m_list.end();
 }
 
-ArgImplList::iterator ArgumentHandler::find(const icu::UnicodeString& alias) {
+ArgImplList::iterator ArgumentHandler::find(icu::UnicodeString const& alias) {
 	ArgImplList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
 		if ((*iter)->hasAlias(alias)) {
 			break;
 		}
@@ -115,9 +116,9 @@ ArgImplList::iterator ArgumentHandler::find(const icu::UnicodeString& alias) {
 	return iter;
 }
 
-ArgImplList::const_iterator ArgumentHandler::find(const icu::UnicodeString& alias) const {
+ArgImplList::const_iterator ArgumentHandler::find(icu::UnicodeString const& alias) const {
 	ArgImplList::const_iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
 		if ((*iter)->hasAlias(alias)) {
 			break;
 		}
@@ -127,13 +128,13 @@ ArgImplList::const_iterator ArgumentHandler::find(const icu::UnicodeString& alia
 
 bool ArgumentHandler::addImpl(ArgImpl* impl) {
 	if (impl && impl->getAliases().size()>0) {
-		_list.push_back(impl);
+		m_list.push_back(impl);
 		return true;
 	}
 	return false;
 }
 
-ArgImpl* ArgumentHandler::getImpl(const icu::UnicodeString& alias) {
+ArgImpl* ArgumentHandler::getImpl(icu::UnicodeString const& alias) {
 	ArgImplList::iterator iter=find(alias);
 	if (iter!=end()) {
 		return (*iter);
@@ -143,44 +144,45 @@ ArgImpl* ArgumentHandler::getImpl(const icu::UnicodeString& alias) {
 
 void ArgumentHandler::clear() {
 	ArgImplList::iterator iter;
-	for (iter=_list.begin(); iter!=_list.end(); ++iter) {
+	for (iter=m_list.begin(); iter!=m_list.end(); ++iter) {
 		delete (*iter);
 	}
-	_list.clear();
+	m_list.clear();
 }
 
 // class ArgImpl implementation
 
-ArgImpl::ArgImpl() : _calltype(0), _args(NULL) {
-}
+ArgImpl::ArgImpl()
+	: m_calltype(0), m_args(NULL)
+{/* Do nothing*/}
 
 ArgImpl::~ArgImpl() {
-	_args=NULL;
+	m_args=NULL;
 }
 
 void ArgImpl::setCallType(unsigned int calltype) {
-	_calltype=calltype;
+	m_calltype=calltype;
 }
 
 unsigned int ArgImpl::getCallType() const {
-	return _calltype;
+	return m_calltype;
 }
 
 StringArray& ArgImpl::getAliases() {
-	return _aliases;
+	return m_aliases;
 }
 
 void ArgImpl::setArgs(Identifier* args) {
-	_args=args;
+	m_args=args;
 }
 
 Identifier* ArgImpl::getArgs() {
-	return _args;
+	return m_args;
 }
 
-bool ArgImpl::hasAlias(const icu::UnicodeString& alias) const {
-	for (unsigned int i=0; i<_aliases.size(); ++i) {
-		if (alias.compare(*_aliases[i])==0) {
+bool ArgImpl::hasAlias(icu::UnicodeString const& alias) const {
+	for (unsigned int i=0; i<m_aliases.size(); ++i) {
+		if (alias.compare(*m_aliases[i])==0) {
 			return true;
 		}
 	}

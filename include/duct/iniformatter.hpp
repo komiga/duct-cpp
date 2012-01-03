@@ -122,11 +122,11 @@ public:
 	void readNodeToken();
 	
 protected:
-	static CharacterSet _whitespaceset;
-	static CharacterSet _numberset;
-	static CharacterSet _digitset;
+	static CharacterSet s_whitespaceset;
+	static CharacterSet s_numberset;
+	static CharacterSet s_digitset;
 	
-	IniParserHandler* _handler;
+	IniParserHandler* m_handler;
 };
 
 /**
@@ -159,25 +159,25 @@ public:
 	/**
 		Constructor with values.
 	*/
-	IniParserException(IniParserError error, const char* reporter, const Token* token, const IniParser* parser, const char* fmt, ...);
+	IniParserException(IniParserError error, char const* reporter, Token const* token, IniParser const* parser, char const* fmt, ...);
 	/**
 		Get the exception's message.
 		@returns The exception's message.
 	*/
-	virtual const char* what() const throw();
+	virtual char const* what() const throw();
 	/**
 		Convert an exception error to a NUL-terminated string.
 		@returns The error as a string.
 		@param error The error to convert.
 	*/
-	static const char* errorToString(IniParserError error);
+	static char const* errorToString(IniParserError error);
 	
 protected:
-	char _message[512];
-	IniParserError _error;
-	const char* _reporter;
-	const Token* _token;
-	const IniParser* _parser;
+	char m_message[512];
+	IniParserError m_error;
+	char const* m_reporter;
+	Token const* m_token;
+	IniParser const* m_parser;
 };
 
 /**
@@ -227,11 +227,11 @@ public:
 	void addValueAndReset(ValueVariable* value);
 	
 protected:
-	IniParser& _parser;
-	icu::UnicodeString _varname;
-	bool _equals;
-	Node* _rootnode;
-	Node* _currentnode;
+	IniParser& m_parser;
+	icu::UnicodeString m_varname;
+	bool m_equals;
+	Node* m_rootnode;
+	Node* m_currentnode;
 };
 
 /**
@@ -247,7 +247,7 @@ public:
 		@param nameformat The format for names.
 		@param varformat The format for values.
 	*/
-	static bool formatValue(const ValueVariable& value, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool formatValue(ValueVariable const& value, icu::UnicodeString& result, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Load a node from the given file path.
 		The user owns the returned node.
@@ -256,9 +256,9 @@ public:
 		@param path The file path to read.
 		@param encoding File character encoding. Default is UTF8.
 	*/
-	static Node* loadFromFile(const char* path, const char* encoding="utf8");
-	static Node* loadFromFile(const std::string& path, const char* encoding="utf8");
-	static Node* loadFromFile(const icu::UnicodeString& path, const char* encoding="utf8");
+	static Node* loadFromFile(char const* path, char const* encoding="utf8");
+	static Node* loadFromFile(std::string const& path, char const* encoding="utf8");
+	static Node* loadFromFile(icu::UnicodeString const& path, char const* encoding="utf8");
 	/**
 		Load a node from the given stream.
 		The user owns the returned node.
@@ -278,9 +278,9 @@ public:
 		@param varformat The format for values.
 		@see writeToStream()
 	*/
-	static bool writeToFile(const Node* root, const char* path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const std::string& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
-	static bool writeToFile(const Node* root, const icu::UnicodeString& path, const char* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, char const* path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, std::string const& path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToFile(Node const* root, icu::UnicodeString const& path, char const* encoding="utf8", unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	/**
 		Write the given node to the given stream.
 		NOTE: Identifiers are unexpected variables for this formatter. They will be ignored.
@@ -292,11 +292,11 @@ public:
 		@param varformat The format for values.
 		@see writeToFile()
 	*/
-	static bool writeToStream(const Node* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
+	static bool writeToStream(Node const* root, Stream* stream, unsigned int tcount, unsigned int nameformat=FMT_NAME_DEFAULT, unsigned int varformat=FMT_ALL_DEFAULT);
 	
 protected:
-	static IniParser _parser;
-	static IniParserHandler _handler;
+	static IniParser s_parser;
+	static IniParserHandler s_handler;
 	
 private:
 	static void writeTabs(Stream* stream, unsigned int count, bool newline=false);

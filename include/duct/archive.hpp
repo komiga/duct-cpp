@@ -73,61 +73,65 @@ public:
 	/**
 		Constructor.
 	*/
-	inline Archive();
+	inline Archive()
+		: m_stream(NULL), m_readable(false), m_writeable(false)
+	{/* Do nothing */}
 	/**
 		Constructor with path.
 	*/
-	inline Archive(const icu::UnicodeString& path);
+	inline Archive(icu::UnicodeString const& path)
+		: m_stream(NULL), m_path(path), m_readable(false), m_writeable(false)
+	{/* Do nothing */}
 	/**
 		Destructor.
 	*/
-	inline virtual ~Archive();
+	inline virtual ~Archive() { close(); }
 	/**
 		Get the four-char string identifier for the archive's extended format.
 		@returns The archive-type's four-char string identifier.
 	*/
-	virtual const char* getIdentifier() const=0;
+	virtual char const* getIdentifier() const=0;
 	/**
 		Get the archive's stream.
 		@returns The archive's current stream, which may be NULL.
 		@see isReadable(), isWriteable()
 	*/
-	inline Stream* getStream();
+	inline Stream* getStream() { return m_stream; }
 	/**
 		Get the archive's path.
 		@returns The archive's path.
 	*/
-	inline const icu::UnicodeString& getPath() const;
+	inline icu::UnicodeString const& getPath() const { return m_path; }
 	/**
 		Set the archive's path.
 		@returns Nothing.
 		@param path The archive's new path.
 	*/
-	inline void setPath(const icu::UnicodeString& path);
+	inline void setPath(icu::UnicodeString const& path) { m_path.setTo(path); }
 	/**
 		Determine if the archive is currently open.
 		@returns true if the archive is currently open, or false if it is closed.
 		@see isReadable(), isWriteable()
 	*/
-	inline bool isOpen() const;
+	inline bool isOpen() const { return (m_readable || m_writeable); }
 	/**
 		Determine if the archive is opened for reading.
 		@returns true if the archive is open for reading, or false if it is not.
 		@see isWriteable(), isOpen()
 	*/
-	inline bool isReadable() const;
+	inline bool isReadable() const { return m_readable; }
 	/**
 		Determine if the archive is opened for writing.
 		@returns true if the archive is open for writing, or false if it is not.
 		@see isReadable(), isOpen()
 	*/
-	inline bool isWriteable() const;
+	inline bool isWriteable() const { return m_writeable; }
 	/**
 		Get the size (in bytes) of the archive's metadata (includes the <em>user-space</em> section).
 		The base implementation always returns 4.
 		@returns The size of the archive's metadata.
 	*/
-	inline virtual size_t getMetadataSize() const;
+	inline virtual size_t getMetadataSize() const { return 4; /* identifier */ }
 	/**
 		Get the size (in bytes) of the entire archive header (includes the <em>user-space</em> and <em>entry-metadata</em> sections).
 		@returns The size of the archive's metadata.
@@ -209,9 +213,9 @@ public:
 	virtual bool writeEntries()=0;
 	
 protected:
-	FileStream* _stream;
-	icu::UnicodeString _path;
-	bool _readable, _writeable;
+	FileStream* m_stream;
+	icu::UnicodeString m_path;
+	bool m_readable, m_writeable;
 };
 
 /**
@@ -223,60 +227,68 @@ public:
 	/**
 		Constructor.
 	*/
-	inline Entry();
+	inline Entry()
+		: m_opened(false), m_flags(ENTRYFLAG_NONE), m_dataoffset(0), m_datasize(0)
+	{/* Do nothing */}
 	/**
 		Destructor.
 	*/
-	inline virtual ~Entry();
+	inline virtual ~Entry() {/* Do nothing */}
 	/**
 		Determine if the entry is currently opened.
 		@returns true if the entry is opened, or false if the entry is closed.
 		@see open(), close()
 	*/
-	inline bool isOpen() const;
+	inline bool isOpen() const { return m_opened; }
 	/**
 		Get the entry's flags.
 		@returns The entry's flags.
 	*/
-	inline uint16_t getFlags() const;
+	inline uint16_t getFlags() const { return m_flags; }
 	/**
 		Set the entry's flags.
 		@returns Nothing.
 		@param flags The entry's new flags.
 	*/
-	inline void setFlags(uint16_t flags);
+	inline void setFlags(uint16_t flags) { m_flags=flags; }
 	/**
 		Determine if the entry is compressed.
 		@returns true if the entry is compressed, or false if the entry is uncompressed.
 	*/
-	inline bool isCompressed() const;
+	inline bool isCompressed() const { return 0!=(m_flags&ENTRYFLAG_COMPRESSED); }
 	/**
 		Set the compressed flag for the entry.
 		@returns Nothing.
 		@param compresse Whether the flag should be on or off.
 	*/
-	inline void setCompressed(bool compressed);
+	inline void setCompressed(bool compressed) {
+		if (compressed) {
+			m_flags|=ENTRYFLAG_COMPRESSED;
+		} else {
+			m_flags&=~ENTRYFLAG_COMPRESSED;
+		}
+	}
 	/**
 		Get the entry's data offset.
 		@returns the entry's data offset.
 	*/
-	inline uint64_t getDataOffset() const;
+	inline uint64_t getDataOffset() const { return m_dataoffset; }
 	/**
 		Get the entry's data size.
 		@returns The entry's data size.
 	*/
-	inline unsigned int getDataSize() const;
+	inline unsigned int getDataSize() const { return m_datasize; }
 	/**
 		Get the entry's const metadata size (14).
 		@returns 14.
 	*/
-	static inline unsigned int getConstMetadataSize();
+	static inline unsigned int getConstMetadataSize() { return 14; }
 	/**
 		Get the entry's metadata size.
 		The base returns 14.
 		@returns The size of the entry's <em>entry-metadata</em> section.
 	*/
-	inline virtual unsigned int getMetadataSize() const;
+	inline virtual unsigned int getMetadataSize() const { return 14; }
 	/**
 		Open the entry for reading, using an archive stream.
 		If the entry is already opened, this should just return the active stream.
@@ -332,13 +344,11 @@ public:
 	virtual bool write(Stream* stream)=0;
 	
 protected:
-	bool _opened;
-	uint16_t _flags;
-	uint64_t _dataoffset;
-	uint32_t _datasize;
+	bool m_opened;
+	uint16_t m_flags;
+	uint64_t m_dataoffset;
+	uint32_t m_datasize;
 };
-
-#include <duct/inline/archive.inl>
 
 } // namespace duct
 

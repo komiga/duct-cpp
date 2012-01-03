@@ -7,12 +7,12 @@
 
 using namespace duct;
 
-const char* inpath="in.csv";
-const char* outpath="out.csv";
-const UChar32 sepchar=',';
-const unsigned int headercount=1;
+char const* inpath="in.csv";
+char const* outpath="out.csv";
+UChar32 const sepchar=',';
+unsigned int const headercount=1;
 
-void printRow(const CSVRow& row) {
+void printRow(CSVRow const& row) {
 	printf("[%d:%lu] ", row.getIndex(), row.getCount(true));
 	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);
