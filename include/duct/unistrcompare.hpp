@@ -40,7 +40,7 @@ namespace duct {
 /**
 	icu::UnicodeString* comparison class.
 */
-class DUCT_API icu::UnicodeStringPCompare {
+class DUCT_API UnicodeStringPCompare {
 public:
 	bool operator()(icu::UnicodeString const* x, icu::UnicodeString const* y) const {
 		return x->compare(*y)<0;
