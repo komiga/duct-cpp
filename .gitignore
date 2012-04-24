@@ -25,6 +25,9 @@ lib/
 *.ncb
 *.user
 
+# Project stuff
+*.sublime-workspace
+
 # Dependencies
 # MSVC
 deps/msvc/x64/icu/

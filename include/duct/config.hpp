@@ -40,46 +40,109 @@ duct++ configuration header.
 
 namespace duct {
 
-/*
-	duct++ version.
-*/
-//char const* VERSION="0.01"; // TODO: multiple definition errors with this line; use extern, you imbecile
-
-// TODO: DUCT_PLATFORM_* not showing up on doxygen (defined, but to void)
-/** 
-	\def DUCT_PLATFORM_WINDOWS
-	Defined when the system is Windows.
-*/
-
-/**
-	\def DUCT_PLATFORM_LINUX
-	Defined when the system is Linux.
-*/
-
-/**
-	\def DUCT_PLATFORM_MACOS
-	Defined when the system is MacOS.
-*/
+#ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
 // Platform
-#if defined(_WIN32) || defined(__WIN32__)
-	// Windows
-	#define DUCT_PLATFORM_WINDOWS
-#elif defined(linux) || defined(__linux)
-	// Linux
-	#define DUCT_PLATFORM_LINUX
-#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
-	// MacOS
-	#define DUCT_PLATFORM_MACOS
-#else // Unsupported
-	#error This operating system is not supported by duct++.
-#endif
+/**
+	Equal to the platform bitness (32 or 64).
+*/
+#define DUCT_PLATFORM_BITNESS 32 or 64
+/**
+	Defined when the platform is 32-bit (32==DUCT_PLATFORM_BITNESS).
+*/
+#define DUCT_PLATFORM_BITNESS_32
+/**
+	Defined when the platform is 64-bit (64==DUCT_PLATFORM_BITNESS).
+*/
+#define DUCT_PLATFORM_BITNESS_64
+
+/** 
+	Defined when the system is Windows; equivalent to DUCT_PLATFORM_BITNESS.
+*/
+#define DUCT_PLATFORM_WINDOWS DUCT_PLATFORM_BITNESS
+/**
+	Defined when the system is Linux; equivalent to DUCT_PLATFORM_BITNESS.
+*/
+#define DUCT_PLATFORM_LINUX DUCT_PLATFORM_BITNESS
+/**
+	Defined when the system is Mac OS; equivalent to DUCT_PLATFORM_BITNESS.
+*/
+#define DUCT_PLATFORM_MACOS DUCT_PLATFORM_BITNESS
 
 // Exports
 /**
-	\def DUCT_API
-	duct import/export define for win32 (undefined on Linux).
+	Import/export attributes for Windows (blank when building static or on UNIX-based systems).
 */
+#define DUCT_API
+
+/**
+	Ensures bswap_16 is implemented (Linux byteswap.h).
+	@see bswap_32(), bswap_64()
+*/
+#define bswap_16(x)
+/**
+	Ensures bswap_32 is implemented (Linux byteswap.h).
+	@see bswap_16(), bswap_64()
+*/
+#define bswap_32(x)
+/**
+	Ensures bswap_64 is implemented (Linux byteswap.h).
+	@see bswap_16(), bswap_32()
+*/
+#define bswap_64(x)
+
+// Byte order
+/* This byte order stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
+/**
+	Little endian.
+	@see DUCT_BYTEORDER, DUCT_BIG_ENDIAN
+*/
+#define DUCT_LITTLE_ENDIAN	1234
+/**
+	Big endian.
+	@see DUCT_BYTEORDER, DUCT_LITTLE_ENDIAN
+*/
+#define DUCT_BIG_ENDIAN		4321
+
+/**
+	System byteorder (equals either DUCT_LITTLE_ENDIAN or DUCT_BIG_ENDIAN).
+*/
+#define DUCT_BYTEORDER DUCT_LITTLE_ENDIAN or DUCT_BIG_ENDIAN
+/**
+	Defined when DUCT_BYTEORDER==DUCT_LITTLE_ENDIAN.
+	@see DUCT_BYTEORDER_BE
+*/
+#define DUCT_BYTEORDER_LE
+/**
+	Defined when DUCT_BYTEORDER==DUCT_BIG_ENDIAN.
+	@see DUCT_BYTEORDER_LE
+*/
+#define DUCT_BYTEORDER_BE
+
+#else // Quick, actually define everything while Doxygen isn't looking!
+
+// Platform
+#if (defined(__WORDSIZE) && (__WORDSIZE == 64)) || defined(__arch64__) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
+	#define DUCT_PLATFORM_BITNESS 64
+	#define DUCT_PLATFORM_BITNESS_64
+#elif (defined(__i386__) || defined(__ppc__))
+	#define DUCT_PLATFORM_BITNESS 32
+	#define DUCT_PLATFORM_BITNESS_32
+#else
+	#error "Unable to determine platform bitness"
+#endif
+
+#if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
+	#define DUCT_PLATFORM_WINDOWS	DUCT_PLATFORM_BITNESS
+#elif defined(linux) || defined(__linux)
+	#define DUCT_PLATFORM_LINUX		DUCT_PLATFORM_BITNESS
+#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
+	#define DUCT_PLATFORM_MACOS		DUCT_PLATFORM_BITNESS
+#else // Unsupported
+	#error "This operating system is not supported by duct++"
+#endif
+
+// Exports
 #if defined(DUCT_PLATFORM_WINDOWS)
 	#ifdef DUCT_DYNAMIC
 		#ifdef DUCT_EXPORT
@@ -102,31 +165,16 @@ namespace duct {
 	#include <byteswap.h>
 #endif
 
-/**
-	\def bswap_16
-	Ensures bswap_16 is implemented (Linux byteswap.h).
-	@see bswap_32, bswap_64
-*/
 #ifndef bswap_16
 	#define bswap_16(x)	\
 		((((x)>>8)&0xff)|(((x)&0xff)<<8))
 #endif
 
-/**
-	\def bswap_32
-	Ensures bswap_32 is implemented (Linux byteswap.h).
-	@see bswap_16, bswap_64
-*/
 #ifndef bswap_32
 	#define bswap_32(x)	\
 		((((x)&0xff000000)>>24)|(((x)&0x00ff0000)>>8)|(((x)&0x0000ff00)<<8)|(((x)&0x000000ff)<<24))
 #endif
 
-/**
-	\def bswap_64
-	Ensures bswap_64 is implemented (Linux byteswap.h).
-	@see bswap_16, bswap_32
-*/
 #ifndef bswap_64
 	#define bswap_64(x)	\
 		(((((x)&0xff00000000000000ULL) >> 56) | (((x)&0x00ff000000000000ULL) >> 40) | \
@@ -135,22 +183,11 @@ namespace duct {
 		  (((x)&0x000000000000ff00ULL) << 40) | (((x)&0x00000000000000ffULL) << 56)))
 #endif
 
-/* This byteorder stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
-/**
-	Little endian.
-	@see DUCT_BYTEORDER, DUCT_BIG_ENDIAN
-*/
+// Byte order
+/* This byte order stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
 #define DUCT_LITTLE_ENDIAN	1234
-/**
-	Big endian.
-	@see DUCT_BYTEORDER, DUCT_LITTLE_ENDIAN
-*/
-#define DUCT_BIG_ENDIAN	4321
+#define DUCT_BIG_ENDIAN		4321
 
-/**
-	\def DUCT_BYTEORDER
-	System byteorder (equals either DUCT_LITTLE_ENDIAN or DUCT_BIG_ENDIAN).
-*/
 #if	defined(__i386__) || defined(__ia64__) || defined(WIN32) || \
 	(defined(__alpha__) || defined(__alpha)) || \
 	defined(__arm__) || defined(ARM) || \
@@ -158,12 +195,16 @@ namespace duct {
 	defined(__SYMBIAN32__) || \
 	defined(__x86_64__) || \
 	defined(__LITTLE_ENDIAN__)
+	
 	#define DUCT_BYTEORDER	DUCT_LITTLE_ENDIAN
+	#define DUCT_BYTEORDER_LE
 #else
 	#define DUCT_BYTEORDER	DUCT_BIG_ENDIAN
+	#define DUCT_BYTEORDER_BE
 #endif
+
+#endif // DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
 } // namespace duct
 
 #endif // _DUCT_CONFIG_HPP
-
