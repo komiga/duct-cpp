@@ -1,5 +1,5 @@
 
-#include <duct/variables.hpp>
+#include <duct/Variables.hpp>
 
 #include <stdio.h>
 #include <iostream>

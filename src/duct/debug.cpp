@@ -66,4 +66,3 @@ void debug_assertp__(char const* assertion__, char const* file__, int line__, ch
 #endif // if !NDEBUG
 
 } // namespace duct
-

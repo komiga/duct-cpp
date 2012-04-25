@@ -1,5 +1,5 @@
 
-#include <duct/arghandling.hpp>
+#include <duct/ArgHandling.hpp>
 
 #include <stdio.h>
 #include <iostream>

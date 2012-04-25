@@ -1,6 +1,6 @@
 
-#include <duct/template.hpp>
-#include <duct/scriptformatter.hpp>
+#include <duct/Template.hpp>
+#include <duct/ScriptFormatter.hpp>
 
 #include <stdio.h>
 #include <iostream>

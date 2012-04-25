@@ -1,6 +1,6 @@
 
-#include <duct/csv.hpp>
-#include <duct/csvtemplate.hpp>
+#include <duct/CSV.hpp>
+#include <duct/CSVTemplate.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -24,7 +24,7 @@ CSVTemplate tpl(5, __tpl_layout);
 CSVTemplate tpl2(5, NULL); // only requires a count of 5
 
 void printRow(CSVRow const& row) {
-	printf("{%s, %s} [%d:%lu] ", tpl.validate(row) ? "true " : "false", tpl2.validate(row) ? "true " : "false", row.getIndex(), row.getCount(true));
+	printf("{%s, %s} [%d:%lu] ", tpl.validate(row) ? "true " : "false", tpl2.validate(row) ? "true " : "false", row.getIndex(), (unsigned long)row.getCount(true));
 	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);
 	std::cout<<temp<<std::endl;

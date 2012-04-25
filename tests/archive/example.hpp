@@ -1,6 +1,6 @@
 
-#include <duct/archive.hpp>
-#include <duct/filestream.hpp>
+#include <duct/Archive.hpp>
+#include <duct/FileStream.hpp>
 
 #include <list>
 #include <unicode/unistr.h>
