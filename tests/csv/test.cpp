@@ -1,5 +1,5 @@
 
-#include <duct/csv.hpp>
+#include <duct/CSV.hpp>
 
 #include <stdio.h>
 

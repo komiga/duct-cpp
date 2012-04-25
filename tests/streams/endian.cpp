@@ -2,8 +2,8 @@
 //#define DUCT_DYNAMIC
 
 #include <duct/debug.hpp>
-#include <duct/filestream.hpp>
-#include <duct/endianstream.hpp>
+#include <duct/FileStream.hpp>
+#include <duct/EndianStream.hpp>
 
 using namespace std;
 using namespace duct;

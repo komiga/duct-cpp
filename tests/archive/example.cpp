@@ -1,8 +1,8 @@
 
 #include "example.hpp"
 #include <duct/debug.hpp>
-#include <duct/archive.hpp>
-#include <duct/filesystem.hpp>
+#include <duct/Archive.hpp>
+#include <duct/FileSystem.hpp>
 
 #include <stdio.h>
 #include <stdexcept>
@@ -230,7 +230,7 @@ int main(int argc, char** argv) {
 		MyEntry* e=*iter;
 		printf("\"");
 		std::cout<<e->getPath();
-		printf("\" offset=%lu size=%u metadatasize=%u\n", e->getDataOffset(), e->getDataSize(), e->getMetadataSize());
+		printf("\" offset=%lu size=%u metadatasize=%u\n", (unsigned long)e->getDataOffset(), e->getDataSize(), e->getMetadataSize());
 		e->save();
 	}
 	return 0;

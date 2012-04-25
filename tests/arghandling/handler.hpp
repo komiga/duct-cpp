@@ -1,5 +1,5 @@
 
-#include <duct/arghandling.hpp>
+#include <duct/ArgHandling.hpp>
 
 #ifndef __TESTS_HANDLER_HPP__
 #define __TESTS_HANDLER_HPP__

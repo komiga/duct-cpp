@@ -1,5 +1,5 @@
 
-#include <duct/filestream.hpp>
+#include <duct/FileStream.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -20,14 +20,14 @@ int main() {
 		// NOTE: FileStream::eof returns the equality of pos() and size().
 		// Thus, in this case, it simply means that the stream is at
 		// the end of the stream, not that the stream was closed.
-		printf("out.eof()==%s  out.pos()==%lu  out.size()==%lu\n", out.eof() ? "true" : "false", out.pos(), out.size());
+		printf("out.eof()==%s  out.pos()==%lu  out.size()==%lu\n", out.eof() ? "true" : "false", out.pos(), (unsigned long)out.size());
 		out.close();
 	}
 	
 	{
 		FileStream in(file, true, false);
 		in.readString(str, str.length());
-		printf("in.eof()==%s  in.pos()==%lu  in.size()==%lu\n", in.eof() ? "true" : "false", in.pos(), in.size());
+		printf("in.eof()==%s  in.pos()==%lu  in.size()==%lu\n", in.eof() ? "true" : "false", in.pos(), (unsigned long)in.size());
 		int8_t a=in.readInt8();
 		int16_t b=in.readInt16();
 		int32_t c=in.readInt32();

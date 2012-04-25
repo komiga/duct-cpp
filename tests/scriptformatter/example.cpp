@@ -1,5 +1,5 @@
 
-#include <duct/scriptformatter.hpp>
+#include <duct/ScriptFormatter.hpp>
 
 #include <stdio.h>
 #include <iostream>

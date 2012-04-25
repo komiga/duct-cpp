@@ -28,8 +28,8 @@ THE SOFTWARE.
 duct++ configuration header.
 */
 
-#ifndef _DUCT_CONFIG_HPP
-#define _DUCT_CONFIG_HPP
+#ifndef DUCT_CONFIG_HPP_
+#define DUCT_CONFIG_HPP_
 
 #include <assert.h>
 #include <stdint.h>
@@ -207,4 +207,4 @@ namespace duct {
 
 } // namespace duct
 
-#endif // _DUCT_CONFIG_HPP
+#endif // DUCT_CONFIG_HPP_

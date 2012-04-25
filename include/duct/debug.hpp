@@ -28,8 +28,8 @@ THE SOFTWARE.
 duct++ debug functions.
 */
 
-#ifndef _DUCT_DEBUG_HPP
-#define _DUCT_DEBUG_HPP
+#ifndef DUCT_DEBUG_HPP_
+#define DUCT_DEBUG_HPP_
 
 #include <duct/config.hpp>
 
@@ -191,5 +191,4 @@ duct++ debug functions.
 	
 #endif // if NDEBUG -> else
 
-#endif // __DUCT_DEBUG_HPP
-
+#endif // DUCT_DEBUG_HPP_

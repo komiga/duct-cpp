@@ -1,5 +1,5 @@
 
-#include <duct/charutils.hpp>
+#include <duct/CharUtils.hpp>
 
 #include <stdio.h>
 #include <iostream>

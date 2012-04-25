@@ -1,5 +1,5 @@
 
-#include <duct/csv.hpp>
+#include <duct/CSV.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -13,7 +13,7 @@ UChar32 const sepchar=',';
 unsigned int const headercount=1;
 
 void printRow(CSVRow const& row) {
-	printf("[%d:%lu] ", row.getIndex(), row.getCount(true));
+	printf("[%d:%lu] ", row.getIndex(), (unsigned long)row.getCount(true));
 	icu::UnicodeString temp;
 	CSVFormatter::formatRow(row, temp, sepchar);
 	std::cout<<temp<<std::endl;

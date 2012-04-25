@@ -1,6 +1,6 @@
 
-#include <duct/variables.hpp>
-#include <duct/template.hpp>
+#include <duct/Variables.hpp>
+#include <duct/Template.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -10,7 +10,7 @@ using namespace duct;
 using namespace std;
 
 void printValues(Identifier const& iden) {
-	printf("Variable count: %lu\n", iden.getChildCount());
+	printf("Variable count: %lu\n", (unsigned long)iden.getChildCount());
 	icu::UnicodeString str;
 	for (VarList::const_iterator iter=iden.begin(); iter!=iden.end(); ++iter) {
 		ValueVariable* var=dynamic_cast<ValueVariable*>(*iter);
@@ -42,4 +42,3 @@ int main() {
 	delete tplv;
 	return 0;
 }
-

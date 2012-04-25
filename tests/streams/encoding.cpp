@@ -1,9 +1,9 @@
 
 #include <duct/debug.hpp>
-#include <duct/filesystem.hpp>
-#include <duct/filestream.hpp>
-#include <duct/endianstream.hpp>
-#include <duct/streamwrapper.hpp>
+#include <duct/FileSystem.hpp>
+#include <duct/FileStream.hpp>
+#include <duct/EndianStream.hpp>
+#include <duct/StreamWrapper.hpp>
 
 #include <iostream>
 #include <unicode/ustream.h>
@@ -49,12 +49,12 @@ int main(int argc, char* argv[]) {
 				std::cout<<str<<std::endl;
 			}
 		} else if (operation=='b') {
-			printf("writeLine count: %lu\n", fs->writeLine(str));
+			printf("writeLine count: %lu\n", (unsigned long)fs->writeLine(str));
 			fs->seek(0);
 			fs->readLine(str);
 			std::cout<<str<<std::endl;
 		} else {
-			printf("writeLine count: %lu\n", fs->writeLine(str));
+			printf("writeLine count: %lu\n", (unsigned long)fs->writeLine(str));
 		}
 		delete fs;
 	} else {
