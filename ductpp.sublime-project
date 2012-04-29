@@ -2,7 +2,20 @@
 	"folders":
 	[
 		{
+			"name": "Root",
 			"path": "./"
+		},
+		{
+			"name": "- Headers",
+			"path": "./include/duct/"
+		},
+		{
+			"name": "- Source",
+			"path": "./src/duct/"
+		},
+		{
+			"name": "- Tests",
+			"path": "./tests/"
 		}
 	],
 	"settings":
