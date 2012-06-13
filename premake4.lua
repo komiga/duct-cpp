@@ -34,7 +34,7 @@ configuration {"linux", "x64"}
 	targetdir(libpath_linux.."/x64")
 
 configuration {"linux"}
-	buildoptions {"-std=c++0x"}
+	buildoptions {"-std=c++0x", "-pedantic"}
 	files {
 		"src/duct/unix/*.cpp"
 	}

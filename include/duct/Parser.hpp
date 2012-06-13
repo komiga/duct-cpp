@@ -54,7 +54,7 @@ class ParserHandler;
 
 enum {
 	/** Null/invalid Token type constant. */
-	NULL_TOKEN=0xCA11ACAB
+	NULL_TOKEN=(int)0xCA11ACAB
 };
 
 /**

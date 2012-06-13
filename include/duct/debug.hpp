@@ -203,24 +203,24 @@ namespace duct {
 	
 	// - signature and pointer
 	#define DUCT_DEBUGCP(p, mesg) \
-		DUCT_DEBUGF("[%p] in %s: " mesg, p, DUCT_FUNC_SIG)
+		DUCT_DEBUGF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUGCPF(p, format, ...) \
-		DUCT_DEBUGF("[%p] in %s: " format, p, DUCT_FUNC_SIG, __VA_ARGS__)
+		DUCT_DEBUGF("[%p] in %s: " format, (void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
 	
 	// - signature and pointer and no newline
 	#define DUCT_DEBUGNCP(p, mesg) \
-		DUCT_DEBUGNF("[%p] in %s: " mesg, p, DUCT_FUNC_SIG)
+		DUCT_DEBUGNF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUGNCPF(p, format, ...) \
-		DUCT_DEBUGNF("[%p] in %s: " format, p, DUCT_FUNC_SIG, __VA_ARGS__)
+		DUCT_DEBUGNF("[%p] in %s: " format, (void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
 	
 	// Call
 	#define DUCT_DEBUG_CALLED() \
 		DUCT_DEBUGF("called: %s", DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUG_CALLEDP(p) \
-		DUCT_DEBUGF("called: [%p] %s", p, DUCT_FUNC_SIG)
+		DUCT_DEBUGF("called: [%p] %s", (void const* const)p, DUCT_FUNC_SIG)
 	
 	// Assert
 	#define DUCT_ASSERT(expr, mesg) \
@@ -231,10 +231,10 @@ namespace duct {
 
 	// - pointer
 	#define DUCT_ASSERTP(expr, p, mesg) \
-		DUCT_ASSERTF(expr, "[%p] " mesg, p)
+		DUCT_ASSERTF(expr, "[%p] " mesg, (void const* const)p)
 
 	#define DUCT_ASSERTPF(expr, p, format, ...) \
-		DUCT_ASSERTF(expr, "[%p] " format, p, __VA_ARGS__)
+		DUCT_ASSERTF(expr, "[%p] " format, (void const* const)p, __VA_ARGS__)
 	
 #endif
 

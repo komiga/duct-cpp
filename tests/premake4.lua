@@ -39,7 +39,7 @@ function setup_test(name, src)
 		}
 	
 	configuration {"linux"}
-		buildoptions {"-std=c++0x"}
+		buildoptions {"-std=c++0x", "-pedantic"}
 	
 	configuration {"windows", "x32"}
 		libdirs {
