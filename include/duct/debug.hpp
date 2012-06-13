@@ -33,162 +33,213 @@ duct++ debug functions.
 
 #include <duct/config.hpp>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cstdarg>
+#include <cassert>
+#include <cstdio>
 
-#ifdef NDEBUG
-	#define debug_print(mesg)
-	#define debug_printp(p, mesg)
-	#define debug_print_source(mesg)
-	#define debug_printp_source(p, mesg)
-	#define debug_called()
-	#define debug_calledp(p)
-	#define debug_assert(expr, mesg)
-	#define debug_assertp(expr, p, mesg)
-#else
-	namespace duct {
-		
-		// Debug functions
-		void DUCT_API debug_assert__(char const* assertion__, char const* file__, int line__, char const* function__, char const* mesg__);
-		void DUCT_API debug_assertp__(char const* assertion__, char const* file__, int line__, char const* function__, void const* p__, char const* mesg__);
-		
-	} // namespace duct
-	
+namespace duct {
+
+/**
+	@defgroup debug Debug utilities
+	@note All macros defined here are no-ops if @c NDEBUG is defined and unless #DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
+
+	Configuration defines:
+	- #DUCT_CONFIG_FORCE_DEBUG_MACROS
+	@{
+*/
+
+#ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
+/**
+	When defined, ensure all @c DUCT_DEBUG and @c DUCT_ASSERT macros are not no-ops.
+*/
+#define DUCT_CONFIG_FORCE_DEBUG_MACROS
+#endif
+
+#if (defined(NDEBUG) && !defined(DUCT_CONFIG_FORCE_DEBUG_MACROS)) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 	/**
-		@def debug_print(mesg)
-		Print a debug message.
-		The output format is "debug: %s\n", where %s is the message.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
-		@param mesg Message to print.
+		Print debug message.
+		@param mesg Debug message.
 	*/
-	#define debug_print(mesg)	\
-		(printf("debug: %s\n", mesg))
-	
+	#define DUCT_DEBUG(mesg)
 	/**
-		@def debug_printp(p, mesg)
-		Helper macro for printing object-specific information.
-		The output format is "debug: [%p] %s\n", where %s is the message.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
-		@param p Pointer to print with message.
-		@param mesg Message to print.
+		Print formatted debug message.
+		@param format Format string.
+		@param ... Format arguments.
 	*/
-	#define debug_printp(p, mesg)	\
-		(printf("debug: [%p] %s\n", (void const*)p, mesg))
-	
+	#define DUCT_DEBUGF(format, ...)
 	/**
-		@def debug_print_source(mesg)
-		Helper macro for printing caller-specific information.
-		The output format is "debug: from %s: %s\n", where the first %s is the function being called, and the second is the message.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
-		@param mesg Message to print.
+		Print debug message with no newline.
+		@param mesg Debug message.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_print_source(mesg)	\
-			(printf("debug: from %s: %s\n", __FUNCTION__, mesg))
-	#else
-		#define debug_print_source(mesg)	\
-			(printf("debug: from %s: %s\n", __PRETTY_FUNCTION__, mesg))
-	#endif
-	
+	#define DUCT_DEBUGN(mesg)
 	/**
-		@def debug_printp_source(p, mesg)
-		Helper macro for printing object- and caller- specific information.
-		The output format is "debug: [%p] from %s: %s\n", where %p is the pointer, the first %s is the function being called, and the second is the message.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
-		@param p Pointer to print with message.
-		@param mesg Message to print.
+		Print formatted debug message with no newline.
+		@param format Format string.
+		@param ... Format arguments.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_printp_source(p, mesg)	\
-			(printf("debug: [%p] from %s: %s\n", (void const*)p, __FUNCTION__, mesg))
-	#else
-		#define debug_printp_source(p, mesg)	\
-			(printf("debug: [%p] from %s: %s\n", (void const*)p, __PRETTY_FUNCTION__, mesg))
-	#endif
-	
+	#define DUCT_DEBUGNF(format, ...)
 	/**
-		@def debug_called()
-		Debug message 'function called'.
-		Helper macro for outputting a message to note that a function has been called.
-		The output format is "debug_called: %s\n", where %s is the name of the function that was called.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
+		Print debug message with function signature.
+		@param mesg Debug message.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_called()	\
-			(printf("debug_called: %s\n", __FUNCTION__))
-	#else
-		#define debug_called()	\
-			(printf("debug_called: %s\n", __PRETTY_FUNCTION__))
-	#endif
-	
+	#define DUCT_DEBUGC(mesg)
 	/**
-		@def debug_calledp(p)
-		Debug message 'function called' with pointer.
-		Helper macro for outputting a message to note that a function has been called (with pointer).
-		The output format is "debug_calledp: [%p] %s\n", where %s is the name of the function that was called.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
-		@param p Pointer to print with message.
+		Print formatted debug message with function signature.
+		@param format Format string.
+		@param ... Format arguments.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_calledp(p)	\
-			(printf("debug_calledp: [%p] %s\n", (void const*)p, __FUNCTION__))
-	#else
-		#define debug_calledp(p)	\
-			(printf("debug_calledp: [%p] %s\n", (void const*)p, __PRETTY_FUNCTION__))
-	#endif
-	
+	#define DUCT_DEBUGCF(format, ...)
 	/**
-		@def debug_assert(expr, mesg)
+		Print debug message with no newline and function signature.
+		@param mesg Debug message.
+	*/
+	#define DUCT_DEBUGNC(mesg)
+	/**
+		Print formatted debug message with no newline and function signature.
+		@param format Format string.
+		@param ... Format arguments.
+	*/
+	#define DUCT_DEBUGNCF(format, ...)
+	/**
+		Print debug message with function signature and pointer.
+		@param mesg Debug message.
+		@param p Pointer.
+	*/
+	#define DUCT_DEBUGCP(p, mesg)
+	/**
+		Print formatted debug message with function signature and pointer.
+		@param p Pointer.
+		@param format Format string.
+		@param ... Format arguments.
+	*/
+	#define DUCT_DEBUGCPF(p, format, ...)
+	/**
+		Print debug message with no newline, function signature, and pointer.
+		@param p Pointer.
+		@param mesg Debug message.
+	*/
+	#define DUCT_DEBUGNCP(p, mesg)
+	/**
+		Print formatted debug message with no newline, function signature, and pointer.
+		@param p Pointer.
+		@param format Format string.
+		@param ... Format arguments.
+	*/
+	#define DUCT_DEBUGNCPF(p, format, ...)
+	/**
+		Print function signature.
+	*/
+	#define DUCT_DEBUG_CALLED()
+	/**
+		Print function signature with pointer.
+		@param p Pointer.
+	*/
+	#define DUCT_DEBUG_CALLEDP(p)
+
+	/**
 		Assertion with message.
-		This macro mimics assert(), and aborts the program if the assertion fails.
-		
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
+		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
 		@param expr Expression to evaluate.
-		@param mesg Message to print.
+		@param mesg Message.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_assert(expr, mesg)	\
-			((expr) ? void(0) : duct::debug_assert__(#expr, __FILE__, __LINE__, __FUNCTION__, mesg))
-	#else
-		#define debug_assert(expr, mesg)	\
-			((expr) ? void(0) : duct::debug_assert__(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, mesg))
-	#endif
-	
+	#define DUCT_ASSERT(expr, mesg)
 	/**
-		@def debug_assertp(expr, p, mesg)
-		Assertion with message and pointer.
-		Helper macro for object-specific assertions.
-		
-		This macro mimics assert(), and aborts the program if the assertion fails.
-		This macro is blank-defined if NDEBUG is defined at the time of debug.hpp being included.
-		@returns Nothing.
+		Assertion with formatted message.
+		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
 		@param expr Expression to evaluate.
-		@param p Pointer to print with message.
-		@param mesg Message to print.
+		@param format Format string.
+		@param ... Format arguments.
 	*/
-	#ifdef DUCT_PLATFORM_WINDOWS
-		#define debug_assertp(expr, p, mesg)	\
-			((expr) ? void(0) : duct::debug_assertp__(#expr, __FILE__, __LINE__, __FUNCTION__, p, mesg))
-	#else
-		#define debug_assertp(expr, p, mesg)	\
-			((expr) ? void(0) : duct::debug_assertp__(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, p, mesg))
-	#endif
+	#define DUCT_ASSERTF(expr, format, ...)
+	/**
+		Assertion with pointer and message.
+		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
+		@param expr Expression to evaluate.
+		@param p Pointer.
+		@param mesg Message.
+	*/
+	#define DUCT_ASSERTP(expr, p, mesg)
+	/**
+		Assertion with pointer and formatted message.
+		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
+		@param expr Expression to evaluate.
+		@param p Pointer.
+		@param format Format string.
+		@param ... Format arguments.
+	*/
+	#define DUCT_ASSERTPF(expr, p, format, ...)
+
+#else
+	#define DUCT_DEBUG_PREFIX__ "debug: "
 	
-#endif // if NDEBUG -> else
+	// Debug
+	#define DUCT_DEBUG(mesg) \
+		printf(DUCT_DEBUG_PREFIX__ mesg "\n")
+	
+	#define DUCT_DEBUGF(format, ...) \
+		printf(DUCT_DEBUG_PREFIX__ format "\n", __VA_ARGS__)
+	
+	// - no newline
+	#define DUCT_DEBUGN(mesg) \
+		printf(DUCT_DEBUG_PREFIX__ mesg)
+	
+	#define DUCT_DEBUGNF(format, ...) \
+		printf(DUCT_DEBUG_PREFIX__ format, __VA_ARGS__)
+	
+	// - signature
+	#define DUCT_DEBUGC(mesg) \
+		DUCT_DEBUGF("in %s: " mesg, DUCT_FUNC_SIG)
+	
+	#define DUCT_DEBUGCF(format, ...) \
+		DUCT_DEBUGF("in %s: " format, DUCT_FUNC_SIG, __VA_ARGS__)
+	
+	// - signature and no newline
+	#define DUCT_DEBUGNC(mesg) \
+		DUCT_DEBUGNF("in %s: " mesg, DUCT_FUNC_SIG)
+	
+	#define DUCT_DEBUGNCF(format, ...) \
+		DUCT_DEBUGNF("in %s: " format, DUCT_FUNC_SIG, __VA_ARGS__)
+	
+	// - signature and pointer
+	#define DUCT_DEBUGCP(p, mesg) \
+		DUCT_DEBUGF("[%p] in %s: " mesg, p, DUCT_FUNC_SIG)
+	
+	#define DUCT_DEBUGCPF(p, format, ...) \
+		DUCT_DEBUGF("[%p] in %s: " format, p, DUCT_FUNC_SIG, __VA_ARGS__)
+	
+	// - signature and pointer and no newline
+	#define DUCT_DEBUGNCP(p, mesg) \
+		DUCT_DEBUGNF("[%p] in %s: " mesg, p, DUCT_FUNC_SIG)
+	
+	#define DUCT_DEBUGNCPF(p, format, ...) \
+		DUCT_DEBUGNF("[%p] in %s: " format, p, DUCT_FUNC_SIG, __VA_ARGS__)
+	
+	// Call
+	#define DUCT_DEBUG_CALLED() \
+		DUCT_DEBUGF("called: %s", DUCT_FUNC_SIG)
+	
+	#define DUCT_DEBUG_CALLEDP(p) \
+		DUCT_DEBUGF("called: [%p] %s", p, DUCT_FUNC_SIG)
+	
+	// Assert
+	#define DUCT_ASSERT(expr, mesg) \
+		((expr) ? void(0) : (fprintf(stderr, "assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", __FILE__, __LINE__, DUCT_FUNC_SIG), abort()))
+	
+	#define DUCT_ASSERTF(expr, format, ...) \
+		((expr) ? void(0) : (fprintf(stderr, "assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", __VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), abort()))
+
+	// - pointer
+	#define DUCT_ASSERTP(expr, p, mesg) \
+		DUCT_ASSERTF(expr, "[%p] " mesg, p)
+
+	#define DUCT_ASSERTPF(expr, p, format, ...) \
+		DUCT_ASSERTF(expr, "[%p] " format, p, __VA_ARGS__)
+	
+#endif
+
+/** @} */ // end doc-group debug
+
+} // namespace duct
 
 #endif // DUCT_DEBUG_HPP_

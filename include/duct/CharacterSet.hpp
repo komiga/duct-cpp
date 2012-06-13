@@ -25,23 +25,20 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-Implements component parts:
-<ul>
-	<li>ductParser</li>
-	<ul>
-		<li>class CharacterRange</li>
-		<li>class CharacterSet</li>
-	</ul>
-</ul>
+CharacterSet and CharacterRange classes.
 */
 
 #ifndef DUCT_CHARACTERSET_HPP_
 #define DUCT_CHARACTERSET_HPP_
 
 #include <duct/config.hpp>
+#include <duct/string.hpp>
+#include <duct/char.hpp>
+#include <duct/detail/string_traits.hpp>
+#include <duct/debug.hpp>
 
 #include <vector>
-#include <unicode/unistr.h>
+#include <algorithm>
 
 namespace duct {
 
@@ -50,219 +47,428 @@ class CharacterRange;
 class CharacterSet;
 
 /**
-	CharacterSet range vector.
+	@addtogroup string
+	@{
 */
-typedef std::vector<CharacterRange> RangeVec;
+/**
+	@name Comparison helpers
+	@{
+*/
 
 /**
 	A range of characters.
-	Used to match characters within a range.
-	Implements component class ductParser.CharacterRange.
+	@note The range defined is end-inclusive; for a code point @em cp and CharacterRange @em range, will match: @code cp>=range.start() && cp<=range.end() @endcode
 */
-class DUCT_API CharacterRange {
+class CharacterRange {
 public:
+// ctor/dtor
+	/**
+		Constructor with single code point.
+		@note Equivalent to @c CharacterRange(cp, 0).
+		@param cp Code point.
+	*/
+	explicit CharacterRange(char32 const cp)
+		: m_start(cp)
+		, m_end(cp)
+	{}
 	/**
 		Constructor with range.
-		@param start The start of the range.
-		@param length The length of the range.
+		@note A @a length of 0 will still match @a start.
+		@param start First code point of the range.
+		@param length Length of the range.
 	*/
-	CharacterRange(UChar32 start, unsigned int length=0);
+	CharacterRange(char32 const start, unsigned int const length)
+		: m_start(start)
+		, m_end(start+length)
+	{}
 	/**
 		Copy constructor.
-		@param range The range to copy from.
+		@param other Range to copy from.
 	*/
-	CharacterRange(CharacterRange const& range);
+	CharacterRange(CharacterRange const& other)
+		: m_start(other.m_start)
+		, m_end(other.m_end)
+	{}
+
+// properties
 	/**
 		Set the start of the range.
-		@returns Nothing.
-		@param start The new start of the range.
+		@param start New starting code point.
 	*/
-	void setStart(UChar32 start);
+	void set_start(char32 const start) { m_start=start; }
 	/**
 		Get the start of the range.
-		@returns The start of the range.
+		@returns First code point in range.
 	*/
-	UChar32 start() const;
+	char32 start() const { return m_start; }
 	/**
 		Set the end of the range.
-		@returns Nothing.
-		@param end The new end of the range.
+		@param end New ending code point.
 	*/
-	void setEnd(UChar32 end);
+	void set_end(char32 const end) { m_end=end; }
 	/**
 		Get the end of the range.
-		@returns The end of the range.
+		@returns Last code point in range.
 	*/
-	UChar32 end() const;
+	char32 end() const { return m_end; }
+
+// comparison
 	/**
-		Check if the range contains the given character.
-		@returns true if the character was in the range, or false if it was not.
-		@param c The character to test.
+		Check if the range contains a code point.
+		@returns @c true if @a cp was in the range, @c false if it was not.
+		@param cp Code point to test.
 	*/
-	bool contains(UChar32 c) const;
+	bool contains(char32 const cp) const {
+		return cp>=m_start && cp<=m_end;
+	}
 	/**
-		Find the first matching character in the given string.
-		@returns The index of the first matching character in the string, or -1 if either <i>from</i> was greater than or equal to the string's length or there were no matching characters in the string.
-		@param str The string to search.
-		@param from Optional start index.
+		Compare against another CharacterRange.
+		@returns @c -1 if the @a other is greater than this, @c 1 if @c this is greater than @a other, or 0 if @c this and @a other are equivalent.
+		@param other Range to compare against.
 	*/
-	int findInString(icu::UnicodeString const& str, unsigned int from=0) const;
+	int compare(CharacterRange const& other) const {
+		int const sd=m_end-m_start;
+		int const od=other.m_end-other.m_start;
+		if (sd<od) {
+			return -1;
+		} else if (sd>od) {
+			return 1;
+		}
+		if (m_start<other.m_start) {
+			return -1;
+		} else if (m_start>other.m_start) {
+			return 1;
+		}
+		return 0;
+	}
 	/**
-		Find the last matching character in the given string.
-		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
-		@param str The string to search.
-		@param from Optional start index. If -1, the last index will be used. Iteration is backwards.
+		Check if a range intersects with this one.
+		@returns @c true if the ranges intersect, @c false if they do not.
+		@param other Range to compare against.
 	*/
-	int findLastInString(icu::UnicodeString const& str, int from=-1) const;
+	bool intersects(CharacterRange const& other) const {
+		if (0==compare(other)) {
+			return true;
+		}
+		if (m_end==(other.m_start-1)) {
+			return true;
+		} else if ((m_start-1)==other.m_end) {
+			return true;
+		}
+		return !(m_start>other.m_end || m_end<other.m_start);
+	}
 	/**
-		Compare the given range with this range.
-		@returns -1 if the given range is greater than this, 1 if this range is greater than the given, or 0 if they are the same.
-		@param other The range to test.
+		Find the first matching code point in a string.
+		@returns Iterator of the first matching code point in @a str, or the end iterator if the @a from to @c str.cend() range had no matching code points.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param from Start iterator. Behavior is undefined if @a from is not pointing to the lead unit for a sequence.
 	*/
-	int compare(CharacterRange const& other) const;
-	/**
-		Check if the given range intersects with this range.
-		@returns true if the ranges intersect, or false if they do not.
-		@param other The range to test.
-	*/
-	bool intersects(CharacterRange const& other) const;
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	string_iterator find(stringT const& str, string_iterator from) const {
+		char32 cp;
+		string_iterator it, next;
+		for (it=from; str.cend()!=it; it=next) {
+			next=stringU::decode(it, str.cend(), cp, CHAR_NULL);
+			if (next==it) { // Incomplete sequence
+				return str.cend();
+			} else if (CHAR_NULL!=cp && contains(cp)) {
+				return it;
+			}
+		}
+		return str.cend();
+	}
 	
-protected:
-	UChar32 m_start;
-	UChar32 m_end;
+private:
+	char32 m_start;
+	char32 m_end;
 };
 
 /**
 	A set of CharacterRanges.
-	Used to match non-intersecting ranges against characters or strings.
-	Implements component class ductParser.CharacterSet.
 */
-class DUCT_API CharacterSet {
+class CharacterSet {
 public:
+	/**
+		CharacterRange @c std::vector.
+	*/
+	typedef std::vector<CharacterRange> vector_type;
+
+public:
+// ctor/dtor
 	/**
 		Constructor.
 	*/
-	CharacterSet();
+	CharacterSet()
+		: m_ranges()
+	{}
+	/** @{ */
 	/**
 		Constructor with string ranges.
-		@param str The ranges.
+		@param str String of ranges.
 	*/
-	CharacterSet(icu::UnicodeString const& str);
-	CharacterSet(char const* str);
+	explicit CharacterSet(u8string const& str)
+		: m_ranges()
+	{
+		add_from_string(str);
+	}
+	explicit CharacterSet(char const* str)
+		: m_ranges()
+	{
+		add_from_string(u8string(str));
+	}
+	/** @} */
 	/**
 		Constructor with single range.
-		@param start The start character.
-		@param length The number of characters in the range.
+		@param start First code point of range.
+		@param length Number of code points in the range.
 	*/
-	CharacterSet(UChar32 start, unsigned int length);
+	CharacterSet(char32 const start, unsigned int const length)
+		: m_ranges()
+	{
+		add_range(start, length);
+	}
 	/**
-		Constructor with character.
-		@param character Single character in set.
+		Constructor with single code point.
+		@param cp Code point.
 	*/
-	CharacterSet(UChar32 character);
+	explicit CharacterSet(char32 const cp)
+		: m_ranges()
+	{
+		add_range(cp, 0);
+	}
 	/**
 		Copy constructor.
-		@param set The source set.
+		@param other CharacterSet to copy.
 	*/
-	CharacterSet(CharacterSet const& set);
+	CharacterSet(CharacterSet const& other)
+		: m_ranges(other.m_ranges)
+	{}
+
+// properties
+	/** @{ */
 	/**
 		Begin range iterator.
-		@returns The beginning iterator for the set's ranges.
+		@returns Beginning iterator for the set's ranges.
 	*/
-	RangeVec::iterator begin();
+	vector_type::iterator begin() { return m_ranges.begin(); }
+	vector_type::const_iterator cbegin() const { return m_ranges.cbegin(); }
+	/** @} */
+
+	/** @{ */
 	/**
 		End range iterator.
-		@returns The end iterator for the set's ranges.
+		@returns Ending iterator for the set's ranges.
 	*/
-	RangeVec::iterator end();
+	vector_type::iterator end() { return m_ranges.end(); }
+	vector_type::const_iterator cend() const { return m_ranges.cend(); }
+	/** @} */
+
+// comparison
 	/**
-		const begin range iterator.
-		@returns The beginning iterator for the set's ranges.
+		Check if the set contains a code point.
+		@returns @c true if @a cp was in the set's ranges, or @c false if it was not.
+		@param cp Code point to test.
 	*/
-	RangeVec::const_iterator begin() const;
-	/**
-		const end range iterator.
-		@returns The end iterator for the set's ranges.
-	*/
-	RangeVec::const_iterator end() const;
-	/**
-		Check if the set contains the given character.
-		@returns true if the character was in the set's ranges, or false if it was not.
-		@param c The character to test.
-	*/
-	bool contains(UChar32 c) const;
+	bool contains(char32 const cp) const {
+		for (auto it=cbegin(); cend()!=it; ++it) {
+			if ((*it).contains(cp)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 		Check if the set contains the given range.
-		@returns true if the character was in the set's ranges, or false if it was not.
-		@param range The range to test.
+		@returns @c true if the range was found, or @c false if it was not.
+		@param range Range to test.
 	*/
-	bool contains(CharacterRange const& range) const;
+	bool contains(CharacterRange const& range) const {
+		for (auto it=cbegin(); cend()!=it; ++it) {
+			if (0==range.compare(*it)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
-		Find the first matching character in the given string.
-		@returns The index of the first matching character in the string, or -1 if either <i>from</i> was greater than or equal to the string's length or there were no matching characters in the string.
-		@param str The string to search.
-		@param from Optional begin index.
+		Find the first matching code point in a string.
+		@returns Iterator of the first matching code point in @a str, or the end iterator if the @a from to @c str.cend() range had no matching code points.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param from Start iterator. Behavior is undefined if @a from is not pointing to the lead unit for a sequence.
 	*/
-	int findInString(icu::UnicodeString const& str, unsigned int from=0) const;
-	/**
-		Find the last matching character in the given string.
-		@returns The index of the last matching character in the string, or -1 if there were no matching characters in the string.
-		@param str The string to search.
-		@param from Optional begin index. If -1, the last index will be used. Iteration is backwards.
-	*/
-	int findLastInString(icu::UnicodeString const& str, int from=-1) const;
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	string_iterator find(stringT const& str, string_iterator from) const {
+		string_iterator sit;
+		for (vector_type::const_iterator rit=cbegin(); cend()!=rit; ++rit) {
+			sit=(*rit).find(str, from);
+			if (str.cend()!=sit) {
+				return sit;
+			}
+		}
+		return str.cend();
+	}
+
+// addition
 	/**
 		Remove all ranges from the set.
-		@returns Nothing.
 	*/
-	void clear();
+	void clear() {
+		m_ranges.clear();
+	}
+
 	/**
 		Add the given string ranges to the set.
-		@returns Nothing.
-		@param str The string ranges to add.
+		@returns @c *this.
+		@tparam stringT String type; inferred from @a str.
+		@param str String ranges to add.
 	*/
-	void addRangesWithString(icu::UnicodeString const& str);
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	CharacterSet& add_from_string(stringT const& str) {
+		char32 lastcp=CHAR_NULL;
+		char32 cp;
+		bool isrange=false;
+		bool escape=false;
+		string_iterator it, next;
+		for (it=str.cbegin(); str.cend()!=it; it=next) {
+			next=stringU::decode(it, str.cend(), cp, CHAR_NULL);
+			if (next==it) { // Incomplete sequence
+				DUCT_DEBUG("CharacterSet::add_from_string: ics");
+				break;
+			} else if (CHAR_NULL==cp) { // Invalid code point
+				DUCT_DEBUGF("CharacterSet::add_from_string: Invalid code point in string at %lu", (unsigned long)(str.cend()-it));
+				escape=isrange=false;
+				lastcp=CHAR_NULL;
+				continue;
+			}
+			if (escape) {
+				escape=false;
+			} else if (CHAR_BACKSLASH==cp) {
+				escape=true;
+				continue;
+			} else if (CHAR_NULL!=lastcp && CHAR_DASH==cp && !isrange) {
+				isrange=true;
+				continue;
+			}
+			if (CHAR_NULL!=lastcp) {
+				if (isrange) {
+					if (cp==lastcp) {
+						add_range(cp, 0);
+					} else if (cp<lastcp) {
+						add_range(cp, lastcp-cp);
+					} else {
+						add_range(lastcp, cp-lastcp);
+					}
+					lastcp=CHAR_NULL;
+					isrange=false;
+				} else {
+					add_range(lastcp, 0);
+					lastcp=cp;
+				}
+			} else {
+				lastcp=cp;
+			}
+		}
+		if (CHAR_NULL!=lastcp) {
+			if (isrange) {
+				DUCT_DEBUG("CharacterSet::add_from_string: Invalid range in string");
+			}
+			add_range(lastcp, 0);
+		}
+		return *this;
+	}
+
 	/**
-		Add the given integer range.
-		@returns Nothing.
-		@param begin The start of the range.
-		@param length The length of the range.
+		Add a length range.
+		@returns @c *this.
+		@param start Start of the range.
+		@param length Length of the range.
+		@see CharacterRange::CharacterRange(char32 const, unsigned int const)
 	*/
-	void addRange(UChar32 begin, unsigned int length=0);
+	CharacterSet& add_range(char32 const start, unsigned int const length=0) {
+		bool empty=m_ranges.empty();
+		CharacterRange const new_range(start, length);
+		if (empty || !contains(new_range)) { // Try to avoid adding the same new_range twice
+			if (!empty) {
+				for (vector_type::iterator it=begin(); end()!=it; ++it) {
+					CharacterRange& cr=(*it);
+					if (new_range.intersects(cr)) {
+						if (new_range.start()<cr.start()) {
+							cr.set_start(new_range.start());
+						}
+						if (new_range.end()>cr.end()) {
+							cr.set_end(new_range.end());
+						}
+						return *this;
+					}
+				}
+			}
+			m_ranges.push_back(new_range);
+		}
+		return *this;
+	}
+
 	/**
 		Add all whitespace characters to the set: tab, linefeed, carriage return, and space.
-		@returns Nothing.
+		@returns @c *this.
 	*/
-	void addWhitespace();
+	CharacterSet& add_whitespace() {
+		add_range('\t', 1); // \t and \n
+		add_range('\r', 0);
+		add_range(' ', 0);
+		return *this;
+	}
 	/**
-		Add all alphanumberic characters to the set: A-Z, a-z, and 0-9.
-		@returns Nothing.
+		Add all alphanumberic characters to the set: @c A-Z, @c a-z, and @c 0-9.
+		@returns @c *this.
 	*/
-	void addAlphanumeric();
+	CharacterSet& add_alphanumeric() {
+		add_range('A', 25);
+		add_range('a', 25);
+		add_range('0', 9);
+		return *this;
+	}
 	/**
-		Add A-Z and a-z to the set.
-		@returns Nothing.
+		Add @c A-Z and @c a-z to the set.
+		@returns @c *this.
 	*/
-	void addLetters();
+	CharacterSet& add_letters() {
+		add_range('A', 25);
+		add_range('a', 25);
+		return *this;
+	}
 	/**
-		Add A-Z to the set.
-		@returns Nothing.
+		Add @c A-Z to the set.
+		@returns @c *this.
 	*/
-	void addUppercaseLetters();
+	CharacterSet& add_uppercase_letters() {
+		add_range('A', 25);
+		return *this;
+	}
 	/**
-		Add a-z to the set.
-		@returns Nothing.
+		Add @c a-z to the set.
+		@returns @c *this.
 	*/
-	void addLowercaseLetters();
+	CharacterSet& add_lowercase_letters() {
+		add_range('a', 25);
+		return *this;
+	}
 	/**
-		Add 0-9 to the set.
-		@returns Nothing.
+		Add @c 0-9 to the set.
+		@returns @c *this.
 	*/
-	void addNumbers();
+	CharacterSet& add_numbers() {
+		add_range('0', 9);
+		return *this;
+	}
 	
-protected:
-	RangeVec m_ranges;
+private:
+	vector_type m_ranges;
 };
+
+/** @} */ // end of name-group Comparison helpers
+/** @} */ // end of doc-group string
 
 } // namespace duct
 

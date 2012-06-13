@@ -25,25 +25,20 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-Implements component parts:
-<ul>
-	<li>ductParser</li>
-	<ul>
-		<li>class Token</li>
-		<li>class Parser</li>
-		<li>class ParserHandler</li>
-	</ul>
-</ul>
+Generic Parser class and associated classes.
+
+@defgroup parser Parser framework
 */
 
 #ifndef DUCT_PARSER_HPP_
 #define DUCT_PARSER_HPP_
 
 #include <duct/config.hpp>
+#include <duct/char.hpp>
 #include <duct/CharBuf.hpp>
-#include <duct/Stream.hpp>
+#include <duct/IO.hpp>
 
-#include <unicode/unistr.h>
+#include <istream>
 
 namespace duct {
 
@@ -52,320 +47,372 @@ class Token;
 class Parser;
 class ParserHandler;
 
+/**
+	@addtogroup parser
+	@{
+*/
+
 enum {
-	/**
-		NULL/reset token type constant.
-	*/
+	/** Null/invalid Token type constant. */
 	NULL_TOKEN=0xCA11ACAB
 };
 
 /**
-	Generic token class.
+	Generic token.
 */
-class DUCT_API Token {
+class Token {
+private:
+	DUCT_DISALLOW_COPY_AND_ASSIGN(Token);
+	
 public:
 	/**
 		Constructor with type.
-		@param type The token's type.
+		@param type Token type.
 	*/
-	Token(int type=NULL_TOKEN);
+	Token(int type=NULL_TOKEN)
+		: m_type(type)
+		, m_line(-1)
+		, m_column(-1)
+		, m_buffer()
+	{}
 	/**
 		Destructor.
 	*/
-	~Token();
+	~Token() {}
+
 	/**
 		Set the token's type.
-		@returns Nothing.
 		@param type The token's type.
 	*/
-	void setType(int type);
+	inline void set_type(int type) { m_type=type; }
 	/**
 		Get the token's type.
 		@returns The token's type.
 	*/
-	int getType() const;
+	inline int get_type() const { return m_type; }
 	/**
 		Set the token's line number.
-		@returns Nothing.
 		@param line The line of the token.
 	*/
-	void setLine(int line);
+	inline void set_line(int line) { m_line=line; }
 	/**
 		Get the token's line number.
 		@returns The token's line number.
 	*/
-	int getLine() const;
+	inline int get_line() const { return m_line; }
 	/**
 		Set the token's column number.
-		@returns Nothing.
 		@param column The token's column number.
 	*/
-	void setColumn(int column);
+	inline void set_column(int column) { m_column=column; }
 	/**
 		Get the token's column number.
 		@returns The token's column number.
 	*/
-	int getColumn() const;
+	inline int get_column() const { return m_column; }
 	/**
 		Set the line and column of the token.
-		@returns Nothing.
-		@param line The line of the token.
-		@param column The column of the token.
+		@param line Line position.
+		@param column Column position.
 	*/
-	void setPosition(int line, int column);
+	void set_position(int line, int column) {
+		m_line=line;
+		m_column=column;
+	}
+
+	/** @{ */
 	/**
-		Add the given character to the token's buffer.
-		@returns Nothing.
-		@param c The character to add.
+		Get the token's character buffer.
+		@returns The token's buffer.
 	*/
-	void addChar(UChar32 c);
+	CharBuf& get_buffer() { return m_buffer; }
+	CharBuf const& get_buffer() const { return m_buffer; }
+	/** @} */
+
 	/**
 		Reset the token.
-		This will clear the token's buffer and set the token's type.
-		@returns Nothing.
-		@param type The token's type (should be a null token constant depending on use).
+		@note This will reset the character buffer and set the type (and call @c set_position(-1, -1) if @c position==true).
+		@param type Type to reset to (generic @c NULL_TOKEN is provided for invalidity purposes).
+		@param position Whether to reset the token's position; if @c true, will call @c set_position(-1, -1).
 	*/
-	void reset(int type=NULL_TOKEN);
-	/**
-		Compare every character in the token's buffer to the given character.
-		@returns true if the given character matches every character in the token's buffer, or false otherwise.
-		@param c The character to compare against.
-	*/
-	bool compare(UChar32 c) const;
-	/**
-		Compare every character in the token's buffer to each character in the given set.
-		@returns true if every character in the token's buffer matches a character in the given set, or false otherwise.
-		@param charset The character set to compare against.
-	*/
-	bool compare(CharacterSet const& charset) const;
-	/**
-		Convert the token's buffer to a string.
-		If conversion fails, <em>str</em> is unmodified.
-		@returns true if the string was converted, or false on cache failure (likely because of an invalid surrogate pair).
-		@param str The output string.
-	*/
-	bool toString(icu::UnicodeString& str);
-	/**
-		Convert the token's buffer as a string.
-		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
-		@returns A reference to the cached string (which will be bogus if conversion failed).
-	*/
-	icu::UnicodeString const& toString();
-	/**
-		Convert the token's buffer to a 32-bit integer.
-		@returns The buffer as an integer, or 0 if the buffer was not a numeric value.
-	*/
-	int32_t toInt();
-	/**
-		Convert the token's buffer to a 32-bit integer (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the buffer was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toInt(int32_t& value);
-	/**
-		Convert the token's buffer to a 64-bit integer.
-		@returns The buffer as a long, or 0 if the buffer was not a numeric value.
-	*/
-	int64_t toLong();
-	/**
-		Convert the token's buffer to a long (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the buffer was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toLong(int64_t& value);
-	/**
-		Convert the token's buffer to a float.
-		@returns The buffer as a float, or 0.0 if the buffer was not a numeric value.
-	*/
-	float toFloat();
-	/**
-		Convert the token's buffer to a float (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the buffer was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toFloat(float& value);
-	/**
-		Convert the token's buffer to a double.
-		@returns The buffer as a double, or 0.0 if the buffer was not a numeric value.
-	*/
-	double toDouble();
-	/**
-		Convert the token's buffer to a double (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the buffer was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toDouble(double& value);
-	
+	void reset(int type, bool position) {
+		m_buffer.reset();
+		set_type(type);
+		if (position) {
+			set_position(-1, -1);
+		}
+	}
+
 protected:
-	int m_type;
-	int m_line, m_column;
-	CharBuf m_buffer;
+	int m_type; /**< Type. */
+	int m_line; /**< Line position. */
+	int m_column; /**< Column position. */
+	CharBuf m_buffer; /**< Character buffer. */
 };
 
 /**
 	Base parser class.
+	@note This class and deriving classes shall not take ownership of input streams.
 */
-class DUCT_API Parser {
+class Parser {
+private:
+	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
+
 public:
 	/**
-		Constructor.
+		Default constructor.
 	*/
-	Parser();
+	Parser()
+		: m_line(1)
+		, m_column(1)
+		, m_curchar(CHAR_EOF)
+		, m_peekchar(CHAR_EOF)
+		, m_peeked(false)
+		, m_stream(nullptr)
+		, m_stream_ctx()
+	{}
 	/**
 		Destructor.
 	*/
-	virtual ~Parser();
+	virtual ~Parser() {}
+
+// properties
 	/**
-		Get the parser's current line.
-		@returns The parser's current line.
+		Get current line.
+		@returns Current line position.
 	*/
-	virtual int getLine() const;
+	virtual int get_line() const { return m_line; }
 	/**
-		Get the parser's current column.
-		@returns The parser's current column.
+		Get current column.
+		@returns Current column position.
 	*/
-	virtual int getColumn() const;
+	virtual int get_column() const { return m_column; }
+
+	/** @{ */
 	/**
-		Set the parser's handler.
-		@returns Nothing.
-		@param handler The parser's new handler.
+		Get token.
+		@returns Current token.
 	*/
-	virtual void setHandler(ParserHandler* handler)=0;
+	virtual Token& get_token() { return m_token; }
+	virtual Token const& get_token() const { return m_token; }
+	/** @} */
+
 	/**
-		Get the parser's handler.
-		@returns The parser's handler.
+		Get input stream.
+		@returns Current input stream.
 	*/
-	virtual ParserHandler* getHandler()=0;
+	virtual std::istream* get_stream() { return m_stream; }
 	/**
-		Get the parser's token.
-		@returns The parser's token.
+		Get stream context.
+		@returns Current stream context.
 	*/
-	virtual Token& getToken();
+	virtual IO::StreamContext const get_stream_context() const { return m_stream_ctx; }
+
 	/**
-		Get the parser's token (const).
-		@returns The parser's token.
+		Set handler.
+		@param handler New handler.
 	*/
-	virtual Token const& getToken() const;
+	virtual void set_handler(ParserHandler* handler)=0;
 	/**
-		Get the parser's stream.
-		@returns The parser's stream (which may be NULL).
+		Get handler.
+		@returns Current handler.
 	*/
-	virtual Stream* getStream();
+	virtual ParserHandler* get_handler()=0;
+
+// operations
 	/**
-		Initialize the parser with the given stream.
-		This reset()s the current state. Calls nextChar() to get the first character in the parser (since the reset will clear the current character).
-		@returns true if the stream was initialized with the given stream, or false if an error occurred (likely if the stream is NULL).
-		@param stream The stream to initialize with.
+		@c initialize(std::istream&,Encoding const,Endian const) with properties from a StreamContext.
+		@returns @c true if the parser was initialized, or @c false if an error occurred.
+		@param stream Input stream.
+		@param ctx IO::StreamContext to copy.
 	*/
-	virtual bool initWithStream(Stream* stream);
+	bool initialize(std::istream& stream, IO::StreamContext const& ctx) {
+		return initialize(stream, ctx.get_encoding(), ctx.get_endian());
+	}
 	/**
-		Reset the parser's state.
-		This will reset the Line, Column, Token and Stream properties and the curchar and peekchar fields.
-		@returns Nothing.
+		Initialize the parser.
+		This will @c reset() the current state and call @c next_char() to get the first character in the stream.
+		@note The input stream is not owned by the parser; its lifetime must be guaranteed by the callee until @c reset() is called.
+		@returns @c true if the parser was initialized, or @c false if an error occurred (in the base implementation: if @c stream.good()==false).
+		@param stream Input stream.
+		@param encoding Encoding of stream.
+		@param endian Endian of stream.
 	*/
-	virtual void reset();
+	virtual bool initialize(std::istream& stream, Encoding const encoding, Endian const endian) {
+		reset();
+		m_stream=&stream;
+		m_stream_ctx.set_properties(encoding, endian);
+		if (m_stream->good()) {
+			next_char(); // Get the first character
+			return true;
+		} else {
+			return false;
+		}
+	}
 	/**
-		Get the next character from the stream.
-		If peekchar is not equal to CHAR_EOF, curchar is set to peekchar, and then peekchar is reset to CHAR_EOF. If there is no more data in the stream, curchar is set to CHAR_EOF.
-		@returns The next character from the stream.
+		Reset state.
+		@note This will nullify the input stream.
+		@note The parser's StreamContext is not reset.
 	*/
-	virtual UChar32 nextChar();
+	virtual void reset() {
+		m_line=m_column=1;
+		m_curchar=m_peekchar=CHAR_EOF;
+		m_peeked=false;
+		m_token.reset(NULL_TOKEN, true);
+		m_stream=nullptr;
+	}
+
 	/**
-		Peek the next character in the stream, without advancing the parser's position.
-		This does not set m_curchar, and does not advance the parser, but will advance the stream.
-		If the next character has already been peeked (peek state not cleared by a call to nextChar(), the m_peekchar will be returned).
-		@returns The next character in the stream.
+		Get the next character from the stream and advance the parser's position.
+		@note
+		- If @c m_peeked==true, @c m_curchar is set to @c m_peekchar.
+		- If there is no more data in the input stream, @c m_curchar is set to @c CHAR_EOF.
+		@returns The next character from the input stream.
 	*/
-	virtual UChar32 peekChar();
+	virtual char32 next_char() {
+		DUCT_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		if (CHAR_NEWLINE==m_curchar) {
+			m_line++;
+			m_column=1;
+		}
+		if (m_peeked) {
+			m_curchar=m_peekchar;
+			m_peeked=false;
+		} else if (!m_stream->eof()) {
+			m_curchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
+		} else {
+			m_curchar=CHAR_EOF;
+		}
+		if (CHAR_CARRIAGERETURN==m_curchar || CHAR_SENTINEL==m_curchar) {
+			return next_char();
+		} else if (CHAR_EOF!=m_curchar) {
+			m_column++;
+		}
+		return m_curchar;
+	}
+	/**
+		Peek the next code point in the stream, without advancing the parser's position.
+		@note Will peek multiple points if invalid code points are encountered.
+		@returns The next character in the input stream.
+	*/
+	virtual char32 peek_char() {
+		DUCT_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		if (!m_peeked) {
+			if (!m_stream->eof()) {
+				m_peekchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
+				if (!m_stream->good()) {
+					m_peekchar=CHAR_EOF;
+				} else if (CHAR_SENTINEL==m_peekchar) {
+					return peek_char();
+				}
+			} else {
+				m_peekchar=CHAR_EOF;
+			}
+			m_peeked=true;
+		}
+		return m_peekchar;
+	}
+
 	/**
 		Skip data in the stream until the given character is met.
-		@returns true if the given character was met, or false if CHAR_EOF was met.
-		@param c The character to skip to.
+		@returns @c true if the given character was met, or @c false if @c CHAR_EOF was met.
+		@param cp Code point to skip to.
 	*/
-	virtual bool skipToChar(UChar32 c);
+	virtual bool skip_to(char32 const cp) {
+		while (CHAR_EOF!=m_curchar && cp!=m_curchar) {
+			next_char();
+		}
+		return cp==m_curchar;
+	}
 	/**
 		Skip to the end of the line.
-		This is an alias for skipToChar('\n');
-		@returns true if the end of the line was met, or false if CHAR_EOF was met.
+		@note This is an alias for @c skip_to(CHAR_NEWLINE).
+		@returns @c true if the end of the line was met, or @c false if @c CHAR_EOF was met.
+		@sa skip_to(char32 const)
 	*/
-	virtual bool skipToEOL();
+	virtual bool skip_to_eol() {
+		return skip_to(CHAR_NEWLINE);
+	}
+
 	/**
-		Determine and set the current token based on the current character.
-		@returns The next token.
+		Determine and set the current token type based on the current character.
+		@returns The current token.
 	*/
-	virtual Token& nextToken()=0;
+	virtual Token& next_token()=0;
 	/**
 		Read the current token.
-		@returns Nothing.
 	*/
-	virtual void readToken()=0;
+	virtual void read_token()=0;
 	/**
-		Get and read the next token.
-		@returns true if there is more data in the parser's stream, or false if there is no more data in the stream (generally meaning an EOF token was met).
+		Parse the next token in the stream.
+		@returns @c true if there is more data in the input stream, or @c false if there is no more data in the stream (generally meaning an EOF token was met).
 	*/
 	virtual bool parse()=0;
 	
 protected:
-	int m_line, m_column;
-	UChar32 m_curchar, m_peekchar;
-	bool m_peeked;
-	Token m_token;
-	Stream* m_stream;
+	int m_line; /**< Line position. */
+	int m_column; /**< Column position. */
+	char32 m_curchar; /**< Current character. */
+	char32 m_peekchar; /**< Peeked character. */
+	bool m_peeked; /**< Whether a character has been peeked. */
+	Token m_token; /**< Current token. */
+	std::istream* m_stream; /**< Current stream. */
+	IO::StreamContext m_stream_ctx; /**< Stream context. */
 };
 
 /**
-	Base handler class for a Parser.
+	Base handler class for a @c Parser.
 */
-class DUCT_API ParserHandler {
+class ParserHandler {
+private:
+	DUCT_DISALLOW_COPY_AND_ASSIGN(ParserHandler);
+
 public:
 	/**
 		Constructor.
 	*/
-	ParserHandler();
+	ParserHandler()
+	{}
 	/**
 		Destructor.
 	*/
-	virtual ~ParserHandler();
+	virtual ~ParserHandler() {}
+
 	/**
-		Set the handler's parser.
-		@returns Nothing.
-		@param parser The handler's parser.
+		Set parser.
+		@param parser New parser.
 	*/
-	virtual void setParser(Parser& parser)=0;
+	virtual void set_parser(Parser& parser)=0;
 	/**
-		Get the handler's parser.
-		@returns The handler's parser.
+		Get parser.
+		@returns Current parser.
 	*/
-	virtual Parser& getParser()=0;
+	virtual Parser& get_parser()=0;
 	/**
-		Clean the handler's state.
-		This should <em>not</em> not reset() the parser.
-		@returns Nothing.
+		Clean states.
+		@c This should @em not not call @c reset() on the parser.
 	*/
 	virtual void clean()=0;
 	/**
-		Process the parser's stream.
-		@returns true on success, or false if an error occurred.
+		Process parser's input stream.
+		@returns @c true on success, or @c false if an error occurred.
 	*/
 	virtual bool process()=0;
 	/**
-		Handle the given token.
-		This is called from Parser::readToken().
-		@returns Nothing.
-		@param token The token to handle.
-	*/
-	virtual void handleToken(Token& token)=0;
-	/**
-		Finish handling the parser's stream.
-		Called when there is no more data in the parser's stream.
-		@returns Nothing.
+		Finish handling the parser's input stream.
+		@note This is called when there is no more data in the input stream.
 	*/
 	virtual void finish()=0;
+
+	/**
+		Handle a token.
+		@note This is called from @c Parser::read_token().
+		@param token Token to handle.
+	*/
+	virtual void handle_token(Token& token)=0;
 };
+
+/** @} */ // end of doc-group parser
 
 } // namespace duct
 

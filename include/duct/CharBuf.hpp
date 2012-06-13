@@ -32,11 +32,21 @@ duct++ CharBuf class.
 #define DUCT_CHARBUF_HPP_
 
 #include <duct/config.hpp>
+#include <duct/char.hpp>
+#include <duct/EncodingUtils.hpp>
+#include <duct/StringUtils.hpp>
 #include <duct/CharacterSet.hpp>
 
-#include <unicode/unistr.h>
+#include <type_traits>
+#include <sstream>
+#include <cstdlib>
 
 namespace duct {
+
+/**
+	@addtogroup string
+	@{
+*/
 
 // Forward declarations
 class CharBuf;
@@ -44,115 +54,176 @@ class CharBuf;
 /**
 	Character buffer.
 */
-class DUCT_API CharBuf {
+class CharBuf /*final*/ {
+public:
+	/**
+		Internal character type.
+	*/
+	typedef char32 char_type;
+
 public:
 	/**
 		Constructor.
 	*/
-	CharBuf();
+	CharBuf()
+		: m_buffer()
+		, m_cached(false)
+		, m_cache_string()
+	{}
+
+// properties
 	/**
-		Destructor.
+		Get current size.
+		@returns The number of characters in the buffer.
+		@sa get_capacity().
 	*/
-	~CharBuf();
+	inline std::size_t get_size() const { return m_buffer.size(); }
 	/**
-		Add a character to the buffer.
-		Adding a character from the buffer will cause the cached string to be reset.
-		@returns Nothing.
-		@param c The character to add.
+		Get current capacity.
+		@returns The reserved size of the buffer.
+		@sa get_size().
 	*/
-	void addChar(UChar32 c);
-	/**
-		Cache the character buffer as a string.
-		@returns The cached string.
-	*/
-	icu::UnicodeString const& cacheString();
+	inline std::size_t get_capacity() const { return m_buffer.capacity(); }
+
+// operations and comparison
 	/**
 		Reset the buffer.
-		The internal memory buffer will not be freed, but the position and cached string will be reset.
-		@returns Nothing.
 	*/
-	void reset();
+	void reset() {
+		m_cached=false;
+		m_buffer.clear();
+	}
+
 	/**
-		Compare all the characters in the buffer to the given character.
-		@returns true if all characters match the given character, or false otherwise.
+		Cache buffer as string.
+		@returns Reference to cached string.
+	*/
+	u8string const& cache() {
+		if (!m_cached) {
+			StringUtils::convert<UTF32Utils>(m_cache_string, m_buffer.cbegin(), m_buffer.cend());
+			m_cached=true;
+		}
+		return m_cache_string;
+	}
+
+	/**
+		Insert code point to the end of the buffer.
+		@warning Invalid code points are ignored.
+		@warning An exception may be thrown by reallocation.
+		@note The cached string will be invalidated by this operation.
+		@param cp The code point to insert.
+	*/
+	void push_back(char_type const cp) {
+		if (DUCT_UNI_IS_CP_VALID(cp)) {
+			grow();
+			m_buffer.push_back(cp);
+			m_cached=false;
+		}
+	}
+
+	/**
+		Compare all characters in the buffer to a character.
+		@returns @c true if all characters match the character; @c false otherwise.
+		@tparam charT Character type; inferred from @a c.
 		@param c The character to compare against.
 	*/
-	bool compare(UChar32 c) const;
+	template<typename charT>
+	bool compare(charT const c) const {
+		for (unsigned int i=0; get_size()>i; ++i) {
+			if (m_buffer[i]!=c) {
+				return false;
+			}
+		}
+		return true;
+	}
 	/**
-		Compare all the characters in the buffer with the given character set.
-		@returns true if all characters match a character in the set, or false otherwise.
+		Compare buffer to a character set.
+		@returns @c true if all characters match a character from @a charset; @c false otherwise.
 		@param charset The character set to compare against.
 	*/
-	bool compare(CharacterSet const& charset) const;
+	bool compare(CharacterSet const& charset) const {
+		for (unsigned int i=0; get_size()>i; ++i) {
+			if (!charset.contains(m_buffer[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+// conversion
 	/**
-		Convert the buffer to a string.
-		If conversion fails, <em>str</em> is unmodified.
-		@returns true if the string was converted, or false on cache failure (likely because of an invalid surrogate pair).
-		@param str The string to store the result in.
+		Convert buffer to a string.
+		@returns Cache string converted to @a stringT.
+		@tparam stringT String type to convert to. Encoding is inferred from the type's character size.
 	*/
-	bool toString(icu::UnicodeString& str);
+	template<class stringT>
+	stringT to_string() {
+		stringT str;
+		StringUtils::convert<UTF32Utils>(str, m_buffer.cbegin(), m_buffer.cend(), true);
+		return str;
+	}
 	/**
-		Convert the buffer to a string.
-		The string returned is only a snapshot of the buffer's current state, and will be emptied upon buffer reset or caching a new buffer state, or bogus'd on cache failure.
-		@returns A reference to the cached string (which will be bogus if conversion failed).
+		Convert buffer to a string (by-ref).
+		@param[out] str Output string.
+		@param append Whether to append to @a str; defaults to @c false (@a str is cleared on entry).
 	*/
-	icu::UnicodeString const& toString();
+	template<class stringT>
+	void to_string(stringT& str, bool append=false) {
+		StringUtils::convert<UTF32Utils>(str, m_buffer.cbegin(), m_buffer.cend(), append);
+	}
+
 	/**
-		Convert the buffer to a 32-bit integer.
-		@returns The buffer as an integer, or 0 if the cached string was not a numeric value.
+		Convert the buffer to an arithmetic type.
+		@returns The buffer converted to arithmetic type @a T.
+		@tparam T An arithmetic type.
+		@sa to_arithmetic(T&)
 	*/
-	int32_t toInt();
+	template<typename T>
+	T to_arithmetic() {
+		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
+		T val;
+		to_arithmetic(val);
+		return val;
+	}
 	/**
-		Convert the buffer to a 32-bit integer (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
+		Convert the buffer to a 32-bit integer with error return.
+		@note @a value is guaranteed to be equal to @c T() if extraction failed.
+		@returns @c true if the buffer was convertible to @a T (@a value is set); @c false otherwise (@a value equals @c T(0)).
+		@tparam T An arithmetic type; inferred from @a value.
 		@param value Output value.
 	*/
-	bool toInt(int32_t& value);
-	/**
-		Convert the buffer to a 64-bit integer.
-		@returns The buffer as a long, or 0 if the cached string was not a numeric value.
-	*/
-	int64_t toLong();
-	/**
-		Convert the buffer to a long (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toLong(int64_t& value);
-	/**
-		Convert the buffer to a float.
-		@returns The buffer as a float, or 0.0 if the cached string was not a numeric value.
-	*/
-	float toFloat();
-	/**
-		Convert the buffer to a float (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toFloat(float& value);
-	/**
-		Convert the buffer to a double.
-		@returns The buffer as a double, or 0.0 if the cached string was not a numeric value.
-	*/
-	double toDouble();
-	/**
-		Convert the buffer to a double (with error-return).
-		If the conversion fails, <em>value</em> is unmodified.
-		@returns true if the cached string was a numeric value (<em>value</em> is set), or false otherwise.
-		@param value Output value.
-	*/
-	bool toDouble(double& value);
-	
-protected:
-	UChar32* m_buffer;
-	size_t m_bufsize;
-	size_t m_buflength;
-	icu::UnicodeString m_bufstring;
+	template<typename T>
+	bool to_arithmetic(T& value) {
+		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
+		cache();
+		std::istringstream stream(m_cache_string);
+		stream>>value;
+		if (stream.good()) {
+			return true;
+		} else {
+			value=T();
+			return false;
+		}
+	}
+
+private:
+	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
+
+	void grow() {
+		if (0==get_capacity()) {
+			m_buffer.reserve(64u);
+		} else if (get_size()+1>=get_capacity()) {
+			m_buffer.reserve(2*get_capacity());
+		}
+	}
+
+private:
+	std::vector<char_type> m_buffer;
 	bool m_cached;
+	u8string m_cache_string;
 };
+
+/** @} */ // end of doc-group string
 
 } // namespace duct
 

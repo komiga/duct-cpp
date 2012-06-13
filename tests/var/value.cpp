@@ -1,0 +1,41 @@
+
+#include <duct/config.hpp>
+#include <duct/string.hpp>
+#include <duct/Variable.hpp>
+
+#include <iostream>
+
+void print_var(duct::Variable const& var);
+
+int main(int argc, char* argv[]) {
+	duct::Variable string_var(duct::u8string("string_var"), duct::u8string("bar"));
+	duct::Variable int_var(duct::u8string("int_var"), 12341234);
+	duct::Variable float_var(duct::u8string("float_var"), 3.14159f);
+	duct::Variable bool_var(duct::u8string("bool_var"), true);
+	duct::Variable null_var(duct::u8string("null_var"), duct::VARTYPE_NULL);
+	print_var(string_var);
+	print_var(int_var);
+	print_var(float_var);
+	print_var(bool_var);
+	print_var(null_var);
+	
+	duct::Variable morph_var(duct::u8string("morph_var"), duct::u8string("qwerty"));
+	print_var(morph_var);
+	morph_var.morph(142);
+	print_var(morph_var);
+	morph_var.morph(23.12f);
+	print_var(morph_var);
+	std::cout.flush();
+	return 0;
+}
+
+void print_var(duct::Variable const& var) {
+	std::cout<<'\''<<var.get_name()<<"' = ";
+	duct::u8string var_str("other");
+	var.get_as_str(var_str);
+	switch (var.get_type()) {
+	case duct::VARTYPE_STRING: std::cout<<'\''<<var_str<<'\''; break;
+	default: std::cout<<var_str; break;
+	}
+	std::cout<<'\n';
+}
