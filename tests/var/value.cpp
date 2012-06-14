@@ -2,10 +2,12 @@
 #include <duct/config.hpp>
 #include <duct/string.hpp>
 #include <duct/Variable.hpp>
+#include <duct/detail/vartype.hpp>
 
+#include <iomanip>
 #include <iostream>
 
-void print_var(duct::Variable const& var);
+#include "common.inl"
 
 int main(int argc, char* argv[]) {
 	duct::Variable string_var(duct::u8string("string_var"), duct::u8string("bar"));
@@ -27,15 +29,4 @@ int main(int argc, char* argv[]) {
 	print_var(morph_var);
 	std::cout.flush();
 	return 0;
-}
-
-void print_var(duct::Variable const& var) {
-	std::cout<<'\''<<var.get_name()<<"' = ";
-	duct::u8string var_str("other");
-	var.get_as_str(var_str);
-	switch (var.get_type()) {
-	case duct::VARTYPE_STRING: std::cout<<'\''<<var_str<<'\''; break;
-	default: std::cout<<var_str; break;
-	}
-	std::cout<<'\n';
 }

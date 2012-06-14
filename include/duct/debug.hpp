@@ -42,7 +42,7 @@ namespace duct {
 
 /**
 	@defgroup debug Debug utilities
-	@note All macros defined here are no-ops if @c NDEBUG is defined and unless #DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
+	@note All debug macros defined here are no-ops if @c NDEBUG is defined and unless #DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
 
 	Configuration defines:
 	- #DUCT_CONFIG_FORCE_DEBUG_MACROS
@@ -50,13 +50,57 @@ namespace duct {
 */
 
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
-/**
-	When defined, ensure all @c DUCT_DEBUG and @c DUCT_ASSERT macros are not no-ops.
-*/
-#define DUCT_CONFIG_FORCE_DEBUG_MACROS
+	/**
+		When defined, ensure all @c DUCT_DEBUG and @c DUCT_DEBUG_ASSERT macros are not no-ops.
+	*/
+	#define DUCT_CONFIG_FORCE_DEBUG_MACROS
 #endif
 
+/**
+	@name Non-debug assertion
+	@note These macros mimic @c assert(), and will @c std::abort() the program if @a expr evaluates to @c false.
+	@note These macros are always defined.
+	@sa DUCT_DEBUG_ASSERT(), DUCT_DEBUG_ASSERTF(), DUCT_DEBUG_ASSERTP(), DUCT_DEBUG_ASSERTPF()
+*/ /// @{
+/**
+	Assertion with message.
+	@param expr Expression to evaluate.
+	@param mesg Message.
+*/
+#define DUCT_ASSERT(expr, mesg) \
+	((expr) ? void(0) : (fprintf(stderr, "assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+
+/**
+	Assertion with formatted message.
+	@param expr Expression to evaluate.
+	@param format Format string.
+	@param ... Format arguments.
+*/
+#define DUCT_ASSERTF(expr, format, ...) \
+	((expr) ? void(0) : (fprintf(stderr, "assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", __VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+
+/**
+	Assertion with pointer and message.
+	@param expr Expression to evaluate.
+	@param p Pointer.
+	@param mesg Message.
+*/
+#define DUCT_ASSERTP(expr, p, mesg) \
+	DUCT_ASSERTF(expr, "[%p] " mesg, (void const* const)p)
+
+/**
+	Assertion with pointer and formatted message.
+	@param expr Expression to evaluate.
+	@param p Pointer.
+	@param format Format string.
+	@param ... Format arguments.
+*/
+#define DUCT_ASSERTPF(expr, p, format, ...) \
+	DUCT_ASSERTF(expr, "[%p] " format, (void const* const)p, __VA_ARGS__)
+/// @}
+
 #if (defined(NDEBUG) && !defined(DUCT_CONFIG_FORCE_DEBUG_MACROS)) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
+/** @name Message */ /// @{
 	/**
 		Print debug message.
 		@param mesg Debug message.
@@ -79,6 +123,9 @@ namespace duct {
 		@param ... Format arguments.
 	*/
 	#define DUCT_DEBUGNF(format, ...)
+/// @}
+
+/** @name Message with function signature */ /// @{
 	/**
 		Print debug message with function signature.
 		@param mesg Debug message.
@@ -101,6 +148,9 @@ namespace duct {
 		@param ... Format arguments.
 	*/
 	#define DUCT_DEBUGNCF(format, ...)
+/// @}
+
+/** @name Message with function signature and pointer */ /// @{
 	/**
 		Print debug message with function signature and pointer.
 		@param mesg Debug message.
@@ -127,6 +177,9 @@ namespace duct {
 		@param ... Format arguments.
 	*/
 	#define DUCT_DEBUGNCPF(p, format, ...)
+/// @}
+
+/** @name Print function signature */ /// @{
 	/**
 		Print function signature.
 	*/
@@ -136,39 +189,22 @@ namespace duct {
 		@param p Pointer.
 	*/
 	#define DUCT_DEBUG_CALLEDP(p)
+/// @}
 
-	/**
-		Assertion with message.
-		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
-		@param expr Expression to evaluate.
-		@param mesg Message.
-	*/
-	#define DUCT_ASSERT(expr, mesg)
-	/**
-		Assertion with formatted message.
-		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
-		@param expr Expression to evaluate.
-		@param format Format string.
-		@param ... Format arguments.
-	*/
-	#define DUCT_ASSERTF(expr, format, ...)
-	/**
-		Assertion with pointer and message.
-		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
-		@param expr Expression to evaluate.
-		@param p Pointer.
-		@param mesg Message.
-	*/
-	#define DUCT_ASSERTP(expr, p, mesg)
-	/**
-		Assertion with pointer and formatted message.
-		This macro mimics @c assert(), and will abort the program if @a expr evaluates to @c false.
-		@param expr Expression to evaluate.
-		@param p Pointer.
-		@param format Format string.
-		@param ... Format arguments.
-	*/
-	#define DUCT_ASSERTPF(expr, p, format, ...)
+/**
+	@name Debug assertion
+	@note These route to the non-debug assertion macros.
+	@sa DUCT_ASSERT(), DUCT_ASSERTF(), DUCT_ASSERTP(), DUCT_ASSERTPF()
+*/ /// @{
+	/** @copydoc DUCT_ASSERT() */
+	#define DUCT_DEBUG_ASSERT(expr, mesg)
+	/** @copydoc DUCT_ASSERTF() */
+	#define DUCT_DEBUG_ASSERTF(expr, format, ...)
+	/** @copydoc DUCT_ASSERTP() */
+	#define DUCT_DEBUG_ASSERTP(expr, p, mesg)
+	/** @copydoc DUCT_ASSERTPF() */
+	#define DUCT_DEBUG_ASSERTPF(expr, p, format, ...)
+/// @}
 
 #else
 	#define DUCT_DEBUG_PREFIX__ "debug: "
@@ -223,18 +259,18 @@ namespace duct {
 		DUCT_DEBUGF("called: [%p] %s", (void const* const)p, DUCT_FUNC_SIG)
 	
 	// Assert
-	#define DUCT_ASSERT(expr, mesg) \
-		((expr) ? void(0) : (fprintf(stderr, "assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", __FILE__, __LINE__, DUCT_FUNC_SIG), abort()))
-	
-	#define DUCT_ASSERTF(expr, format, ...) \
-		((expr) ? void(0) : (fprintf(stderr, "assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", __VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), abort()))
+	#define DUCT_DEBUG_ASSERT(expr, mesg) \
+		DUCT_ASSERT(expr, mesg)
+
+	#define DUCT_DEBUG_ASSERTF(expr, format, ...) \
+		DUCT_ASSERTF(expr, format, __VA_ARGS__)
 
 	// - pointer
-	#define DUCT_ASSERTP(expr, p, mesg) \
-		DUCT_ASSERTF(expr, "[%p] " mesg, (void const* const)p)
+	#define DUCT_DEBUG_ASSERTP(expr, p, mesg) \
+		DUCT_ASSERTP(expr, p, mesg)
 
-	#define DUCT_ASSERTPF(expr, p, format, ...) \
-		DUCT_ASSERTF(expr, "[%p] " format, (void const* const)p, __VA_ARGS__)
+	#define DUCT_DEBUG_ASSERTPF(expr, p, format, ...) \
+		DUCT_ASSERTPF(expr, p, format, __VA_ARGS__)
 	
 #endif
 

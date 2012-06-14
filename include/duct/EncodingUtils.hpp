@@ -103,7 +103,7 @@ extern unsigned int const g_utf8_trailing[];
 /**
 	String encoding utilities template.
 	@note BOMs are not handled by these utilities.
-	@tparam spec_ The byte size of the encoding's code unit.
+	@tparam spec_ Byte size of the encoding's code unit.
 */
 template<unsigned int _spec> class EncodingUtils;
 
@@ -132,13 +132,14 @@ public:
 	/** Utility's ID. */
 	static constexpr Encoding id=Encoding::UTF8;
 
+/** @name Base operations */ /// @{
 	/**
 		Decode a single sequence to a code point.
 		@returns Next input position on success; or @a pos if either the input was incomplete or if @a pos had already overrun @a end (@a output is not modified).
 		@param pos Position to decode from.
 		@param end Ending input iterator.
 		@param output Output code point.
-		@param replacement The replacement code point. @a output will be set to this only if the decoded code point is invalid.
+		@param replacement Replacement code point. @a output will be set to this only if the decoded code point is invalid.
 	*/
 	template<typename InputIterator>
 	static InputIterator decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement=CHAR_NULL);
@@ -146,7 +147,7 @@ public:
 		Encode a single code point to a sequence.
 		@returns The next output position; or @a output if both @a input was invalid and @a replacement was either invalid or equal to @c CHAR_NULL.
 		@param input Input code point.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 		@param replacement Replacement code point. If invalid or equal to @c CHAR_NULL (default) when @a input is invalid, nothing will be outputted (returns @a output).
 	*/
 	template<typename OutputIterator>
@@ -154,7 +155,7 @@ public:
 	/**
 		Advance to the next sequence.
 		@returns The stepped iterator; or @a from if either the sequence was incomplete or @c from>=end.
-		@param from The position to advance from.
+		@param from Position to advance from.
 		@param end End of boundary.
 	*/
 	template<typename RandomAccessIterator>
@@ -174,14 +175,14 @@ public:
 		Get the number of code units required to complete an encoded sequence based on its first unit.
 		@note This <em>does not</em> count the first unit (@a first); see @c required_first_whole().
 		@returns The number of code units required to complete the sequence.
-		@param first The first unit in a code unit sequence.
+		@param first First unit in a code unit sequence.
 	*/
 	static inline unsigned int required_first(char_type const first);
 	/**
 		Get the number of code units required to store an encoded sequence based on its first unit.
 		@note This @em does count the first unit (@a first); it is equivalent to: @code required_first(first)+1 @endcode
 		@returns The number of code units required to store the sequence.
-		@param first The first unit in a code unit sequence.
+		@param first First unit in a code unit sequence.
 	*/
 	static inline unsigned int required_first_whole(char_type const first);
 	/**
@@ -192,9 +193,8 @@ public:
 	static inline unsigned int required(char32 const c);
 	/**
 		Count the number of code points in a code unit range.
-		@warning
-		- An incomplete trailing sequence will not be counted unless: @code count_incomplete==true @endcode
-		- The input range is not checked for invalid code points; it will provide exactly the required number of code points to store the input range if it were entirely valid.
+		@warning An incomplete trailing sequence will not be counted unless: @code count_incomplete==true @endcode
+		@warning The input range is not checked for invalid code points; it will provide exactly the required number of code points to store the input range if it were entirely valid.
 		@returns The number of code points in the range.
 		@param begin Beginning iterator.
 		@param end Ending iterator.
@@ -202,131 +202,136 @@ public:
 	*/
 	template<typename RandomAccessIterator>
 	static std::size_t count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete=false);
-	
-// convenience operations
+/// @}
+
+/** @name Conversion between Unicode encodings */ /// @{
 	/**
-		Convert locale-encoded range to UTF-8.
+		Convert from UTF-8 code unit range.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param locale The locale to use for decoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
-	/**
-		Convert code wide unit range to UTF-8.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert Latin1 code unit range to UTF-8.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Copy UTF-8 code unit range to the output iterator.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Convert UTF-16 code unit range to UTF-8.
+		Convert from UTF-16 code unit range.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Convert UTF-32 code unit range to UTF-8.
+		Convert from UTF-32 code unit range.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Convert UTF-8 code unit range to a locale encoding.
+		Convert code unit range to another Unicode encoding.
 		@returns The last output position.
+		@tparam outU @c EncodingUtils specialization to use for encoding.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement Replacement code unit. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
-		@param locale The locale to use for encoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
-	/**
-		Convert UTF-8 code unit range to the system's wide-char encoding (uses UTF-16 or UTF-32).
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement The replacement wide-char. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-8 code unit range to Latin1.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement Replacement code unit. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-8 code unit range to another Unicode encoding.
-		@returns The last output position.
-		@tparam outU The EncodingUtils specialization to use for encoding.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<class outU, typename InputIterator, typename OutputIterator>
 	static OutputIterator to_other(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Copy UTF-8 code unit range to the output iterator.
+		Convert code unit range to UTF-8.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Convert UTF-8 code unit range to UTF-16.
+		Convert code unit range to UTF-16.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
-		Convert UTF-8 code unit range to UTF-32 (code points).
+		Convert code unit range to UTF-32.
 		@returns The last output position.
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 	*/
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
+/// @}
+
+/** @name Conversion to other encodings */ /// @{
+	/**
+		Convert from locale-encoded range.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+		@param locale Locale to use for decoding; global locale by default.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
+	/**
+		Convert from wide-char range.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
+	/**
+		Convert from Latin1 range.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
+	/**
+		Convert code unit range to locale.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+		@param replacement Replacement code unit. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
+		@param locale Locale to use for encoding; global locale by default.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
+	/**
+		Convert code unit range to wide-char.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+		@param replacement Replacement wide-char. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
+	/**
+		Convert code unit range to Latin1.
+		@returns The last output position.
+		@param begin Beginning input iterator.
+		@param end Ending input iterator.
+		@param output Output iterator.
+		@param replacement Replacement code unit. If equal to @c CHAR_NULL (default), invalid code points will be ignored.
+	*/
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
+/// @}
 };
 
 /**
@@ -347,6 +352,7 @@ public:
 	/** @copydoc UTF8Utils::id */
 	static constexpr Encoding id=Encoding::UTF16;
 
+/** @name Base operations */ /// @{
 	/** @copydoc UTF8Utils::decode(InputIterator,InputIterator const,char32&,char32) */
 	template<typename InputIterator>
 	static InputIterator decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement=CHAR_NULL);
@@ -371,131 +377,54 @@ public:
 	/** @copydoc UTF8Utils::count(RandomAccessIterator,RandomAccessIterator const,bool const) */
 	template<typename RandomAccessIterator>
 	static std::size_t count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete=false);
+/// @}
 
-// convenience operations
-	/**
-		Convert locale-encoding range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param locale The locale to use for decoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
-	/**
-		Convert wide code unit range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert Latin1 code unit range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-8 code unit range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+/** @name Conversion between Unicode encodings */ /// @{
+	/** @copydoc UTF8Utils::from_utf8(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Copy UTF-16 code unit range to the output iterator.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	/** @copydoc UTF8Utils::from_utf16(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-32 code unit range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	/** @copydoc UTF8Utils::from_utf32(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator from_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-16 code unit range to a locale encoding.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement Replacement code unit. If this is @c CHAR_NULL (default), malformed units/pairs will be skipped entirely.
-		@param locale The locale to use for encoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
-	/**
-		Convert UTF-16 code unit range to the system's wide-char encoding (uses UTF-16 or UTF-32).
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement The replacement wide-char. If this is @c CHAR_NULL (default), malformed units/pairs will be skipped entirely.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-16 code unit range to Latin1.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement Replacement code unit. If this is @c CHAR_NULL (default), malformed units/pairs will be skipped entirely.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-16 code unit range to another Unicode encoding.
-		@returns The last output position.
-		@tparam outU The EncodingUtils specialization to use for encoding.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	
+	/** @copydoc UTF8Utils::to_other(InputIterator,InputIterator const,OutputIterator) */
 	template<class outU, typename InputIterator, typename OutputIterator>
 	static OutputIterator to_other(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-16 code unit range to UTF-8.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	/** @copydoc UTF8Utils::to_utf8(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Copy UTF-16 code unit range to the output iterator.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	/** @copydoc UTF8Utils::to_utf16(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-16 code unit range to UTF-32 (code points).
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
+	/** @copydoc UTF8Utils::to_utf32(InputIterator,InputIterator const,OutputIterator) */
 	template<typename InputIterator, typename OutputIterator>
 	static OutputIterator to_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
+/// @}
+
+/** @name Conversion to other encodings */ /// @{
+	/** @copydoc UTF8Utils::from_locale(InputIterator,InputIterator const,OutputIterator,std::locale const&) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
+	/** @copydoc UTF8Utils::from_wide(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::from_latin1(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
+
+	/** @copydoc UTF8Utils::to_locale(InputIterator,InputIterator const,OutputIterator,char8 const,std::locale const&) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
+	/** @copydoc UTF8Utils::to_wide(InputIterator,InputIterator const,OutputIterator,char32 const) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
+	/** @copydoc UTF8Utils::to_latin1(InputIterator,InputIterator const,OutputIterator,char8 const) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
+/// @}
 };
 
 /**
@@ -516,13 +445,14 @@ public:
 	/** @copydoc UTF8Utils::id */
 	static constexpr Encoding id=Encoding::UTF32;
 
+/** @name Base operations */ /// @{
 	/**
 		Decode a single code point from a code point range.
 		@returns Next input position on success; or @a begin if @a begin had already overrun @a end (@a output is not modified).
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
 		@param output Output code point.
-		@param replacement The replacement code point. @a output will be set to this only if the decoded code point is invalid.
+		@param replacement Replacement code point. @a output will be set to this only if the decoded code point is invalid.
 	*/
 	template<typename InputIterator>
 	static InputIterator decode(InputIterator begin, InputIterator const end, char32& output, char32 const replacement=CHAR_NULL);
@@ -531,7 +461,7 @@ public:
 		@note This will step at most @c 1 element.
 		@returns The next output position; or @a output if both @a input was invalid and @a replacement was either invalid or equal to @c CHAR_NULL.
 		@param input Input code point.
-		@param output Beginning output iterator.
+		@param output Output iterator.
 		@param replacement Replacement code point. If invalid or equal to @c CHAR_NULL (default) when @a input is invalid, nothing will be outputted (returns @a output).
 	*/
 	template<typename OutputIterator>
@@ -539,7 +469,7 @@ public:
 	/**
 		Advance to next code point.
 		@returns The stepped iterator; or @a from if @c from>=end.
-		@param from The position to advance from.
+		@param from Position to advance from.
 		@param end End of boundary.
 	*/
 	template<typename RandomAccessIterator>
@@ -547,7 +477,7 @@ public:
 	/**
 		Step backwards to nearest sequence.
 		@returns The backwards-stepped iterator; or @a from if @c from<=begin.
-		@param from The position to step from.
+		@param from Position to step from.
 		@param begin Front of boundary.
 	*/
 	template<typename RandomAccessIterator>
@@ -556,14 +486,14 @@ public:
 		Get the number of code units required to complete an encoded sequence based on its first unit.
 		@note This <em>does not</em> count the first unit (@a first); see @c required_first_whole().
 		@returns <strong>Always @c 0</strong>.
-		@param first The first unit in a code unit sequence.
+		@param first First unit in a code unit sequence.
 	*/
 	static inline unsigned int required_first(char_type const first);
 	/**
 		Get the number of code units required to store an encoded sequence based on its first unit.
 		@note This @em does count the first unit (@a first); it is equivalent to: @code required_first(first)+1 @endcode
 		@returns <strong>Always @c 1</strong>.
-		@param first The first unit in a code unit sequence.
+		@param first First unit in a code unit sequence.
 	*/
 	static inline unsigned int required_first_whole(char_type const first);
 	/**
@@ -583,164 +513,89 @@ public:
 	template<typename RandomAccessIterator>
 	static inline std::size_t count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete=false);
 
-// convenience operations
-	/**
-		Convert locale-encoded range to UTF-32 code points.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param locale The locale to use for decoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
-	/**
-		Convert wide code unit range to UTF-32.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert Latin1 code unit range to UTF-32.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-8 code unit range to UTF-32.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-16 code unit range to UTF-32.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Copy UTF-32 code unit range to the output iterator.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator from_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-32 code unit range to a locale encoding.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement The replacement code point. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
-		@param locale The locale to use for encoding; current locale by default.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
-	/**
-		Convert UTF-32 code unit range to the system's wide-char encoding (uses UTF-16 or UTF-32).
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement The replacement character. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-32 code unit range to Latin1.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-		@param replacement The replacement character. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
-	/**
-		Convert UTF-32 code unit range to another Unicode encoding.
-		@returns The last output position.
-		@tparam outU The EncodingUtils specialization to use for encoding.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<class outU, typename InputIterator, typename OutputIterator>
-	static OutputIterator to_other(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-32 code unit range to UTF-8.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Convert UTF-32 code unit range to UTF-16.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
-	/**
-		Copy UTF-32 code unit range to the output iterator.
-		@returns The last output position.
-		@param begin Beginning input iterator.
-		@param end Ending input iterator.
-		@param output Beginning output iterator.
-	*/
-	template<typename InputIterator, typename OutputIterator>
-	static OutputIterator to_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
 	/**
 		Decode locale-encoded unit to a code point.
 		@returns The converted code point.
 		@param input Beginning input iterator.
-		@param locale The locale to use for decoding; current locale by default.
+		@param locale Locale to use for decoding; global locale by default.
 	*/
 	template<typename InputIterator>
 	static char_type decode_locale(InputIterator input, std::locale const& locale=std::locale());
+		/**
+		Encode a code point to a locale encoding.
+		@returns The last output position.
+		@param input A code point to encode.
+		@param output Output iterator.
+		@param replacement Replacement character. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
+		@param locale Locale to use for encoding; global locale by default.
+	*/
+	template<typename OutputIterator>
+	static OutputIterator encode_locale(char32 input, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
+
 	/**
 		Decode wide-char unit (uses UTF-16 or UTF-32 depending on the system) to a code point.
 		@returns The converted code point.
-		@param input The input iterator.
+		@param input Input iterator.
 	*/
 	template<typename InputIterator>
 	static char_type decode_wide(InputIterator input);
 	/**
-		Encode a code point to a locale encoding.
-		@returns The last output position.
-		@param input A code point to encode.
-		@param output Beginning output iterator.
-		@param replacement The replacement character. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
-		@param locale The locale to use for encoding; current locale by default.
-	*/
-	template<typename OutputIterator>
-	static OutputIterator encode_locale(char32 input, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
-	/**
 		Encode a code point to the system's wide-char encoding (uses UTF-16 or UTF-32).
 		@returns The last output position.
 		@param input Input code point.
-		@param output Beginning output iterator.
-		@param replacement The replacement wide-char. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
+		@param output Output iterator.
+		@param replacement Replacement wide-char. If this is @c CHAR_NULL (default), the non-convertable code point is skipped.
 	*/
 	template<typename OutputIterator>
 	static OutputIterator encode_wide(char32 input, OutputIterator output, char32 const replacement=CHAR_NULL);
+/// @}
+
+/** @name Conversion between Unicode encodings */ /// @{
+	/** @copydoc UTF8Utils::from_utf8(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::from_utf16(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::from_utf32(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
+	
+	/** @copydoc UTF8Utils::to_other(InputIterator,InputIterator const,OutputIterator) */
+	template<class outU, typename InputIterator, typename OutputIterator>
+	static OutputIterator to_other(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::to_utf8(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_utf8(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::to_utf16(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_utf16(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::to_utf32(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_utf32(InputIterator begin, InputIterator const end, OutputIterator output);
+/// @}
+
+/** @name Conversion to other encodings */ /// @{
+	/** @copydoc UTF8Utils::from_locale(InputIterator,InputIterator const,OutputIterator,std::locale const&) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale=std::locale());
+	/** @copydoc UTF8Utils::from_wide(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_wide(InputIterator begin, InputIterator const end, OutputIterator output);
+	/** @copydoc UTF8Utils::from_latin1(InputIterator,InputIterator const,OutputIterator) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator from_latin1(InputIterator begin, InputIterator const end, OutputIterator output);
+
+	/** @copydoc UTF8Utils::to_locale(InputIterator,InputIterator const,OutputIterator,char8 const,std::locale const&) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL, std::locale const& locale=std::locale());
+	/** @copydoc UTF8Utils::to_wide(InputIterator,InputIterator const,OutputIterator,char32 const) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement=CHAR_NULL);
+	/** @copydoc UTF8Utils::to_latin1(InputIterator,InputIterator const,OutputIterator,char8 const) */
+	template<typename InputIterator, typename OutputIterator>
+	static OutputIterator to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement=CHAR_NULL);
+/// @}
 };
 
 /** @} */ // end of name-group Utilities

@@ -1,6 +1,7 @@
 
-#include <duct/string.hpp>
 #include <duct/EncodingUtils.hpp>
+#include <duct/string.hpp>
+#include <duct/debug.hpp>
 
 #include <cstdlib>
 #include <cstdio>
@@ -67,7 +68,7 @@ static duct::char32_strict const utf32_invalid1[]	={0x00FFFF};
 static duct::char32_strict const utf32_invalid2[]	={0x10FFFE};
 
 int main(int argc, char* argv[]) {
-	assert(argc>1);
+	DUCT_ASSERT(argc>1, "requires series argument (pass 0 for all)");
 	unsigned int
 		series=atoi(argv[1]),
 		offset=argc>2 ? atoi(argv[2]) : 4;

@@ -56,38 +56,50 @@ class CharBuf;
 */
 class CharBuf /*final*/ {
 public:
-	/**
-		Internal character type.
-	*/
+	/** Internal character type. */
 	typedef char32 char_type;
 
 public:
+/** @name Constructors */ /// @{
 	/**
-		Constructor.
+		Construct empty.
 	*/
 	CharBuf()
 		: m_buffer()
 		, m_cached(false)
 		, m_cache_string()
 	{}
-
-// properties
 	/**
-		Get current size.
+		Construct with capacity.
+		@param capacity Capacity of buffer.
+	*/
+	CharBuf(std::size_t const capacity)
+		: m_buffer()
+		, m_cached(false)
+		, m_cache_string()
+	{
+		m_buffer.reserve(capacity);
+	}
+/// @}
+
+/** @name Properties */ /// @{
+	/**
+		Get size.
 		@returns The number of characters in the buffer.
 		@sa get_capacity().
 	*/
 	inline std::size_t get_size() const { return m_buffer.size(); }
 	/**
-		Get current capacity.
+		Get capacity.
 		@returns The reserved size of the buffer.
 		@sa get_size().
 	*/
 	inline std::size_t get_capacity() const { return m_buffer.capacity(); }
+/// @}
 
-// operations and comparison
+/** @name Operations and comparison */ /// @{
 	/**
-		Reset the buffer.
+		Reset.
 	*/
 	void reset() {
 		m_cached=false;
@@ -107,11 +119,11 @@ public:
 	}
 
 	/**
-		Insert code point to the end of the buffer.
+		Append code point to the end of the buffer.
 		@warning Invalid code points are ignored.
-		@warning An exception may be thrown by reallocation.
+		@warning An exception may be thrown by internal resizing.
 		@note The cached string will be invalidated by this operation.
-		@param cp The code point to insert.
+		@param cp Code point to insert.
 	*/
 	void push_back(char_type const cp) {
 		if (DUCT_UNI_IS_CP_VALID(cp)) {
@@ -125,7 +137,7 @@ public:
 		Compare all characters in the buffer to a character.
 		@returns @c true if all characters match the character; @c false otherwise.
 		@tparam charT Character type; inferred from @a c.
-		@param c The character to compare against.
+		@param c Character to compare against.
 	*/
 	template<typename charT>
 	bool compare(charT const c) const {
@@ -138,19 +150,20 @@ public:
 	}
 	/**
 		Compare buffer to a character set.
-		@returns @c true if all characters match a character from @a charset; @c false otherwise.
-		@param charset The character set to compare against.
+		@returns @c true if all characters match a character from @a char_set; @c false otherwise.
+		@param char_set Ccharacter set to compare against.
 	*/
-	bool compare(CharacterSet const& charset) const {
+	bool compare(CharacterSet const& char_set) const {
 		for (unsigned int i=0; get_size()>i; ++i) {
-			if (!charset.contains(m_buffer[i])) {
+			if (!char_set.contains(m_buffer[i])) {
 				return false;
 			}
 		}
 		return true;
 	}
+/// @}
 
-// conversion
+/** @name Output */ /// @{
 	/**
 		Convert buffer to a string.
 		@returns Cache string converted to @a stringT.
@@ -190,7 +203,7 @@ public:
 		@note @a value is guaranteed to be equal to @c T() if extraction failed.
 		@returns @c true if the buffer was convertible to @a T (@a value is set); @c false otherwise (@a value equals @c T(0)).
 		@tparam T An arithmetic type; inferred from @a value.
-		@param value Output value.
+		@param[out] value Output value.
 	*/
 	template<typename T>
 	bool to_arithmetic(T& value) {
@@ -205,6 +218,7 @@ public:
 			return false;
 		}
 	}
+/// @}
 
 private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);

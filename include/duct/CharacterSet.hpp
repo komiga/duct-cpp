@@ -61,9 +61,9 @@ class CharacterSet;
 */
 class CharacterRange {
 public:
-// ctor/dtor
+/** @name Constructors */ /// @{
 	/**
-		Constructor with single code point.
+		Construct with single code point.
 		@note Equivalent to @c CharacterRange(cp, 0).
 		@param cp Code point.
 	*/
@@ -72,7 +72,7 @@ public:
 		, m_end(cp)
 	{}
 	/**
-		Constructor with range.
+		Construct with range.
 		@note A @a length of 0 will still match @a start.
 		@param start First code point of the range.
 		@param length Length of the range.
@@ -89,8 +89,9 @@ public:
 		: m_start(other.m_start)
 		, m_end(other.m_end)
 	{}
+/// @}
 
-// properties
+/** @name Properties */ /// @{
 	/**
 		Set the start of the range.
 		@param start New starting code point.
@@ -111,8 +112,9 @@ public:
 		@returns Last code point in range.
 	*/
 	char32 end() const { return m_end; }
+/// @}
 
-// comparison
+/** @name Comparison */ /// @{
 	/**
 		Check if the range contains a code point.
 		@returns @c true if @a cp was in the range, @c false if it was not.
@@ -178,7 +180,8 @@ public:
 		}
 		return str.cend();
 	}
-	
+/// @}
+
 private:
 	char32 m_start;
 	char32 m_end;
@@ -189,22 +192,23 @@ private:
 */
 class CharacterSet {
 public:
-	/**
-		CharacterRange @c std::vector.
-	*/
+	/** CharacterRange vector. */
 	typedef std::vector<CharacterRange> vector_type;
+	/** CharacterRange iterator. */
+	typedef vector_type::iterator iterator;
+	/** CharacterRange const iterator. */
+	typedef vector_type::const_iterator const_iterator;
 
 public:
-// ctor/dtor
+/** @name Constructors */ /// @{
 	/**
-		Constructor.
+		Construct empty set.
 	*/
 	CharacterSet()
 		: m_ranges()
 	{}
-	/** @{ */
 	/**
-		Constructor with string ranges.
+		Construct with string ranges.
 		@param str String of ranges.
 	*/
 	explicit CharacterSet(u8string const& str)
@@ -212,14 +216,14 @@ public:
 	{
 		add_from_string(str);
 	}
+	/** @copydoc CharacterSet(u8string const&) */
 	explicit CharacterSet(char const* str)
 		: m_ranges()
 	{
 		add_from_string(u8string(str));
 	}
-	/** @} */
 	/**
-		Constructor with single range.
+		Construct with single range.
 		@param start First code point of range.
 		@param length Number of code points in the range.
 	*/
@@ -229,7 +233,7 @@ public:
 		add_range(start, length);
 	}
 	/**
-		Constructor with single code point.
+		Construct with single code point.
 		@param cp Code point.
 	*/
 	explicit CharacterSet(char32 const cp)
@@ -244,27 +248,33 @@ public:
 	CharacterSet(CharacterSet const& other)
 		: m_ranges(other.m_ranges)
 	{}
+/// @}
 
-// properties
-	/** @{ */
+/** @name Properties */ /// @{
 	/**
-		Begin range iterator.
-		@returns Beginning iterator for the set's ranges.
+		Get number of ranges.
+		@returns The current number of ranges.
 	*/
-	vector_type::iterator begin() { return m_ranges.begin(); }
-	vector_type::const_iterator cbegin() const { return m_ranges.cbegin(); }
-	/** @} */
+	vector_type::size_type size() const { return m_ranges.size(); }
 
-	/** @{ */
 	/**
-		End range iterator.
-		@returns Ending iterator for the set's ranges.
+		Get beginning range iterator.
+		@returns The beginning range iterator.
 	*/
-	vector_type::iterator end() { return m_ranges.end(); }
-	vector_type::const_iterator cend() const { return m_ranges.cend(); }
-	/** @} */
+	iterator begin() { return m_ranges.begin(); }
+	/** @copydoc begin() */
+	const_iterator cbegin() const { return m_ranges.cbegin(); }
 
-// comparison
+	/**
+		Get ending range iterator.
+		@returns The ending range iterator.
+	*/
+	iterator end() { return m_ranges.end(); }
+	/** @copydoc end() */
+	const_iterator cend() const { return m_ranges.cend(); }
+/// @}
+
+/** @name Comparison */ /// @{
 	/**
 		Check if the set contains a code point.
 		@returns @c true if @a cp was in the set's ranges, or @c false if it was not.
@@ -301,7 +311,7 @@ public:
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
 	string_iterator find(stringT const& str, string_iterator from) const {
 		string_iterator sit;
-		for (vector_type::const_iterator rit=cbegin(); cend()!=rit; ++rit) {
+		for (const_iterator rit=cbegin(); cend()!=rit; ++rit) {
 			sit=(*rit).find(str, from);
 			if (str.cend()!=sit) {
 				return sit;
@@ -309,14 +319,13 @@ public:
 		}
 		return str.cend();
 	}
+/// @}
 
-// addition
+/** @name Modification */ /// @{
 	/**
 		Remove all ranges from the set.
 	*/
-	void clear() {
-		m_ranges.clear();
-	}
+	void clear() { m_ranges.clear(); }
 
 	/**
 		Add the given string ranges to the set.
@@ -391,7 +400,7 @@ public:
 		CharacterRange const new_range(start, length);
 		if (empty || !contains(new_range)) { // Try to avoid adding the same new_range twice
 			if (!empty) {
-				for (vector_type::iterator it=begin(); end()!=it; ++it) {
+				for (iterator it=begin(); end()!=it; ++it) {
 					CharacterRange& cr=(*it);
 					if (new_range.intersects(cr)) {
 						if (new_range.start()<cr.start()) {
@@ -462,7 +471,8 @@ public:
 		add_range('0', 9);
 		return *this;
 	}
-	
+/// @}
+
 private:
 	vector_type m_ranges;
 };

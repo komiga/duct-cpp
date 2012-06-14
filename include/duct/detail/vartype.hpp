@@ -43,7 +43,7 @@ namespace duct {
 
 /**
 	@addtogroup variable
-	@note The @c valtype constructs here are only defined for the value-type VariableTypes:
+	@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE VariableTypes:
 	-# VARTYPE_STRING
 	-# VARTYPE_INTEGER
 	-# VARTYPE_FLOAT
@@ -151,19 +151,19 @@ struct var_config {
 
 /**
 	Get the name of a VariableType.
-	@returns Name of the given variable type.
-	@param type The variable type.
+	@returns The name of the variable type.
+	@param type Variable type.
 */
 char const* get_vartype_name(VariableType const type) {
 	static char const* const names[]={
-		"VARTYPE_NULL",
-		"VARTYPE_STRING",
-		"VARTYPE_INTEGER",
-		"VARTYPE_FLOAT",
-		"VARTYPE_BOOL",
-		"VARTYPE_ARRAY",
-		"VARTYPE_NODE",
-		"VARTYPE_IDENTIFIER"
+		"NULL",
+		"STRING",
+		"INTEGER",
+		"FLOAT",
+		"BOOL",
+		"ARRAY",
+		"NODE",
+		"IDENTIFIER"
 	};
 	return names[ffs((int)type)-1];
 }

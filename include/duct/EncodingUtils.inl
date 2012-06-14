@@ -61,7 +61,7 @@ THE SOFTWARE.
 	http://people.w3.org/rishida/scripts/uniview/conversion
 */
 
-// specialization UTF8 implementation
+// specialization UTF8Utils implementation
 
 template<typename InputIterator>
 InputIterator UTF8Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
@@ -175,6 +175,65 @@ std::size_t UTF8Utils::count(RandomAccessIterator begin, RandomAccessIterator co
 }
 
 template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+	while (end>begin) {
+		*output++=*begin++;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=UTF16Utils::decode(begin, end, codepoint);
+		output=encode(codepoint, output);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+	while (end>begin) {
+		output=encode(*begin++, output);
+	}
+	return output;
+}
+
+template<class outU, typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
+	return outU::from_utf8(begin, end, output);
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::to_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+	while (end>begin) {
+		*output++=*begin++;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::to_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=decode(begin, end, codepoint);
+		output=UTF16Utils::encode(codepoint, output);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF8Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=decode(begin, end, codepoint);
+		*output++=codepoint;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF8Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
 	while (end>begin) {
 		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
@@ -196,32 +255,6 @@ template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF8Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
 	// Latin-1 is directly compatible with Unicode encodings,
 	// and can thus be treated as (a sub-range of) UTF-32
-	while (end>begin) {
-		output=encode(*begin++, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
-	while (end>begin) {
-		*output++=*begin++;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=UTF16Utils::decode(begin, end, codepoint);
-		output=encode(codepoint, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
 	while (end>begin) {
 		output=encode(*begin++, output);
 	}
@@ -260,40 +293,7 @@ OutputIterator UTF8Utils::to_latin1(InputIterator begin, InputIterator const end
 	return output;
 }
 
-template<class outU, typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
-	return outU::from_utf8(begin, end, output);
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
-	while (end>begin) {
-		*output++=*begin++;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF16Utils::encode(codepoint, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		*output++=codepoint;
-	}
-	return output;
-}
-
-// specialization UTF16 implementation
+// specialization UTF16Utils implementation
 
 template<typename InputIterator>
 InputIterator UTF16Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
@@ -395,34 +395,6 @@ std::size_t UTF16Utils::count(RandomAccessIterator begin, RandomAccessIterator c
 }
 
 template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
-		output=encode(codepoint, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_wide(InputIterator begin, InputIterator const end, OutputIterator output) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_wide(*begin++);
-		output=encode(codepoint, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
-	while (end>begin) {
-		*output++=*begin++;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF16Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
 	char32 codepoint;
 	while (end>begin) {
@@ -444,37 +416,6 @@ template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF16Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
 	while (end>begin) {
 		output=encode(*begin++, output);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement, std::locale const& locale) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_locale(codepoint, output, replacement, locale);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_wide(codepoint, output, replacement);
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
-	while (end>begin) {
-		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
-		++begin;
 	}
 	return output;
 }
@@ -512,7 +453,66 @@ OutputIterator UTF16Utils::to_utf32(InputIterator begin, InputIterator const end
 	return output;
 }
 
-// specialization UTF32 implementation
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
+	while (end>begin) {
+		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
+		output=encode(codepoint, output);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::from_wide(InputIterator begin, InputIterator const end, OutputIterator output) {
+	while (end>begin) {
+		char32 codepoint=UTF32Utils::decode_wide(*begin++);
+		output=encode(codepoint, output);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
+	// Latin-1 is directly compatible with Unicode encodings,
+	// and can thus be treated as (a sub-range of) UTF-32
+	while (end>begin) {
+		*output++=*begin++;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement, std::locale const& locale) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=decode(begin, end, codepoint);
+		output=UTF32Utils::encode_locale(codepoint, output, replacement, locale);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=decode(begin, end, codepoint);
+		output=UTF32Utils::encode_wide(codepoint, output, replacement);
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF16Utils::to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement) {
+	// Latin-1 is directly compatible with Unicode encodings,
+	// and can thus be treated as (a sub-range of) UTF-32
+	while (end>begin) {
+		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
+		++begin;
+	}
+	return output;
+}
+
+// specialization UTF32Utils implementation
 
 template<typename InputIterator>
 InputIterator UTF32Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
@@ -566,6 +566,85 @@ inline std::size_t UTF32Utils::count(RandomAccessIterator begin, RandomAccessIte
 	return end-begin;
 }
 
+template<typename InputIterator>
+char32 UTF32Utils::decode_locale(InputIterator input, std::locale const& locale) {
+	// On Windows, gcc's standard library (glibc++) has almost
+	// no support for Unicode stuff. As a consequence, in this
+	// context we can only use the default locale and ignore
+	// the one passed as parameter.
+	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
+	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
+	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
+		wchar_t character=0;
+		mbtowc(&character, &input, 1);
+		return static_cast<char32>(character);
+	#else
+		// Get the facet of the locale which deals with character conversion
+		std::ctype<wchar_t> const& facet=std::use_facet<std::ctype<wchar_t> >(locale);
+		// Use the facet to convert each character of the input string
+		return static_cast<char32>(facet.widen(input));
+	#endif
+}
+
+template<typename OutputIterator>
+OutputIterator UTF32Utils::encode_locale(char32 input, OutputIterator output, char8 const replacement, std::locale const& locale) {
+	// On Windows, gcc's standard library (glibc++) has almost
+	// no support for Unicode stuff. As a consequence, in this
+	// context we can only use the default locale and ignore
+	// the one passed as parameter.
+	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
+	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
+	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
+		char8 character=0;
+		if (wctomb(&character, static_cast<wchar_t>(input))>=0) {
+			*output++=character;
+		} else if (replacement) {
+			*output++=replacement;
+		}
+		return output;
+	#else
+		// Get the facet of the locale which deals with character conversion
+		std::ctype<wchar_t> const& facet=std::use_facet<std::ctype<wchar_t> >(locale);
+		// Use the facet to convert each character of the input string
+		*output++=facet.narrow(static_cast<wchar_t>(input), replacement);
+		return output;
+	#endif
+}
+
+template<typename InputIterator>
+char32 UTF32Utils::decode_wide(InputIterator input) {
+	// The encoding of wide characters is not well defined and is left to the system;
+	// however we can safely assume that it is UCS-2 on Windows and
+	// UCS-4 on Unix systems.
+	// InputIterator both cases, a simple copy is enough (UCS-2 is a subset of UCS-4,
+	// and UCS-4 *is* UTF-32).
+	return input;
+}
+
+template<typename OutputIterator>
+OutputIterator UTF32Utils::encode_wide(char32 input, OutputIterator output, char32 const replacement) {
+	// The encoding of wide characters is not well defined and is left to the system;
+	// however we can safely assume that it is UCS-2 on Windows and
+	// UCS-4 on Unix systems.
+	// For UCS-2 we need to check if the source characters fits in (UCS-2 is a subset of UCS-4).
+	// For UCS-4 we can do a direct copy (UCS-4 *is* UTF-32).
+	switch (sizeof(wchar_t)) {
+		case 4: {
+			*output++=static_cast<wchar_t>(input);
+			break;
+		}
+		default: { // TODO: replace with encoding the code point to two code units?
+			if ((input<=0xFFFF) && ((input<0xD800) || (input>0xDFFF))) {
+				*output++=static_cast<wchar_t>(input);
+			} else if (replacement && ((replacement<=0xFFFF) && ((replacement<0xD800) || (replacement>0xDFFF)))) {
+				*output++=replacement;
+			}
+			break;
+		}
+	}
+	return output;
+}
+
 template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF32Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
 	while (end>begin) {
@@ -586,34 +665,6 @@ template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF32Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
 	// Latin-1 is directly compatible with Unicode encodings,
 	// and can thus be treated as (a sub-range of) UTF-32
-	while (end>begin) {
-		*output++=*begin++;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=UTF8Utils::decode(begin, end, codepoint);
-		*output++=codepoint;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
-	char32 codepoint;
-	while (end>begin) {
-		begin=UTF16Utils::decode(begin, end, codepoint);
-		*output++=codepoint;
-	}
-	return output;
-}
-
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
@@ -647,6 +698,34 @@ OutputIterator UTF32Utils::to_latin1(InputIterator begin, InputIterator const en
 	return output;
 }
 
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF32Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=UTF8Utils::decode(begin, end, codepoint);
+		*output++=codepoint;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF32Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+	char32 codepoint;
+	while (end>begin) {
+		begin=UTF16Utils::decode(begin, end, codepoint);
+		*output++=codepoint;
+	}
+	return output;
+}
+
+template<typename InputIterator, typename OutputIterator>
+OutputIterator UTF32Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+	while (end>begin) {
+		*output++=*begin++;
+	}
+	return output;
+}
+
 template<class outU, typename InputIterator, typename OutputIterator>
 OutputIterator UTF32Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
 	return outU::from_utf32(begin, end, output);
@@ -672,85 +751,6 @@ template<typename InputIterator, typename OutputIterator>
 OutputIterator UTF32Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
 	while (end>begin) {
 		*output++=*begin++;
-	}
-	return output;
-}
-
-template<typename InputIterator>
-char32 UTF32Utils::decode_locale(InputIterator input, std::locale const& locale) {
-	// On Windows, gcc's standard library (glibc++) has almost
-	// no support for Unicode stuff. As a consequence, in this
-	// context we can only use the default locale and ignore
-	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
-	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
-	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
-		wchar_t character=0;
-		mbtowc(&character, &input, 1);
-		return static_cast<char32>(character);
-	#else
-		// Get the facet of the locale which deals with character conversion
-		std::ctype<wchar_t> const& facet=std::use_facet<std::ctype<wchar_t> >(locale);
-		// Use the facet to convert each character of the input string
-		return static_cast<char32>(facet.widen(input));
-	#endif
-}
-
-template<typename InputIterator>
-char32 UTF32Utils::decode_wide(InputIterator input) {
-	// The encoding of wide characters is not well defined and is left to the system;
-	// however we can safely assume that it is UCS-2 on Windows and
-	// UCS-4 on Unix systems.
-	// InputIterator both cases, a simple copy is enough (UCS-2 is a subset of UCS-4,
-	// and UCS-4 *is* UTF-32).
-	return input;
-}
-
-template<typename OutputIterator>
-OutputIterator UTF32Utils::encode_locale(char32 input, OutputIterator output, char8 const replacement, std::locale const& locale) {
-	// On Windows, gcc's standard library (glibc++) has almost
-	// no support for Unicode stuff. As a consequence, in this
-	// context we can only use the default locale and ignore
-	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
-	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
-	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
-		char8 character=0;
-		if (wctomb(&character, static_cast<wchar_t>(input))>=0) {
-			*output++=character;
-		} else if (replacement) {
-			*output++=replacement;
-		}
-		return output;
-	#else
-		// Get the facet of the locale which deals with character conversion
-		std::ctype<wchar_t> const& facet=std::use_facet<std::ctype<wchar_t> >(locale);
-		// Use the facet to convert each character of the input string
-		*output++=facet.narrow(static_cast<wchar_t>(input), replacement);
-		return output;
-	#endif
-}
-
-template<typename OutputIterator>
-OutputIterator UTF32Utils::encode_wide(char32 input, OutputIterator output, char32 const replacement) {
-	// The encoding of wide characters is not well defined and is left to the system;
-	// however we can safely assume that it is UCS-2 on Windows and
-	// UCS-4 on Unix systems.
-	// For UCS-2 we need to check if the source characters fits in (UCS-2 is a subset of UCS-4).
-	// For UCS-4 we can do a direct copy (UCS-4 *is* UTF-32).
-	switch (sizeof(wchar_t)) {
-		case 4: {
-			*output++=static_cast<wchar_t>(input);
-			break;
-		}
-		default: { // TODO: replace with encoding the code point to two code units?
-			if ((input<=0xFFFF) && ((input<0xD800) || (input>0xDFFF))) {
-				*output++=static_cast<wchar_t>(input);
-			} else if (replacement && ((replacement<=0xFFFF) && ((replacement<0xD800) || (replacement>0xDFFF)))) {
-				*output++=replacement;
-			}
-			break;
-		}
 	}
 	return output;
 }

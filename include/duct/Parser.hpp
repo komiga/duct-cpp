@@ -63,13 +63,23 @@ enum {
 class Token {
 private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Token);
-	
+
 public:
+/** @name Constructors and destructor */ /// @{
+	/**
+		Constructor with type @c NULL_TOKEN.
+	*/
+	Token()
+		: m_type(NULL_TOKEN)
+		, m_line(-1)
+		, m_column(-1)
+		, m_buffer()
+	{}
 	/**
 		Constructor with type.
 		@param type Token type.
 	*/
-	Token(int type=NULL_TOKEN)
+	Token(int type)
 		: m_type(type)
 		, m_line(-1)
 		, m_column(-1)
@@ -78,57 +88,63 @@ public:
 	/**
 		Destructor.
 	*/
-	~Token() {}
+	virtual ~Token() {}
+/// @}
 
+/** @name Properties */ /// @{
 	/**
-		Set the token's type.
-		@param type The token's type.
+		Set type.
+		@param type New type.
 	*/
-	inline void set_type(int type) { m_type=type; }
+	inline void set_type(int const type) { m_type=type; }
 	/**
-		Get the token's type.
-		@returns The token's type.
+		Get type.
+		@returns The current type.
 	*/
 	inline int get_type() const { return m_type; }
+
 	/**
-		Set the token's line number.
-		@param line The line of the token.
+		Set line position.
+		@param line New line position.
 	*/
-	inline void set_line(int line) { m_line=line; }
+	inline void set_line(int const line) { m_line=line; }
 	/**
-		Get the token's line number.
-		@returns The token's line number.
+		Get line position.
+		@returns The current line position.
 	*/
 	inline int get_line() const { return m_line; }
+
 	/**
-		Set the token's column number.
-		@param column The token's column number.
+		Set column position.
+		@param column New column position.
 	*/
-	inline void set_column(int column) { m_column=column; }
+	inline void set_column(int const column) { m_column=column; }
 	/**
-		Get the token's column number.
-		@returns The token's column number.
+		Get column position.
+		@returns The current column position.
 	*/
 	inline int get_column() const { return m_column; }
+
 	/**
-		Set the line and column of the token.
-		@param line Line position.
-		@param column Column position.
+		Set position.
+		@param line New line position.
+		@param column New column position.
 	*/
-	void set_position(int line, int column) {
+	void set_position(int const line, int const column) {
 		m_line=line;
 		m_column=column;
 	}
 
-	/** @{ */
 	/**
-		Get the token's character buffer.
-		@returns The token's buffer.
+		Get character buffer.
+		@returns The token's character buffer.
 	*/
 	CharBuf& get_buffer() { return m_buffer; }
+	/** @copydoc get_buffer() */
 	CharBuf const& get_buffer() const { return m_buffer; }
-	/** @} */
+/// @}
 
+/** @name Operations */ /// @{
 	/**
 		Reset the token.
 		@note This will reset the character buffer and set the type (and call @c set_position(-1, -1) if @c position==true).
@@ -142,6 +158,7 @@ public:
 			set_position(-1, -1);
 		}
 	}
+/// @}
 
 protected:
 	int m_type; /**< Type. */
@@ -159,6 +176,7 @@ private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
 
 public:
+/** @name Constructor and destructor */ /// @{
 	/**
 		Default constructor.
 	*/
@@ -175,36 +193,36 @@ public:
 		Destructor.
 	*/
 	virtual ~Parser() {}
+/// @}
 
-// properties
+/** @name Properties */ /// @{
 	/**
 		Get current line.
-		@returns Current line position.
+		@returns The current line position.
 	*/
 	virtual int get_line() const { return m_line; }
 	/**
 		Get current column.
-		@returns Current column position.
+		@returns The current column position.
 	*/
 	virtual int get_column() const { return m_column; }
 
-	/** @{ */
 	/**
 		Get token.
-		@returns Current token.
+		@returns The current token.
 	*/
 	virtual Token& get_token() { return m_token; }
+	/** @copydoc get_token() */
 	virtual Token const& get_token() const { return m_token; }
-	/** @} */
 
 	/**
 		Get input stream.
-		@returns Current input stream.
+		@returns The current input stream.
 	*/
 	virtual std::istream* get_stream() { return m_stream; }
 	/**
 		Get stream context.
-		@returns Current stream context.
+		@returns The current stream context.
 	*/
 	virtual IO::StreamContext const get_stream_context() const { return m_stream_ctx; }
 
@@ -215,25 +233,19 @@ public:
 	virtual void set_handler(ParserHandler* handler)=0;
 	/**
 		Get handler.
-		@returns Current handler.
+		@returns The current handler.
 	*/
 	virtual ParserHandler* get_handler()=0;
+/// @}
 
-// operations
-	/**
-		@c initialize(std::istream&,Encoding const,Endian const) with properties from a StreamContext.
-		@returns @c true if the parser was initialized, or @c false if an error occurred.
-		@param stream Input stream.
-		@param ctx IO::StreamContext to copy.
-	*/
-	bool initialize(std::istream& stream, IO::StreamContext const& ctx) {
-		return initialize(stream, ctx.get_encoding(), ctx.get_endian());
-	}
+/** @name State */ /// @{
 	/**
 		Initialize the parser.
 		This will @c reset() the current state and call @c next_char() to get the first character in the stream.
 		@note The input stream is not owned by the parser; its lifetime must be guaranteed by the callee until @c reset() is called.
-		@returns @c true if the parser was initialized, or @c false if an error occurred (in the base implementation: if @c stream.good()==false).
+		@returns
+			@c true if the parser was initialized; or
+			@c false if an error occurred (in the base implementation: if @c stream.good()==false)
 		@param stream Input stream.
 		@param encoding Encoding of stream.
 		@param endian Endian of stream.
@@ -250,6 +262,19 @@ public:
 		}
 	}
 	/**
+		@c initialize(std::istream&,Encoding const,Endian const) with properties from a StreamContext.
+		@returns
+			@c true if the parser was initialized; or
+			@c false if an error occurred
+		@param stream Input stream.
+		@param ctx IO::StreamContext to copy.
+		@sa initialize(std::istream&,Encoding const,Endian const)
+	*/
+	bool initialize(std::istream& stream, IO::StreamContext const& ctx) {
+		return initialize(stream, ctx.get_encoding(), ctx.get_endian());
+	}
+
+	/**
 		Reset state.
 		@note This will nullify the input stream.
 		@note The parser's StreamContext is not reset.
@@ -261,16 +286,17 @@ public:
 		m_token.reset(NULL_TOKEN, true);
 		m_stream=nullptr;
 	}
+/// @}
 
+/** @name Operations */ /// @{
 	/**
 		Get the next character from the stream and advance the parser's position.
-		@note
-		- If @c m_peeked==true, @c m_curchar is set to @c m_peekchar.
-		- If there is no more data in the input stream, @c m_curchar is set to @c CHAR_EOF.
+		@note If @c m_peeked==true, @c m_curchar is set to @c m_peekchar.
+		@note If there is no more data in the input stream, @c m_curchar is set to @c CHAR_EOF.
 		@returns The next character from the input stream.
 	*/
 	virtual char32 next_char() {
-		DUCT_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
 		if (CHAR_NEWLINE==m_curchar) {
 			m_line++;
 			m_column=1;
@@ -296,7 +322,7 @@ public:
 		@returns The next character in the input stream.
 	*/
 	virtual char32 peek_char() {
-		DUCT_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
 		if (!m_peeked) {
 			if (!m_stream->eof()) {
 				m_peekchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
@@ -315,7 +341,9 @@ public:
 
 	/**
 		Skip data in the stream until the given character is met.
-		@returns @c true if the given character was met, or @c false if @c CHAR_EOF was met.
+		@returns
+			@c true if the given character was met; or
+			@c false if @c CHAR_EOF was met
 		@param cp Code point to skip to.
 	*/
 	virtual bool skip_to(char32 const cp) {
@@ -327,7 +355,9 @@ public:
 	/**
 		Skip to the end of the line.
 		@note This is an alias for @c skip_to(CHAR_NEWLINE).
-		@returns @c true if the end of the line was met, or @c false if @c CHAR_EOF was met.
+		@returns
+			@c true if the end of the line was met; or
+			@c false if @c CHAR_EOF was met
 		@sa skip_to(char32 const)
 	*/
 	virtual bool skip_to_eol() {
@@ -345,10 +375,13 @@ public:
 	virtual void read_token()=0;
 	/**
 		Parse the next token in the stream.
-		@returns @c true if there is more data in the input stream, or @c false if there is no more data in the stream (generally meaning an EOF token was met).
+		@returns
+			@c true if there is more data in the input stream; or
+			@c false if there is no more data in the stream (generally meaning an EOF token was met)
 	*/
 	virtual bool parse()=0;
-	
+/// @}
+
 protected:
 	int m_line; /**< Line position. */
 	int m_column; /**< Column position. */
@@ -368,6 +401,7 @@ private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(ParserHandler);
 
 public:
+/** @name Constructor and destructor */ /// @{
 	/**
 		Constructor.
 	*/
@@ -377,7 +411,9 @@ public:
 		Destructor.
 	*/
 	virtual ~ParserHandler() {}
+/// @}
 
+/** @name Properties */ /// @{
 	/**
 		Set parser.
 		@param parser New parser.
@@ -385,9 +421,12 @@ public:
 	virtual void set_parser(Parser& parser)=0;
 	/**
 		Get parser.
-		@returns Current parser.
+		@returns The current parser.
 	*/
 	virtual Parser& get_parser()=0;
+/// @}
+
+/** @name Operations */ /// @{
 	/**
 		Clean states.
 		@c This should @em not not call @c reset() on the parser.
@@ -403,13 +442,13 @@ public:
 		@note This is called when there is no more data in the input stream.
 	*/
 	virtual void finish()=0;
-
 	/**
 		Handle a token.
 		@note This is called from @c Parser::read_token().
 		@param token Token to handle.
 	*/
 	virtual void handle_token(Token& token)=0;
+/// @}
 };
 
 /** @} */ // end of doc-group parser

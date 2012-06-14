@@ -692,7 +692,7 @@ private:
 	void operator=(StreamContext const&); // Disallow copy operator
 
 public:
-// ctor/dtor
+/** @name Constructors */ /// @{
 	/**
 		Default constructor with UTF-8 encoding and system endian.
 	*/
@@ -733,8 +733,9 @@ public:
 		: m_encoding(other.m_encoding)
 		, m_endian(other.m_endian)
 	{}
+/// @}
 
-// properties
+/** @name Properties */ /// @{
 	/**
 		Set encoding and endian.
 		@param encoding An encoding.
@@ -764,8 +765,9 @@ public:
 		@returns The current endian.
 	*/
 	inline Endian get_endian() const { return m_endian; }
+/// @}
 
-// Raw data
+/** @name Raw data */ /// @{
 	/** See @c duct::IO::read_arithmetic(). */
 	template<typename T>
 	inline void read_arithmetic(std::istream& stream, T& value) {
@@ -792,15 +794,16 @@ public:
 	inline void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count) {
 		::duct::IO::write_arithmetic_array(stream, src, count, m_endian);
 	}
+/// @}
 
-// Unicode
+/** @name Unicode */ /// @{
 	/** See @c duct::IO::read_char(). */
 	char32 read_char(std::istream& stream, char32 const replacement=CHAR_SENTINEL) {
 		switch (m_encoding) {
 		case Encoding::UTF8:	return (::duct::IO::read_char<UTF8Utils>(stream, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::read_char<UTF16Utils>(stream, replacement, m_endian));
 		case Encoding::UTF32:	return (::duct::IO::read_char<UTF32Utils>(stream, replacement, m_endian));
-		default: DUCT_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
+		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
 	}}
 	/** See @c duct::IO::write_char(). */
 	std::size_t write_char(std::ostream& stream, char32 const cp, char32 const replacement=CHAR_NULL) {
@@ -808,7 +811,7 @@ public:
 		case Encoding::UTF8:	return (::duct::IO::write_char<UTF8Utils>(stream, cp, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::write_char<UTF16Utils>(stream, cp, replacement, m_endian));
 		case Encoding::UTF32:	return (::duct::IO::write_char<UTF32Utils>(stream, cp, replacement, m_endian));
-		default: DUCT_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
+		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
 	}}
 
 	/** See @c duct::IO::read_string(). */
@@ -818,7 +821,7 @@ public:
 		case Encoding::UTF8:	(::duct::IO::read_string<UTF8Utils>(stream, value, size, replacement, m_endian)); return;
 		case Encoding::UTF16:	(::duct::IO::read_string<UTF16Utils>(stream, value, size, replacement, m_endian)); return;
 		case Encoding::UTF32:	(::duct::IO::read_string<UTF32Utils>(stream, value, size, replacement, m_endian)); return;
-		default: DUCT_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!");
+		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!");
 	}}
 	/** See @c duct::IO::write_string(). */
 	template<class stringT>
@@ -827,8 +830,9 @@ public:
 		case Encoding::UTF8:	return (::duct::IO::write_string<UTF8Utils>(stream, value, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::write_string<UTF16Utils>(stream, value, replacement, m_endian));
 		case Encoding::UTF32:	return (::duct::IO::write_string<UTF32Utils>(stream, value, replacement, m_endian));
-		default: DUCT_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return 0;
+		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return 0;
 	}}
+/// @}
 
 private:
 	Encoding m_encoding;
