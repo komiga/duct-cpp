@@ -32,6 +32,7 @@ Character types and constants.
 #define DUCT_CHAR_HPP_
 
 #include <duct/config.hpp>
+
 //#include <cuchar>
 
 namespace duct {
@@ -39,7 +40,7 @@ namespace duct {
 /**
 	@addtogroup string
 	Configuration defines:
-	- #DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
+	- %DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
 	@{
 */
 
@@ -53,7 +54,7 @@ namespace duct {
 
 /**
 	Defined when the proper C++11 @c char16_t and @c char32_t types are used for @c char16 and @c char32.
-	@note This is always defined when #DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES is defined.
+	@note This is always defined when %DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES is defined.
 */
 #define DUCT_USING_CPP11_CHAR_TYPES
 
@@ -63,7 +64,7 @@ namespace duct {
 	@name Unicode character types
 	@note The C++11 @c char16_t and @c char32_t types will be used when available; otherwise, @c uint16_t and @c uint32_t are used.
 	@note The strictly-sized character types (@c char8_strict, @c char16_strict, and @c char32_strict) are integral non-character types; in addition, they will probably never be unequal in size to the @c char8, @c char16, and @c char32 types.
-	@sa #DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES, #DUCT_USING_CPP11_CHAR_TYPES
+	@sa %DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES, %DUCT_USING_CPP11_CHAR_TYPES
 	@{
 */
 /** Strictly-sized 8-bit character. */

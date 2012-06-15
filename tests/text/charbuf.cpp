@@ -1,7 +1,7 @@
 
-#include <duct/CharBuf.hpp>
-#include <duct/string.hpp>
 #include <duct/char.hpp>
+#include <duct/string.hpp>
+#include <duct/CharBuf.hpp>
 
 #include <iostream>
 #include <string>

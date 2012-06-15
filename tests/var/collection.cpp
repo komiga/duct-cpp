@@ -1,8 +1,8 @@
 
 #include <duct/config.hpp>
 #include <duct/string.hpp>
-#include <duct/Variable.hpp>
 #include <duct/detail/vartype.hpp>
+#include <duct/Variable.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
 			.emplace_back(duct::VARTYPE_NODE))
 		);
 	print_var(top);
-
 	std::cout.flush();
 	return 0;
 }

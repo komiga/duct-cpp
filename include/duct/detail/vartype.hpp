@@ -43,20 +43,21 @@ namespace duct {
 
 /**
 	@addtogroup variable
-	@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE VariableTypes:
+	@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE @c VariableTypes:
 	-# VARTYPE_STRING
 	-# VARTYPE_INTEGER
 	-# VARTYPE_FLOAT
 	-# VARTYPE_BOOL
 
 	Configuration defines:
-	- #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
+	- %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
 	@{
 */
 
 /**
 	Variable value type.
 	@note @c VARTYPE_NULL is a special type to indicate nullness; it has no associated data field.
+	@sa VariableClass, VariableMasks
 */
 enum VariableType : unsigned int {
 	/** Null; value-less. */
@@ -79,10 +80,10 @@ enum VariableType : unsigned int {
 
 /**
 	Variable classes.
-	Defines @c VariableType groups.
 	@note @c VARTYPE_NULL is essentially its own class and is thus not included in any defined classes.
+	@sa VariableType, VariableMasks
 */
-enum VariableClass {
+enum VariableClass : unsigned int {
 	/**
 		Numerical variable types.
 		Equal to: @code VARTYPE_INTEGER|VARTYPE_FLOAT @endcode
@@ -111,6 +112,27 @@ enum VariableClass {
 		|VARTYPE_IDENTIFIER
 };
 
+/**
+	Various @c VariableType masks.
+	@sa VariableType, VariableClass
+*/
+enum VariableMasks : unsigned int {
+	/** Matches no types. */
+	VARMASK_NONE
+		=0x00
+	,
+	/** Matches all types. */
+	VARMASK_ALL
+		=VARCLASS_VALUE
+		|VARCLASS_COLLECTION
+		|VARTYPE_NULL
+	,
+	/** Matches @c VARCLASS_VALUE or @c VARTYPE_NULL. */
+	VARMASK_VALUE_OR_NULL
+		=VARCLASS_VALUE
+		|VARTYPE_NULL
+};
+
 namespace detail {
 
 #ifndef DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
@@ -123,7 +145,7 @@ namespace detail {
 #endif
 
 /**
-	Variable types and configuration.
+	@c Variable configuration.
 */
 struct var_config {
 	/** typename for @c VARTYPE_STRING */
@@ -132,12 +154,12 @@ struct var_config {
 #if (0==DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 	/**
 		typename for @c VARTYPE_INTEGER.
-		@c int32_t by default; @c int64_t with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c int32_t by default; @c int64_t with %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef int32_t		int_type;
 	/**
 		typename for @c VARTYPE_FLOAT.
-		@c float by default; @c double with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c float by default; @c double with %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef float		float_type;
 #else
@@ -150,7 +172,7 @@ struct var_config {
 };
 
 /**
-	Get the name of a VariableType.
+	Get the name of a @c VariableType.
 	@returns The name of the variable type.
 	@param type Variable type.
 */

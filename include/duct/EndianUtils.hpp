@@ -33,8 +33,8 @@ Endian utilities.
 
 #include <duct/config.hpp>
 
-#include <algorithm>
 #include <type_traits>
+#include <algorithm>
 #include <cstddef>
 
 namespace duct {
@@ -54,11 +54,11 @@ namespace duct {
 	Endian types.
 */
 enum class Endian : unsigned int {
-	/** System's endian. Equal to #DUCT_BYTEORDER (either #DUCT_ENDIAN_LITTLE or #DUCT_ENDIAN_BIG). */
+	/** System's endian. Equal to %DUCT_BYTEORDER (either %DUCT_ENDIAN_LITTLE or %DUCT_ENDIAN_BIG). */
 	SYSTEM=DUCT_BYTEORDER,
-	/** Little endian. Equal to #DUCT_ENDIAN_LITTLE. */
+	/** Little endian. Equal to %DUCT_ENDIAN_LITTLE. */
 	LITTLE=DUCT_ENDIAN_LITTLE,
-	/** Big endian. Equal to #DUCT_ENDIAN_BIG. */
+	/** Big endian. Equal to %DUCT_ENDIAN_BIG. */
 	BIG=DUCT_ENDIAN_BIG
 };
 

@@ -36,9 +36,9 @@ String encoding utilities.
 #include <duct/config.hpp>
 #include <duct/char.hpp>
 
-#include <locale>
-#include <string>
 #include <stdexcept>
+#include <string>
+#include <locale>
 #include <string.h>
 
 namespace duct {
@@ -119,7 +119,6 @@ typedef EncodingUtils<Encoding::UTF32> UTF32Utils;
 */
 template<>
 class EncodingUtils<Encoding::UTF8> {
-private:
 	DUCT_DISALLOW_ALL_CONSTRUCTION(EncodingUtils<Encoding::UTF8>);
 
 public:
@@ -339,7 +338,6 @@ public:
 */
 template<>
 class EncodingUtils<Encoding::UTF16> {
-private:
 	DUCT_DISALLOW_ALL_CONSTRUCTION(EncodingUtils<Encoding::UTF16>);
 
 public:
@@ -432,7 +430,6 @@ public:
 */
 template<>
 class EncodingUtils<Encoding::UTF32> {
-private:
 	DUCT_DISALLOW_ALL_CONSTRUCTION(EncodingUtils<Encoding::UTF32>);
 
 public:

@@ -32,10 +32,10 @@ String utilities.
 #define DUCT_STRINGUTILS_HPP_
 
 #include <duct/config.hpp>
-#include <duct/EncodingUtils.hpp>
-#include <duct/detail/string_traits.hpp>
-#include <duct/string.hpp>
 #include <duct/char.hpp>
+#include <duct/string.hpp>
+#include <duct/detail/string_traits.hpp>
+#include <duct/EncodingUtils.hpp>
 
 #include <type_traits>
 

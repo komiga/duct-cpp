@@ -1,6 +1,6 @@
 
-#include <duct/CharacterSet.hpp>
 #include <duct/char.hpp>
+#include <duct/CharacterSet.hpp>
 
 #include <iostream>
 #include <iomanip>

@@ -42,10 +42,10 @@ namespace duct {
 
 /**
 	@defgroup debug Debug utilities
-	@note All debug macros defined here are no-ops if @c NDEBUG is defined and unless #DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
+	@note All debug macros defined here are no-ops if @c NDEBUG is defined and unless %DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
 
 	Configuration defines:
-	- #DUCT_CONFIG_FORCE_DEBUG_MACROS
+	- %DUCT_CONFIG_FORCE_DEBUG_MACROS
 	@{
 */
 

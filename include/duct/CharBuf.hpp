@@ -33,9 +33,9 @@ duct++ CharBuf class.
 
 #include <duct/config.hpp>
 #include <duct/char.hpp>
+#include <duct/CharacterSet.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/StringUtils.hpp>
-#include <duct/CharacterSet.hpp>
 
 #include <type_traits>
 #include <sstream>
@@ -55,11 +55,14 @@ class CharBuf;
 	Character buffer.
 */
 class CharBuf /*final*/ {
-public:
-	/** Internal character type. */
-	typedef char32 char_type;
+	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
 
 public:
+/** @name Types */ /// @{
+	/** Internal character type. */
+	typedef char32 char_type;
+/// @}
+
 /** @name Constructors */ /// @{
 	/**
 		Construct empty.
@@ -73,7 +76,7 @@ public:
 		Construct with capacity.
 		@param capacity Capacity of buffer.
 	*/
-	CharBuf(std::size_t const capacity)
+	explicit CharBuf(std::size_t const capacity)
 		: m_buffer()
 		, m_cached(false)
 		, m_cache_string()
@@ -221,8 +224,6 @@ public:
 /// @}
 
 private:
-	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
-
 	void grow() {
 		if (0==get_capacity()) {
 			m_buffer.reserve(64u);

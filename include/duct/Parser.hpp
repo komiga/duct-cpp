@@ -61,7 +61,6 @@ enum {
 	Generic token.
 */
 class Token {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Token);
 
 public:
@@ -172,7 +171,6 @@ protected:
 	@note This class and deriving classes shall not take ownership of input streams.
 */
 class Parser {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
 
 public:
@@ -397,7 +395,6 @@ protected:
 	Base handler class for a @c Parser.
 */
 class ParserHandler {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(ParserHandler);
 
 public:

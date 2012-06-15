@@ -32,13 +32,13 @@ CharacterSet and CharacterRange classes.
 #define DUCT_CHARACTERSET_HPP_
 
 #include <duct/config.hpp>
-#include <duct/string.hpp>
-#include <duct/char.hpp>
-#include <duct/detail/string_traits.hpp>
 #include <duct/debug.hpp>
+#include <duct/char.hpp>
+#include <duct/string.hpp>
+#include <duct/detail/string_traits.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 namespace duct {
 
@@ -83,7 +83,7 @@ public:
 	{}
 	/**
 		Copy constructor.
-		@param other Range to copy from.
+		@param other Range to copy.
 	*/
 	CharacterRange(CharacterRange const& other)
 		: m_start(other.m_start)
@@ -196,10 +196,9 @@ public:
 	typedef std::vector<CharacterRange> vector_type;
 	/** CharacterRange iterator. */
 	typedef vector_type::iterator iterator;
-	/** CharacterRange const iterator. */
+	/** @copydoc iterator */
 	typedef vector_type::const_iterator const_iterator;
 
-public:
 /** @name Constructors */ /// @{
 	/**
 		Construct empty set.

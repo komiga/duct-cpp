@@ -1,11 +1,11 @@
 
-#include <duct/EncodingUtils.hpp>
-#include <duct/string.hpp>
 #include <duct/debug.hpp>
+#include <duct/string.hpp>
+#include <duct/EncodingUtils.hpp>
 
 #include <cstdlib>
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
 
 #define init_decode(data_, offset_) \
 	begin=data_; \

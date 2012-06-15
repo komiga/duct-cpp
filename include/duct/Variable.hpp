@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 Multi-type variable class.
 
-@defgroup variable Variable constructs
+@defgroup variable Variable class and utilities
 */
 
 #ifndef DUCT_VARIABLE_HPP_
@@ -35,11 +35,11 @@ Multi-type variable class.
 
 #include <duct/config.hpp>
 #include <duct/string.hpp>
-#include <duct/StringUtils.hpp>
 #include <duct/detail/vartype.hpp>
+#include <duct/StringUtils.hpp>
 
-#include <sstream>
 #include <vector>
+#include <sstream>
 #include <cassert>
 
 namespace duct {
@@ -62,10 +62,9 @@ public:
 	typedef std::vector<Variable> vector_type;
 	/** Children iterator.  */
 	typedef vector_type::iterator iterator;
-	/** Children const iterator.  */
+	/** @copydoc iterator  */
 	typedef vector_type::const_iterator const_iterator;
 
-public:
 /** @name Constructors and destructor */ /// @{
 	/**
 		Construct nameless @c VARTYPE_NULL.
@@ -208,7 +207,7 @@ public:
 	}
 	/**
 		Copy operator.
-		@note #reset() is called if @a other's type and the current type are both unequal and not collections.
+		@note %reset() is called if @a other's type and the current type are both unequal and not collections.
 		@param other Variable to copy.
 	*/
 	void operator=(Variable const& other) {
@@ -236,14 +235,18 @@ public:
 	/**
 		Get type.
 		@returns The current type.
+		@sa morph(VariableType const)
 	*/
 	inline VariableType get_type() const { return m_type; }
 
 	/**
 		Set name.
+		@returns @c *this.
 		@param name New name.
 	*/
-	inline void set_name(u8string const& name) { m_name=name; }
+	inline Variable& set_name(u8string const& name) { m_name=name; return *this; }
+	/** @copydoc set_name(u8string const&) */
+	inline Variable& set_name(u8string&& name) { m_name=std::move(name); return *this; }
 	/**
 		Get name.
 		@returns The current name.
@@ -267,14 +270,16 @@ public:
 	/**
 		Change type to @c VARTYPE_NULL.
 		Equivalent to @c morph(VARTYPE_NULL).
+		@returns @c *this.
 	*/
-	inline void nullify() { morph(VARTYPE_NULL); }
+	inline Variable& nullify() { morph(VARTYPE_NULL); return *this; }
 
 	/**
 		Reset @c VARCLASS_VALUE types to default value; clear children for @c VARCLASS_COLLECTION types.
 		@note Does nothing when @c is_null()==true
+		@returns @c *this.
 	*/
-	void reset() {
+	Variable& reset() {
 		switch (m_type) {
 		case VARTYPE_STRING: m_strv.clear(); break;
 		case VARTYPE_INTEGER: m_intv=0; break;
@@ -287,20 +292,20 @@ public:
 			break;
 		default: break;
 		}
+		return *this;
 	}
 
 	/**
 		Change type.
-		@note #reset() is called if @a type and the current type are both unequal and not collections.
-		@note If the desired type and the current type are both collections, children are kept.
 		@returns
 			@c true if the type was changed; or
 			@c false if @c get_type()==type
 		@param type New type.
+		@param discard_children Whether to discard children (%reset()) when changing between @c VARCLASS_COLLECTION types; @c false by default.
 	*/
-	bool morph(VariableType const type) {
+	bool morph(VariableType const type, bool const discard_children=false) {
 		if (type!=m_type) {
-			if (!((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&type))) {
+			if (discard_children || !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&type))) {
 				reset();
 			}
 			m_type=type;
@@ -310,52 +315,89 @@ public:
 	}
 
 	/**
+		Change type to collection and set children.
+		@returns
+			@c true if the type was changed; or
+			@c false if @c get_type()==type
+		@param type New collection type. An assertion will fail if @a type is not a @c VARCLASS_COLLECTION.
+		@param children New child collection.
+		@param force_set Whether to set the children if the variable is already of the desired type; @c true by default.
+	*/
+	bool morph(VariableType const type, vector_type const& children, bool const force_set=true) {
+		assert(VARCLASS_COLLECTION&type);
+		if (type!=m_type) {
+			m_type=type;
+			set_children(children);
+			return true;
+		} else if (force_set) {
+			set_children(children);
+		}
+		return false;
+	}
+	/**
+		Change type to collection and set children (move).
+		@returns
+			@c true if the type was changed; or
+			@c false if @c get_type()==type
+		@param type New collection type. An assertion will fail if @a type is not a @c VARCLASS_COLLECTION.
+		@param children New child collection (rvalue).
+		@param force_set Whether to set the children if the variable is already of the desired type; @c true by default.
+	*/
+	bool morph(VariableType const type, vector_type&& children, bool const force_set=true) {
+		assert(VARCLASS_COLLECTION&type);
+		if (type!=m_type) {
+			m_type=type;
+			set_children(std::move(children));
+			return true;
+		} else if (force_set) {
+			set_children(std::move(children));
+		}
+		return false;
+	}
+
+	/**
 		Change type and set value.
-		@note #reset() is called if the type is changed.
+		@note %reset() is called if the type is changed.
 		@returns
 			@c true if the type was changed — @c reset() is called and value is set; or
-			@c false if @c get_type()==type — value is not set unless @c force_set==true
+			@c false if current type was equal to the type of @a T — value is not set unless @c force_set==true
 		@tparam T Value type; inferred from @a value.
 		@param value New value; the new variable type is inferred.
-		@param force_set Whether to set the value if the variable is already of the desired type; @c false by default.
+		@param force_set Whether to set the value if the variable is already of the desired type; @c true by default.
 	*/
 	template<typename T>
-	bool morph(T const& value, bool const force_set=false) {
+	bool morph(T const& value, bool const force_set=true) {
 		static_assert(true==detail::is_valtype<T>::value, "value type does not have a corresponding VariableType");
 		VariableType const type=(VariableType)detail::type_to_valtype<T>::value;
 		if (type!=m_type) {
 			reset();
 			m_type=type;
-			set(value);
+			assign(value);
 			return true;
-		} else {
-			if (force_set) {
-				set(value);
-			}
-			return false;
+		} else if (force_set) {
+			assign(value);
 		}
+		return false;
 	}
 	/**
 		Change type and set string value (move).
-		@note #reset() is called if the type is changed.
+		@note %reset() is called if the type is changed.
 		@returns
 			@c true if the type was changed — @c reset() is called and value is set; or
 			@c false if @c get_type()==VARTYPE_STRING — value is not set unless @c force_set==true
-		@param value New value.
-		@param force_set Whether to set the value if the variable is already of the desired type; @c false by default.
+		@param value New value (rvalue).
+		@param force_set Whether to set the value if the variable is already of the desired type; @c true by default.
 	*/
-	bool morph(detail::var_config::string_type&& value, bool const force_set=false) {
+	bool morph(detail::var_config::string_type&& value, bool const force_set=true) {
 		if (VARTYPE_STRING!=m_type) {
 			reset();
 			m_type=VARTYPE_STRING;
-			set(std::move(value));
+			assign(std::move(value));
 			return true;
-		} else {
-			if (force_set) {
-				set(std::move(value));
-			}
-			return false;
+		} else if (force_set) {
+			assign(std::move(value));
 		}
+		return false;
 	}
 /// @}
 
@@ -437,7 +479,7 @@ public:
 	@{
 */
 	/** @cond INTERNAL */
-	#define DUCT_V_set_value_() assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_=value
+	#define DUCT_V_set_value_() assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_=value; return *this;
 	#define DUCT_V_get_value_() assert(DUCT_V_TYPE_==m_type); return DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VARTYPE_STRING
 	#define DUCT_V_FIELD_ m_strv
@@ -445,12 +487,13 @@ public:
 
 	/**
 		Set value.
+		@returns @c *this.
 		@param value New value.
 		@sa morph(T, bool)
 	*/
-	void set(detail::var_config::string_type const& value) { DUCT_V_set_value_(); }
-	/** @copydoc set(detail::var_config::string_type const&) */
-	void set(detail::var_config::string_type&& value) { assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_=std::move(value); }
+	Variable& assign(detail::var_config::string_type const& value) { DUCT_V_set_value_(); }
+	/** @copydoc assign(detail::var_config::string_type const&) */
+	Variable& assign(detail::var_config::string_type&& value) { assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_=std::move(value); return *this; }
 	/**
 		Get string value.
 		@returns The current string value.
@@ -468,8 +511,8 @@ public:
 	#define DUCT_V_FIELD_ m_intv
 	/** @endcond */
 
-	/** @copydoc Variable::set(detail::var_config::string_type const&) */
-	void set(detail::var_config::int_type const value) { DUCT_V_set_value_(); }
+	/** @copydoc Variable::assign(detail::var_config::string_type const&) */
+	Variable& assign(detail::var_config::int_type const value) { DUCT_V_set_value_(); }
 	/**
 		Get int value.
 		@returns The current int value.
@@ -485,8 +528,8 @@ public:
 	#define DUCT_V_FIELD_ m_floatv
 	/** @endcond */
 
-	/** @copydoc Variable::set(detail::var_config::string_type const&) */
-	void set(detail::var_config::float_type const value) { DUCT_V_set_value_(); }
+	/** @copydoc Variable::assign(detail::var_config::string_type const&) */
+	Variable& assign(detail::var_config::float_type const value) { DUCT_V_set_value_(); }
 	/**
 		Get float value.
 		@returns The current float value.
@@ -501,8 +544,8 @@ public:
 	#define DUCT_V_TYPE_ VARTYPE_BOOL
 	#define DUCT_V_FIELD_ m_boolv
 	/** @endcond */
-	/** @copydoc Variable::set(detail::var_config::string_type const&) */
-	void set(detail::var_config::bool_type const value) { DUCT_V_set_value_(); }
+	/** @copydoc Variable::assign(detail::var_config::string_type const&) */
+	Variable& assign(detail::var_config::bool_type const value) { DUCT_V_set_value_(); }
 	/**
 		Get boolean value.
 		@returns The current boolean value.
@@ -569,7 +612,7 @@ public:
 /** @} */
 
 /**
-	@name Children
+	@name Child properties and insertion
 	@warning An assertion will fail for all methods defined in this group if @c is_class(VARCLASS_COLLECTION)==false.
 	@{
 */
@@ -589,6 +632,11 @@ public:
 	/** @copydoc end() */
 	const_iterator cend() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.cend(); }
 
+	/**
+		Check if the child collection is empty.
+		@returns @c true if the child collection is empty.
+	*/
+	inline bool empty() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.empty(); }
 	/**
 		Get number of children.
 		@returns The current number of children.

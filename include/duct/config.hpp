@@ -60,21 +60,21 @@ duct++ configuration header.
 /**
 	Platform flags.
 	Defined to a bit-wise OR of one OS:
-	-# #DUCT_FLAG_PLATFORM_WINDOWS
-	-# #DUCT_FLAG_PLATFORM_LINUX
-	-# #DUCT_FLAG_PLATFORM_MACOS
+	-# %DUCT_FLAG_PLATFORM_WINDOWS
+	-# %DUCT_FLAG_PLATFORM_LINUX
+	-# %DUCT_FLAG_PLATFORM_MACOS
 
 	and one model:
-	-# #DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
-	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
+	-# %DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
+	-# %DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
 */
 #define DUCT_PLATFORM system_dependent
 
 /**
 	Equals one of:
-	-# #DUCT_FLAG_PLATFORM_WINDOWS
-	-# #DUCT_FLAG_PLATFORM_LINUX
-	-# #DUCT_FLAG_PLATFORM_MACOS
+	-# %DUCT_FLAG_PLATFORM_WINDOWS
+	-# %DUCT_FLAG_PLATFORM_LINUX
+	-# %DUCT_FLAG_PLATFORM_MACOS
 */
 #define DUCT_PLATFORM_SYSTEM system_dependent
 
@@ -88,8 +88,8 @@ duct++ configuration header.
 /**
 	Platform processor model: 32-bit (x86) or 64-bit (x86-64).
 	Equals one of:
-	-# #DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
-	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
+	-# %DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
+	-# %DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
 */
 #define DUCT_PLATFORM_MODEL system_dependent
 /**	Defined when the platform is 32-bit: @code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_32) @endcode */
@@ -141,8 +141,8 @@ duct++ configuration header.
 /**
 	System byteorder.
 	Equals one of:
-	-# #DUCT_ENDIAN_LITTLE - little-endian architecture
-	-# #DUCT_ENDIAN_BIG - big-endian architecture
+	-# %DUCT_ENDIAN_LITTLE - little-endian architecture
+	-# %DUCT_ENDIAN_BIG - big-endian architecture
 */
 #define DUCT_BYTEORDER
 /**
@@ -338,11 +338,11 @@ duct++ configuration header.
 // G++
 #elif defined(__GNUC__) || defined(__MINGW32__)
 	#if defined (__llvm__)
-	   #define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_LLVM
+		#define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_LLVM
 	#elif defined (__clang__)
-	   #define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_CLANG
+		#define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_CLANG
 	#else
-	   #define DUCT_FLAG_COMPILER_GCC_EXTRA 0
+		#define DUCT_FLAG_COMPILER_GCC_EXTRA 0
 	#endif
 
 	#if   (__GNUC__ == 3) && (__GNUC_MINOR__ == 2)

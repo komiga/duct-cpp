@@ -36,13 +36,13 @@ I/O utilities and Standard Library iostream extensions.
 #define DUCT_IO_HPP_
 
 #include <duct/config.hpp>
-#include <duct/EndianUtils.hpp>
+#include <duct/debug.hpp>
 #include <duct/string.hpp>
 #include <duct/detail/string_traits.hpp>
-#include <duct/debug.hpp>
+#include <duct/EndianUtils.hpp>
 
-#include <iostream>
 #include <type_traits>
+#include <iostream>
 #include <strings.h>
 
 namespace duct {
@@ -582,7 +582,6 @@ exit_f:
 */
 template<typename charT>
 class basic_mem_istreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_istreambuf<charT>);
 
 public:
@@ -615,7 +614,6 @@ public:
 */
 template<typename charT>
 class basic_mem_ostreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_ostreambuf<charT>);
 
 public:
@@ -644,7 +642,6 @@ public:
 */
 template<typename charT>
 class basic_mem_iostreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_iostreambuf<charT>);
 
 public:
@@ -688,7 +685,6 @@ typedef basic_mem_iostreambuf<wchar_t> wmem_iostreambuf;
 	@note Documentation is identical to the static functions. Notice that no methods in StreamContext take an endian parameter nor an EncodingUtils template parameter.
 */
 class StreamContext {
-private:
 	void operator=(StreamContext const&); // Disallow copy operator
 
 public:
