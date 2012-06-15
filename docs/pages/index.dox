@@ -1,23 +1,24 @@
 
-## duct++ ain't ya papa's cup'a tea
+/**
 
-**duct++** is a general-purpose C++11 header library which supplies:
+@mainpage
+@section README
 
-* Compiler and platform detection macros
-* Debug message and assertion macros
-* Endian byte-swapping
-* Unicode encoding and string conversion helpers
-* `iostream` helpers for binary and textual data
-* Generic token parsing
-* CVar-esque system with validation, and a markup language
+<strong>duct++</strong> is a general-purpose C++11 header library which supplies:
 
-All it needs is a shiny C++11-compliant compiler. That's not too much to ask for, is it? Is it, Microsoft?
+- Compiler and platform detection macros
+- Debug message and assertion macros
+- Endian byte-swapping
+- Unicode encoding and string conversion helpers
+- iostream helpers for binary and textual data
+- Generic token parsing
+- CVar-esque system with validation, and a markup language
 
-## License
+@section License
 
 duct++ carries the MIT license, meaning you can do whatever you want to with it.
 
-```
+@verbatim
 Copyright (c) 2010-2012 Tim Howard
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,4 +38,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-```
+@endverbatim
+
+*/

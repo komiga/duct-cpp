@@ -6,6 +6,10 @@
 			"path": "./"
 		},
 		{
+			"name": "- Docs",
+			"path": "./docs"
+		},
+		{
 			"name": "- Source",
 			"path": "./duct/"
 		},

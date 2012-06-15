@@ -1,31 +1,10 @@
 /**
 @file EndianUtils.hpp
+@brief Endian utilities.
+@defgroup endian_swap_utils Endian-swapping utilities
+
 @author Tim Howard
-
-@section LICENSE
-Copyright (c) 2010-2012 Tim Howard
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-@section DESCRIPTION
-
-Endian utilities.
+@copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
 */
 
 #ifndef DUCT_ENDIANUTILS_HPP_
@@ -43,7 +22,7 @@ namespace duct {
 //enum Endian : int;
 
 /**
-	@defgroup endian_swap_utils Endian-swapping utilities
+	@addtogroup endian_swap_utils
 	@note The byte_swap() functions:
 	-# are only usable with 2, 4, and 8 byte-sized arithmetic types (integral and floating-point types; see @c std::is_arithmetic); a 1-byte immediate-return implementation is defined for convenience
 	-# may be system-optimized for integral types (where @c <byteswap.h> is present)
