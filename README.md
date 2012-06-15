@@ -1,8 +1,14 @@
-duct++ is an official [duct](http://duct.komiga.com) implementation in C++.
 
-This library has only been tested on Linux (Ubuntu 10.10, 32-bit and 64-bit) and Windows (Visual Studio 2008, 32-bit). It *should* work on Mac OS.
+## duct++ ain't ya papa's cup'a tea
 
-Dependencies:
+**duct++** is a general-purpose C++11 header library which supplies:
 
-* [ICU (International Components for Unicode)](http://site.icu-project.org) (duct++ uses ICU 4.4.2 - see the downloads list on the GitHub page)
-* [msinttypes](http://code.google.com/p/msinttypes) (headers; required for `stdint.h` when compiling with MSVC 9.0)
+* Compiler and platform detection macros
+* Debug message and assertion macros
+* Endian byte-swapping
+* Unicode encoding and string conversion helpers
+* `iostream` helpers for binary and textual data
+* Generic token parsing
+* CVar-esque system with validation, and a markup language
+
+All it wants is a shiny C++11-compliant compiler. That's not too much to ask for, is it? Is it, Microsoft?

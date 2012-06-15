@@ -6,12 +6,8 @@
 			"path": "./"
 		},
 		{
-			"name": "- Headers",
-			"path": "./include/duct/"
-		},
-		{
 			"name": "- Source",
-			"path": "./src/duct/"
+			"path": "./duct/"
 		},
 		{
 			"name": "- Tests",

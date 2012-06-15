@@ -27,12 +27,3 @@ lib/
 
 # Project stuff
 *.sublime-workspace
-
-# Dependencies
-# MSVC
-deps/msvc/x64/icu/
-deps/msvc/x86/icu/
-
-# Linux
-deps/linux/x64/icu/
-deps/linux/x86/icu/

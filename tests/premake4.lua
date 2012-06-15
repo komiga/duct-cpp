@@ -20,42 +20,20 @@ function setup_test(name, src)
 	
 	configuration {"debug"}
 		defines {"DEBUG", "_DEBUG"}
-		flags {"Symbols", "ExtraWarnings"}
-		links {"duct_debug"}
+		flags {"ExtraWarnings", "Symbols"}
 	
 	configuration {"release"}
 		defines {"NDEBUG"}
-		flags {"Optimize", "ExtraWarnings"}
-		links {"duct"}
-	
-	configuration {"linux", "x32"}
-		libdirs {
-			"../../lib/linux/x86"
-		}
-	
-	configuration {"linux", "x64"}
-		libdirs {
-			"../../lib/linux/x64"
-		}
+		flags {"ExtraWarnings", "Optimize"}
 	
 	configuration {"linux"}
 		buildoptions {"-std=c++0x", "-pedantic"}
-	
-	configuration {"windows", "x32"}
-		libdirs {
-			"../../lib/windows/x86"
-		}
-	
-	configuration {"windows", "x64"}
-		libdirs {
-			"../../lib/windows/x64"
-		}
 	
 	configuration {}
 		targetdir(".")
 		objdir(outpath)
 		includedirs {
-			"../../include"
+			"../.."
 		}
 		files {
 			src

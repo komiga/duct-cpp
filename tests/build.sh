@@ -7,7 +7,7 @@ BUILD="$2"
 if [ $# -lt 2 ]; then
 	unamestr=`uname`
 	if [[ "$unamestr" == MINGW32_NT* ]]; then # msysgit
-		BUILD="vs2008"
+		BUILD="vs2010"
 	fi
 fi
 
@@ -28,7 +28,6 @@ if [ "$ACTION" == "clean" ]; then
 fi
 
 function fix_makefile() {
-	# we /don't/ want to link to the OS' version of ICU first
 	echo "sedding: $1"
 	sed -i -e 's/ -L\/usr\/lib32//g' -e 's/ -L\/usr\/lib64//g' $1
 }
