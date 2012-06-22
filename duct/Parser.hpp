@@ -1,7 +1,7 @@
 /**
 @file Parser.hpp
 @brief Generic Parser and associated classes.
-@defgroup parser Parser framework
+@defgroup parser Parser framework and supplied parsers
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -22,7 +22,6 @@ namespace duct {
 // Forward declarations
 class Token;
 class Parser;
-class ParserHandler;
 
 /**
 	@addtogroup parser
@@ -118,6 +117,13 @@ public:
 	CharBuf& get_buffer() { return m_buffer; }
 	/** @copydoc get_buffer() */
 	CharBuf const& get_buffer() const { return m_buffer; }
+
+	/**
+		Test the token's type.
+		@returns @c true if @c get_type()==type.
+		@param type Type to test against.
+	*/
+	bool is_type(int type) const { return type==m_type; }
 /// @}
 
 /** @name Operations */ /// @{
@@ -157,7 +163,7 @@ public:
 	*/
 	Parser()
 		: m_line(1)
-		, m_column(1)
+		, m_column(0)
 		, m_curchar(CHAR_EOF)
 		, m_peekchar(CHAR_EOF)
 		, m_peeked(false)
@@ -200,23 +206,12 @@ public:
 		@returns The current stream context.
 	*/
 	virtual IO::StreamContext const get_stream_context() const { return m_stream_ctx; }
-
-	/**
-		Set handler.
-		@param handler New handler.
-	*/
-	virtual void set_handler(ParserHandler* handler)=0;
-	/**
-		Get handler.
-		@returns The current handler.
-	*/
-	virtual ParserHandler* get_handler()=0;
 /// @}
 
 /** @name State */ /// @{
 	/**
 		Initialize the parser.
-		This will @c reset() the current state and call @c next_char() to get the first character in the stream.
+		@note This will @c reset() the current state and call @c next_char().
 		@note The input stream is not owned by the parser; its lifetime must be guaranteed by the callee until @c reset() is called.
 		@returns
 			@c true if the parser was initialized; or
@@ -227,9 +222,9 @@ public:
 	*/
 	virtual bool initialize(std::istream& stream, Encoding const encoding, Endian const endian) {
 		reset();
-		m_stream=&stream;
-		m_stream_ctx.set_properties(encoding, endian);
-		if (m_stream->good()) {
+		if (stream.good()) {
+			m_stream=&stream;
+			m_stream_ctx.set_properties(encoding, endian);
 			next_char(); // Get the first character
 			return true;
 		} else {
@@ -242,7 +237,7 @@ public:
 			@c true if the parser was initialized; or
 			@c false if an error occurred
 		@param stream Input stream.
-		@param ctx IO::StreamContext to copy.
+		@param ctx Context to copy.
 		@sa initialize(std::istream&,Encoding const,Endian const)
 	*/
 	bool initialize(std::istream& stream, IO::StreamContext const& ctx) {
@@ -250,12 +245,13 @@ public:
 	}
 
 	/**
-		Reset state.
+		Reset all state.
 		@note This will nullify the input stream.
 		@note The parser's StreamContext is not reset.
 	*/
 	virtual void reset() {
-		m_line=m_column=1;
+		m_line=1;
+		m_column=0;
 		m_curchar=m_peekchar=CHAR_EOF;
 		m_peeked=false;
 		m_token.reset(NULL_TOKEN, true);
@@ -273,13 +269,13 @@ public:
 	virtual char32 next_char() {
 		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
 		if (CHAR_NEWLINE==m_curchar) {
-			m_line++;
-			m_column=1;
+			++m_line;
+			m_column=0;
 		}
 		if (m_peeked) {
 			m_curchar=m_peekchar;
 			m_peeked=false;
-		} else if (!m_stream->eof()) {
+		} else if (m_stream->good()) {
 			m_curchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
 		} else {
 			m_curchar=CHAR_EOF;
@@ -287,7 +283,7 @@ public:
 		if (CHAR_CARRIAGERETURN==m_curchar || CHAR_SENTINEL==m_curchar) {
 			return next_char();
 		} else if (CHAR_EOF!=m_curchar) {
-			m_column++;
+			++m_column;
 		}
 		return m_curchar;
 	}
@@ -299,7 +295,7 @@ public:
 	virtual char32 peek_char() {
 		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
 		if (!m_peeked) {
-			if (!m_stream->eof()) {
+			if (m_stream->good()) {
 				m_peekchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
 				if (!m_stream->good()) {
 					m_peekchar=CHAR_EOF;
@@ -315,10 +311,11 @@ public:
 	}
 
 	/**
-		Skip data in the stream until the given character is met.
+		Skip data in the input stream until a code point is met.
+		@note This will check the current character before stepping the stream.
 		@returns
-			@c true if the given character was met; or
-			@c false if @c CHAR_EOF was met
+			@c true if @c cp was met (even if @c cp==CHAR_EOF); or
+			@c false if @c CHAR_EOF was met and only if @c cp!=CHAR_EOF
 		@param cp Code point to skip to.
 	*/
 	virtual bool skip_to(char32 const cp) {
@@ -340,21 +337,26 @@ public:
 	}
 
 	/**
-		Determine and set the current token type based on the current character.
-		@returns The current token.
+		Parse the next token in the stream.
+		@returns
+			@c true if there is more data to parse; or
+			@c false if there is no more data to parse (generally meaning an EOF token was met)
 	*/
-	virtual Token& next_token()=0;
+	virtual bool parse()=0;
+
+	/**
+		Determine and set the current token type based on the current character.
+	*/
+	virtual void discern_token()=0;
 	/**
 		Read the current token.
 	*/
 	virtual void read_token()=0;
 	/**
-		Parse the next token in the stream.
-		@returns
-			@c true if there is more data in the input stream; or
-			@c false if there is no more data in the stream (generally meaning an EOF token was met)
+		Handle the current token.
+		@note This is called from @c read_token().
 	*/
-	virtual bool parse()=0;
+	virtual void handle_token()=0;
 /// @}
 
 protected:
@@ -366,63 +368,6 @@ protected:
 	Token m_token; /**< Current token. */
 	std::istream* m_stream; /**< Current stream. */
 	IO::StreamContext m_stream_ctx; /**< Stream context. */
-};
-
-/**
-	Base handler class for a @c Parser.
-*/
-class ParserHandler {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(ParserHandler);
-
-public:
-/** @name Constructor and destructor */ /// @{
-	/**
-		Constructor.
-	*/
-	ParserHandler()
-	{}
-	/**
-		Destructor.
-	*/
-	virtual ~ParserHandler() {}
-/// @}
-
-/** @name Properties */ /// @{
-	/**
-		Set parser.
-		@param parser New parser.
-	*/
-	virtual void set_parser(Parser& parser)=0;
-	/**
-		Get parser.
-		@returns The current parser.
-	*/
-	virtual Parser& get_parser()=0;
-/// @}
-
-/** @name Operations */ /// @{
-	/**
-		Clean states.
-		@c This should @em not not call @c reset() on the parser.
-	*/
-	virtual void clean()=0;
-	/**
-		Process parser's input stream.
-		@returns @c true on success, or @c false if an error occurred.
-	*/
-	virtual bool process()=0;
-	/**
-		Finish handling the parser's input stream.
-		@note This is called when there is no more data in the input stream.
-	*/
-	virtual void finish()=0;
-	/**
-		Handle a token.
-		@note This is called from @c Parser::read_token().
-		@param token Token to handle.
-	*/
-	virtual void handle_token(Token& token)=0;
-/// @}
 };
 
 /** @} */ // end of doc-group parser

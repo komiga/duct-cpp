@@ -213,8 +213,12 @@ enum Chars {
 	CHAR_CLOSEBRACKET=']',
 	/** Equality sign. */
 	CHAR_EQUALSIGN='=',
+	/** Comma. */
+	CHAR_COMMA=',',
 	/** Semicolon. */
 	CHAR_SEMICOLON=';',
+	/** Plus sign. */
+	CHAR_PLUS='+',
 	/** Dash (hyphen/minus sign). */
 	CHAR_DASH='-',
 	/** Lowercase N. */
@@ -222,7 +226,9 @@ enum Chars {
 	/** Lowercase R. */
 	CHAR_R='r',
 	/** Lowercase T. */
-	CHAR_T='t'
+	CHAR_T='t',
+	/** Lowercase F. */
+	CHAR_F='f'
 };
 
 /** @} */ // end of doc-group string

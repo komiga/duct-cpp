@@ -30,7 +30,7 @@ void print_var(duct::Variable const& var, int tab_count=0, bool const newline=tr
 		std::cout<<']';
 		break;
 	}
-	case duct::VARTYPE_STRING: std::cout<<'"'<<var.get_string_cref()<<'"'; break;
+	case duct::VARTYPE_STRING: std::cout<<'"'<<var.get_string_ref()<<'"'; break;
 	default: std::cout<<var.get_as_str(); break;
 	}
 	if (newline) {

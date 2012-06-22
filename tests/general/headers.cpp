@@ -12,8 +12,10 @@
 #include <duct/StringUtils.hpp>
 #include <duct/IO.hpp>
 #include <duct/Variable.hpp>
+#include <duct/VariableUtils.hpp>
 #include <duct/Template.hpp>
 #include <duct/Parser.hpp>
+#include <duct/ScriptParser.hpp>
 
 int main(int argc, char* argv[]) {
 	return 0;

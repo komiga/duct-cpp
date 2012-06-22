@@ -157,6 +157,13 @@ public:
 		return str;
 	}
 	/**
+		Convert buffer to a @c u8string.
+		@returns Cache string.
+	*/
+	u8string to_string() {
+		return cache();
+	}
+	/**
 		Convert buffer to a string (by-ref).
 		@param[out] str Output string.
 		@param append Whether to append to @a str; defaults to @c false (@a str is cleared on entry).
@@ -192,11 +199,11 @@ public:
 		cache();
 		std::istringstream stream(m_cache_string);
 		stream>>value;
-		if (stream.good()) {
-			return true;
-		} else {
+		if (stream.fail()) {
 			value=T();
 			return false;
+		} else {
+			return true;
 		}
 	}
 /// @}

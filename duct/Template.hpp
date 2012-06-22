@@ -15,6 +15,7 @@
 #include "./string.hpp"
 #include "./Variable.hpp"
 
+#include <utility>
 #include <vector>
 
 namespace duct {
@@ -26,7 +27,7 @@ namespace duct {
 
 /**
 	Layout field flags.
-	@note See @c Variable::validate_layout() for usage notes.
+	@note See @c Template::validate_layout() for usage notes.
 */
 enum LayoutFieldFlag : unsigned int {
 	/** Optional field. */
@@ -72,13 +73,7 @@ public:
 		@param type_mask Type mask.
 		@param identity Identity.
 	*/
-	Template(unsigned int const type_mask, identity_vector_type const& identity)
-		: m_type_mask(type_mask)
-		, m_identity(identity)
-		, m_layout()
-	{}
-	/** @copydoc Template(unsigned int const,identity_vector_type const&) */
-	Template(unsigned int const type_mask, identity_vector_type&& identity)
+	Template(unsigned int const type_mask, identity_vector_type identity)
 		: m_type_mask(type_mask)
 		, m_identity(std::move(identity))
 		, m_layout()
@@ -88,13 +83,7 @@ public:
 		@param type_mask Type mask.
 		@param layout Layout.
 	*/
-	Template(unsigned int const type_mask, layout_vector_type const& layout)
-		: m_type_mask(type_mask)
-		, m_identity()
-		, m_layout(layout)
-	{}
-	/** @copydoc Template(unsigned int const,layout_vector_type const&) */
-	Template(unsigned int const type_mask, layout_vector_type&& layout)
+	Template(unsigned int const type_mask, layout_vector_type layout)
 		: m_type_mask(type_mask)
 		, m_identity()
 		, m_layout(std::move(layout))
@@ -105,13 +94,7 @@ public:
 		@param identity Identity.
 		@param layout Layout.
 	*/
-	Template(unsigned int const type_mask, identity_vector_type const& identity, layout_vector_type const& layout)
-		: m_type_mask(type_mask)
-		, m_identity(identity)
-		, m_layout(layout)
-	{}
-	/** @copydoc Template(unsigned int const,identity_vector_type const&,layout_vector_type const&) */
-	Template(unsigned int const type_mask, identity_vector_type&& identity, layout_vector_type&& layout)
+	Template(unsigned int const type_mask, identity_vector_type identity, layout_vector_type layout)
 		: m_type_mask(type_mask)
 		, m_identity(std::move(identity))
 		, m_layout(std::move(layout))
@@ -141,9 +124,7 @@ public:
 		@param identity New identity.
 		@sa validate_identity(Variable const&)
 	*/
-	inline void set_identity(identity_vector_type const& identity) { m_identity=identity; }
-	/** @copydoc set_identity(identity_vector_type const&) */
-	inline void set_identity(identity_vector_type&& identity) { m_identity=std::move(identity); }
+	inline void set_identity(identity_vector_type identity) { m_identity=std::move(identity); }
 	/**
 		Get identity.
 		@returns The current identity.
@@ -158,9 +139,7 @@ public:
 		@param layout New layout.
 		@sa validate_layout(Variable const&)
 	*/
-	inline void set_layout(layout_vector_type const& layout) { m_layout=layout; }
-	/** @copydoc set_layout(layout_vector_type const&) */
-	inline void set_layout(layout_vector_type&& layout) { m_layout=std::move(layout); }
+	inline void set_layout(layout_vector_type layout) { m_layout=std::move(layout); }
 	/**
 		Get layout.
 		@returns The current layout.

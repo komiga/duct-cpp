@@ -193,14 +193,14 @@ struct rchar_impl {
 		char32 cp;
 		IO::read_arithmetic(stream, buffer[0], endian);
 		if (!stream.good()) {
-			DUCT_DEBUG("rchar_impl<(defaults)>::read: !stream.good()");
+			//DUCT_DEBUG("rchar_impl<(defaults)>::read: !stream.good()");
 			return replacement;
 		}
 		amt=defsT::from_utils::required_first(buffer[0]);
 		if (amt) {
 			IO::read_arithmetic_array(stream, buffer+1u, amt, endian);
 			if (!stream.good()) {
-				DUCT_DEBUG("rchar_impl<(defaults)>::read: 2 !stream.good()");
+				//DUCT_DEBUG("rchar_impl<(defaults)>::read: 2 !stream.good()");
 				return replacement;
 			}
 		}
@@ -222,7 +222,7 @@ struct rchar_impl<defsT, 4> {
 		char32 cp;
 		IO::read_arithmetic(stream, cp, endian);
 		if (!stream.good()) {
-			DUCT_DEBUG("rchar_impl<(default),4>::read: !stream.good()");
+			//DUCT_DEBUG("rchar_impl<(default),4>::read: !stream.good()");
 			return replacement;
 		}
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
