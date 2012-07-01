@@ -121,8 +121,7 @@ void parse_stream(duct::Variable& root, std::istream& stream, bool valid) {
 }
 
 void do_test(duct::Variable& root, TestData const& td) {
-	duct::IO::mem_istreambuf sb{td.data, td.size};
-	std::istream stream{&sb};
+	duct::IO::imemstream stream{td.data, td.size};
 	printf("  Testing `%*s`:\n", static_cast<int>(td.size), td.data);
 	parse_stream(root, stream, td.valid);
 }
