@@ -947,28 +947,28 @@ public:
 	/** See @c duct::IO::read_arithmetic(). */
 	template<typename T>
 	inline void read_arithmetic(std::istream& stream, T& value) const {
-		::duct::IO::read_arithmetic(stream, value, m_endian);
+		::duct::IO::read_arithmetic<T>(stream, value, m_endian);
 	}
 	/** See @c duct::IO::read_arithmetic(). */
 	template<typename T>
 	inline T read_arithmetic(std::istream& stream) const {
-		return ::duct::IO::read_arithmetic(stream, m_endian);
+		return ::duct::IO::read_arithmetic<T>(stream, m_endian);
 	}
 	/** See @c duct::IO::read_arithmetic_array(). */
 	template<typename T>
 	inline void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count) const {
-		::duct::IO::read_arithmetic_array(stream, dest, count, m_endian);
+		::duct::IO::read_arithmetic_array<T>(stream, dest, count, m_endian);
 	}
 
 	/** See @c duct::IO::write_arithmetic(). */
 	template<typename T>
 	inline void write_arithmetic(std::ostream& stream, T const value) const {
-		::duct::IO::write_arithmetic(stream, value, m_endian);
+		::duct::IO::write_arithmetic<T>(stream, value, m_endian);
 	}
 	/** See @c duct::IO::write_arithmetic_array(). */
 	template<typename T>
 	inline void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count) const {
-		::duct::IO::write_arithmetic_array(stream, src, count, m_endian);
+		::duct::IO::write_arithmetic_array<T>(stream, src, count, m_endian);
 	}
 /// @}
 
