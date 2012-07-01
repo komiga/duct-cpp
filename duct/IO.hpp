@@ -18,17 +18,19 @@
 #include "./detail/string_traits.hpp"
 #include "./EndianUtils.hpp"
 
+#include <cstring>
 #include <type_traits>
+#include <limits>
 #include <iostream>
-#include <strings.h>
 
 namespace duct {
 namespace IO {
 
 // Forward declarations
-template<typename charT> class basic_mem_istreambuf;
-template<typename charT> class basic_mem_ostreambuf;
-template<typename charT> class basic_mem_iostreambuf;
+template<typename charT, typename traitsT> class basic_memstreambuf;
+template<typename charT, typename traitsT> class basic_imemstream;
+template<typename charT, typename traitsT> class basic_omemstream;
+template<typename charT, typename traitsT> class basic_memstream;
 class StreamContext;
 
 /**
@@ -38,6 +40,50 @@ class StreamContext;
 	@c ios::badbit and/or @c ios::failbit may be set on the stream after the operation has executed; see std::basic_istream::read() and std::basic_ostream::write().
 	@{
 */
+
+/**
+	@name Utilities
+	@{
+*/
+
+/**
+	Get the size of a stream.
+	@note This requires bidirectional seeking (e.g. @c memstream, @c std::ifstream, @c std::istringstream).
+	@warning @c stream may be in an @c std::ios_base::failbit state upon return (in which case the return value will be @c 0) or <strong>existing error states may even be removed</strong>.
+	@returns The size of the stream, 0 may mean failure.
+	@param stream Stream to size up.
+*/
+template<typename charT, class traitsT>
+std::size_t size(std::basic_istream<charT, traitsT>& stream) {
+	if (stream.eof()) { // Already at eof: don't have to seek anywhere
+		DUCT_DEBUG("duct::IO::size: eof() initial");
+		stream.setstate(std::ios_base::eofbit); // Get rid of all other states
+		auto const end=stream.tellg();
+		if (decltype(end)(-1)!=end) {
+			return static_cast<std::size_t>(end);
+		} else {
+			DUCT_DEBUG("duct::IO::size: -1==end");
+		}
+	} else {
+		stream.clear(); // Get rid of all states
+		auto const original=stream.tellg();
+		if (decltype(original)(-1)!=original) { // If the stream will give its position
+			stream.seekg(0, std::ios_base::end);
+			auto const end=stream.tellg();
+			if (decltype(end)(-1)!=end) {
+				stream.seekg(original);
+				return static_cast<std::size_t>(end);
+			} else {
+				DUCT_DEBUG("duct::IO::size: -1==end");
+			}
+		} else {
+			DUCT_DEBUG("duct::IO::size: -1==original");
+		}
+	}
+	return 0;
+}
+
+/** @} */ // end of name-group Utilities
 
 /**
 	@name Raw data
@@ -388,7 +434,7 @@ void read_string(std::istream& stream, stringT& value, std::size_t size, char32 
 			if (0>=size) { // No sense pushing back if there's no more data to read
 				break;
 			} else {
-				memcpy(buffer, next, offset); // Push the incomplete sequence to the beginning
+				std::memcpy(buffer, next, offset); // Push the incomplete sequence to the beginning
 			}
 		}
 	}
@@ -550,112 +596,269 @@ exit_f:
 
 /**
 	@name Helper classes
+	@warning All memory stream buffer classes are incapable of automatically growing.
 	@{
 */
 
 /**
-	Generic read-only memory streambuf.
-	@warning Re-assigning the buffer will not clear stream (good/bad) state.
-*/
-template<typename charT>
-class basic_mem_istreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_istreambuf<charT>);
-
-public:
-	/**
-		Constructor.
-		@param buffer Data buffer.
-		@param size Size of @a buffer.
-	*/
-	basic_mem_istreambuf(void const* buffer, std::size_t const size) {
-		assign(buffer, size);
-	}
-
-	/**
-		Assign the streambuf's get area.
-		@param buffer New data buffer.
-		@param size Size of @a buffer.
-	*/
-	void assign(void const* buffer, std::size_t const size) {
-		setg(
-			const_cast<charT*>(reinterpret_cast<charT const*>(buffer)),
-			const_cast<charT*>(reinterpret_cast<charT const*>(buffer)),
-			const_cast<charT*>(reinterpret_cast<charT const*>(buffer))+size
-		);
-	}
-};
-
-/**
-	Generic write-only memory streambuf.
-	@warning Re-assigning the buffer will not clear stream (good/bad) state.
-*/
-template<typename charT>
-class basic_mem_ostreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_ostreambuf<charT>);
-
-public:
-	/**
-		Constructor.
-		@param buffer Data buffer.
-		@param size Size of @a buffer.
-	*/
-	basic_mem_ostreambuf(void* buffer, std::size_t const size) {
-		assign(buffer, size);
-	}
-
-	/**
-		Assign the streambuf's put area.
-		@param buffer New data buffer.
-		@param size Size of @a buffer.
-	*/
-	void assign(void* buffer, std::size_t const size) {
-		setp(reinterpret_cast<charT*>(buffer), reinterpret_cast<charT*>(buffer)+size);
-	}
-};
-
-/**
 	Generic memory streambuf.
-	@warning Re-assigning the buffer will not clear stream (good/bad) state.
+	@warning Reassigning the buffer will not clear stream state.
 */
-template<typename charT>
-class basic_mem_iostreambuf : public std::basic_streambuf<charT, std::char_traits<charT> > {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_mem_iostreambuf<charT>);
+template<typename charT, typename traitsT=std::char_traits<charT> >
+class basic_memstreambuf : public std::basic_streambuf<charT, traitsT> {
+	typedef std::basic_streambuf<charT, traitsT> base_streambuf_type_;
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstreambuf);
 
 public:
+	typedef charT char_type; /**< Character type. */
+	typedef traitsT traits_type; /**< Traits type. */
+	typedef typename traits_type::pos_type pos_type; /**< Position type. */
+	typedef typename traits_type::off_type off_type; /**< Offset type. */
+
 	/**
-		Constructor.
+		Constructor with input buffer.
 		@param buffer Data buffer.
 		@param size Size of @a buffer.
+		@param mode @c openmode for the streambuf; defaults to and forces @c std::ios_base::in; removes @c std::ios_base::out.
 	*/
-	basic_mem_iostreambuf(void* buffer, std::size_t const size) {
+	basic_memstreambuf(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
+		: base_streambuf_type_()
+		, m_mode((mode&~std::ios_base::out)|std::ios_base::in)
+	{
+		assign(const_cast<void*>(buffer), size);
+	}
+	/**
+		Constructor with input/output buffer.
+		@param buffer Data buffer.
+		@param size Size of @a buffer.
+		@param mode @c openmode for the streambuf; defaults to and forces @c std::ios_base::out.
+	*/
+	basic_memstreambuf(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
+		: base_streambuf_type_()
+		, m_mode(mode|std::ios_base::out)
+	{
 		assign(buffer, size);
 	}
 
 	/**
-		Assign the streambuf's put and get areas.
-		@param buffer New data buffer.
+		Assign the streambuf's get and put areas.
+		@note The current get and put positions will be reset.
+		@param buffer Data buffer.
 		@param size Size of @a buffer.
 	*/
-	void assign(void* buffer, std::size_t const size) {
-		setg(reinterpret_cast<charT*>(buffer), reinterpret_cast<charT*>(buffer), reinterpret_cast<charT*>(buffer)+size);
-		setp(reinterpret_cast<charT*>(buffer), reinterpret_cast<charT*>(buffer)+size);
+	void assign(void* const buffer, std::size_t const size) {
+		if (nullptr==buffer) {
+			this->setg(nullptr, nullptr, nullptr);
+			this->setp(nullptr, nullptr);
+		} else {
+			char_type* cbuf=reinterpret_cast<char_type*>(buffer);
+			if (m_mode&std::ios_base::in) { setg(cbuf, cbuf, cbuf+size); }
+			if (m_mode&std::ios_base::out) { setp(cbuf, cbuf+size); }
+		}
 	}
+
+protected:
+	/** @cond INTERNAL */
+	virtual pos_type seekoff(off_type soff, std::ios_base::seekdir direction, std::ios_base::openmode mode=std::ios_base::in|std::ios_base::out) {
+		pos_type ret_pos=pos_type(off_type(-1));
+		bool const do_in=m_mode&std::ios_base::in && mode&std::ios_base::in;
+		bool const do_out=m_mode&std::ios_base::out && mode&std::ios_base::out;
+		char_type *beg=nullptr, *cur, *end;
+		if (do_in) {
+			beg=this->eback(); cur=this->gptr(); end=this->egptr();
+		} else if (do_out) {
+			beg=this->pbase(); cur=this->pptr(); end=this->epptr();
+		}
+		if (nullptr!=beg) {
+			off_type new_off=soff;
+			if (std::ios_base::cur==direction) {
+				new_off+=cur-beg;
+			} else if (std::ios_base::end==direction) {
+				new_off+=end-beg;
+			}
+			if (0<=new_off && (end-beg)>=new_off) {
+				if (do_in) { setg(beg, beg+new_off, end); }
+				if (do_out) { priv_pmove(beg, end, new_off); }
+				ret_pos=pos_type(new_off);
+			}
+		}
+		return ret_pos;
+	}
+
+	virtual pos_type seekpos(pos_type spos, std::ios_base::openmode mode=std::ios_base::in|std::ios_base::out) {
+		pos_type ret_pos=pos_type(off_type(-1));
+		bool const do_in=m_mode&std::ios_base::in && mode&std::ios_base::in;
+		bool const do_out=m_mode&std::ios_base::out && mode&std::ios_base::out;
+		char_type *beg=nullptr, *end;
+		if (do_in) {
+			beg=this->eback(); end=this->egptr();
+		} else if (do_out) {
+			beg=this->pbase(); end=this->epptr();
+		}
+		if (nullptr!=beg) {
+			off_type new_off=off_type(spos);
+			if (0<=new_off && (end-beg)>=new_off) {
+				if (do_in) { setg(beg, beg+new_off, end); }
+				if (do_out) { priv_pmove(beg, end, new_off); }
+				ret_pos=pos_type(new_off);
+			}
+		}
+		return ret_pos;
+	}
+	/** @endcond */ // INTERNAL
+
+private:
+	void priv_pmove(char_type* const beg, char_type* const end, off_type soff) {
+		this->setp(beg, end);
+		while (std::numeric_limits<int>::max()<soff) {
+			this->pbump(std::numeric_limits<int>::max());
+			soff-=std::numeric_limits<int>::max();
+		}
+		this->pbump(soff);
+	}
+
+	std::ios_base::openmode m_mode;
 };
 
-/** Narrow read-only memory streambuf for @c istream. */
-typedef basic_mem_istreambuf<char> mem_istreambuf;
-/** Wide read-only memory streambuf for @c wistream. */
-typedef basic_mem_istreambuf<wchar_t> wmem_istreambuf;
+/** Narrow memory streambuf. */
+typedef basic_memstreambuf<char> mem_streambuf;
+/** Wide memory streambuf. */
+typedef basic_memstreambuf<wchar_t> wmem_streambuf;
 
-/** Narrow write-only memory streambuf for @c ostream. */
-typedef basic_mem_ostreambuf<char> mem_ostreambuf;
-/** Wide write-only memory streambuf for @c wostream. */
-typedef basic_mem_ostreambuf<wchar_t> wmem_ostreambuf;
+/**
+	Input memory stream.
+	@sa basic_omemstream, basic_memstream, basic_memstreambuf
+*/
+template<typename charT, typename traitsT=std::char_traits<charT> >
+class basic_imemstream : public std::basic_istream<charT, traitsT> {
+	typedef std::basic_istream<charT, traitsT> base_stream_type_;
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_imemstream);
 
-/** Narrow memory streambuf for @c iostream. */
-typedef basic_mem_iostreambuf<char> mem_iostreambuf;
-/** Wide memory streambuf for @c wiostream. */
-typedef basic_mem_iostreambuf<wchar_t> wmem_iostreambuf;
+public:
+	typedef charT char_type; /**< Character type. */
+	typedef traitsT traits_type; /**< Traits type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+
+	/**
+		Constructor with buffer.
+		@param buffer Data buffer.
+		@param size Size of @c buffer.
+		@param mode @c openmode for the stream; defaults to and forces @c std::ios_base::in; removes @c std::ios_base::out.
+	*/
+	basic_imemstream(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
+		: base_stream_type_()
+		, m_membuf(buffer, size, (mode&~std::ios_base::out)|std::ios_base::in)
+	{ this->init(&m_membuf); }
+
+	/**
+		Destructor.
+	*/
+	virtual ~basic_imemstream() {}
+
+	/**
+		Get streambuf.
+		@returns Pointer to the stream's streambuf (never @c nullptr).
+	*/
+	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
+
+private:
+	membuf_type m_membuf;
+};
+
+/**
+	Output memory stream.
+	@sa basic_imemstream, basic_memstream, basic_memstreambuf
+*/
+template<typename charT, typename traitsT=std::char_traits<charT> >
+class basic_omemstream : public std::basic_ostream<charT, traitsT> {
+	typedef std::basic_ostream<charT, traitsT> base_stream_type_;
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_omemstream);
+
+public:
+	typedef charT char_type; /**< Character type. */
+	typedef traitsT traits_type; /**< Traits type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+
+	/**
+		Constructor with buffer.
+		@param buffer Data buffer.
+		@param size Size of @c buffer.
+		@param mode @c openmode for the stream; defaults to and forces @c std::ios_base::out; removes @c std::ios_base::in.
+	*/
+	basic_omemstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
+		: base_stream_type_()
+		, m_membuf(buffer, size, (mode&~std::ios_base::in)|std::ios_base::out)
+	{ this->init(&m_membuf); }
+
+	/**
+		Destructor.
+	*/
+	virtual ~basic_omemstream() {}
+
+	/**
+		Get streambuf.
+		@returns Pointer to the stream's streambuf (never @c nullptr).
+	*/
+	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
+
+private:
+	membuf_type m_membuf;
+};
+
+/**
+	Input/output memory stream.
+	@sa basic_imemstream, basic_omemstream, basic_memstreambuf
+*/
+template<typename charT, typename traitsT=std::char_traits<charT> >
+class basic_memstream : public std::basic_iostream<charT, traitsT> {
+	typedef std::basic_iostream<charT, traitsT> base_stream_type_;
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstream);
+
+public:
+	typedef charT char_type; /**< Character type. */
+	typedef traitsT traits_type; /**< Traits type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+
+	/**
+		Constructor with buffer.
+		@param buffer Data buffer.
+		@param size Size of @c buffer.
+		@param mode @c openmode for the stream; defaults to and forces @c std::ios_base::in and @c std::ios_base::out.
+	*/
+	basic_memstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in|std::ios_base::out)
+		: base_stream_type_()
+		, m_membuf(buffer, size, mode|std::ios_base::in|std::ios_base::out)
+	{ this->init(&m_membuf); }
+
+	/**
+		Destructor.
+	*/
+	virtual ~basic_memstream() {}
+
+	/**
+		Get streambuf.
+		@returns Pointer to the stream's streambuf (never @c nullptr).
+	*/
+	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
+
+private:
+	membuf_type m_membuf;
+};
+
+/** Narrow input memory stream. */
+typedef basic_imemstream<char> imemstream;
+/** Wide input memory stream. */
+typedef basic_imemstream<wchar_t> wimemstream;
+
+/** Narrow output memory stream. */
+typedef basic_omemstream<char> omemstream;
+/** Wide output memory stream. */
+typedef basic_omemstream<wchar_t> womemstream;
+
+/** Narrow input/output memory stream. */
+typedef basic_memstream<char> memstream;
+/** Wide input/output memory stream. */
+typedef basic_memstream<wchar_t> wmemstream;
 
 /**
 	Encoding and endian stream context.

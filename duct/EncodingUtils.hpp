@@ -15,9 +15,7 @@
 #include "./char.hpp"
 
 #include <stdexcept>
-#include <string>
 #include <locale>
-#include <string.h>
 
 namespace duct {
 

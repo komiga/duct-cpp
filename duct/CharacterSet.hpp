@@ -370,7 +370,7 @@ public:
 		@returns @c *this.
 		@param start Start of the range.
 		@param length Length of the range.
-		@see CharacterRange::CharacterRange(char32 const, unsigned int const)
+		@sa CharacterRange::CharacterRange(char32 const, unsigned int const)
 	*/
 	CharacterSet& add_range(char32 const start, unsigned int const length=0) {
 		bool empty=m_ranges.empty();

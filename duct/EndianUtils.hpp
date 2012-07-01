@@ -12,9 +12,9 @@
 
 #include "./config.hpp"
 
+#include <cstddef>
 #include <type_traits>
 #include <algorithm>
-#include <cstddef>
 
 namespace duct {
 

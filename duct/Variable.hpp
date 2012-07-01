@@ -15,10 +15,10 @@
 #include "./detail/vartype.hpp"
 #include "./StringUtils.hpp"
 
+#include <cassert>
 #include <utility>
 #include <vector>
 #include <sstream>
-#include <cassert>
 
 namespace duct {
 

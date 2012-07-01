@@ -12,8 +12,8 @@
 #include "./../config.hpp"
 #include "./../string.hpp"
 
-#include <type_traits>
 #include <strings.h>
+#include <type_traits>
 
 // TODO: documentation on struct members
 

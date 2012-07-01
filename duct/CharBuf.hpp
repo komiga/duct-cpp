@@ -15,9 +15,9 @@
 #include "./EncodingUtils.hpp"
 #include "./StringUtils.hpp"
 
+#include <cstdlib>
 #include <type_traits>
 #include <sstream>
-#include <cstdlib>
 
 namespace duct {
 
