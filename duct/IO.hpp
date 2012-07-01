@@ -946,35 +946,35 @@ public:
 /** @name Raw data */ /// @{
 	/** See @c duct::IO::read_arithmetic(). */
 	template<typename T>
-	inline void read_arithmetic(std::istream& stream, T& value) {
+	inline void read_arithmetic(std::istream& stream, T& value) const {
 		::duct::IO::read_arithmetic(stream, value, m_endian);
 	}
 	/** See @c duct::IO::read_arithmetic(). */
 	template<typename T>
-	inline T read_arithmetic(std::istream& stream) {
+	inline T read_arithmetic(std::istream& stream) const {
 		return ::duct::IO::read_arithmetic(stream, m_endian);
 	}
 	/** See @c duct::IO::read_arithmetic_array(). */
 	template<typename T>
-	inline void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count) {
+	inline void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count) const {
 		::duct::IO::read_arithmetic_array(stream, dest, count, m_endian);
 	}
 
 	/** See @c duct::IO::write_arithmetic(). */
 	template<typename T>
-	inline void write_arithmetic(std::ostream& stream, T const value) {
+	inline void write_arithmetic(std::ostream& stream, T const value) const {
 		::duct::IO::write_arithmetic(stream, value, m_endian);
 	}
 	/** See @c duct::IO::write_arithmetic_array(). */
 	template<typename T>
-	inline void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count) {
+	inline void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count) const {
 		::duct::IO::write_arithmetic_array(stream, src, count, m_endian);
 	}
 /// @}
 
 /** @name Unicode */ /// @{
 	/** See @c duct::IO::read_char(). */
-	char32 read_char(std::istream& stream, char32 const replacement=CHAR_SENTINEL) {
+	char32 read_char(std::istream& stream, char32 const replacement=CHAR_SENTINEL) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:	return (::duct::IO::read_char<UTF8Utils>(stream, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::read_char<UTF16Utils>(stream, replacement, m_endian));
@@ -982,7 +982,7 @@ public:
 		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
 	}}
 	/** See @c duct::IO::write_char(). */
-	std::size_t write_char(std::ostream& stream, char32 const cp, char32 const replacement=CHAR_NULL) {
+	std::size_t write_char(std::ostream& stream, char32 const cp, char32 const replacement=CHAR_NULL) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:	return (::duct::IO::write_char<UTF8Utils>(stream, cp, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::write_char<UTF16Utils>(stream, cp, replacement, m_endian));
@@ -992,7 +992,7 @@ public:
 
 	/** See @c duct::IO::read_string(). */
 	template<class stringT>
-	void read_string(std::istream& stream, stringT& value, std::size_t size, char32 const replacement=CHAR_NULL) {
+	void read_string(std::istream& stream, stringT& value, std::size_t size, char32 const replacement=CHAR_NULL) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:	(::duct::IO::read_string<UTF8Utils>(stream, value, size, replacement, m_endian)); return;
 		case Encoding::UTF16:	(::duct::IO::read_string<UTF16Utils>(stream, value, size, replacement, m_endian)); return;
@@ -1001,7 +1001,7 @@ public:
 	}}
 	/** See @c duct::IO::write_string(). */
 	template<class stringT>
-	std::size_t write_string(std::ostream& stream, stringT const& value, char32 const replacement=CHAR_NULL) {
+	std::size_t write_string(std::ostream& stream, stringT const& value, char32 const replacement=CHAR_NULL) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:	return (::duct::IO::write_string<UTF8Utils>(stream, value, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::write_string<UTF16Utils>(stream, value, replacement, m_endian));
