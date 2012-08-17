@@ -33,14 +33,20 @@ class CharBuf;
 	Character buffer.
 */
 class CharBuf /*final*/ {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
-
 public:
 /** @name Types */ /// @{
 	/** Internal character type. */
 	typedef char32 char_type;
 /// @}
 
+private:
+	duct::stl::vector<char_type>::type m_buffer;
+	bool m_cached;
+	u8string m_cache_string;
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
+
+public:
 /** @name Constructors */ /// @{
 	/**
 		Construct empty.
@@ -216,11 +222,6 @@ private:
 			m_buffer.reserve(2*get_capacity());
 		}
 	}
-
-private:
-	duct::stl::vector<char_type>::type m_buffer;
-	bool m_cached;
-	u8string m_cache_string;
 };
 
 /** @} */ // end of doc-group string

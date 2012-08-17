@@ -38,6 +38,10 @@ class CharacterSet;
 	@note The range defined is end-inclusive; for a code point @em cp and CharacterRange @em range, will match: @code cp>=range.start() && cp<=range.end() @endcode
 */
 class CharacterRange {
+private:
+	char32 m_start;
+	char32 m_end;
+
 public:
 /** @name Constructors */ /// @{
 	/**
@@ -159,10 +163,6 @@ public:
 		return str.cend();
 	}
 /// @}
-
-private:
-	char32 m_start;
-	char32 m_end;
 };
 
 /**
@@ -177,6 +177,10 @@ public:
 	/** @copydoc iterator */
 	typedef vector_type::const_iterator const_iterator;
 
+private:
+	vector_type m_ranges;
+
+public:
 /** @name Constructors */ /// @{
 	/**
 		Construct empty set.
@@ -449,9 +453,6 @@ public:
 		return *this;
 	}
 /// @}
-
-private:
-	vector_type m_ranges;
 };
 
 /** @} */ // end of name-group Comparison helpers

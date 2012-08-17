@@ -51,6 +51,13 @@ enum ScriptParserError {
 	ScriptParser exception.
 */
 class ScriptParserException : public std::exception {
+private:
+	ScriptParserError m_error;
+	char const* m_scope;
+	Token const* m_token;
+	ScriptParser const* m_parser;
+	char m_message[512];
+
 public:
 	/**
 		Detailed constructor.
@@ -73,19 +80,17 @@ public:
 		@param error An error.
 	*/
 	static char const* get_error_name(ScriptParserError const error);
-	
-private:
-	ScriptParserError m_error;
-	char const* m_scope;
-	Token const* m_token;
-	ScriptParser const* m_parser;
-	char m_message[512];
 };
 
 /**
 	ductScript parser.
 */
 class ScriptParser /*final*/ : public Parser {
+private:
+	duct::stl::deque<Variable*>::type m_stack;
+	u8string m_varname;
+	unsigned int m_states;
+
 	DUCT_DISALLOW_COPY_AND_ASSIGN(ScriptParser);
 
 public:
@@ -156,11 +161,6 @@ private:
 	void make_collection(VariableType const type, bool push_collection=true);
 	void make_value();
 	void make_nameless_value(int override_type=NULL_TOKEN);
-
-private:
-	duct::stl::deque<Variable*>::type m_stack;
-	u8string m_varname;
-	unsigned int m_states;
 };
 
 #include "./impl/ScriptParser.inl"

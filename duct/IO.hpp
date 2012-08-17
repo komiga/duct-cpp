@@ -610,15 +610,20 @@ exit_f:
 */
 template<typename charT, typename traitsT=std::char_traits<charT> >
 class basic_memstreambuf : public std::basic_streambuf<charT, traitsT> {
-	typedef std::basic_streambuf<charT, traitsT> base_streambuf_type_;
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstreambuf);
-
 public:
 	typedef charT char_type; /**< Character type. */
 	typedef traitsT traits_type; /**< Traits type. */
 	typedef typename traits_type::pos_type pos_type; /**< Position type. */
 	typedef typename traits_type::off_type off_type; /**< Offset type. */
 
+private:
+	typedef std::basic_streambuf<charT, traitsT> base_streambuf_type_;
+
+	std::ios_base::openmode m_mode;
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstreambuf);
+
+public:
 	/**
 		Constructor with input buffer.
 		@param buffer Data buffer.
@@ -720,8 +725,6 @@ private:
 		}
 		this->pbump(soff);
 	}
-
-	std::ios_base::openmode m_mode;
 };
 
 /** Narrow memory streambuf. */
@@ -735,14 +738,19 @@ typedef basic_memstreambuf<wchar_t> wmem_streambuf;
 */
 template<typename charT, typename traitsT=std::char_traits<charT> >
 class basic_imemstream : public std::basic_istream<charT, traitsT> {
-	typedef std::basic_istream<charT, traitsT> base_stream_type_;
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_imemstream);
-
 public:
 	typedef charT char_type; /**< Character type. */
 	typedef traitsT traits_type; /**< Traits type. */
 	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
 
+private:
+	typedef std::basic_istream<charT, traitsT> base_stream_type_;
+
+	membuf_type m_membuf;
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_imemstream);
+
+public:
 	/**
 		Constructor with buffer.
 		@param buffer Data buffer.
@@ -764,9 +772,6 @@ public:
 		@returns Pointer to the stream's streambuf (never @c nullptr).
 	*/
 	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
-
-private:
-	membuf_type m_membuf;
 };
 
 /**
@@ -775,14 +780,19 @@ private:
 */
 template<typename charT, typename traitsT=std::char_traits<charT> >
 class basic_omemstream : public std::basic_ostream<charT, traitsT> {
-	typedef std::basic_ostream<charT, traitsT> base_stream_type_;
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_omemstream);
-
 public:
 	typedef charT char_type; /**< Character type. */
 	typedef traitsT traits_type; /**< Traits type. */
 	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
 
+private:
+	typedef std::basic_ostream<charT, traitsT> base_stream_type_;
+
+	membuf_type m_membuf;
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_omemstream);
+
+public:
 	/**
 		Constructor with buffer.
 		@param buffer Data buffer.
@@ -804,9 +814,6 @@ public:
 		@returns Pointer to the stream's streambuf (never @c nullptr).
 	*/
 	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
-
-private:
-	membuf_type m_membuf;
 };
 
 /**
@@ -815,14 +822,19 @@ private:
 */
 template<typename charT, typename traitsT=std::char_traits<charT> >
 class basic_memstream : public std::basic_iostream<charT, traitsT> {
-	typedef std::basic_iostream<charT, traitsT> base_stream_type_;
-	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstream);
-
 public:
 	typedef charT char_type; /**< Character type. */
 	typedef traitsT traits_type; /**< Traits type. */
 	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
 
+private:
+	typedef std::basic_iostream<charT, traitsT> base_stream_type_;
+	
+	membuf_type m_membuf;
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(basic_memstream);
+
+public:
 	/**
 		Constructor with buffer.
 		@param buffer Data buffer.
@@ -844,9 +856,6 @@ public:
 		@returns Pointer to the stream's streambuf (never @c nullptr).
 	*/
 	membuf_type* rdbuf() const { return const_cast<membuf_type*>(&m_membuf); }
-
-private:
-	membuf_type m_membuf;
 };
 
 /** Narrow input memory stream. */
@@ -869,6 +878,10 @@ typedef basic_memstream<wchar_t> wmemstream;
 	@note Documentation is identical to the static functions. Notice that no methods in StreamContext take an endian parameter nor an EncodingUtils template parameter.
 */
 class StreamContext {
+private:
+	Encoding m_encoding;
+	Endian m_endian;
+
 	void operator=(StreamContext const&); // Disallow copy operator
 
 public:
@@ -1013,10 +1026,6 @@ public:
 		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return 0;
 	}}
 /// @}
-
-private:
-	Encoding m_encoding;
-	Endian m_endian;
 };
 
 /** @} */ // end of name-group Helper classes

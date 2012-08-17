@@ -42,6 +42,18 @@ public:
 	/** @copydoc iterator  */
 	typedef vector_type::const_iterator const_iterator;
 
+private:
+	VariableType m_type;
+	u8string m_name;
+	vector_type m_children;
+	detail::var_config::string_type m_strv;
+	union {
+		detail::var_config::int_type m_intv;
+		detail::var_config::float_type m_floatv;
+		detail::var_config::bool_type m_boolv;
+	};
+
+public:
 /** @name Constructors and operators */ /// @{
 	/**
 		Construct nameless @c VARTYPE_NULL.
@@ -628,17 +640,6 @@ public:
 		return *this;
 	}
 /** @} */
-
-private:
-	VariableType m_type;
-	u8string m_name;
-	vector_type m_children;
-	detail::var_config::string_type m_strv;
-	union {
-		detail::var_config::int_type m_intv;
-		detail::var_config::float_type m_floatv;
-		detail::var_config::bool_type m_boolv;
-	};
 };
 
 /** @} */ // end doc-group variable

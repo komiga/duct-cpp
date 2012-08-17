@@ -41,15 +41,20 @@ enum LayoutFieldFlag : unsigned int {
 	@warning Every layout field after an optional field (@c LAYOUT_FIELD_OPTIONAL) is considered optional.
 */
 class Template {
-	DUCT_DISALLOW_COPY_AND_ASSIGN(Template);
-
 public:
 	/** Identity vector type. */
 	typedef duct::stl::vector<u8string>::type identity_vector_type;
-
 	/** Layout vector type. */
 	typedef duct::stl::vector<unsigned int>::type layout_vector_type;
 
+protected:
+	unsigned int m_type_mask; /**< Type mask. */
+	identity_vector_type m_identity; /**< Identity. */
+	layout_vector_type m_layout; /**< Layout. */
+
+	DUCT_DISALLOW_COPY_AND_ASSIGN(Template);
+
+public:
 /** @name Constructors and destructor */ /// @{
 	/**
 		Construct with @c VARMASK_NONE type mask, empty identity, and empty layout.
@@ -244,11 +249,6 @@ public:
 		}
 	}
 /// @}
-
-protected:
-	unsigned int m_type_mask; /**< Type mask. */
-	identity_vector_type m_identity; /**< Identity. */
-	layout_vector_type m_layout; /**< Layout. */
 };
 
 /** @} */ // end of doc-group variable

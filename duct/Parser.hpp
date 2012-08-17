@@ -37,6 +37,12 @@ enum {
 	Generic token.
 */
 class Token {
+protected:
+	int m_type; /**< Type. */
+	int m_line; /**< Line position. */
+	int m_column; /**< Column position. */
+	CharBuf m_buffer; /**< Character buffer. */
+
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Token);
 
 public:
@@ -141,12 +147,6 @@ public:
 		}
 	}
 /// @}
-
-protected:
-	int m_type; /**< Type. */
-	int m_line; /**< Line position. */
-	int m_column; /**< Column position. */
-	CharBuf m_buffer; /**< Character buffer. */
 };
 
 /**
@@ -154,6 +154,16 @@ protected:
 	@note This class and deriving classes shall not take ownership of input streams.
 */
 class Parser {
+protected:
+	int m_line; /**< Line position. */
+	int m_column; /**< Column position. */
+	char32 m_curchar; /**< Current character. */
+	char32 m_peekchar; /**< Peeked character. */
+	bool m_peeked; /**< Whether a character has been peeked. */
+	Token m_token; /**< Current token. */
+	std::istream* m_stream; /**< Current stream. */
+	IO::StreamContext m_stream_ctx; /**< Stream context. */
+
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
 
 public:
@@ -358,16 +368,6 @@ public:
 	*/
 	virtual void handle_token()=0;
 /// @}
-
-protected:
-	int m_line; /**< Line position. */
-	int m_column; /**< Column position. */
-	char32 m_curchar; /**< Current character. */
-	char32 m_peekchar; /**< Peeked character. */
-	bool m_peeked; /**< Whether a character has been peeked. */
-	Token m_token; /**< Current token. */
-	std::istream* m_stream; /**< Current stream. */
-	IO::StreamContext m_stream_ctx; /**< Stream context. */
 };
 
 /** @} */ // end of doc-group parser
