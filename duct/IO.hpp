@@ -154,7 +154,7 @@ T read_arithmetic(std::istream& stream, Endian const endian=Endian::SYSTEM) {
 template<typename T>
 void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count, Endian const endian=Endian::SYSTEM) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-	if (0>count) {
+	if (0<count) {
 		stream.read(reinterpret_cast<char*>(dest), sizeof(T)*count);
 		if (Endian::SYSTEM!=endian && 1!=sizeof(T)) {
 			for (unsigned int idx=0; count>idx; ++idx) {
@@ -661,8 +661,8 @@ public:
 			this->setp(nullptr, nullptr);
 		} else {
 			char_type* cbuf=reinterpret_cast<char_type*>(buffer);
-			if (m_mode&std::ios_base::in) { setg(cbuf, cbuf, cbuf+size); }
-			if (m_mode&std::ios_base::out) { setp(cbuf, cbuf+size); }
+			if (m_mode&std::ios_base::in) { this->setg(cbuf, cbuf, cbuf+size); }
+			if (m_mode&std::ios_base::out) { this->setp(cbuf, cbuf+size); }
 		}
 	}
 
@@ -686,7 +686,7 @@ protected:
 				new_off+=end-beg;
 			}
 			if (0<=new_off && (end-beg)>=new_off) {
-				if (do_in) { setg(beg, beg+new_off, end); }
+				if (do_in) { this->setg(beg, beg+new_off, end); }
 				if (do_out) { priv_pmove(beg, end, new_off); }
 				ret_pos=pos_type(new_off);
 			}
@@ -707,7 +707,7 @@ protected:
 		if (nullptr!=beg) {
 			off_type new_off=off_type(spos);
 			if (0<=new_off && (end-beg)>=new_off) {
-				if (do_in) { setg(beg, beg+new_off, end); }
+				if (do_in) { this->setg(beg, beg+new_off, end); }
 				if (do_out) { priv_pmove(beg, end, new_off); }
 				ret_pos=pos_type(new_off);
 			}
