@@ -38,7 +38,7 @@ struct cvt_defs {
 	typedef fromU from_utils;
 	typedef typename to_utils::char_type to_char;
 	static constexpr bool equivalent=std::is_same<typename from_utils::char_type, to_char>::value;
-	static constexpr unsigned int BUFFER_SIZE=256;
+	enum {BUFFER_SIZE=256u};
 };
 
 template<class defsT, typename InputIterator>

@@ -12,11 +12,11 @@
 #define DUCT_TEMPLATE_HPP_
 
 #include "./config.hpp"
+#include "./stl.hpp"
 #include "./string.hpp"
 #include "./Variable.hpp"
 
 #include <utility>
-#include <vector>
 
 namespace duct {
 
@@ -45,10 +45,10 @@ class Template {
 
 public:
 	/** Identity vector type. */
-	typedef std::vector<u8string> identity_vector_type;
+	typedef duct::stl::vector<u8string>::type identity_vector_type;
 
 	/** Layout vector type. */
-	typedef std::vector<unsigned int> layout_vector_type;
+	typedef duct::stl::vector<unsigned int>::type layout_vector_type;
 
 /** @name Constructors and destructor */ /// @{
 	/**

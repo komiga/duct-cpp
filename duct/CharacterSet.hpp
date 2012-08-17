@@ -11,12 +11,12 @@
 
 #include "./config.hpp"
 #include "./debug.hpp"
+#include "./stl.hpp"
 #include "./char.hpp"
 #include "./string.hpp"
 #include "./detail/string_traits.hpp"
 
 #include <algorithm>
-#include <vector>
 
 namespace duct {
 
@@ -171,7 +171,7 @@ private:
 class CharacterSet {
 public:
 	/** CharacterRange vector. */
-	typedef std::vector<CharacterRange> vector_type;
+	typedef duct::stl::vector<CharacterRange>::type vector_type;
 	/** CharacterRange iterator. */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator */

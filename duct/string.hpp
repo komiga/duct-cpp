@@ -11,8 +11,7 @@
 #define DUCT_STRING_HPP_
 
 #include "./config.hpp"
-
-#include <string>
+#include "./stl.hpp"
 
 namespace duct {
 
@@ -45,13 +44,9 @@ namespace duct {
 /**
 	UTF-8 string type.
 	Implies UTF-8 encoded data.
-	@note There is nothing special about this type; it is merely an @c std::string used as a convenient container.
+	@note There is nothing special about this type; it is merely a @c std::basic_string<char> used as a convenient container.
 */
-typedef std::string u8string;
-/*
-	UTF-32 string type.
-*/
-//typedef std::u32string u32string;
+typedef duct::stl::basic_string<char>::type u8string;
 
 /** @} */ // end of doc-group string
 

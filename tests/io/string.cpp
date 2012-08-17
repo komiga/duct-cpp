@@ -61,12 +61,12 @@ template<class fromU, class stringT>
 void read_s(stringT& str, void const* data, std::size_t const size) {
 	duct::IO::StreamContext ctx(fromU::id, duct::Endian::SYSTEM);
 	duct::IO::imemstream stream(data, size*fromU::char_size);
-	printf("stream size: %lu\n", duct::IO::size(stream));
+	printf("stream size: %lu\n", static_cast<unsigned long>(duct::IO::size(stream)));
 	assert(stream.good());
 	ctx.read_string(stream, str, static_cast<std::streamsize>(size), duct::CHAR_NULL);
 	assert(stream.good());
 	print_states(stream);
-	printf("String [size: %lu bsize: %lu len: %lu]: |", size, size*fromU::char_size, str.size());
+	printf("String [size: %lu bsize: %lu len: %lu]: |", static_cast<unsigned long>(size), static_cast<unsigned long>(size*fromU::char_size), static_cast<unsigned long>(str.size()));
 	std::cout<<str<<"|\n";
 	str.clear();
 }
@@ -78,7 +78,7 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
 	assert(stream.good());
 	std::size_t written_size=ctx.write_string(stream, str, duct::CHAR_NULL);
-	printf("size: %lu  written_size: %lu\n", size, written_size);
+	printf("size: %lu  written_size: %lu\n", static_cast<unsigned long>(size), static_cast<unsigned long>(written_size));
 	assert(stream.good());
 	assert(written_size==size);
 	stream.flush();
@@ -89,7 +89,7 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 		*wi=out_buffer;
 	for (; data+size!=di && out_buffer+written_size!=wi; ++di, ++wi) {
 		if (*di!=*wi) {
-			printf("di: %lu, %u 0x%X  wi: %lu, %u 0x%X\n", di-data, *di, *di, wi-out_buffer, *wi, *wi);
+			printf("di: %lu, %u 0x%X  wi: %lu, %u 0x%X\n", static_cast<unsigned long>(di-data), *di, *di, static_cast<unsigned long>(wi-out_buffer), *wi, *wi);
 			kosher=false;
 		}
 	}

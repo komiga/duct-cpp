@@ -15,7 +15,7 @@
 // -
 
 #define print_decode(data_, enc_) \
-	printf(" next: %lu  end: %lu  cp: %d 0x%X  required: %u\n", next-data_, end-data_, cp, cp, duct:: enc_ ::required(cp))
+	printf(" next: %lu  end: %lu  cp: %d 0x%X  required: %u\n", static_cast<unsigned long>(next-data_), static_cast<unsigned long>(end-data_), cp, cp, duct:: enc_ ::required(cp))
 	//printf(" non-surr: %d  non-max: %d ; 3.2-nc: %d  FFFE: %d\n", cp<0xD800 || cp>0xDFFF, cp<=0x10FFFF, cp>=0xFDD0 && cp<=0xFDEF, (cp&0xFFFE)==0xFFFE && cp<=0x10FFFF)
 // -
 
@@ -32,7 +32,7 @@
 // -
 
 #define print_encode(enc_) \
-	printf(" next: %lu  cp: %d 0x%X  required: %u  enc: [", next-buffer, cp, cp, duct:: enc_ ::required(cp)); \
+	printf(" next: %lu  cp: %d 0x%X  required: %u  enc: [", static_cast<unsigned long>(next-buffer), cp, cp, duct:: enc_ ::required(cp)); \
 	for (auto it_=buffer; next>it_; ++it_) { \
 		printf("0x%X%s", *it_, next==it_+1 ? "" : ", "); \
 	} puts("]")

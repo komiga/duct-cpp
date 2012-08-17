@@ -79,7 +79,7 @@
 // Compiler
 /**
 	Compiler.
-	See <duct/config.hpp" for possible values.
+	See <duct/config.hpp> for possible values.
 */
 #define DUCT_COMPILER system_dependent
 

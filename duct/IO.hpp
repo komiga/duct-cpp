@@ -190,7 +190,7 @@ void write_arithmetic(std::ostream& stream, T value, Endian const endian=Endian:
 template<typename T>
 void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count, Endian const endian=Endian::SYSTEM) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-	static constexpr unsigned int BUFFER_SIZE=32;
+	enum {BUFFER_SIZE=32u};
 	T flipbuf[BUFFER_SIZE];
 	if (count) {
 		if (Endian::SYSTEM!=endian && 1!=sizeof(T)) {
@@ -224,8 +224,10 @@ template<class fromU>
 struct rchar_defs {
 	typedef fromU from_utils;
 	typedef typename from_utils::char_type char_type;
-	static constexpr unsigned int char_size=from_utils::char_size;
-	static constexpr unsigned int BUFFER_SIZE=6u; // max UTF-8 (including invalid planes)
+	enum {
+		char_size=from_utils::char_size,
+		BUFFER_SIZE=6u // max UTF-8 (including invalid planes)
+	};
 };
 
 template<class defsT, std::size_t _size=defsT::char_size>
@@ -299,8 +301,10 @@ template<class toU>
 struct wchar_defs {
 	typedef toU to_utils;
 	typedef typename to_utils::char_type char_type;
-	static constexpr unsigned int char_size=to_utils::char_size;
-	static constexpr unsigned int BUFFER_SIZE=4u; // max valid UTF-8
+	enum {
+		char_size=to_utils::char_size,
+		BUFFER_SIZE=4u // max valid UTF-8
+	};
 };
 
 template<class defsT, std::size_t _size=defsT::char_size>
@@ -373,7 +377,7 @@ struct rstr_defs {
 	typedef detail::string_traits<string_type> string_traits;
 	typedef fromU from_utils;
 	typedef typename string_traits::encoding_utils to_utils;
-	static constexpr unsigned int BUFFER_SIZE=512u;
+	enum {BUFFER_SIZE=512u};
 };
 } // anonymous namespace
 /** @endcond */ // INTERNAL
@@ -430,7 +434,7 @@ void read_string(std::istream& stream, stringT& value, std::size_t size, char32 
 		}
 		size-=amt;
 		if (0!=offset) { // Handle incomplete sequence
-			DUCT_DEBUGF("read_string: ics - pos: %lu offset: %u iter: 0x%X left: %ld", next-buffer, offset, *next, size);
+			DUCT_DEBUGF("read_string: ics - pos: %lu offset: %u iter: 0x%X left: %lu", static_cast<unsigned long>(next-buffer), offset, *next, static_cast<unsigned long>(size));
 			if (0>=size) { // No sense pushing back if there's no more data to read
 				break;
 			} else {
@@ -446,7 +450,7 @@ void read_string(std::istream& stream, stringT& value, std::size_t size, char32 
 		DUCT_DEBUG("read_string: eos with trailing ics");
 		value.append(1, replacement);
 	} else {
-		DUCT_DEBUGF("read_string: eos; offset: %u size: %ld replacement: 0x%X", offset, size, replacement);
+		DUCT_DEBUGF("read_string: eos; offset: %u size: %lu replacement: 0x%X", offset, static_cast<unsigned long>(size), replacement);
 	}
 }
 
@@ -491,7 +495,7 @@ struct wstr_defs {
 	typedef detail::string_traits<string_type> string_traits;
 	typedef toU to_utils;
 	typedef typename string_traits::encoding_utils from_utils;
-	static constexpr unsigned int BUFFER_SIZE=512u;
+	enum {BUFFER_SIZE=512u};
 };
 } // anonymous namespace
 /** @endcond */ // INTERNAL
@@ -521,7 +525,7 @@ std::size_t write_string(std::ostream& stream, stringT const& value, char32 cons
 			DUCT_DEBUG("write_string: ics");
 			break;
 		}
-		//DUCT_DEBUGF("write_string: in: %lu  out: %lu %p cp: %u 0x%X", in_next-value.cbegin(), out_iter-out_buffer, out_iter, cp, cp);
+		//DUCT_DEBUGF("write_string: in: %lu  out: %lu %p cp: %u 0x%X", static_cast<unsigned long>(in_next-value.cbegin()), static_cast<unsigned long>(out_iter-out_buffer), out_iter, cp, cp);
 		out_iter=defsT::to_utils::encode(cp, out_iter, replacement);
 		if (defsT::BUFFER_SIZE<=6+(out_iter-out_buffer)) { // Prevent output overrun
 			if (Endian::SYSTEM!=endian && 1!=defsT::to_utils::char_size) {

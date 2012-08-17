@@ -223,9 +223,10 @@ DUCT_DETAIL_TRAITS_(VARTYPE_BOOL, var_config::bool_type);
 #undef DUCT_DETAIL_TRAITS_
 /** @endcond */ // INTERNAL
 
+} // namespace detail
+
 /** @} */ // end of doc-group variable
 
-} // namespace detail
 } // namespace duct
 
 #endif // DUCT_DETAIL_VARTYPE_HPP_

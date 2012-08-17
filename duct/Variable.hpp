@@ -11,14 +11,13 @@
 #define DUCT_VARIABLE_HPP_
 
 #include "./config.hpp"
+#include "./stl.hpp"
 #include "./string.hpp"
 #include "./detail/vartype.hpp"
 #include "./StringUtils.hpp"
 
 #include <cassert>
 #include <utility>
-#include <vector>
-#include <sstream>
 
 namespace duct {
 
@@ -37,7 +36,7 @@ class Variable;
 class Variable /*final*/ {
 public:
 	/** Children vector. */
-	typedef std::vector<Variable> vector_type;
+	typedef duct::stl::vector<Variable>::type vector_type;
 	/** Children iterator.  */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator  */
@@ -547,7 +546,7 @@ public:
 		case VARTYPE_STRING: StringUtils::convert(out_str, m_strv); break;
 		case VARTYPE_BOOL: out_str=(m_boolv) ? "true" : "false"; break;
 		default: {
-			std::stringstream stream;
+			duct::stl::stringstream stream;
 			switch (m_type) {
 			case VARTYPE_INTEGER: stream<<m_intv; break;
 			case VARTYPE_FLOAT: stream<<std::showpoint<<m_floatv; break;
