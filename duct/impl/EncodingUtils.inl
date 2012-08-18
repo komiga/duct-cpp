@@ -564,7 +564,7 @@ char32 UTF32Utils::decode_locale(InputIterator input, std::locale const& locale)
 	// no support for Unicode stuff. As a consequence, in this
 	// context we can only use the default locale and ignore
 	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
+	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&						/* if Windows ... */						  \
 	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
 	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
 		wchar_t character=0;
@@ -584,7 +584,7 @@ OutputIterator UTF32Utils::encode_locale(char32 input, OutputIterator output, ch
 	// no support for Unicode stuff. As a consequence, in this
 	// context we can only use the default locale and ignore
 	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_WINDOWS) &&						/* if Windows ... */						  \
+	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&						/* if Windows ... */						  \
 	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
 	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
 		char8 character=0;

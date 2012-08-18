@@ -194,11 +194,11 @@
 #endif
 
 #if (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_WINDOWS)
-	#define DUCT_PLATFORM_WINDOWS
+	#define DUCT_PLATFORM_SYSTEM_WINDOWS
 #elif (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_LINUX)
-	#define DUCT_PLATFORM_LINUX
+	#define DUCT_PLATFORM_SYSTEM_LINUX
 #elif (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_MACOS)
-	#define DUCT_PLATFORM_MACOS
+	#define DUCT_PLATFORM_SYSTEM_MACOS
 #endif
 
 #if (defined(__WORDSIZE) && (__WORDSIZE == 64)) || defined(__arch64__) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
@@ -364,7 +364,7 @@
 #endif
 
 // Endian
-#ifdef DUCT_PLATFORM_LINUX
+#ifdef DUCT_PLATFORM_SYSTEM_LINUX
 	#include <byteswap.h>
 #endif
 
@@ -418,7 +418,7 @@
 // -
 
 // etc
-#ifdef DUCT_PLATFORM_WINDOWS
+#ifdef DUCT_PLATFORM_SYSTEM_WINDOWS
 	#define DUCT_FUNC_SIG __FUNCSIG__
 #else
 	#define DUCT_FUNC_SIG __PRETTY_FUNCTION__
