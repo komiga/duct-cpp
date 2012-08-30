@@ -14,6 +14,7 @@
 #include <duct/Variable.hpp>
 #include <duct/VariableUtils.hpp>
 #include <duct/Template.hpp>
+#include <duct/ScriptWriter.hpp>
 #include <duct/Parser.hpp>
 #include <duct/ScriptParser.hpp>
 
