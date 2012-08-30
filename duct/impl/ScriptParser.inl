@@ -70,7 +70,8 @@ char const* get_token_name(Token const& token) {
 static CharacterSet const s_set_whitespace{"\t "};
 static CharacterSet const s_set_sign{"\\-+"};
 static CharacterSet const s_set_numeral{"0-9"};
-static CharacterSet const s_set_terminator{"\n\t ,={}[]"}; // Linefeed, s_set_whitespace, and functors
+static CharacterSet const s_set_terminator{"\n\t ,=[]{}"}; // Linefeed, s_set_whitespace, and functors
+static StringUtils::EscapeablePair const s_esc_pair{"\n\r\t,=[]{}\"\'\\", "nrt,=[]{}\"\'\\"};
 
 static char32 const s_lit_true[]={'t','r','u','e'};
 static char32 const s_lit_false[]={'f','a','l','s','e'};
@@ -152,8 +153,8 @@ void ScriptParser::skip_whitespace() {
 	}
 }
 
-bool ScriptParser::process(Variable& root, std::istream& stream, Encoding const encoding, Endian const endian) {
-	if (initialize(stream, encoding, endian)) {
+bool ScriptParser::process(Variable& root, std::istream& stream) {
+	if (initialize(stream)) {
 		root.morph(VARTYPE_NODE, false); // Make sure variable is a node
 		push(root);
 		while (parse())
@@ -516,7 +517,7 @@ void ScriptParser::read_tok_string() {
 		if (CHAR_QUOTE==m_curchar) {
 			DUCT_SP_THROW__(PARSER, "Unexpected quote");
 		} else if (CHAR_BACKSLASH==m_curchar) {
-			char32 const cp=StringUtils::get_escape_char(next_char());
+			char32 const cp=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__(PARSER, "Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -525,7 +526,7 @@ void ScriptParser::read_tok_string() {
 				m_token.get_buffer().push_back(cp);
 			}
 		} else if (s_set_terminator.contains(m_curchar) // All single terminators
-				||(CHAR_SLASH    ==m_curchar && (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar))) { // Comment or comment block terminate
+				||(CHAR_SLASH==m_curchar && (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar))) { // Comment or comment block terminate
 			break;
 		} else {
 			m_token.get_buffer().push_back(m_curchar);
@@ -541,7 +542,7 @@ void ScriptParser::read_tok_string_quoted() {
 		if (CHAR_EOF==m_curchar) {
 			DUCT_SP_THROW__(PARSER, "Encountered EOF whilst reading quoted string");
 		} else if (CHAR_BACKSLASH==m_curchar) {
-			char32 const cp=StringUtils::get_escape_char(next_char());
+			char32 const cp=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__(PARSER, "Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -607,7 +608,7 @@ void ScriptParser::pop() {
 	m_stack.pop_back();
 }
 
-void ScriptParser::throwex(ScriptParserException&& e) {
+void ScriptParser::throwex(ScriptParserException e) {
 	reset();
 	throw e;
 }

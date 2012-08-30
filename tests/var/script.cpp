@@ -8,6 +8,7 @@
 #include <duct/Variable.hpp>
 #include <duct/ScriptParser.hpp>
 
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -20,10 +21,10 @@ struct TestData {
 	bool valid;
 };
 
-#define TDV(data) {data, strlen(data), true},
-#define TDN(data) {data, strlen(data), false},
+#define TDV(data) {data, std::strlen(data), true},
+#define TDN(data) {data, std::strlen(data), false},
 
-static duct::ScriptParser s_parser{};
+static duct::ScriptParser s_parser{duct::Encoding::UTF8, duct::Endian::SYSTEM};
 
 static TestData const s_test_data[]={
 	// Values
@@ -75,6 +76,9 @@ static TestData const s_test_data[]={
 	TDV("name// asdfasdfadf")
 	TDV("name=/*false*/true/*terminal*/")
 
+	// Escape sequences
+	TDV("all=\\n\\r\\t\\,\\=\\[\\]\\{\\}\\\"\\\'\\\\")
+
 	// Errors
 	TDN("name=")
 	TDN("name==")
@@ -101,13 +105,13 @@ static TestData const s_test_data[]={
 	{nullptr, 0, false}
 };
 
-void parse_stream(duct::Variable& root, std::istream& stream, bool valid) {
+void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) {
 	assert(stream.good());
 	if (valid) {
-		s_parser.process(root, stream, duct::Encoding::UTF8, duct::Endian::SYSTEM);
+		s_parser.process(root, stream);
 	} else {
 		try {
-			s_parser.process(root, stream, duct::Encoding::UTF8, duct::Endian::SYSTEM);
+			s_parser.process(root, stream);
 			std::cout<<"Received no exception when one was expected\n\n";
 			assert(false);
 		} catch (duct::ScriptParserException& e) {
@@ -134,12 +138,12 @@ int main(int argc, char* argv[]) {
 		for (int index=1; argc>index; ++index) {
 			fs.open(argv[index]);
 			if (fs.is_open()) {
-				parse_stream(root, fs, true);
+				parse_stream(root, fs, false);
+				fs.close();
 			} else {
 				td.data=argv[index]; td.size=strlen(td.data);
 				root.reset(); do_test(root, td);
 			}
-			fs.close();
 		}
 	} else {
 		for (TestData const* td=&s_test_data[0]; nullptr!=td->data; ++td) {

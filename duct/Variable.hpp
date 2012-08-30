@@ -44,7 +44,7 @@ public:
 
 private:
 	VariableType m_type;
-	u8string m_name;
+	detail::var_config::name_type m_name;
 	vector_type m_children;
 	detail::var_config::string_type m_strv;
 	union {
@@ -70,7 +70,7 @@ public:
 		@param name Name.
 		@param type Type.
 	*/
-	Variable(u8string name, VariableType const type)
+	Variable(detail::var_config::name_type name, VariableType const type)
 		: m_type(type)
 		, m_name(std::move(name))
 		, m_children()
@@ -93,7 +93,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(u8string name, detail::var_config::string_type value)
+	Variable(detail::var_config::name_type name, detail::var_config::string_type value)
 		: m_type(VARTYPE_STRING)
 		, m_name(std::move(name))
 		, m_children()
@@ -116,7 +116,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(u8string name, int const value)
+	Variable(detail::var_config::name_type name, int const value)
 		: m_type(VARTYPE_INTEGER)
 		, m_name(std::move(name))
 		, m_children()
@@ -139,7 +139,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(u8string name, float const value)
+	Variable(detail::var_config::name_type name, float const value)
 		: m_type(VARTYPE_FLOAT)
 		, m_name(std::move(name))
 		, m_children()
@@ -162,7 +162,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(u8string name, bool const value)
+	Variable(detail::var_config::name_type name, bool const value)
 		: m_type(VARTYPE_BOOL)
 		, m_name(std::move(name))
 		, m_children()
@@ -235,12 +235,12 @@ public:
 		@returns @c *this.
 		@param name New name.
 	*/
-	inline Variable& set_name(u8string name) { m_name.assign(std::move(name)); return *this; }
+	inline Variable& set_name(detail::var_config::name_type name) { m_name.assign(std::move(name)); return *this; }
 	/**
 		Get name.
 		@returns The current name.
 	*/
-	inline u8string const& get_name() const { return m_name; }
+	inline detail::var_config::name_type const& get_name() const { return m_name; }
 
 	/**
 		Test the variable's type.

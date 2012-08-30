@@ -23,10 +23,10 @@ namespace VariableUtils {
 */
 
 namespace {
-	static detail::var_config::string_type s_sv_false{"false"};
-	static detail::var_config::string_type s_sv_true{"true"};
-	static detail::var_config::string_type s_sv_null{"null"};
-}
+static detail::var_config::string_type const s_sv_false{"false"};
+static detail::var_config::string_type const s_sv_true{"true"};
+static detail::var_config::string_type const s_sv_null{"null"};
+} // anonymous namespace
 
 /**
 	Convert string to appropriate type and set Variable value.
@@ -39,11 +39,11 @@ namespace {
 	@param value String value to convert.
 */
 void convert_typed(Variable& var, detail::var_config::string_type value) {
-	if (s_sv_false.compare(value)) {
+	if (0==s_sv_false.compare(value)) {
 		var.morph(false);
-	} else if (s_sv_true.compare(value)) {
+	} else if (0==s_sv_true.compare(value)) {
 		var.morph(true);
-	} else if (s_sv_null.compare(value)) {
+	} else if (0==s_sv_null.compare(value)) {
 		var.nullify();
 	} else {
 		var.morph(std::move(value));
@@ -61,11 +61,11 @@ void convert_typed(Variable& var, detail::var_config::string_type value) {
 	@param value String value to convert.
 */
 Variable convert_typed(detail::var_config::string_type value) {
-	if (s_sv_false.compare(value)) {
+	if (0==s_sv_false.compare(value)) {
 		return Variable(false);
-	} else if (s_sv_true.compare(value)) {
+	} else if (0==s_sv_true.compare(value)) {
 		return Variable(true);
-	} else if (s_sv_null.compare(value)) {
+	} else if (0==s_sv_null.compare(value)) {
 		return Variable(VARTYPE_NULL);
 	} else {
 		return Variable(std::move(value));
@@ -83,12 +83,12 @@ Variable convert_typed(detail::var_config::string_type value) {
 	@param name Name of constructed variable.
 	@param value String value to convert.
 */
-Variable convert_typed(u8string name, detail::var_config::string_type value) {
-	if (s_sv_false.compare(value)) {
+Variable convert_typed(detail::var_config::name_type name, detail::var_config::string_type value) {
+	if (0==s_sv_false.compare(value)) {
 		return Variable(std::move(name), false);
-	} else if (s_sv_true.compare(value)) {
+	} else if (0==s_sv_true.compare(value)) {
 		return Variable(std::move(name), true);
-	} else if (s_sv_null.compare(value)) {
+	} else if (0==s_sv_null.compare(value)) {
 		return Variable(std::move(name), VARTYPE_NULL);
 	} else {
 		return Variable(std::move(name), std::move(value));

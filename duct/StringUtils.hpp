@@ -15,7 +15,9 @@
 #include "./detail/string_traits.hpp"
 #include "./EncodingUtils.hpp"
 
+#include <cstring>
 #include <type_traits>
+#include <utility>
 
 namespace duct {
 namespace StringUtils {
@@ -72,7 +74,7 @@ struct cvt_impl;
 template<class defsT>
 struct cvt_impl<defsT, false> {
 	template<typename InputIterator>
-	static inline bool do_range(typename defsT::string_type& dest, InputIterator const pos, InputIterator const end) {
+	static inline bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
 		return do_cvt<defsT>(dest, pos, end);
 	}
 	template<class stringS>
@@ -84,7 +86,7 @@ struct cvt_impl<defsT, false> {
 template<class defsT>
 struct cvt_impl<defsT, true> {
 	template<typename InputIterator>
-	static inline bool do_range(typename defsT::string_type& dest, InputIterator const pos, InputIterator const end) {
+	static inline bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
 		dest.append(pos, end);
 		return true;
 	}
@@ -109,196 +111,158 @@ struct cvt_impl<defsT, true> {
 	@param append Whether to append to @a dest; defaults to @c false (@a dest is cleared on entry).
 */
 template<class stringD, class stringS>
-bool convert(stringD& dest, stringS const& src, bool append=false) {
+bool convert(stringD& dest, stringS const& src, bool const append=false) {
 	if (!append) {
 		dest.clear();
 	}
 	return cvt_impl<cvt_defs<stringD, typename detail::string_traits<stringS>::encoding_utils> >::do_string(dest, src);
 }
-
 /**
-	Convert a range from one encoding to another.
+	Convert a sequence from one encoding to another.
 	@note If @a stringD's encoding is equivalent to @a fromU, @c [pos..end] is directly copied to @a dest (no re-encoding is performed).
 	@note If an incomplete sequence was encountered (@c false is returned), @a dest is guaranteed to contain all valid code points up to the incomplete sequence.
 	@returns true on success; or @c false if an incomplete sequence was encountered.
-	@tparam fromU @c EncodingUtils specialization for decoding the range.
+	@tparam fromU @c EncodingUtils specialization for decoding the sequence.
 	@tparam stringD Destination string type; inferred from @a dest.
-	@tparam InputIterator Type which satisfies @c InputIterator requirements.
+	@tparam InputIterator Type which satisfies @c InputIterator requirements; inferred from @a pos.
 	@param[out] dest Destination string.
-	@param pos Beginning input iterator.
-	@param end Ending input iterator.
+	@param pos Start of sequence.
+	@param end End of sequence.
 	@param append Whether to append to @a dest; defaults to @c false (@a dest is cleared on entry).
 */
 template<class fromU, class stringD, typename InputIterator>
-bool convert(stringD& dest, InputIterator const pos, InputIterator const end, bool append=false) {
+bool convert(stringD& dest, InputIterator pos, InputIterator const end, bool const append=false) {
 	if (!append) {
 		dest.clear();
 	}
-	return cvt_impl<cvt_defs<stringD, fromU> >::do_range(dest, pos, end);
+	return cvt_impl<cvt_defs<stringD, fromU> >::do_sequence(dest, pos, end);
 }
 
 /**
-	Escape flags for @c escape_string(stringT const&, unsigned int).
+	Count the number of times a code unit occurs in a string.
+	@note This function does not decode the string into code points; it operates with <strong>code units</strong>.
+	@returns The number of times @a cu occurs in @a str.
+	@tparam stringT String type; inferred from @a str.
+	@param cu Code unit to count.
+	@param str String to test.
 */
-enum EscapeFlags {
-	/**
-		Escape some other stuff.
-		Includes characters @c '\\t', @c '\\"', @c '\\'', and @c '\\\\'.
-	*/
-	ESCAPE_OTHER=1<<0,
-	/**
-		Escape ductScript control characters.
-		Includes characters @c '{', @c '}' and @c '='.
-	*/
-	ESCAPE_CONTROL=1<<1,
-	/**
-		Escape newlines and linefeeds.
-		Includes characters @c '\\n' and @c '\\r'.
-	*/
-	ESCAPE_LINE=1<<2,
-	/**
-		All escape flags.
-	*/
-	ESCAPE_ALL=ESCAPE_OTHER|ESCAPE_CONTROL|ESCAPE_LINE
-};
-
-/**
-	Get the escape character for a character.
-	@returns The escape character, or @c CHAR_NULL if the character is not escapable.
-	@tparam charT Character type; inferred from @a c.
-	@param c Character to escape.
-	@param flags @c EscapeFlags to use; defaults to @c ESCAPE_ALL.
-*/
-template<typename charT>
-charT get_escape_char(charT const c, unsigned int flags=ESCAPE_ALL) {
-	if (flags&ESCAPE_OTHER) {
-		switch (c) {
-		case CHAR_T: return static_cast<charT>(CHAR_TAB);
-		case CHAR_QUOTE:
-		case CHAR_APOSTROPHE:
-		case CHAR_BACKSLASH:
-			return c;
-		}
-	}
-	if (flags&ESCAPE_CONTROL) {
-		switch (c) {
-		case CHAR_OPENBRACE:
-		case CHAR_CLOSEBRACE:
-		case CHAR_EQUALSIGN:
-			return c;
-		}
-	}
-	if (flags&ESCAPE_LINE) {
-		switch (c) {
-		case CHAR_N: return static_cast<charT>(CHAR_NEWLINE);
-		case CHAR_R: return static_cast<charT>(CHAR_CARRIAGERETURN);
-		}
-	}
-	return CHAR_NULL;
+template<class stringT, typename charT=typename stringT::value_type>
+inline unsigned int unit_occurances(charT const cu, stringT const& str) {
+	return unit_occurances(cu, str.cbegin(), str.cend());
 }
-
 /**
-	Escape characters in a string.
-	@note If an existing escape sequence in @a str is invalid, it will be interpreted as escapable, replacing the single backslash with an escaped backslash.
-	@returns The escaped string.
-	@tparam stringT the string type; inferred from @a str.
-	@param str String to escape.
-	@param flags Escape flags to use; see @c EscapeFlags.
-	@param consider_encapsulation When @c true and when string is encapsulated by quotes, will ignore ESCAPE_CONTROL and ESCAPE_LINE; defaults to @c false.
+	Count the number of times a code unit occurs in a sequence.
+	@note This function does not decode the string into code points; it operates with <strong>code units</strong>.
+	@returns The number of times @a cu occurs in the sequence.
+	@tparam charT Character type; inferred from @a cu.
+	@tparam InputIterator Input iterator type; inferred from @a pos.
+	@param cu Code unit to count.
+	@param pos Start of sequence.
+	@param end End of sequence.
 */
-template<class stringT, typename charT=typename detail::string_traits<stringT>::char_type>
-stringT escape_string(stringT const& str, unsigned int const flags, bool const consider_encapsulation=false) {
-	if (str.empty()
-		|| ((flags&ESCAPE_OTHER)==0
-		&& ( flags&ESCAPE_CONTROL)==0
-		&& ( flags&ESCAPE_LINE)==0)) {
-		return str;
+template<typename charT, typename InputIterator>
+unsigned int unit_occurances(charT const cu, InputIterator pos, InputIterator const end) {
+	unsigned int count=0;
+	for (; end!=pos; ++pos) {
+		if (cu==*pos) {
+			++count;
+		}
 	}
-	std::size_t const length=str.size();
-	bool isquoted=consider_encapsulation && (2<=length && CHAR_QUOTE==str[0] && CHAR_QUOTE==str[length-1] && !str.compare(length-2, 2, "\\\""));
-	stringT result;
-	result.reserve(length);
-	for (unsigned int i=0; length>i; ++i) {
-		charT c=str[i];
-		if ((flags&ESCAPE_OTHER)!=0) {
-			switch (c) {
-			case CHAR_TAB:
-				if (!isquoted) {
-					result+=CHAR_BACKSLASH;
-					result+=CHAR_T;
-				} else {
-					result+=c;
-				}
-				continue;
-			case CHAR_QUOTE:
-				if (0<i && (length-1)>i) {
-					result+=CHAR_BACKSLASH;
-					result+=CHAR_QUOTE;
-				} else {
-					result+=CHAR_QUOTE;
-				}
-				continue;
-			case CHAR_BACKSLASH:
-				if (length!=(i+1)) {
-					charT c2=get_escape_char(str[i+1], flags);
-					switch (c2) {
-					case CHAR_BACKSLASH: // We don't want to see the slash again; the continue below makes the i-uppage 2
-						i++;
-						result+=CHAR_BACKSLASH;
-						result+=CHAR_BACKSLASH;
-						continue;
-					case CHAR_NULL: // Invalid escape sequence; TODO: Wait, what? Test this.
-						result+=CHAR_BACKSLASH;
-						result+=CHAR_BACKSLASH;
-						continue;
-					default:
-						result+=CHAR_BACKSLASH;
-						result+=c2;
-						i++; // Already a valid escape sequence
-						continue;
-					}
-				} else {
-					result+=CHAR_BACKSLASH;
-					result+=CHAR_BACKSLASH;
-					continue;
-				}
-				break;
-			}
-		}
-		if ((flags&ESCAPE_CONTROL)!=0 && !isquoted) {
-			switch (c) {
-			case CHAR_OPENBRACE:
-				result+=CHAR_BACKSLASH;
-				result+=CHAR_OPENBRACE;
-				continue;
-			case CHAR_CLOSEBRACE:
-				result+=CHAR_BACKSLASH;
-				result+=CHAR_CLOSEBRACE;
-				continue;
-			case CHAR_EQUALSIGN:
-				result+=CHAR_BACKSLASH;
-				result+=CHAR_EQUALSIGN;
-				continue;
-			}
-		}
-		if ((flags&ESCAPE_LINE)!=0 && !isquoted) {
-			switch (c) {
-			case CHAR_NEWLINE:
-				result+=CHAR_BACKSLASH;
-				result+=CHAR_N;
-				continue;
-			case CHAR_CARRIAGERETURN:
-				result+=CHAR_BACKSLASH;
-				result+=CHAR_R;
-				continue;
-			}
-		}
-		result+=c;
-	}
-	return result;
+	return count;
 }
 
 /** @} */ // end of name-group General utilities
+
+/**
+	@name Escape utilities
+	@note Observe that all escape utilities operate only with ASCII and the backslash.
+	@{
+*/
+
+/**
+	Pair of escapable chars (member @c first) and their replacements (member @c second).
+	@warning Both strings must be the same size; behavior is undefined otherwise.
+*/
+typedef std::pair<char const*, char const*> EscapeablePair;
+
+/**
+	Get the escapeable character for its replacement (e.g. 't' -> literal tabulation).
+	@returns The escapeable character for @a cu, or @c CHAR_NULL if @a cu was non-matching.
+	@tparam charT Character type; inferred from @a cu.
+	@param cu Code unit to test.
+	@param esc_pair Escapeables and replacements.
+*/
+template<typename charT>
+charT get_escape_char(charT const cu, EscapeablePair const& esc_pair) {
+	auto const pos=std::strchr(esc_pair.second, static_cast<int>(cu));
+	if (nullptr!=pos) {
+		return static_cast<charT>(esc_pair.first[pos-esc_pair.second]);
+	} else {
+		return static_cast<charT>(CHAR_NULL);
+	}
+}
+
+/**
+	Escape code units in a string.
+	@returns The escaped string.
+	@tparam stringT Input and result string type; inferred from @a str.
+	@param str String to escape.
+	@param esc_pair Escapeables and replacements.
+	@param ignore_invalids Whether to ignore existing non-matching escape sequences. If @c false, will escape the backslash for non-matching sequences.
+*/
+template<class stringT>
+inline stringT escape_string(stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false) {
+	stringT escaped;
+	escape_string(escaped, str, esc_pair, ignore_invalids);
+	return escaped;
+}
+/**
+	Escape code units in a string.
+	@returns The number of units escaped.
+	@tparam stringT Input and result string type; inferred from @a result.
+	@param[out] result Result string.
+	@param str String to escape.
+	@param esc_pair Escapeables and replacements.
+	@param ignore_invalids Whether to ignore existing non-matching escape sequences. If @c false, will escape the backslash for non-matching sequences.
+*/
+template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, typename charT=typename detail::string_traits<stringT>::char_type>
+unsigned int escape_string(stringT& result, stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false) {
+	unsigned int escaped_count=0;
+	typename stringT::const_iterator next, last=str.cbegin();
+	charT cu;
+	char const* es_pos;
+	result.clear();
+	result.reserve(str.size());
+	for (auto it=str.cbegin(); str.cend()!=it; it=next) {
+		cu=(*it);
+		next=it+1;
+		if (CHAR_BACKSLASH==cu) {
+			// Escape if backslash is trailing or if escaped unit is non-matching (only when ignoring invalids)
+			if (str.cend()==next || (!ignore_invalids && nullptr==std::strchr(esc_pair.second, static_cast<int>(*next)))) {
+				result.append(last, next); // Append section from last position to backslash (inclusive)
+				result.append(1, CHAR_BACKSLASH); // Prior backslash will form an escaped backslash
+				last=next;
+				++escaped_count;
+			}
+			next=stringU::next(next, str.cend()); // Can skip entire unit sequence
+		} else if ((es_pos=std::strchr(esc_pair.first, static_cast<int>(cu)), nullptr!=es_pos)) {
+			result.append(last, it); // Append last position to escapable unit (exclusive)
+			result.append(1, CHAR_BACKSLASH);
+			result.append(1, static_cast<charT>(esc_pair.second[es_pos-esc_pair.first])); // Append escaped form of unit
+			last=next; // Skip over the unit replaced
+			++escaped_count;
+		} else { // Non-escapeable
+			next=stringU::next(it, str.cend()); // Can skip entire unit sequence
+			if (next==it) { // Invalid or incomplete sequence
+				next=str.cend();
+			}
+		}
+	}
+	result.append(last, str.cend());
+	return escaped_count;
+}
+
+/** @} */ // end of name-group Escape utilities
 /** @} */ // end of doc-group string
 
 } // namespace StringUtils

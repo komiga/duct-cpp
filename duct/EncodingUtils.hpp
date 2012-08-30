@@ -77,7 +77,7 @@ enum Encoding : unsigned int {
 	@note BOMs are not handled by these utilities.
 	@tparam spec_ Byte size of the encoding's code unit.
 */
-template<unsigned int _spec> class EncodingUtils;
+template<unsigned int spec_> class EncodingUtils;
 
 /** UTF-8 encoding utilities; convenience typedef. */
 typedef EncodingUtils<Encoding::UTF8> UTF8Utils;

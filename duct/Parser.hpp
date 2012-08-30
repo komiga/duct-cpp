@@ -1,7 +1,7 @@
 /**
 @file Parser.hpp
 @brief Generic Parser and associated classes.
-@defgroup parser Parser framework and supplied parsers
+@defgroup parser Parser framework
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -43,6 +43,7 @@ protected:
 	int m_column; /**< Column position. */
 	CharBuf m_buffer; /**< Character buffer. */
 
+private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Token);
 
 public:
@@ -60,7 +61,7 @@ public:
 		Constructor with type.
 		@param type Token type.
 	*/
-	Token(int type)
+	Token(int const type)
 		: m_type(type)
 		, m_line(-1)
 		, m_column(-1)
@@ -139,7 +140,7 @@ public:
 		@param type Type to reset to (generic @c NULL_TOKEN is provided for invalidity purposes).
 		@param position Whether to reset the token's position; if @c true, will call @c set_position(-1, -1).
 	*/
-	void reset(int type, bool position) {
+	void reset(int const type, bool const position) {
 		m_buffer.reset();
 		set_type(type);
 		if (position) {
@@ -164,6 +165,7 @@ protected:
 	std::istream* m_stream; /**< Current stream. */
 	IO::StreamContext m_stream_ctx; /**< Stream context. */
 
+private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
 
 public:
@@ -181,6 +183,33 @@ public:
 		, m_stream_ctx()
 	{}
 	/**
+		Constructor with StreamContext properties.
+		@param encoding Encoding to use for StreamContext.
+		@param endian Endian to use for StreamContext.
+	*/
+	Parser(Encoding const encoding, Endian const endian)
+		: m_line(1)
+		, m_column(0)
+		, m_curchar(CHAR_EOF)
+		, m_peekchar(CHAR_EOF)
+		, m_peeked(false)
+		, m_stream(nullptr)
+		, m_stream_ctx(encoding, endian)
+	{}
+	/**
+		Constructor with StreamContext.
+		@param context StreamContext to copy.
+	*/
+	Parser(IO::StreamContext const& context)
+		: m_line(1)
+		, m_column(0)
+		, m_curchar(CHAR_EOF)
+		, m_peekchar(CHAR_EOF)
+		, m_peeked(false)
+		, m_stream(nullptr)
+		, m_stream_ctx(context)
+	{}
+	/**
 		Destructor.
 	*/
 	virtual ~Parser() {}
@@ -191,31 +220,33 @@ public:
 		Get current line.
 		@returns The current line position.
 	*/
-	virtual int get_line() const { return m_line; }
+	int get_line() const { return m_line; }
 	/**
 		Get current column.
 		@returns The current column position.
 	*/
-	virtual int get_column() const { return m_column; }
+	int get_column() const { return m_column; }
 
 	/**
 		Get token.
 		@returns The current token.
 	*/
-	virtual Token& get_token() { return m_token; }
+	Token& get_token() { return m_token; }
 	/** @copydoc get_token() */
-	virtual Token const& get_token() const { return m_token; }
+	Token const& get_token() const { return m_token; }
 
 	/**
 		Get input stream.
 		@returns The current input stream.
 	*/
-	virtual std::istream* get_stream() { return m_stream; }
+	std::istream* get_stream() { return m_stream; }
 	/**
 		Get stream context.
 		@returns The current stream context.
 	*/
-	virtual IO::StreamContext const get_stream_context() const { return m_stream_ctx; }
+	IO::StreamContext& get_stream_context() { return m_stream_ctx; }
+	/** @copydoc get_stream_context() */
+	IO::StreamContext const& get_stream_context() const { return m_stream_ctx; }
 /// @}
 
 /** @name State */ /// @{
@@ -227,31 +258,16 @@ public:
 			@c true if the parser was initialized; or
 			@c false if an error occurred (in the base implementation: if @c stream.good()==false)
 		@param stream Input stream.
-		@param encoding Encoding of stream.
-		@param endian Endian of stream.
 	*/
-	virtual bool initialize(std::istream& stream, Encoding const encoding, Endian const endian) {
+	virtual bool initialize(std::istream& stream) {
 		reset();
 		if (stream.good()) {
 			m_stream=&stream;
-			m_stream_ctx.set_properties(encoding, endian);
 			next_char(); // Get the first character
 			return true;
 		} else {
 			return false;
 		}
-	}
-	/**
-		@c initialize(std::istream&,Encoding const,Endian const) with properties from a StreamContext.
-		@returns
-			@c true if the parser was initialized; or
-			@c false if an error occurred
-		@param stream Input stream.
-		@param ctx Context to copy.
-		@sa initialize(std::istream&,Encoding const,Endian const)
-	*/
-	bool initialize(std::istream& stream, IO::StreamContext const& ctx) {
-		return initialize(stream, ctx.get_encoding(), ctx.get_endian());
 	}
 
 	/**

@@ -1,6 +1,7 @@
 /**
 @file ScriptParser.hpp
 @brief ductScript parser.
+@defgroup ductScript ductScript parsing and formatting
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -25,7 +26,7 @@
 namespace duct {
 
 /**
-	@addtogroup parser
+	@addtogroup ductScript
 	@{
 */
 
@@ -104,6 +105,27 @@ public:
 		, m_varname()
 		, m_states(0)
 	{}
+	/**
+		Constructor with StreamContext properties.
+		@param encoding Encoding to use for StreamContext.
+		@param endian Endian to use for StreamContext.
+	*/
+	ScriptParser(Encoding const encoding, Endian const endian)
+		: Parser(encoding, endian)
+		, m_stack(32)
+		, m_varname()
+		, m_states(0)
+	{}
+	/**
+		Constructor with StreamContext.
+		@param context StreamContext to copy.
+	*/
+	ScriptParser(IO::StreamContext const& context)
+		: Parser(context)
+		, m_stack(32)
+		, m_varname()
+		, m_states(0)
+	{}
 /// @}
 
 /** @name State */ /// @{
@@ -125,10 +147,8 @@ public:
 		@returns @c true on success.
 		@param[out] node Output node; will be morphed to @c VARTYPE_NODE and existing children will not be removed.
 		@param stream Stream to process.
-		@param encoding Encoding of stream.
-		@param endian Endian of stream.
 	*/
-	bool process(Variable& node, std::istream& stream, Encoding const encoding, Endian const endian);
+	bool process(Variable& node, std::istream& stream);
 
 	bool parse();
 	void discern_token();
@@ -156,7 +176,7 @@ private:
 	void push(Variable& collection);
 	void pop();
 
-	void throwex(ScriptParserException&& e);
+	void throwex(ScriptParserException e);
 	void make_name();
 	void make_collection(VariableType const type, bool push_collection=true);
 	void make_value();
@@ -165,7 +185,7 @@ private:
 
 #include "./impl/ScriptParser.inl"
 
-/** @} */ // end of doc-group parser
+/** @} */ // end of doc-group ductScript
 
 } // namespace duct
 

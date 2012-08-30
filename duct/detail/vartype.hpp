@@ -126,6 +126,8 @@ namespace detail {
 	@c Variable configuration.
 */
 struct var_config {
+	/** typename for Variable names */
+	typedef u8string	name_type;
 	/** typename for @c VARTYPE_STRING */
 	typedef u8string	string_type;
 

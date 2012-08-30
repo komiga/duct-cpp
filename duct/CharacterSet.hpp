@@ -78,22 +78,22 @@ public:
 		Set the start of the range.
 		@param start New starting code point.
 	*/
-	void set_start(char32 const start) { m_start=start; }
+	inline void set_start(char32 const start) { m_start=start; }
 	/**
 		Get the start of the range.
 		@returns First code point in range.
 	*/
-	char32 start() const { return m_start; }
+	inline char32 start() const { return m_start; }
 	/**
 		Set the end of the range.
 		@param end New ending code point.
 	*/
-	void set_end(char32 const end) { m_end=end; }
+	inline void set_end(char32 const end) { m_end=end; }
 	/**
 		Get the end of the range.
 		@returns Last code point in range.
 	*/
-	char32 end() const { return m_end; }
+	inline char32 end() const { return m_end; }
 /// @}
 
 /** @name Comparison */ /// @{
@@ -106,7 +106,7 @@ public:
 		return cp>=m_start && cp<=m_end;
 	}
 	/**
-		Compare against another CharacterRange.
+		Compare against another range.
 		@returns @c -1 if the @a other is greater than this, @c 1 if @c this is greater than @a other, or 0 if @c this and @a other are equivalent.
 		@param other Range to compare against.
 	*/
@@ -141,26 +141,71 @@ public:
 		}
 		return !(m_start>other.m_end || m_end<other.m_start);
 	}
+
 	/**
 		Find the first matching code point in a string.
-		@returns Iterator of the first matching code point in @a str, or the end iterator if the @a from to @c str.cend() range had no matching code points.
+		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
 		@tparam stringT String type; inferred from @a str.
 		@param str String to search.
-		@param from Start iterator. Behavior is undefined if @a from is not pointing to the lead unit for a sequence.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
 	*/
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	string_iterator find(stringT const& str, string_iterator from) const {
+	inline string_iterator find(stringT const& str, string_iterator pos) const {
+		return find(pos, str.cend());
+	}
+	/**
+		Find the first matching code point in a sequence.
+		@returns Iterator of the first matching code point in the sequence, or @a end if the sequence had no matching code points.
+		@tparam stringU Encoding utilities.
+		@tparam InputIterator Input iterator type; inferred from @a pos.
+		@param pos Start of sequence. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+		@param end End of sequence.
+	*/
+	template<class stringU, typename InputIterator>
+	InputIterator find(InputIterator pos, InputIterator const end) const {
 		char32 cp;
-		string_iterator it, next;
-		for (it=from; str.cend()!=it; it=next) {
-			next=stringU::decode(it, str.cend(), cp, CHAR_NULL);
-			if (next==it) { // Incomplete sequence
-				return str.cend();
+		InputIterator next;
+		for (; end!=pos; pos=next) {
+			next=stringU::decode(pos, end, cp, CHAR_NULL);
+			if (next==pos) { // Incomplete sequence
+				return end;
 			} else if (CHAR_NULL!=cp && contains(cp)) {
-				return it;
+				return pos;
 			}
 		}
-		return str.cend();
+		return end;
+	}
+
+	/**
+		Check if all code points in a string match the range.
+		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the range.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+	*/
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	inline string_iterator matches(stringT const& str, string_iterator pos) const {
+		return matches<stringU>(pos, str.cend());
+	}
+	/**
+		Check if all code points in a sequence match the range.
+		@returns @c true if all code points in the sequence match at least one code point from the range.
+		@tparam stringU Encoding utilities.
+		@tparam InputIterator Input iterator type; inferred from @a pos.
+		@param pos Start of sequence. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+		@param end End of sequence.
+	*/
+	template<class stringU, typename InputIterator>
+	bool matches(InputIterator pos, InputIterator const end) const {
+		char32 cp;
+		InputIterator next;
+		for (; end!=pos; pos=next) {
+			next=stringU::decode(pos, end, cp, CHAR_NULL);
+			if (next==pos || CHAR_NULL==cp || !contains(cp)) { // Incomplete sequence || bad sequence || not a match
+				return false;
+			}
+		}
+		return true;
 	}
 /// @}
 };
@@ -201,7 +246,7 @@ public:
 	explicit CharacterSet(char const* str)
 		: m_ranges()
 	{
-		add_from_string(u8string(str));
+		add_from_string(u8string{str});
 	}
 	/**
 		Construct with single range.
@@ -236,23 +281,23 @@ public:
 		Get number of ranges.
 		@returns The current number of ranges.
 	*/
-	vector_type::size_type size() const { return m_ranges.size(); }
+	inline vector_type::size_type size() const { return m_ranges.size(); }
 
 	/**
 		Get beginning range iterator.
 		@returns The beginning range iterator.
 	*/
-	iterator begin() { return m_ranges.begin(); }
+	inline iterator begin() { return m_ranges.begin(); }
 	/** @copydoc begin() */
-	const_iterator cbegin() const { return m_ranges.cbegin(); }
+	inline const_iterator cbegin() const { return m_ranges.cbegin(); }
 
 	/**
 		Get ending range iterator.
 		@returns The ending range iterator.
 	*/
-	iterator end() { return m_ranges.end(); }
+	inline iterator end() { return m_ranges.end(); }
 	/** @copydoc end() */
-	const_iterator cend() const { return m_ranges.cend(); }
+	inline const_iterator cend() const { return m_ranges.cend(); }
 /// @}
 
 /** @name Comparison */ /// @{
@@ -282,23 +327,75 @@ public:
 		}
 		return false;
 	}
+
 	/**
 		Find the first matching code point in a string.
-		@returns Iterator of the first matching code point in @a str, or the end iterator if the @a from to @c str.cend() range had no matching code points.
+		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
 		@tparam stringT String type; inferred from @a str.
 		@param str String to search.
-		@param from Start iterator. Behavior is undefined if @a from is not pointing to the lead unit for a sequence.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
 	*/
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	string_iterator find(stringT const& str, string_iterator from) const {
-		string_iterator sit;
-		for (const_iterator rit=cbegin(); cend()!=rit; ++rit) {
-			sit=(*rit).find(str, from);
-			if (str.cend()!=sit) {
+	string_iterator find(stringT const& str, string_iterator pos) const {
+		return find<stringU>(pos, str.cend());
+	}
+	/**
+		Find the first matching code point in a sequence.
+		@returns Iterator of the first matching code point in the sequence, or @a end if the sequence had no matching code points.
+		@tparam stringU Encoding utilities.
+		@tparam InputIterator Input iterator type; inferred from @a pos.
+		@param pos Start of sequence. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+		@param end End of sequence.
+	*/
+	template<class stringU, typename InputIterator>
+	InputIterator find(InputIterator pos, InputIterator const end) const {
+		InputIterator sit;
+		for (auto rit=cbegin(); cend()!=rit; ++rit) {
+			sit=(*rit).find<stringU>(pos, end);
+			if (end!=sit) {
 				return sit;
 			}
 		}
-		return str.cend();
+		return end;
+	}
+
+	/**
+		Check if all code points in a string match the set.
+		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the set.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+	*/
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	bool matches(stringT const& str, string_iterator pos) const {
+		return matches<stringU>(pos, str.cend());
+	}
+	/**
+		Check if all code points in a sequence match the set.
+		@returns @c true if all code points in the sequence match at least one code point from the set.
+		@tparam stringU Encoding utilities.
+		@tparam InputIterator Input iterator type; inferred from @a pos.
+		@param pos Start of sequence. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+		@param end End of sequence.
+	*/
+	template<class stringU, typename InputIterator>
+	bool matches(InputIterator pos, InputIterator const end) const {
+		char32 cp;
+		InputIterator next;
+		for (; end!=pos; pos=next) {
+			next=stringU::decode(pos, end, cp, CHAR_NULL);
+			if (next==pos || CHAR_NULL==cp) { // Incomplete or bad sequence
+				return false;
+			} else { // Test code point against all ranges
+				for (auto rit=cbegin(); cend()!=rit; ++rit) {
+					if ((*rit).contains(cp)) {
+						continue;
+					}
+				}
+				return false; // No ranges matched the code point
+			}
+		}
+		return true; // Every code point in the sequence matched
 	}
 /// @}
 
@@ -306,7 +403,7 @@ public:
 	/**
 		Remove all ranges from the set.
 	*/
-	void clear() { m_ranges.clear(); }
+	inline void clear() { m_ranges.clear(); }
 
 	/**
 		Add the given string ranges to the set.

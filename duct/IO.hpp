@@ -939,6 +939,14 @@ public:
 		m_endian=endian;
 	}
 	/**
+		Set encoding and endian from another context.
+		@param ctx StreamContext to copy.
+	*/
+	inline void set_properties(StreamContext const& ctx) {
+		m_encoding=ctx.m_encoding;
+		m_endian=ctx.m_endian;
+	}
+	/**
 		Set encoding.
 		@param encoding An encoding.
 	*/

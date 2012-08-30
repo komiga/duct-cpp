@@ -52,6 +52,7 @@ protected:
 	identity_vector_type m_identity; /**< Identity. */
 	layout_vector_type m_layout; /**< Layout. */
 
+private:
 	DUCT_DISALLOW_COPY_AND_ASSIGN(Template);
 
 public:
