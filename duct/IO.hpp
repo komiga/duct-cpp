@@ -303,13 +303,13 @@ struct wchar_defs {
 	typedef typename to_utils::char_type char_type;
 	enum {
 		char_size=to_utils::char_size,
-		BUFFER_SIZE=4u // max valid UTF-8
+		BUFFER_SIZE=to_utils::max_units
 	};
 };
 
 template<class defsT, std::size_t _size=defsT::char_size>
 struct wchar_impl {
-	static std::size_t write_char(std::ostream& stream, char32 cp, char32 const replacement, Endian const endian) {
+	static std::size_t write_char(std::ostream& stream, char32 cp, unsigned int const num, char32 const replacement, Endian const endian) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
 				return 0;
@@ -320,7 +320,7 @@ struct wchar_impl {
 		typename defsT::char_type
 			out_buffer[defsT::BUFFER_SIZE],
 			*out_iter=out_buffer;
-		defsT::to_utils::encode(cp, out_iter, CHAR_NULL);
+		out_iter=defsT::to_utils::encode(cp, out_iter, CHAR_NULL);
 		if (out_iter==out_buffer) { // Should not occur because both cp and replacement are checked for invalidity before encoding
 			DUCT_DEBUG("wchar_impl<(defaults)>::write: out_iter==out_buffer; curious!");
 			return 0;
@@ -331,8 +331,11 @@ struct wchar_impl {
 					byte_swap_ref(out_buffer[idx]);
 				}
 			}
-			IO::write(stream, out_buffer, amt*defsT::char_size); // Using raw write instead of write_arithmetic_array() because it would use an unnecessary touch of the stack
-			return amt;
+			unsigned int i=num;
+			while (i--) {
+				IO::write(stream, out_buffer, amt*defsT::char_size); // Using raw write instead of write_arithmetic_array() because it would use an unnecessary touch of the stack
+			}
+			return num*amt;
 		}
 	}
 };
@@ -340,7 +343,7 @@ struct wchar_impl {
 // Specialize for UTF-32
 template<class defsT>
 struct wchar_impl<defsT, 4> {
-	static std::size_t write_char(std::ostream& stream, char32 cp, char32 const replacement, Endian const endian) {
+	static std::size_t write_char(std::ostream& stream, char32 cp, unsigned int const num, char32 const replacement, Endian const endian) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
 				return 0;
@@ -348,8 +351,11 @@ struct wchar_impl<defsT, 4> {
 				cp=replacement;
 			}
 		}
-		IO::write_arithmetic(stream, cp, endian);
-		return sizeof(char32);
+		unsigned int i=num;
+		while (i--) {
+			IO::write_arithmetic(stream, cp, endian);
+		}
+		return num;
 	}
 };
 } // anonymous namespace
@@ -361,12 +367,17 @@ struct wchar_impl<defsT, 4> {
 	@tparam toU @c EncodingUtils specialization for encoding to the stream.
 	@param stream Destination stream.
 	@param cp Code point to write.
+	@param num Number of times to write @a cp; defaults to @c 1.
 	@param replacement Replacement code point. If invalid or equal to @c CHAR_NULL (default) when @a cp is invalid, <strong>nothing will be written</strong> (returns @c 0).
 	@param endian Endian to use when writing; defaults to @c Endian::SYSTEM (no swapping).
 */
 template<class toU, class defsT=wchar_defs<toU> >
-std::size_t write_char(std::ostream& stream, char32 const cp, char32 const replacement=CHAR_NULL, Endian const endian=Endian::SYSTEM) {
-	return wchar_impl<defsT>::write_char(stream, cp, replacement, endian);
+std::size_t write_char(std::ostream& stream, char32 const cp, unsigned int const num=1, char32 const replacement=CHAR_NULL, Endian const endian=Endian::SYSTEM) {
+	if (0<num) {
+		return wchar_impl<defsT>::write_char(stream, cp, num, replacement, endian);
+	} else {
+		return 0;
+	}
 }
 
 /** @cond INTERNAL */
@@ -1007,11 +1018,11 @@ public:
 		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
 	}}
 	/** See @c duct::IO::write_char(). */
-	std::size_t write_char(std::ostream& stream, char32 const cp, char32 const replacement=CHAR_NULL) const {
+	std::size_t write_char(std::ostream& stream, char32 const cp, unsigned int const num=1, char32 const replacement=CHAR_NULL) const {
 		switch (m_encoding) {
-		case Encoding::UTF8:	return (::duct::IO::write_char<UTF8Utils>(stream, cp, replacement, m_endian));
-		case Encoding::UTF16:	return (::duct::IO::write_char<UTF16Utils>(stream, cp, replacement, m_endian));
-		case Encoding::UTF32:	return (::duct::IO::write_char<UTF32Utils>(stream, cp, replacement, m_endian));
+		case Encoding::UTF8:	return (::duct::IO::write_char<UTF8Utils>(stream, cp, num, replacement, m_endian));
+		case Encoding::UTF16:	return (::duct::IO::write_char<UTF16Utils>(stream, cp, num, replacement, m_endian));
+		case Encoding::UTF32:	return (::duct::IO::write_char<UTF32Utils>(stream, cp, num, replacement, m_endian));
 		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
 	}}
 

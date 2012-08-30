@@ -45,6 +45,8 @@ static TestData const s_test_data[]={
 	// Arrays
 	TDV("name=[]")
 	TDV("[]")
+	TDV("[1, 2.4]")
+	TDV("[\"aba\", caba]")
 
 	// Non-string names
 	TDV("1234=4321")
@@ -112,7 +114,7 @@ void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) 
 	} else {
 		try {
 			s_parser.process(root, stream);
-			std::cout<<"Received no exception when one was expected\n\n";
+			std::cout<<"Received no exception when one was expected\n"<<std::endl;
 			assert(false);
 		} catch (duct::ScriptParserException& e) {
 			std::cout<<e.what()<<"\n\n";
@@ -146,7 +148,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	} else {
-		for (TestData const* td=&s_test_data[0]; nullptr!=td->data; ++td) {
+		for (TestData const* td=s_test_data; nullptr!=td->data; ++td) {
 			root.reset(); do_test(root, *td);
 		}
 	}

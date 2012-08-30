@@ -143,17 +143,6 @@ public:
 	}
 
 	/**
-		Find the first matching code point in a string.
-		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
-		@tparam stringT String type; inferred from @a str.
-		@param str String to search.
-		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
-	*/
-	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	inline string_iterator find(stringT const& str, string_iterator pos) const {
-		return find(pos, str.cend());
-	}
-	/**
 		Find the first matching code point in a sequence.
 		@returns Iterator of the first matching code point in the sequence, or @a end if the sequence had no matching code points.
 		@tparam stringU Encoding utilities.
@@ -162,7 +151,7 @@ public:
 		@param end End of sequence.
 	*/
 	template<class stringU, typename InputIterator>
-	InputIterator find(InputIterator pos, InputIterator const end) const {
+	InputIterator sequence_find(InputIterator pos, InputIterator const end) const {
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
@@ -175,18 +164,18 @@ public:
 		}
 		return end;
 	}
-
 	/**
-		Check if all code points in a string match the range.
-		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the range.
+		Find the first matching code point in a string.
+		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
 		@tparam stringT String type; inferred from @a str.
 		@param str String to search.
 		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
 	*/
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	inline string_iterator matches(stringT const& str, string_iterator pos) const {
-		return matches<stringU>(pos, str.cend());
+	inline string_iterator find(stringT const& str, string_iterator pos) const {
+		return sequence_find(pos, str.cend());
 	}
+
 	/**
 		Check if all code points in a sequence match the range.
 		@returns @c true if all code points in the sequence match at least one code point from the range.
@@ -196,7 +185,7 @@ public:
 		@param end End of sequence.
 	*/
 	template<class stringU, typename InputIterator>
-	bool matches(InputIterator pos, InputIterator const end) const {
+	bool sequence_matches(InputIterator pos, InputIterator const end) const {
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
@@ -206,6 +195,17 @@ public:
 			}
 		}
 		return true;
+	}
+	/**
+		Check if all code points in a string match the range.
+		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the range.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+	*/
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	inline bool matches(stringT const& str, string_iterator pos) const {
+		return sequence_matches<stringU>(pos, str.cend());
 	}
 /// @}
 };
@@ -329,17 +329,6 @@ public:
 	}
 
 	/**
-		Find the first matching code point in a string.
-		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
-		@tparam stringT String type; inferred from @a str.
-		@param str String to search.
-		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
-	*/
-	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	string_iterator find(stringT const& str, string_iterator pos) const {
-		return find<stringU>(pos, str.cend());
-	}
-	/**
 		Find the first matching code point in a sequence.
 		@returns Iterator of the first matching code point in the sequence, or @a end if the sequence had no matching code points.
 		@tparam stringU Encoding utilities.
@@ -348,28 +337,28 @@ public:
 		@param end End of sequence.
 	*/
 	template<class stringU, typename InputIterator>
-	InputIterator find(InputIterator pos, InputIterator const end) const {
+	InputIterator sequence_find(InputIterator pos, InputIterator const end) const {
 		InputIterator sit;
 		for (auto rit=cbegin(); cend()!=rit; ++rit) {
-			sit=(*rit).find<stringU>(pos, end);
+			sit=(*rit).sequence_find<stringU>(pos, end);
 			if (end!=sit) {
 				return sit;
 			}
 		}
 		return end;
 	}
-
 	/**
-		Check if all code points in a string match the set.
-		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the set.
+		Find the first matching code point in a string.
+		@returns Iterator of the first matching code point in @a str, or @c str.cend() if the @a pos to @c str.cend() sequence had no matching code points.
 		@tparam stringT String type; inferred from @a str.
 		@param str String to search.
 		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
 	*/
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
-	bool matches(stringT const& str, string_iterator pos) const {
-		return matches<stringU>(pos, str.cend());
+	inline string_iterator find(stringT const& str, string_iterator pos) const {
+		return sequence_find<stringU>(pos, str.cend());
 	}
+
 	/**
 		Check if all code points in a sequence match the set.
 		@returns @c true if all code points in the sequence match at least one code point from the set.
@@ -379,7 +368,7 @@ public:
 		@param end End of sequence.
 	*/
 	template<class stringU, typename InputIterator>
-	bool matches(InputIterator pos, InputIterator const end) const {
+	bool sequence_matches(InputIterator pos, InputIterator const end) const {
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
@@ -396,6 +385,17 @@ public:
 			}
 		}
 		return true; // Every code point in the sequence matched
+	}
+	/**
+		Check if all code points in a string match the set.
+		@returns @c true if all code points in the @a pos to @c str.cend() sequence match at least one code point from the set.
+		@tparam stringT String type; inferred from @a str.
+		@param str String to search.
+		@param pos Start iterator. Behavior is undefined if this does not point to the lead unit for a code unit sequence.
+	*/
+	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
+	bool matches(stringT const& str, string_iterator pos) const {
+		return sequence_matches<stringU>(pos, str.cend());
 	}
 /// @}
 

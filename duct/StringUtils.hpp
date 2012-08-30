@@ -139,18 +139,6 @@ bool convert(stringD& dest, InputIterator pos, InputIterator const end, bool con
 }
 
 /**
-	Count the number of times a code unit occurs in a string.
-	@note This function does not decode the string into code points; it operates with <strong>code units</strong>.
-	@returns The number of times @a cu occurs in @a str.
-	@tparam stringT String type; inferred from @a str.
-	@param cu Code unit to count.
-	@param str String to test.
-*/
-template<class stringT, typename charT=typename stringT::value_type>
-inline unsigned int unit_occurances(charT const cu, stringT const& str) {
-	return unit_occurances(cu, str.cbegin(), str.cend());
-}
-/**
 	Count the number of times a code unit occurs in a sequence.
 	@note This function does not decode the string into code points; it operates with <strong>code units</strong>.
 	@returns The number of times @a cu occurs in the sequence.
@@ -161,7 +149,7 @@ inline unsigned int unit_occurances(charT const cu, stringT const& str) {
 	@param end End of sequence.
 */
 template<typename charT, typename InputIterator>
-unsigned int unit_occurances(charT const cu, InputIterator pos, InputIterator const end) {
+unsigned int unit_occurrences(charT const cu, InputIterator pos, InputIterator const end) {
 	unsigned int count=0;
 	for (; end!=pos; ++pos) {
 		if (cu==*pos) {
@@ -169,6 +157,18 @@ unsigned int unit_occurances(charT const cu, InputIterator pos, InputIterator co
 		}
 	}
 	return count;
+}
+/**
+	Count the number of times a code unit occurs in a string.
+	@note This function does not decode the string into code points; it operates with <strong>code units</strong>.
+	@returns The number of times @a cu occurs in @a str.
+	@tparam stringT String type; inferred from @a str.
+	@param cu Code unit to count.
+	@param str String to test.
+*/
+template<class stringT, typename charT=typename stringT::value_type>
+inline unsigned int unit_occurrences(charT const cu, stringT const& str) {
+	return unit_occurrences(cu, str.cbegin(), str.cend());
 }
 
 /** @} */ // end of name-group General utilities
@@ -204,34 +204,23 @@ charT get_escape_char(charT const cu, EscapeablePair const& esc_pair) {
 
 /**
 	Escape code units in a string.
-	@returns The escaped string.
-	@tparam stringT Input and result string type; inferred from @a str.
-	@param str String to escape.
-	@param esc_pair Escapeables and replacements.
-	@param ignore_invalids Whether to ignore existing non-matching escape sequences. If @c false, will escape the backslash for non-matching sequences.
-*/
-template<class stringT>
-inline stringT escape_string(stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false) {
-	stringT escaped;
-	escape_string(escaped, str, esc_pair, ignore_invalids);
-	return escaped;
-}
-/**
-	Escape code units in a string.
 	@returns The number of units escaped.
 	@tparam stringT Input and result string type; inferred from @a result.
 	@param[out] result Result string.
 	@param str String to escape.
 	@param esc_pair Escapeables and replacements.
 	@param ignore_invalids Whether to ignore existing non-matching escape sequences. If @c false, will escape the backslash for non-matching sequences.
+	@param clear Whether to clear @a result before escaping; @c false by default.
 */
 template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, typename charT=typename detail::string_traits<stringT>::char_type>
-unsigned int escape_string(stringT& result, stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false) {
+unsigned int escape_string(stringT& result, stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false, bool const clear=false) {
 	unsigned int escaped_count=0;
 	typename stringT::const_iterator next, last=str.cbegin();
 	charT cu;
 	char const* es_pos;
-	result.clear();
+	if (clear) {
+		result.clear();
+	}
 	result.reserve(str.size());
 	for (auto it=str.cbegin(); str.cend()!=it; it=next) {
 		cu=(*it);
@@ -245,6 +234,9 @@ unsigned int escape_string(stringT& result, stringT const& str, EscapeablePair c
 				++escaped_count;
 			}
 			next=stringU::next(next, str.cend()); // Can skip entire unit sequence
+			if ((it+1)==next) { // Invalid or incomplete sequence
+				break;
+			}
 		} else if ((es_pos=std::strchr(esc_pair.first, static_cast<int>(cu)), nullptr!=es_pos)) {
 			result.append(last, it); // Append last position to escapable unit (exclusive)
 			result.append(1, CHAR_BACKSLASH);
@@ -254,12 +246,26 @@ unsigned int escape_string(stringT& result, stringT const& str, EscapeablePair c
 		} else { // Non-escapeable
 			next=stringU::next(it, str.cend()); // Can skip entire unit sequence
 			if (next==it) { // Invalid or incomplete sequence
-				next=str.cend();
+				break;
 			}
 		}
 	}
 	result.append(last, str.cend());
 	return escaped_count;
+}
+/**
+	Escape code units in a string.
+	@returns The escaped string.
+	@tparam stringT Input and result string type; inferred from @a str.
+	@param str String to escape.
+	@param esc_pair Escapeables and replacements.
+	@param ignore_invalids Whether to ignore existing non-matching escape sequences. If @c false, will escape the backslash for non-matching sequences.
+*/
+template<class stringT>
+inline stringT escape_string(stringT const& str, EscapeablePair const& esc_pair, bool const ignore_invalids=false) {
+	stringT escaped;
+	escape_string(escaped, str, esc_pair, ignore_invalids, false);
+	return escaped;
 }
 
 /** @} */ // end of name-group Escape utilities

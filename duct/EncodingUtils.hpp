@@ -100,6 +100,8 @@ public:
 	typedef char8_strict strict_char_type;
 	/** Size of internal character type. */
 	static constexpr std::size_t char_size=sizeof(char_type);
+	/** Maximum number of units required to encode a code point. */
+	static constexpr std::size_t max_units=4u;
 	/** Utility's ID. */
 	static constexpr Encoding id=Encoding::UTF8;
 
@@ -319,6 +321,8 @@ public:
 	typedef char16_strict strict_char_type;
 	/** @copydoc UTF8Utils::char_size */
 	static constexpr std::size_t char_size=sizeof(char_type);
+	/** @copydoc UTF8Utils::max_units */
+	static constexpr std::size_t max_units=2u;
 	/** @copydoc UTF8Utils::id */
 	static constexpr Encoding id=Encoding::UTF16;
 
@@ -411,6 +415,8 @@ public:
 	typedef char32_strict strict_char_type;
 	/** @copydoc UTF8Utils::char_size */
 	static constexpr std::size_t char_size=sizeof(char_type);
+	/** @copydoc UTF8Utils::max_units */
+	static constexpr std::size_t max_units=1u;
 	/** @copydoc UTF8Utils::id */
 	static constexpr Encoding id=Encoding::UTF32;
 
