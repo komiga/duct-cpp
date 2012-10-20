@@ -33,9 +33,9 @@ function fix_makefile() {
 }
 
 if [ ! -f "Makefile" ]; then
-	premake4 $BUILD
+	premake4 ${@:3} $BUILD
 	if [ "$BUILD" == "gmake" ]; then
-		# fix library path order for 32-bit and 64-bit
+		# Toss explicit 32-bit and 64-bit library search paths
 		echo "Removing /usr/libxx lib dirs"
 		export -f fix_makefile
 		find . -maxdepth 2 -name "*.make" -exec bash -c 'fix_makefile {}' \;

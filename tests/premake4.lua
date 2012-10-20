@@ -1,8 +1,18 @@
---duct++ tests premake file
+-- duct++ tests premake file
 
 --[[if _ACTION=="clean" then
 	os.rmdir(outpath)
 end]]
+
+newoption {
+	trigger="clang",
+	description="Use Clang in-place of GCC",
+}
+
+if _OPTIONS["clang"] then
+	premake.gcc.cc="clang"
+	premake.gcc.cxx="clang++"
+end
 
 solution("tests")
 	configurations {"debug", "release"}
@@ -29,6 +39,11 @@ function setup_test(name, src)
 	configuration {"linux"}
 		buildoptions {"-std=c++0x", "-pedantic"}
 	
+	configuration {"clang"}
+		links {
+			"stdc++"
+		}
+
 	configuration {}
 		targetdir(".")
 		objdir(outpath)
