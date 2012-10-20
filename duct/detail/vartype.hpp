@@ -21,6 +21,7 @@ namespace duct {
 
 /**
 	@addtogroup variable
+	@details
 	@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE @c VariableTypes:
 	-# VARTYPE_STRING
 	-# VARTYPE_INTEGER

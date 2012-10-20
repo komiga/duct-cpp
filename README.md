@@ -1,5 +1,5 @@
 
-## duct++ ain't ya papa's cup'a tea
+## duct++ — it's the bees knees
 
 **duct++** is a general-purpose C++11 header library which supplies:
 
@@ -7,11 +7,11 @@
 * Debug message and assertion macros
 * Endian byte-swapping
 * Unicode encoding and string conversion helpers
-* `iostream` helpers for binary and textual data
+* `iostream` helpers for binary and textual data (integrates with the C++ Standard Library)
 * Generic token parsing
 * CVar-esque system with validation, and a markup language
 
-All it needs is a shiny C++11-compliant compiler. That's not too much to ask for, is it? Is it, Microsoft?
+All it needs is a shiny C++11-compliant compiler. That's not too much to ask for, is it? *Is it, Microsoft?* Hell, what do I care? Windows is a terrible platform.
 
 ## License
 

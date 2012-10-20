@@ -21,9 +21,11 @@ namespace duct {
 
 /**
 	@addtogroup debug
+	@details
 	@note All debug macros defined here are no-ops if @c NDEBUG is defined and unless %DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
 
 	Configuration defines:
+	
 	- %DUCT_CONFIG_FORCE_DEBUG_MACROS
 	@{
 */

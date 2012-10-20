@@ -21,7 +21,9 @@ namespace duct {
 
 /**
 	@addtogroup stl
+	@details
 	Configuration defines:
+	
 	- %DUCT_CONFIG_STL_ALLOCATOR
 	@{
 */

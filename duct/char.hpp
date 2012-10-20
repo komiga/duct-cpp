@@ -17,7 +17,9 @@ namespace duct {
 
 /**
 	@addtogroup string
+	@details
 	Configuration defines:
+	
 	- %DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
 	@{
 */
