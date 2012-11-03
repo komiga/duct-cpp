@@ -1,7 +1,6 @@
 /**
 @file EndianUtils.hpp
 @brief Endian utilities.
-@defgroup endian_swap_utils Endian-swapping utilities
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -22,7 +21,7 @@ namespace duct {
 //enum Endian : int;
 
 /**
-	@addtogroup endian_swap_utils
+	@defgroup endian_swap_utils Endian-swapping utilities
 	@details
 	@note The byte_swap() functions:
 	

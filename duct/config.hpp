@@ -1,7 +1,6 @@
 /**
 @file config.hpp
 @brief Configuration.
-@defgroup config Configuration
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -13,7 +12,7 @@
 #include <cstdint>
 
 /**
-	@addtogroup config
+	@defgroup config Configuration
 	@{
 */
 

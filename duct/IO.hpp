@@ -1,7 +1,6 @@
 /**
 @file IO.hpp
 @brief I/O utilities and Standard Library iostream extensions.
-@defgroup io I/O utilities and Standard Library iostream extensions
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -34,7 +33,7 @@ template<typename charT, typename traitsT> class basic_memstream;
 class StreamContext;
 
 /**
-	@addtogroup io
+	@defgroup io I/O utilities and Standard Library iostream extensions
 	@details
 	@warning All I/O functions defined here are "unsafe" in that they do not check stream state when executing operations; they assume a @c stream.good()==true state on entry and cannot guarantee it on return.
 	@c ios::badbit and/or @c ios::failbit may be set on the stream after the operation has executed; see std::basic_istream::read() and std::basic_ostream::write().

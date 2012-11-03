@@ -1,7 +1,6 @@
 /**
 @file ScriptParser.hpp
 @brief ductScript parser.
-@defgroup ductScript ductScript parsing and formatting
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -26,7 +25,7 @@
 namespace duct {
 
 /**
-	@addtogroup ductScript
+	@defgroup ductScript ductScript parsing and formatting
 	@{
 */
 

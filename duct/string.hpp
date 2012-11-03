@@ -1,7 +1,6 @@
 /**
 @file string.hpp
 @brief String types and utilities.
-@defgroup string String types and utilities
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -16,7 +15,7 @@
 namespace duct {
 
 /**
-	@addtogroup string
+	@defgroup string String types and utilities
 	@{
 */
 

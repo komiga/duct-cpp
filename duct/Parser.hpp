@@ -1,7 +1,6 @@
 /**
 @file Parser.hpp
 @brief Generic Parser and associated classes.
-@defgroup parser Parser framework
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -24,7 +23,7 @@ class Token;
 class Parser;
 
 /**
-	@addtogroup parser
+	@defgroup parser Parser framework
 	@{
 */
 

@@ -1,7 +1,6 @@
 /**
 @file stl.hpp
 @brief STL types and configuration.
-@defgroup stl STL types and configuration
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -20,7 +19,7 @@
 namespace duct {
 
 /**
-	@addtogroup stl
+	@defgroup stl STL types and configuration
 	@details
 	Configuration defines:
 	
