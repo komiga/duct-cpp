@@ -159,7 +159,8 @@ public:
 /** @name Validation */ /// @{
 	/**
 		Validate a variable.
-		@returns @c true if @c var matches template in identity and layout.
+		@note If @c validate_type(var) is @c true, layout validation is only done if @a var is a collection.
+		@returns @c true iff @a var matches template in type, identity, and layout.
 		@param var Variable to validate.
 		@sa validate_type(Variable const&), validate_identity(Variable const&), validate_layout(Variable const&)
 	*/
@@ -173,7 +174,7 @@ public:
 
 	/**
 		Validate a variable by type.
-		@returns @c true if bitwise-and of variable type and type mask is non-zero.
+		@returns @c true iff bitwise-and of @a var type and template type mask is non-zero.
 		@param var Variable to validate.
 	*/
 	virtual bool validate_type(Variable const& var) const {
@@ -182,17 +183,17 @@ public:
 
 	/**
 		Validate a variable by identity.
-		@returns @c true if:
-			-# identity is empty (permits any name)
-			-# variable name matches any name from identity (including empty name)
+		@returns @c true iff:
+		-# identity is empty (permits any name),
+		-# variable name matches any name from identity (including empty name).
 		@param var Variable to validate.
 	*/
 	virtual bool validate_identity(Variable const& var) const {
 		if (m_identity.empty()) {
 			return true; // Any name is permitted with empty identity
 		} else {
-			for (auto iname : get_identity()) {
-				if (iname==var.get_name()) {
+			for (auto const& iname : get_identity()) {
+				if (var.get_name()==iname) {
 					return true; // Variable name matches a name from identity
 				}
 			}
@@ -205,14 +206,14 @@ public:
 		@note The @c LAYOUT_FIELD_OPTIONAL flag will cause all succeeding fields to be considered optional.
 		@note The @c LAYOUT_FIELD_EMPTY flag is only considered when layout contains a single field.
 		@returns
-			- @c false if:
-				-# variable is not a @c VARCLASS_COLLECTION
-				-# variable has more children than layout
-			- @c true if:
-				-# layout is empty (permits any collection)
-				-# layout contains a single field with flag @c LAYOUT_FIELD_EMPTY and variable has no children
-				-# children sequentially match layout fields exactly
-				-# children sequentially match [0..var.size()] layout fields if a field from [0..var.size()+1] is optional (thus making all subsequent fields optional)
+		- @c false iff:
+			-# variable is not a @c VARCLASS_COLLECTION,
+			-# variable has more children than layout;
+		- @c true iff:
+			-# layout is empty (permits any collection),
+			-# layout contains a single field with flag @c LAYOUT_FIELD_EMPTY and variable has no children,
+			-# children sequentially match layout fields exactly,
+			-# children sequentially match [0..var.size()] layout fields if a field from [0..var.size()+1] is optional (thus making all subsequent fields optional).
 		@param var Variable to validate.
 	*/
 	virtual bool validate_layout(Variable const& var) const {
