@@ -195,8 +195,8 @@ public:
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
-			next=stringU::decode(pos, end, cp, CHAR_NULL);
-			if (next==pos || CHAR_NULL==cp) { // Incomplete or bad sequence
+			next=stringU::decode(pos, end, cp, CHAR_SENTINEL);
+			if (next==pos || CHAR_SENTINEL==cp) { // Incomplete or bad sequence
 				return false;
 			} else { // Test code point against all ranges
 				for (auto rit=cbegin(); cend()!=rit; ++rit) {

@@ -150,10 +150,10 @@ public:
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
-			next=stringU::decode(pos, end, cp, CHAR_NULL);
+			next=stringU::decode(pos, end, cp, CHAR_SENTINEL);
 			if (next==pos) { // Incomplete sequence
 				return end;
-			} else if (CHAR_NULL!=cp && contains(cp)) {
+			} else if (CHAR_SENTINEL!=cp && contains(cp)) {
 				return pos;
 			}
 		}
@@ -184,8 +184,8 @@ public:
 		char32 cp;
 		InputIterator next;
 		for (; end!=pos; pos=next) {
-			next=stringU::decode(pos, end, cp, CHAR_NULL);
-			if (next==pos || CHAR_NULL==cp || !contains(cp)) { // Incomplete sequence || bad sequence || not a match
+			next=stringU::decode(pos, end, cp, CHAR_SENTINEL);
+			if (next==pos || CHAR_SENTINEL==cp || !contains(cp)) { // Incomplete sequence || bad sequence || not a match
 				return false;
 			}
 		}
