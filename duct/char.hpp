@@ -175,18 +175,20 @@ typedef system_dependent char32;
 	Various character constants.
 */
 enum Chars {
-	/** NULL character */
+	/** NUL. */
 	CHAR_NULL='\0',
 	/**
 		Special-use constant.
-		@warning This is not a valid Unicode code point, but it can be unsafely casted to a valid UTF-8 code unit (@c U+FF, y with diaeresis). It is only suitable for indicating state with UTF-16 and UTF-32.
+		@warning This is not a valid Unicode character, and it can be unsafely casted to a valid UTF-8 code unit (@c U+FF, y with diaeresis). It is only suitable for indicating state with UTF-16 and UTF-32.
 	*/
 	CHAR_SENTINEL=0xFFFFFFFF,
 	/**
 		End of file/stream/sequence/etc. (special-use constant).
-		@warning This is not a valid Unicode code point, but it can be unsafely casted to a valid UTF-8 code unit (@c U+FF, y with diaeresis). It is only suitable for indicating state with UTF-16 and UTF-32.
+		@warning This is not a valid Unicode character, and it can be unsafely casted to a valid UTF-8 code unit (@c U+FF, y with diaeresis). It is only suitable for indicating state with UTF-16 and UTF-32.
 	*/
 	CHAR_EOF=0xFFFF,
+	/** Replacement character (U+FFFD). */
+	CHAR_REPLACEMENT=0xFFFD,
 	/** Newline (linefeed). */
 	CHAR_NEWLINE='\n',
 	/** Carriage return. */
