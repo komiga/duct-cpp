@@ -107,7 +107,7 @@ public:
 	}
 	/**
 		Compare against another range.
-		@returns @c -1 if the @a other is greater than this, @c 1 if @c this is greater than @a other, or 0 if @c this and @a other are equivalent.
+		@returns @c -1 if the @a other is greater than this, @c 1 if @c this is greater than @a other, or @c 0 if @c this and @a other are equivalent.
 		@param other Range to compare against.
 	*/
 	int compare(CharacterRange const& other) const {
@@ -413,20 +413,20 @@ public:
 	*/
 	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils, class string_iterator=typename stringT::const_iterator>
 	CharacterSet& add_from_string(stringT const& str) {
-		char32 lastcp=CHAR_NULL;
+		char32 lastcp=CHAR_SENTINEL;
 		char32 cp;
 		bool isrange=false;
 		bool escape=false;
 		string_iterator it, next;
 		for (it=str.cbegin(); str.cend()!=it; it=next) {
-			next=stringU::decode(it, str.cend(), cp, CHAR_NULL);
+			next=stringU::decode(it, str.cend(), cp, CHAR_SENTINEL);
 			if (next==it) { // Incomplete sequence
 				DUCT_DEBUG("CharacterSet::add_from_string: ics");
 				break;
-			} else if (CHAR_NULL==cp) { // Invalid code point
+			} else if (CHAR_SENTINEL==cp) { // Invalid code point
 				DUCT_DEBUGF("CharacterSet::add_from_string: Invalid code point in string at %lu", (unsigned long)(str.cend()-it));
 				escape=isrange=false;
-				lastcp=CHAR_NULL;
+				lastcp=CHAR_SENTINEL;
 				continue;
 			}
 			if (escape) {
@@ -434,11 +434,11 @@ public:
 			} else if (CHAR_BACKSLASH==cp) {
 				escape=true;
 				continue;
-			} else if (CHAR_NULL!=lastcp && CHAR_DASH==cp && !isrange) {
+			} else if (CHAR_SENTINEL!=lastcp && CHAR_DASH==cp && !isrange) {
 				isrange=true;
 				continue;
 			}
-			if (CHAR_NULL!=lastcp) {
+			if (CHAR_SENTINEL!=lastcp) {
 				if (isrange) {
 					if (cp==lastcp) {
 						add_range(cp, 0);
@@ -447,7 +447,7 @@ public:
 					} else {
 						add_range(lastcp, cp-lastcp);
 					}
-					lastcp=CHAR_NULL;
+					lastcp=CHAR_SENTINEL;
 					isrange=false;
 				} else {
 					add_range(lastcp, 0);
@@ -457,7 +457,7 @@ public:
 				lastcp=cp;
 			}
 		}
-		if (CHAR_NULL!=lastcp) {
+		if (CHAR_SENTINEL!=lastcp) {
 			if (isrange) {
 				DUCT_DEBUG("CharacterSet::add_from_string: Invalid range in string");
 			}
