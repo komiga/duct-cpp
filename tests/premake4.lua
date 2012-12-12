@@ -37,8 +37,19 @@ function setup_test(name, src)
 		flags {"ExtraWarnings", "Optimize"}
 	
 	configuration {"linux"}
+		buildoptions {
+			--"-Wextra",
+			"-Wunused-parameter",
+			"-Wuninitialized",
+			"-Wmissing-field-initializers",
+			"-Wredundant-decls",
+			"-Wfloat-equal"
+		}
 		buildoptions {"-std=c++0x", "-pedantic"}
 	
+	configuration {"linux" and "clang"}
+		buildoptions {"-stdlib=libstdc++"}
+
 	configuration {"clang"}
 		links {
 			"stdc++"
