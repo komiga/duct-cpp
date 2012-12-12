@@ -9,6 +9,7 @@
 #include <duct/ScriptParser.hpp>
 
 #include <cstring>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -128,7 +129,7 @@ void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) 
 
 void do_test(duct::Variable& root, TestData const& td) {
 	duct::IO::imemstream stream{td.data, td.size};
-	printf("  Testing `%*s`:\n", static_cast<int>(td.size), td.data);
+	std::printf("  Testing `%*s`:\n", static_cast<int>(td.size), td.data);
 	parse_stream(root, stream, td.valid);
 }
 
@@ -143,7 +144,7 @@ int main(int argc, char* argv[]) {
 				parse_stream(root, fs, false);
 				fs.close();
 			} else {
-				td.data=argv[index]; td.size=strlen(td.data);
+				td.data=argv[index]; td.size=std::strlen(td.data);
 				root.reset(); do_test(root, td);
 			}
 		}

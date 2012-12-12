@@ -7,7 +7,7 @@ void tabulate(int count) {
 
 void print_var(duct::Variable const& var, int tab_count=0, bool const newline=true) {
 	tabulate(tab_count);
-	std::cout<<'('<<std::left<<std::setw(10)<<duct::detail::get_vartype_name(var.get_type())<<") \'"<<var.get_name()<<"' = ";
+	std::cout<<'('<<std::left<<std::setw(10)<<duct::detail::get_vartype_name(var.get_type())<<") '"<<var.get_name()<<"' = ";
 	switch (var.get_type()) {
 	case duct::VARTYPE_ARRAY:
 	case duct::VARTYPE_NODE:

@@ -20,17 +20,6 @@ typedef duct::Variable::vector_type children_vector_type;
 typedef duct::Template::identity_vector_type identity_vector_type;
 typedef duct::Template::layout_vector_type layout_vector_type;
 
-void signature(Template& tpl, unsigned int const type_mask) {
-	tpl.set_type_mask(type_mask);
-}
-void signature(Template& tpl, unsigned int const type_mask, identity_vector_type&& identity) {
-	tpl.set_type_mask(type_mask);
-	tpl.set_identity(std::move(identity));
-}
-void signature(Template& tpl, unsigned int const type_mask, layout_vector_type&& layout) {
-	tpl.set_type_mask(type_mask);
-	tpl.set_layout(std::move(layout));
-}
 void signature(Template& tpl, unsigned int const type_mask, identity_vector_type&& identity, layout_vector_type&& layout) {
 	tpl.set_type_mask(type_mask);
 	tpl.set_identity(std::move(identity));
@@ -63,7 +52,7 @@ void morph(Variable& var, u8string&& name, T value) {
 	var.morph(value);
 }
 
-void validate(Template const& tpl, Variable const& var, bool expected[]) {
+void validate(Template const& tpl, Variable const& var, bool expected[4]) {
 	static char const* const s_msg_expectation[]={
 		" [#UNEXPECTED#]",
 		" [expected]"
@@ -101,7 +90,7 @@ int main(int argc, char* argv[]) {
 	Variable match, not_match;
 
 	// String value
-	signature(tpl, duct::VARTYPE_STRING);
+	signature(tpl, duct::VARTYPE_STRING, {}, {});
 	morph(match, u8string("match"), u8string("rampant penguin"));
 	morph(not_match, u8string("not_match"), 1234);
 	do_validation("Value - string",
@@ -109,7 +98,7 @@ int main(int argc, char* argv[]) {
 		false, true, false);
 
 	// Identity
-	signature(tpl, duct::VARMASK_ALL, {u8string("match")});
+	signature(tpl, duct::VARMASK_ALL, {u8string("match")}, {});
 	do_validation("Identity",
 		true, true, false,
 		true, false, false);
