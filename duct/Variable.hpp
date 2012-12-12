@@ -270,7 +270,7 @@ public:
 
 	/**
 		Reset @c VARCLASS_VALUE types to default value; clear children for @c VARCLASS_COLLECTION types.
-		@note Does nothing when @c is_null()==true
+		@note Does nothing when @c is_null()==true.
 		@returns @c *this.
 	*/
 	Variable& reset() {
@@ -382,9 +382,9 @@ public:
 	/**
 		Name and value comparison to another variable.
 		@returns A value which is
-			@c <0 if name or value of @c this is less than name or value of @a other
-			@c 0 if name or value of @c this is equal to name or value of @a other
-			@c >0 if name or value of @c this is greater than name or value of @a other
+		- @c <0 if name or value of @c this is less than name or value of @a other
+		- @c 0 if name or value of @c this is equal to name or value of @a other
+		- @c >0 if name or value of @c this is greater than name or value of @a other
 		@param other Variable to compare against.
 	*/
 	int compare(Variable const& other) const {
@@ -397,9 +397,9 @@ public:
 	/**
 		Value comparison to another variable.
 		@returns A value which is
-			@c <0 if value of @c this is less than value of @a other
-			@c 0 if value of @c this is equal to value of @a other
-			@c >0 if value of @c this is greater than value of @a other
+		- @c <0 if value of @c this is less than value of @a other
+		- @c 0 if value of @c this is equal to value of @a other
+		- @c >0 if value of @c this is greater than value of @a other
 		@param other Variable to compare against.
 	*/
 	int compare_value(Variable const& other) const {
@@ -449,7 +449,7 @@ public:
 		Set value.
 		@returns @c *this.
 		@param value New value.
-		@sa morph(T, bool)
+		@sa morph(T const)
 	*/
 	Variable& assign(detail::var_config::string_type value) { assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_.assign(std::move(value)); return *this; }
 	/**
