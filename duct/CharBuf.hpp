@@ -138,7 +138,7 @@ public:
 	/**
 		Compare buffer to a character set.
 		@returns @c true if all characters match a character from @a char_set; @c false otherwise.
-		@param char_set Ccharacter set to compare against.
+		@param char_set Character set to compare against.
 	*/
 	bool compare(CharacterSet const& char_set) const {
 		for (unsigned int i=0; get_size()>i; ++i) {
@@ -219,7 +219,7 @@ private:
 		if (0==get_capacity()) {
 			m_buffer.reserve(64u);
 		} else if (get_size()+1>=get_capacity()) {
-			m_buffer.reserve(2*get_capacity());
+			m_buffer.reserve((16>=get_capacity()) ? 64 : 2*get_capacity());
 		}
 	}
 };
