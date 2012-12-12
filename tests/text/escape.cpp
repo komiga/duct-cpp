@@ -8,14 +8,12 @@
 #include <iostream>
 #include <iomanip>
 
-using duct::u8string;
-
 static duct::StringUtils::EscapeablePair const s_esc_pair{"\n\r\t,=[]{}\"\'\\", "nrt,=[]{}\"\'\\"};
 
 #define test_equivalent(str, ignore_invalids) test_string(str, str, ignore_invalids)
 
-void test_string(u8string const& str, u8string const& expected, bool const ignore_invalids) {
-	u8string result;
+void test_string(duct::u8string const& str, duct::u8string const& expected, bool const ignore_invalids) {
+	duct::u8string result;
 	unsigned int escaped_count=duct::StringUtils::escape_string(result, str, s_esc_pair, ignore_invalids);
 	std::cout<<std::setw(3)<<std::left<<escaped_count<<std::right<<": `"<<result<<'`'<<std::endl;
 	if (!expected.empty() && 0!=expected.compare(result)) {
@@ -25,7 +23,7 @@ void test_string(u8string const& str, u8string const& expected, bool const ignor
 }
 
 int main(int argc, char* argv[]) {
-	u8string const empty_str{};
+	duct::u8string const empty_str{};
 	if (1<argc) {
 		bool const ignore_invalids=(0!=atoi(argv[1]));
 		for (auto str=argv+2; (argv+argc)>str; ++str) {

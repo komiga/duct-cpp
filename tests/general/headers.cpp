@@ -20,6 +20,6 @@
 #include <duct/Parser.hpp>
 #include <duct/ScriptParser.hpp>
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	return 0;
 }

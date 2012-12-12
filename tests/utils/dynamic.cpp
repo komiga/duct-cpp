@@ -99,7 +99,7 @@ private:
 	duct::Encoding m_encoding;
 };
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	DynamicEncoder u8(duct::Encoding::UTF8);
 	DynamicEncoder u16(duct::Encoding::UTF16);
 	DynamicEncoder u32(duct::Encoding::UTF32);

@@ -15,8 +15,8 @@
 // -
 
 #define print_decode(data_, enc_) \
-	printf(" next: %lu  end: %lu  cp: %d 0x%X  required: %u\n", static_cast<unsigned long>(next-data_), static_cast<unsigned long>(end-data_), cp, cp, duct:: enc_ ::required(cp))
-	//printf(" non-surr: %d  non-max: %d ; 3.2-nc: %d  FFFE: %d\n", cp<0xD800 || cp>0xDFFF, cp<=0x10FFFF, cp>=0xFDD0 && cp<=0xFDEF, (cp&0xFFFE)==0xFFFE && cp<=0x10FFFF)
+	std::printf(" next: %lu  end: %lu  cp: %d 0x%X  required: %u\n", static_cast<unsigned long>(next-data_), static_cast<unsigned long>(end-data_), cp, cp, duct:: enc_ ::required(cp))
+	//std::printf(" non-surr: %d  non-max: %d ; 3.2-nc: %d  FFFE: %d\n", cp<0xD800 || cp>0xDFFF, cp<=0x10FFFF, cp>=0xFDD0 && cp<=0xFDEF, (cp&0xFFFE)==0xFFFE && cp<=0x10FFFF)
 // -
 
 #define run_decode(enc_, data_, offset_) \
@@ -32,10 +32,10 @@
 // -
 
 #define print_encode(enc_) \
-	printf(" next: %lu  cp: %d 0x%X  required: %u  enc: [", static_cast<unsigned long>(next-buffer), cp, cp, duct:: enc_ ::required(cp)); \
+	std::printf(" next: %lu  cp: %d 0x%X  required: %u  enc: [", static_cast<unsigned long>(next-buffer), cp, cp, duct:: enc_ ::required(cp)); \
 	for (auto it_=buffer; next>it_; ++it_) { \
-		printf("0x%X%s", *it_, next==it_+1 ? "" : ", "); \
-	} puts("]")
+		std::printf("0x%X%s", *it_, next==it_+1 ? "" : ", "); \
+	} std::puts("]")
 // -
 
 #define run_encode(enc_, cp_) \
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 		offset=argc>2 ? atoi(argv[2]) : 4;
 	duct::char32 cp;
 	if (do_series(1)) {
-		puts("# UTF-8");
+		std::puts("# UTF-8");
 		duct::char8_strict buffer[8];
 		duct::char8_strict* output;
 		duct::char8_strict const *begin, *end, *next;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 		run_encode(UTF8Utils, utf32_invalid2[0]);
 	}
 	if (do_series(2)) {
-		puts("# UTF-16");
+		std::puts("# UTF-16");
 		duct::char16_strict buffer[2];
 		duct::char16_strict* output;
 		duct::char16_strict const *begin, *end, *next;
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 		run_encode(UTF16Utils, utf32_invalid2[0]);
 	}
 	if (do_series(3)) {
-		puts("# UTF-32");
+		std::puts("# UTF-32");
 		duct::char32_strict buffer[1];
 		duct::char32_strict* output;
 		duct::char32_strict const *begin, *end, *next;

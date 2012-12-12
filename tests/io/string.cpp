@@ -10,7 +10,7 @@
 template<typename charT, class traitsT>
 void print_states(std::basic_ios<charT, traitsT>& stream) {
 	auto const states=stream.rdstate();
-	printf("stream states: [goodbit: %s, failbit: %s, badbit: %s, eofbit: %s]\n"
+	std::printf("stream states: [goodbit: %s, failbit: %s, badbit: %s, eofbit: %s]\n"
 		, states==std::ios_base::goodbit ? "true" : "false"
 		, 0!=(states& std::ios_base::failbit) ? "true" : "false"
 		, 0!=(states& std::ios_base::badbit) ? "true" : "false"
@@ -61,12 +61,12 @@ template<class fromU, class stringT>
 void read_s(stringT& str, void const* data, std::size_t const size) {
 	duct::IO::StreamContext ctx(fromU::id, duct::Endian::SYSTEM);
 	duct::IO::imemstream stream(data, size*fromU::char_size);
-	printf("stream size: %lu\n", static_cast<unsigned long>(duct::IO::size(stream)));
+	std::printf("stream size: %lu\n", static_cast<unsigned long>(duct::IO::size(stream)));
 	assert(stream.good());
 	ctx.read_string(stream, str, static_cast<std::streamsize>(size), duct::CHAR_NULL);
 	assert(stream.good());
 	print_states(stream);
-	printf("String [size: %lu bsize: %lu len: %lu]: |", static_cast<unsigned long>(size), static_cast<unsigned long>(size*fromU::char_size), static_cast<unsigned long>(str.size()));
+	std::printf("String [size: %lu bsize: %lu len: %lu]: |", static_cast<unsigned long>(size), static_cast<unsigned long>(size*fromU::char_size), static_cast<unsigned long>(str.size()));
 	std::cout<<str<<"|\n";
 	str.clear();
 }
@@ -78,7 +78,7 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
 	assert(stream.good());
 	std::size_t written_size=ctx.write_string(stream, str, duct::CHAR_NULL);
-	printf("size: %lu  written_size: %lu\n", static_cast<unsigned long>(size), static_cast<unsigned long>(written_size));
+	std::printf("size: %lu  written_size: %lu\n", static_cast<unsigned long>(size), static_cast<unsigned long>(written_size));
 	assert(stream.good());
 	assert(written_size==size);
 	stream.flush();
@@ -89,25 +89,25 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 		*wi=out_buffer;
 	for (; data+size!=di && out_buffer+written_size!=wi; ++di, ++wi) {
 		if (*di!=*wi) {
-			printf("di: %lu, %u 0x%X  wi: %lu, %u 0x%X\n", static_cast<unsigned long>(di-data), *di, *di, static_cast<unsigned long>(wi-out_buffer), *wi, *wi);
+			std::printf("di: %lu, %u 0x%X  wi: %lu, %u 0x%X\n", static_cast<unsigned long>(di-data), *di, *di, static_cast<unsigned long>(wi-out_buffer), *wi, *wi);
 			kosher=false;
 		}
 	}
 	if (kosher) {
-		puts("She's kosher, cap'n.");
+		std::puts("She's kosher, cap'n.");
 	} else {
-		puts("Something has gone horribly wrong!");
+		std::puts("Something has gone horribly wrong!");
 	}
 }
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	duct::u8string str;
-	puts("Reading");
+	std::puts("Reading");
 	read_s<duct::UTF8Utils>(str, utf8_data, sizeof(utf8_data)/sizeof(*utf8_data));
 	read_s<duct::UTF16Utils>(str, utf16_data, sizeof(utf16_data)/sizeof(*utf16_data));
 	read_s<duct::UTF32Utils>(str, utf32_data, sizeof(utf32_data)/sizeof(*utf32_data));
 
-	puts("\nWriting");
+	std::puts("\nWriting");
 	str.assign(reinterpret_cast<char const*>(utf8_data), sizeof(utf8_data));
 	write_s<duct::UTF8Utils>(str, utf8_data, sizeof(utf8_data)/sizeof(*utf8_data));
 	write_s<duct::UTF16Utils>(str, utf16_data, sizeof(utf16_data)/sizeof(*utf16_data));

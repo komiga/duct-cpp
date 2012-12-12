@@ -9,7 +9,7 @@
 
 #include "common.inl"
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	duct::Variable top(duct::u8string("top"), duct::VARTYPE_ARRAY);
 	top
 		.emplace_back(duct::u8string("string_var"), duct::u8string("bar"))

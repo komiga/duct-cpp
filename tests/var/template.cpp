@@ -9,35 +9,27 @@
 
 #include "common.inl"
 
-using duct::u8string;
-using duct::VariableType;
-using duct::VariableClass;
-using duct::VariableMasks;
-using duct::Variable;
-using duct::Template;
+typedef duct::u8string u8string;
+typedef duct::Variable Variable;
 
-typedef duct::Variable::vector_type children_vector_type;
-typedef duct::Template::identity_vector_type identity_vector_type;
-typedef duct::Template::layout_vector_type layout_vector_type;
-
-void signature(Template& tpl, unsigned int const type_mask, identity_vector_type&& identity, layout_vector_type&& layout) {
+void signature(duct::Template& tpl, unsigned int const type_mask, duct::Template::identity_vector_type&& identity, duct::Template::layout_vector_type&& layout) {
 	tpl.set_type_mask(type_mask);
 	tpl.set_identity(std::move(identity));
 	tpl.set_layout(std::move(layout));
 }
 
-void morph(Variable& var, VariableType const type) {
+void morph(Variable& var, duct::VariableType const type) {
 	var.morph(type);
 }
-void morph(Variable& var, u8string&& name, VariableType const type) {
+void morph(Variable& var, u8string&& name, duct::VariableType const type) {
 	var.set_name(std::move(name));
 	var.morph(type);
 }
 
-void morph(Variable& var, VariableType const type, children_vector_type&& children) {
+void morph(Variable& var, duct::VariableType const type, duct::Variable::vector_type&& children) {
 	var.morph(type, std::move(children));
 }
-void morph(Variable& var, u8string&& name, VariableType const type, children_vector_type&& children) {
+void morph(Variable& var, u8string&& name, duct::VariableType const type, duct::Variable::vector_type&& children) {
 	var.set_name(std::move(name));
 	var.morph(type, std::move(children));
 }
@@ -52,7 +44,7 @@ void morph(Variable& var, u8string&& name, T value) {
 	var.morph(value);
 }
 
-void validate(Template const& tpl, Variable const& var, bool expected[4]) {
+void validate(duct::Template const& tpl, Variable const& var, bool expected[4]) {
 	static char const* const s_msg_expectation[]={
 		" [#UNEXPECTED#]",
 		" [expected]"
@@ -82,11 +74,11 @@ void validate(Template const& tpl, Variable const& var, bool expected[4]) {
 	do_validation_single(tpl, not_match, false, vt_not_match, vi_not_match, vl_not_match); \
 }
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	std::cout<<std::boolalpha;
 
 	bool expected[4];
-	Template tpl;
+	duct::Template tpl;
 	Variable match, not_match;
 
 	// String value
