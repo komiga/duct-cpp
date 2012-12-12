@@ -112,7 +112,7 @@ public:
 		@param pos Position to decode from.
 		@param end Ending input iterator.
 		@param output Output code point.
-		@param replacement Replacement code point. @a output will be set to this only if the decoded code point is invalid.
+		@param replacement Replacement code point. @a output will be set to this if the decoded code point is invalid.
 	*/
 	template<typename InputIterator>
 	static InputIterator decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement=CHAR_NULL);
@@ -427,7 +427,7 @@ public:
 		@param begin Beginning input iterator.
 		@param end Ending input iterator.
 		@param output Output code point.
-		@param replacement Replacement code point. @a output will be set to this only if the decoded code point is invalid.
+		@param replacement Replacement code point. @a output will be set to this if the decoded code point is invalid.
 	*/
 	template<typename InputIterator>
 	static InputIterator decode(InputIterator begin, InputIterator const end, char32& output, char32 const replacement=CHAR_NULL);

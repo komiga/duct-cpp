@@ -541,15 +541,15 @@ inline RandomAccessIterator UTF32Utils::prev(RandomAccessIterator from, RandomAc
 		: from;
 }
 
-inline unsigned int UTF32Utils::required_first(char_type const first) {
+inline unsigned int UTF32Utils::required_first(char_type const) {
 	return 0;
 }
 
-inline unsigned int UTF32Utils::required_first_whole(char_type const first) {
+inline unsigned int UTF32Utils::required_first_whole(char_type const) {
 	return 1;
 }
 
-inline unsigned int UTF32Utils::required(char32 const c) {
+inline unsigned int UTF32Utils::required(char32 const) {
 	return 1;
 }
 
