@@ -166,8 +166,8 @@ unsigned int unit_occurrences(charT const cu, InputIterator pos, InputIterator c
 	@param cu Code unit to count.
 	@param str String to test.
 */
-template<class stringT, typename charT=typename stringT::value_type>
-inline unsigned int unit_occurrences(charT const cu, stringT const& str) {
+template<class stringT>
+inline unsigned int unit_occurrences(typename stringT::value_type const cu, stringT const& str) {
 	return unit_occurrences(cu, str.cbegin(), str.cend());
 }
 
@@ -186,7 +186,7 @@ inline unsigned int unit_occurrences(charT const cu, stringT const& str) {
 typedef std::pair<char const*, char const*> EscapeablePair;
 
 /**
-	Get the escapeable character for its replacement (e.g. 't' -> literal tabulation).
+	Get the escapeable character for its replacement (e.g., 't' -> literal tabulation).
 	@returns The escapeable character for @a cu, or @c CHAR_NULL if @a cu was non-matching.
 	@tparam charT Character type; inferred from @a cu.
 	@param cu Code unit to test.
