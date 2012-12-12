@@ -17,12 +17,12 @@ enum {
 
 	TOK_EQUALS,
 	TOK_COMMA,
-	
+
 	TOK_OPEN_BRACE,
 	TOK_CLOSE_BRACE,
 	TOK_OPEN_BRACKET,
 	TOK_CLOSE_BRACKET,
-	
+
 	TOK_COMMENT,
 	TOK_COMMENT_BLOCK,
 	TOK_EOL,
@@ -78,16 +78,15 @@ static char32 const s_lit_false[]={'f','a','l','s','e'};
 static char32 const s_lit_null[]={'n','u','l','l'};
 } // anonymous namespace
 
-#define DUCT_SP_THROW__(err_, fmt_) throwex({ScriptParserError:: err_, DUCT_FUNC_NAME, &m_token, this, fmt_})
-#define DUCT_SP_THROWF__(err_, fmt_, ...) throwex({ScriptParserError:: err_, DUCT_FUNC_NAME, &m_token, this, fmt_, __VA_ARGS__})
-#define DUCT_SP_THROW_NO_INFO__(err_, fmt_) throwex({ScriptParserError:: err_, DUCT_FUNC_NAME, nullptr, nullptr, fmt_})
-#define DUCT_SP_THROWF_NO_INFO__(err_, fmt_, ...) throwex({ScriptParserError:: err_, DUCT_FUNC_NAME, nullptr, nullptr, fmt_, __VA_ARGS__})
+#define DUCT_SP_THROW__(fmt_) throwex({DUCT_FUNC_NAME, &m_token, this, fmt_})
+#define DUCT_SP_THROWF__(fmt_, ...) throwex({DUCT_FUNC_NAME, &m_token, this, fmt_, __VA_ARGS__})
+#define DUCT_SP_THROW_NO_INFO__(fmt_) throwex({DUCT_FUNC_NAME, nullptr, nullptr, fmt_})
+#define DUCT_SP_THROWF_NO_INFO__(fmt_, ...) throwex({DUCT_FUNC_NAME, nullptr, nullptr, fmt_, __VA_ARGS__})
 
 // class ScriptParserException implementation
 
-ScriptParserException::ScriptParserException(ScriptParserError const error, char const* const scope, Token const* token, ScriptParser const* const parser, char const* const fmt, ...)
+ScriptParserException::ScriptParserException(char const scope[], Token const* token, ScriptParser const* const parser, char const fmt[], ...)
 	: std::exception()
-	, m_error(error)
 	, m_scope(scope)
 	, m_token(token)
 	, m_parser(parser)
@@ -109,20 +108,11 @@ ScriptParserException::ScriptParserException(ScriptParserError const error, char
 		end_line=m_parser->get_line(); end_column=m_parser->get_column();
 	}
 	if (start_line==end_line && start_column==end_column) {
-		snprintf(m_message, 512, "[%s] (%s) at [%d:%d]: %s", get_error_name(m_error), m_scope, start_line, start_column, formatted_message);
+		snprintf(m_message, 512, "(%s) at [%d:%d]: %s", m_scope, start_line, start_column, formatted_message);
 	} else if (-1!=start_line) {
-		snprintf(m_message, 512, "[%s] (%s) from [%d:%d] to [%d:%d]: %s", get_error_name(m_error), m_scope, start_line, start_column, end_line, end_column, formatted_message);
+		snprintf(m_message, 512, "(%s) from [%d:%d] to [%d:%d]: %s", m_scope, start_line, start_column, end_line, end_column, formatted_message);
 	} else {
-		snprintf(m_message, 512, "[%s] (%s): %s", get_error_name(m_error), m_scope, formatted_message);
-	}
-}
-
-char const* ScriptParserException::get_error_name(ScriptParserError const error) {
-	switch (error) {
-	case ScriptParserError::PARSER: return "ERROR_PARSER";
-	case ScriptParserError::HIERARCHY: return "ERROR_HIERARCHY";
-	case ScriptParserError::MEMALLOC: return "ERROR_MEMALLOC";
-	default: return "ERROR_UNKNOWN";
+		snprintf(m_message, 512, "(%s): %s", m_scope, formatted_message);
 	}
 }
 
@@ -137,9 +127,9 @@ void ScriptParser::reset() {
 
 void ScriptParser::finish() {
 	if (has_states(STATE_EQUALS)) {
-		DUCT_SP_THROW__(PARSER, "Expected value, got EOL/EOF");
+		DUCT_SP_THROW__("Expected value, got EOL/EOF");
 	} else if (m_token.is_type(TOK_EOF) && has_states(STATE_COMMA)) {
-		DUCT_SP_THROW__(PARSER, "Expected value, got EOF");
+		DUCT_SP_THROW__("Expected value, got EOF");
 	} else if (!m_varname.empty()) { // No-child identifier
 		make_collection(VARTYPE_IDENTIFIER, false);
 	} else if (in_scope(VARTYPE_IDENTIFIER)) { // Terminates identifier
@@ -153,15 +143,15 @@ void ScriptParser::skip_whitespace() {
 	}
 }
 
-bool ScriptParser::process(Variable& root, std::istream& stream) {
+bool ScriptParser::process(Variable& node, std::istream& stream) {
 	if (initialize(stream)) {
-		root.morph(VARTYPE_NODE, false); // Make sure variable is a node
-		push(root);
+		node.morph(VARTYPE_NODE, false); // Make sure variable is a node
+		push(node);
 		while (parse())
 		{}
 		finish();
 		if (!at_root()) {
-			DUCT_SP_THROWF_NO_INFO__(HIERARCHY, "Unclosed collection at EOF: %lu deep in %s scope",
+			DUCT_SP_THROWF_NO_INFO__("Unclosed collection at EOF: %lu deep in %s scope",
 				static_cast<unsigned long>(m_stack.size()), detail::get_vartype_name(m_stack.back()->get_type()));
 		}
 		reset();
@@ -214,7 +204,7 @@ void ScriptParser::discern_token() {
 	// Terminators
 	case CHAR_ASTERISK:
 		if (CHAR_SLASH==peek_char()) {
-			DUCT_SP_THROW__(PARSER, "Encountered unexpected end of block comment");
+			DUCT_SP_THROW__("Encountered unexpected end of block comment");
 		}
 		m_token.set_type(TOK_STRING);
 		break;
@@ -292,7 +282,7 @@ void ScriptParser::read_token() {
 
 	default:
 		DUCT_DEBUG_ASSERT(false, "Something has gone horribly wrong: unhandled token type!");
-		DUCT_SP_THROWF__(PARSER, "Unhandled token type: '%s'", get_token_name(m_token));
+		DUCT_SP_THROWF__("Unhandled token type: '%s'", get_token_name(m_token));
 		break;
 	}
 	// Special case: when number and floating-point tokens only contain signs or periods
@@ -324,7 +314,7 @@ void ScriptParser::handle_token() {
 	case TOK_LITERAL_FALSE:
 	case TOK_LITERAL_NULL:
 		if (in_scope(VARTYPE_ARRAY) && !has_states_any(STATE_COMMA|STATE_OPEN_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected token after non-open-bracket and non-comma in array scope");
+			DUCT_SP_THROW__("Unexpected token after non-open-bracket and non-comma in array scope");
 		} else if (has_states(STATE_EQUALS)) { // Make named value in node scope
 			make_value();
 		} else if (in_scope(VARTYPE_IDENTIFIER|VARTYPE_ARRAY)) { // Already in a non-node scope; make nameless value
@@ -340,50 +330,50 @@ void ScriptParser::handle_token() {
 	// Scope/functors
 	case TOK_EQUALS:
 		if (!in_scope(VARTYPE_NODE)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected equality sign within non-node scope");
+			DUCT_SP_THROW__("Unexpected equality sign within non-node scope");
 		} else if (m_varname.empty()) {
-			DUCT_SP_THROW__(PARSER, "Expected name, got equality sign");
+			DUCT_SP_THROW__("Expected name, got equality sign");
 		} else if (has_states(STATE_EQUALS)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after equality sign, got equality sign");
+			DUCT_SP_THROW__("Expected value after equality sign, got equality sign");
 		} else if (has_states(STATE_COMMA)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after comma, got comma");
+			DUCT_SP_THROW__("Expected value after comma, got comma");
 		} else {
 			assign_states(STATE_EQUALS);
 		}
 		break;
 	case TOK_COMMA:
 		if (!in_scope(VARTYPE_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected comma in non-array scope");
+			DUCT_SP_THROW__("Unexpected comma in non-array scope");
 		} else if (has_states(STATE_EQUALS)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after equality sign, got comma");
+			DUCT_SP_THROW__("Expected value after equality sign, got comma");
 		} else if (has_states(STATE_OPEN_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Expected value before comma");
+			DUCT_SP_THROW__("Expected value before comma");
 		} else if (has_states(STATE_COMMA)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after comma, got comma");
+			DUCT_SP_THROW__("Expected value after comma, got comma");
 		} else {
 			assign_states(STATE_COMMA);
 		}
 		break;
 	case TOK_OPEN_BRACE:
 		if (in_scope(VARTYPE_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected open-brace in array scope");
+			DUCT_SP_THROW__("Unexpected open-brace in array scope");
 		} else if (in_scope(VARTYPE_IDENTIFIER)) {
-			DUCT_SP_THROW__(PARSER, "Cannot make node on same line as identifier with children");
+			DUCT_SP_THROW__("Cannot make node on same line as identifier with children");
 		} else if (!m_varname.empty() && !has_states(STATE_EQUALS)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected open-brace after name; possibly missing equality sign or attempting to (illegally) add node to identifier");
+			DUCT_SP_THROW__("Unexpected open-brace after name; possibly missing equality sign or attempting to (illegally) add node to identifier");
 		} else {
 			make_collection(VARTYPE_NODE);
 		}
 		break;
 	case TOK_CLOSE_BRACE:
 		if (at_root()) {
-			DUCT_SP_THROW__(PARSER, "Mismatched node brace");
+			DUCT_SP_THROW__("Mismatched node brace");
 		} else if (in_scope(VARTYPE_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected close-brace in array scope");
+			DUCT_SP_THROW__("Unexpected close-brace in array scope");
 		} else if (has_states(STATE_EQUALS)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after equality sign, got close-brace");
+			DUCT_SP_THROW__("Expected value after equality sign, got close-brace");
 		} else if (has_states(STATE_COMMA)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after comma, got close-brace");
+			DUCT_SP_THROW__("Expected value after comma, got close-brace");
 		} else {
 			if (!m_varname.empty()) { // Acts terminatively on a yet-realized identifier
 				make_collection(VARTYPE_IDENTIFIER, false);
@@ -395,7 +385,7 @@ void ScriptParser::handle_token() {
 		break;
 	case TOK_OPEN_BRACKET:
 		if (in_scope(VARTYPE_ARRAY) && !has_states_any(STATE_COMMA|STATE_OPEN_ARRAY)) {
-			DUCT_SP_THROW__(PARSER, "Unexpected token after non-open-bracket and non-comma in array scope");
+			DUCT_SP_THROW__("Unexpected token after non-open-bracket and non-comma in array scope");
 		} else {
 			if (!m_varname.empty() && !has_states(STATE_EQUALS)) { // Acts constructively on a yet-realized identifier
 				make_collection(VARTYPE_IDENTIFIER);
@@ -406,13 +396,13 @@ void ScriptParser::handle_token() {
 		break;
 	case TOK_CLOSE_BRACKET:
 		if (at_root()) {
-			DUCT_SP_THROW__(PARSER, "Mismatched array bracket");
+			DUCT_SP_THROW__("Mismatched array bracket");
 		} else if (!in_scope(VARTYPE_ARRAY)) {
-			DUCT_SP_THROWF__(PARSER, "Unexpected close-bracket in %s scope", detail::get_vartype_name(get_current_collection().get_type()));
+			DUCT_SP_THROWF__("Unexpected close-bracket in %s scope", detail::get_vartype_name(get_current_collection().get_type()));
 		} else if (has_states(STATE_EQUALS)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after equality sign, got close-bracket");
+			DUCT_SP_THROW__("Expected value after equality sign, got close-bracket");
 		} else if (has_states(STATE_COMMA)) {
-			DUCT_SP_THROW__(PARSER, "Expected value after comma, got close-bracket");
+			DUCT_SP_THROW__("Expected value after comma, got close-bracket");
 		} else {
 			pop(); // Pop from array to parent scope
 		}
@@ -436,7 +426,7 @@ void ScriptParser::handle_token() {
 void ScriptParser::read_tok_integer() {
 	while (CHAR_EOF!=m_curchar) {
 		if (CHAR_QUOTE==m_curchar) {
-			DUCT_SP_THROW__(PARSER, "Unexpected quote");
+			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (CHAR_SLASH==m_curchar) {
 			if (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar) {
 				break;
@@ -467,7 +457,7 @@ void ScriptParser::read_tok_integer() {
 void ScriptParser::read_tok_floating() {
 	while (CHAR_EOF!=m_curchar) {
 		if (CHAR_QUOTE==m_curchar) {
-			DUCT_SP_THROW__(PARSER, "Unexpected quote");
+			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (CHAR_SLASH==m_curchar) {
 			if (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar) { // Comment or comment block terminates
 				break;
@@ -493,7 +483,7 @@ void ScriptParser::read_tok_literal(char32 const match_str[], unsigned int const
 	unsigned int index=0;
 	while (CHAR_EOF!=m_curchar) {
 		if (CHAR_QUOTE==m_curchar) {
-			DUCT_SP_THROW__(PARSER, "Unexpected quote");
+			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (s_set_terminator.contains(m_curchar) // All single terminators
 				||(CHAR_SLASH==m_curchar && (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar))) { // Comment or comment block terminate
 			if (length>index) { // Haven't yet checked all characters in match string; must be a normal string
@@ -515,13 +505,13 @@ void ScriptParser::read_tok_literal(char32 const match_str[], unsigned int const
 void ScriptParser::read_tok_string() {
 	while (CHAR_EOF!=m_curchar) {
 		if (CHAR_QUOTE==m_curchar) {
-			DUCT_SP_THROW__(PARSER, "Unexpected quote");
+			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (CHAR_BACKSLASH==m_curchar) {
 			char32 const cp=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
-				DUCT_SP_THROW__(PARSER, "Expected escape sequence, got EOL/EOF");
+				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
-				DUCT_SP_THROWF__(PARSER, "Unexpected escape sequence: '%c' (0x%X)", m_curchar, m_curchar);
+				DUCT_SP_THROWF__("Unexpected escape sequence: '%c' (0x%X)", m_curchar, m_curchar);
 			} else {
 				m_token.get_buffer().push_back(cp);
 			}
@@ -540,13 +530,13 @@ void ScriptParser::read_tok_string_quoted() {
 	next_char(); // Skip the first character (it will be the initial quote)
 	while (CHAR_QUOTE!=m_curchar) {
 		if (CHAR_EOF==m_curchar) {
-			DUCT_SP_THROW__(PARSER, "Encountered EOF whilst reading quoted string");
+			DUCT_SP_THROW__("Encountered EOF whilst reading quoted string");
 		} else if (CHAR_BACKSLASH==m_curchar) {
 			char32 const cp=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
-				DUCT_SP_THROW__(PARSER, "Expected escape sequence, got EOL/EOF");
+				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
-				DUCT_SP_THROWF__(PARSER, "Unexpected escape sequence: '%c' (0x%X)", m_curchar, m_curchar);
+				DUCT_SP_THROWF__("Unexpected escape sequence: '%c' (0x%X)", m_curchar, m_curchar);
 			} else {
 				m_token.get_buffer().push_back(cp);
 			}
@@ -575,7 +565,7 @@ void ScriptParser::read_tok_comment_block() {
 			}
 		}
 	}
-	DUCT_SP_THROW__(PARSER, "Unexpected EOF whilst reading comment block");
+	DUCT_SP_THROW__("Unexpected EOF whilst reading comment block");
 }
 
 bool ScriptParser::at_root() const {
@@ -608,7 +598,7 @@ void ScriptParser::pop() {
 	m_stack.pop_back();
 }
 
-void ScriptParser::throwex(ScriptParserException e) {
+void ScriptParser::throwex(ScriptParserException&& e) {
 	reset();
 	throw e;
 }

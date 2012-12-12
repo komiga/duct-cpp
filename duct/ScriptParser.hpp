@@ -34,25 +34,10 @@ class ScriptParserException;
 class ScriptParser;
 
 /**
-	ScriptParser errors.
-*/
-enum ScriptParserError {
-	/** Unknown error. */
-	UNKNOWN=0,
-	/** Parser error. */
-	PARSER,
-	/** Hierarchy error (e.g. collection opened but not closed). */
-	HIERARCHY,
-	/** Memory allocation error (e.g. out of memory). */
-	MEMALLOC
-};
-
-/**
 	ScriptParser exception.
 */
 class ScriptParserException : public std::exception {
 private:
-	ScriptParserError m_error;
 	char const* m_scope;
 	Token const* m_token;
 	ScriptParser const* m_parser;
@@ -62,7 +47,7 @@ public:
 	/**
 		Detailed constructor.
 	*/
-	ScriptParserException(ScriptParserError const error, char const* const scope, Token const* token, ScriptParser const* const parser, char const* const fmt, ...);
+	ScriptParserException(char const scope[], Token const* token, ScriptParser const* const parser, char const fmt[], ...);
 	/**
 		Destructor.
 	*/
@@ -72,14 +57,7 @@ public:
 		Get error message.
 		@returns The error message.
 	*/
-	char const* what() const throw() { return m_message; }
-
-	/**
-		Get the name of an error.
-		@returns The name of @a error.
-		@param error An error.
-	*/
-	static char const* get_error_name(ScriptParserError const error);
+	inline char const* what() const throw() { return m_message; }
 };
 
 /**
@@ -175,7 +153,7 @@ private:
 	void push(Variable& collection);
 	void pop();
 
-	void throwex(ScriptParserException e);
+	void throwex(ScriptParserException&& e);
 	void make_name();
 	void make_collection(VariableType const type, bool push_collection=true);
 	void make_value();
