@@ -42,35 +42,36 @@ namespace {
 	// Can't do partial template function specialization (grumble grumble); using a struct instead for the sneaky magics
 	template<typename T, std::size_t size_=sizeof(T)>
 	struct bs_impl;
-	
+
 	// Convenience
 	template<typename T>
 	struct bs_impl<T, 1> {
-		inline static T swap(T value) {
+		inline static constexpr T swap(T value) {
 			return value;
 		}
 	};
 
-	// Specialize float and double.
-	// bswap_X() could probably be used safely with both type-casted floating-point types,
-	// but it's safer to just swap the bytes (apparently 80-bit doubles are possible? I
-	// muchly doubt their prevalence, but whatever)
+	// Specialize for floating-point types.
+	// bswap_X() could maybe sometimes be used safely with both 32-bit and 64-bit floating-point types,
+	// but it's safer to just swap the bytes (esp. since the bswap macros can use assembly voodoo).
 	template<> struct bs_impl<float> {
-		static float swap(float value) {
+		inline static float swap(float value) {
 			char& b=reinterpret_cast<char&>(value);
 			std::reverse(&b, &b+sizeof(float));
 			return value;
 		}
 	};
 
+	// *long* double, you say? Never heard of such an arcane thing!
 	template<> struct bs_impl<double> {
-		static double swap(double value) {
+		inline static double swap(double value) {
 			char& b=reinterpret_cast<char&>(value);
 			std::reverse(&b, &b+sizeof(double));
 			return value;
 		}
 	};
 
+	// NB: Cannot constexpr these; bswap macros can potentially use assembly code
 	template<typename T>
 	struct bs_impl<T, 2> {
 		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
@@ -104,7 +105,7 @@ namespace {
 	@param value Value to swap.
 */
 template<typename T>
-inline T byte_swap(T value) {
+inline constexpr T byte_swap(T value) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	return bs_impl<T, sizeof(T)>::swap(value);
 }
@@ -127,12 +128,8 @@ inline void byte_swap_ref(T& value) {
 	@param endian Desired endian.
 */
 template<typename T>
-T byte_swap_if(T value, duct::Endian const endian) {
-	if (Endian::SYSTEM!=endian) {
-		return byte_swap<T>(value);
-	} else {
-		return value;
-	}
+inline constexpr T byte_swap_if(T value, duct::Endian const endian) {
+	return (Endian::SYSTEM!=endian) ? byte_swap<T>(value) : value;
 }
 
 /**
