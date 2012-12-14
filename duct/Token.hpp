@@ -18,7 +18,7 @@ namespace duct {
 class Token;
 
 /**
-	@defgroup parser Parser framework
+	@addtogroup parser
 	@{
 */
 

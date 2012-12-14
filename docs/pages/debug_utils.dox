@@ -1,0 +1,13 @@
+
+/**
+
+@defgroup debug Debug utilities
+@details
+
+@note All debug macros defined here are no-ops if @c NDEBUG is defined (unless %DUCT_CONFIG_FORCE_DEBUG_MACROS is defined).
+
+Configuration defines:
+
+	- %DUCT_CONFIG_FORCE_DEBUG_MACROS
+
+*/

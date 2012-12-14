@@ -24,7 +24,7 @@ namespace duct {
 class Variable;
 
 /**
-	@defgroup variable Variable class and utilities
+	@addtogroup variable
 	@{
 */
 

@@ -23,7 +23,7 @@ namespace duct {
 namespace StringUtils {
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 /**
@@ -269,7 +269,7 @@ inline stringT escape_string(stringT const& str, EscapeablePair const& esc_pair,
 }
 
 /** @} */ // end of name-group Escape utilities
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace StringUtils
 } // namespace duct

@@ -22,7 +22,7 @@ namespace duct {
 class Parser;
 
 /**
-	@defgroup parser Parser framework
+	@addtogroup parser
 	@{
 */
 

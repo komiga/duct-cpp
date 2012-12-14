@@ -20,7 +20,7 @@
 namespace duct {
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 
@@ -574,7 +574,7 @@ public:
 };
 
 /** @} */ // end of name-group Utilities
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 #include "./impl/EncodingUtils.inl"
 

@@ -18,15 +18,10 @@
 namespace duct {
 
 // Forward declarations
-//enum Endian : int;
+enum class Endian : unsigned int;
 
 /**
-	@defgroup endian_swap_utils Endian-swapping utilities
-	@details
-	@note The byte_swap() functions:
-	
-	-# are only usable with 2, 4, and 8 byte-sized arithmetic types (integral and floating-point types; see @c std::is_arithmetic); a 1-byte immediate-return implementation is defined for convenience
-	-# may be system-optimized for integral types (where @c <byteswap.h> is present)
+	@addtogroup endian_utils
 	@{
 */
 
@@ -153,7 +148,7 @@ inline void byte_swap_ref_if(T& value, duct::Endian const endian) {
 	}
 }
 
-/** @} */ // end of doc-group endian_swap_utils
+/** @} */ // end of doc-group endian_utils
 
 } // namespace duct
 

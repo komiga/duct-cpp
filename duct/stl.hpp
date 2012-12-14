@@ -17,13 +17,10 @@
 #include <sstream>
 
 namespace duct {
+namespace stl {
 
 /**
-	@defgroup stl STL types and configuration
-	@details
-	Configuration defines:
-	
-	- %DUCT_CONFIG_STL_ALLOCATOR
+	@addtogroup stl
 	@{
 */
 
@@ -35,13 +32,12 @@ namespace duct {
 	#define DUCT_CONFIG_STL_ALLOCATOR std::allocator
 #endif
 
-namespace stl {
-
 /**
 	Template for @c std::vector using the configured allocator.
 */
 template<typename T>
 struct vector {
+	/** The full type. */
 	typedef std::vector<T, DUCT_CONFIG_STL_ALLOCATOR<T> > type;
 };
 
@@ -50,6 +46,7 @@ struct vector {
 */
 template<typename T>
 struct deque {
+	/** The full type. */
 	typedef std::deque<T, DUCT_CONFIG_STL_ALLOCATOR<T> > type;
 };
 
@@ -58,6 +55,7 @@ struct deque {
 */
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_string {
+	/** The full type. */
 	typedef std::basic_string<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
 };
 
@@ -66,6 +64,7 @@ struct basic_string {
 */
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_istringstream {
+	/** The full type. */
 	typedef std::basic_istringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
 };
 
@@ -74,6 +73,7 @@ struct basic_istringstream {
 */
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_ostringstream {
+	/** The full type. */
 	typedef std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
 };
 
@@ -82,6 +82,7 @@ struct basic_ostringstream {
 */
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_stringstream {
+	/** The full type. */
 	typedef std::basic_stringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
 };
 
@@ -92,10 +93,9 @@ typedef basic_ostringstream<char>::type ostringstream;
 /**	Alias for @c basic_stringstream<char>. */
 typedef basic_stringstream<char>::type stringstream;
 
-} // namespace stl
-
 /** @} */ // end of doc-group stl
 
+} // namespace stl
 } // namespace duct
 
 #endif // DUCT_STL_HPP_

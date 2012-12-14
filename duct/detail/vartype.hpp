@@ -21,15 +21,6 @@ namespace duct {
 
 /**
 	@addtogroup variable
-	@details
-	@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE @c VariableTypes:
-	-# VARTYPE_STRING
-	-# VARTYPE_INTEGER
-	-# VARTYPE_FLOAT
-	-# VARTYPE_BOOL
-
-	Configuration defines:
-	- %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
 	@{
 */
 

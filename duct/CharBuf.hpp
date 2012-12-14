@@ -22,7 +22,7 @@
 namespace duct {
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 
@@ -224,7 +224,7 @@ private:
 	}
 };
 
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace duct
 

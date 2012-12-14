@@ -17,15 +17,13 @@
 #include "./detail/string_traits.hpp"
 #include "./CharacterRange.hpp"
 
-#include <algorithm>
-
 namespace duct {
 
 // Forward declarations
 class CharacterSet;
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 /**
@@ -376,7 +374,7 @@ public:
 };
 
 /** @} */ // end of name-group Comparison helpers
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace duct
 

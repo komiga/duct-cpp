@@ -1,6 +1,6 @@
 /**
 @file ScriptWriter.hpp
-@brief ductScript formatter.
+@brief ductScript writer.
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.

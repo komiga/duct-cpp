@@ -15,7 +15,7 @@
 namespace duct {
 
 /**
-	@defgroup string String types and utilities
+	@addtogroup text
 	@{
 */
 
@@ -43,11 +43,11 @@ namespace duct {
 /**
 	UTF-8 string type.
 	Implies UTF-8 encoded data.
-	@note There is nothing special about this type; it is merely a @c std::basic_string<char> used as a convenient container.
+	@note There is nothing special about this type; it is merely a @c std::basic_string<char, ...> used as a convenient container.
 */
 typedef duct::stl::basic_string<char>::type u8string;
 
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace duct
 

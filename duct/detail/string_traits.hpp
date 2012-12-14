@@ -19,7 +19,7 @@ namespace duct {
 namespace detail {
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 
@@ -40,7 +40,7 @@ struct string_traits {
 	typedef EncodingUtils<char_size> encoding_utils;
 };
 
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace detail
 } // namespace duct

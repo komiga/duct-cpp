@@ -12,7 +12,7 @@
 #include <cstdint>
 
 /**
-	@defgroup config Configuration
+	@addtogroup config
 	@{
 */
 

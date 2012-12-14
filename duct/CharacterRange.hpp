@@ -20,7 +20,7 @@ namespace duct {
 class CharacterRange;
 
 /**
-	@addtogroup string
+	@addtogroup text
 	@{
 */
 /**
@@ -206,7 +206,7 @@ public:
 };
 
 /** @} */ // end of name-group Comparison helpers
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace duct
 

@@ -1,6 +1,6 @@
 /**
 @file debug.hpp
-@brief Debug utilities
+@brief Debug utilities.
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
@@ -19,13 +19,7 @@
 namespace duct {
 
 /**
-	@defgroup debug Debug utilities
-	@details
-	@note All debug macros defined here are no-ops if @c NDEBUG is defined and unless %DUCT_CONFIG_FORCE_DEBUG_MACROS is defined.
-
-	Configuration defines:
-	
-	- %DUCT_CONFIG_FORCE_DEBUG_MACROS
+	@addtogroup debug
 	@{
 */
 

@@ -25,7 +25,7 @@
 namespace duct {
 
 /**
-	@defgroup ductScript ductScript parsing and formatting
+	@addtogroup ductScript
 	@{
 */
 

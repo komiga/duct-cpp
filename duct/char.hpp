@@ -16,11 +16,7 @@
 namespace duct {
 
 /**
-	@addtogroup string
-	@details
-	Configuration defines:
-	
-	- %DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
+	@addtogroup text
 	@{
 */
 
@@ -235,7 +231,7 @@ enum Chars {
 	CHAR_F='f'
 };
 
-/** @} */ // end of doc-group string
+/** @} */ // end of doc-group text
 
 } // namespace duct
 
