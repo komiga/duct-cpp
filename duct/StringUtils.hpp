@@ -74,11 +74,11 @@ struct cvt_impl;
 template<class defsT>
 struct cvt_impl<defsT, false> {
 	template<typename InputIterator>
-	static inline bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
+	inline static bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
 		return do_cvt<defsT>(dest, pos, end);
 	}
 	template<class stringS>
-	static inline bool do_string(typename defsT::string_type& dest, stringS const& src) {
+	inline static bool do_string(typename defsT::string_type& dest, stringS const& src) {
 		return do_cvt<defsT>(dest, src.cbegin(), src.cend());
 	}
 };
@@ -86,12 +86,12 @@ struct cvt_impl<defsT, false> {
 template<class defsT>
 struct cvt_impl<defsT, true> {
 	template<typename InputIterator>
-	static inline bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
+	inline static bool do_sequence(typename defsT::string_type& dest, InputIterator pos, InputIterator const end) {
 		dest.append(pos, end);
 		return true;
 	}
 	template<class stringS>
-	static inline bool do_string(typename defsT::string_type& dest, stringS const& src) {
+	inline static bool do_string(typename defsT::string_type& dest, stringS const& src) {
 		dest.append(src);
 		return true;
 	}

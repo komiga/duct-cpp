@@ -150,20 +150,20 @@ public:
 		@returns The number of code units required to complete the sequence.
 		@param first First unit in a code unit sequence.
 	*/
-	static inline unsigned int required_first(char_type const first);
+	inline static unsigned int required_first(char_type const first);
 	/**
 		Get the number of code units required to store an encoded sequence based on its first unit.
 		@note This @em does count the first unit (@a first); it is equivalent to: @code required_first(first)+1 @endcode
 		@returns The number of code units required to store the sequence.
 		@param first First unit in a code unit sequence.
 	*/
-	static inline unsigned int required_first_whole(char_type const first);
+	inline static unsigned int required_first_whole(char_type const first);
 	/**
 		Get the number of code units required to encode a code point.
 		@returns The number of code units required.
 		@param c A code point.
 	*/
-	static inline unsigned int required(char32 const c);
+	inline static unsigned int required(char32 const c);
 	/**
 		Count the number of code points in a code unit range.
 		@warning An incomplete trailing sequence will not be counted unless: @code count_incomplete==true @endcode
@@ -342,11 +342,11 @@ public:
 	static RandomAccessIterator prev(RandomAccessIterator from, RandomAccessIterator const begin);
 
 	/** @copydoc UTF8Utils::required_first(char const) */
-	static inline unsigned int required_first(char_type const first);
+	inline static unsigned int required_first(char_type const first);
 	/** @copydoc UTF8Utils::required_first_whole(char const) */
-	static inline unsigned int required_first_whole(char_type const first);
+	inline static unsigned int required_first_whole(char_type const first);
 	/** @copydoc UTF8Utils::required(char32 const) */
-	static inline unsigned int required(char32 const c);
+	inline static unsigned int required(char32 const c);
 
 	/** @copydoc UTF8Utils::count(RandomAccessIterator,RandomAccessIterator const,bool const) */
 	template<typename RandomAccessIterator>
@@ -448,7 +448,7 @@ public:
 		@param end End of boundary.
 	*/
 	template<typename RandomAccessIterator>
-	static inline RandomAccessIterator next(RandomAccessIterator const from, RandomAccessIterator const end);
+	inline static RandomAccessIterator next(RandomAccessIterator const from, RandomAccessIterator const end);
 	/**
 		Step backwards to nearest sequence.
 		@returns The backwards-stepped iterator; or @a from if @c from<=begin.
@@ -456,27 +456,27 @@ public:
 		@param begin Front of boundary.
 	*/
 	template<typename RandomAccessIterator>
-	static inline RandomAccessIterator prev(RandomAccessIterator from, RandomAccessIterator const begin);
+	inline static RandomAccessIterator prev(RandomAccessIterator from, RandomAccessIterator const begin);
 	/**
 		Get the number of code units required to complete an encoded sequence based on its first unit.
 		@note This <em>does not</em> count the first unit (@a first); see @c required_first_whole().
 		@returns <strong>Always @c 0</strong>.
 		@param first First unit in a code unit sequence.
 	*/
-	static inline unsigned int required_first(char_type const first);
+	inline static unsigned int required_first(char_type const first);
 	/**
 		Get the number of code units required to store an encoded sequence based on its first unit.
 		@note This @em does count the first unit (@a first); it is equivalent to: @code required_first(first)+1 @endcode
 		@returns <strong>Always @c 1</strong>.
 		@param first First unit in a code unit sequence.
 	*/
-	static inline unsigned int required_first_whole(char_type const first);
+	inline static unsigned int required_first_whole(char_type const first);
 	/**
 		Get the number of code units required to encode a code point.
 		@returns <strong>Always @c 1</strong>.
 		@param c A code point.
 	*/
-	static inline unsigned int required(char32 const c);
+	inline static unsigned int required(char32 const c);
 	/**
 		Count the number of code points in a UTF-32 code point range.
 		@warning The input range is not checked for invalid code points; it will provide exactly the required number of code points to store the input range if it were entirely valid.
@@ -486,7 +486,7 @@ public:
 		@param count_incomplete Unused.
 	*/
 	template<typename RandomAccessIterator>
-	static inline std::size_t count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete=false);
+	inline static std::size_t count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete=false);
 
 	/**
 		Decode locale-encoded unit to a code point.

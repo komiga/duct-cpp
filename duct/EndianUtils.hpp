@@ -46,7 +46,7 @@ namespace {
 	// Convenience
 	template<typename T>
 	struct bs_impl<T, 1> {
-		static inline T swap(T value) {
+		inline static T swap(T value) {
 			return value;
 		}
 	};
@@ -74,7 +74,7 @@ namespace {
 	template<typename T>
 	struct bs_impl<T, 2> {
 		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-		static inline T swap(T value) {
+		inline static T swap(T value) {
 			return static_cast<T>(bswap_16(reinterpret_cast<uint16_t&>(value)));
 		}
 	};
@@ -82,7 +82,7 @@ namespace {
 	template<typename T>
 	struct bs_impl<T, 4> {
 		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-		static inline T swap(T value) {
+		inline static T swap(T value) {
 			return static_cast<T>(bswap_32(reinterpret_cast<uint32_t&>(value)));
 		}
 	};
@@ -90,7 +90,7 @@ namespace {
 	template<typename T>
 	struct bs_impl<T, 8> {
 		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-		static inline T swap(T value) {
+		inline static T swap(T value) {
 			return static_cast<T>(bswap_64(reinterpret_cast<uint64_t&>(value)));
 		}
 	};
