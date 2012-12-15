@@ -6,16 +6,16 @@
 			"path": "./"
 		},
 		{
-			"name": "- Docs",
-			"path": "./docs"
+			"name": "- Doc",
+			"path": "./doc/"
 		},
 		{
 			"name": "- Source",
 			"path": "./duct/"
 		},
 		{
-			"name": "- Tests",
-			"path": "./tests/"
+			"name": "- Test",
+			"path": "./test/"
 		}
 	],
 	"settings":
