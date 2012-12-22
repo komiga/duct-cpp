@@ -166,7 +166,7 @@ public:
 	inline static unsigned int required(char32 const c);
 	/**
 		Count the number of code points in a code unit range.
-		@warning An incomplete trailing sequence will not be counted unless: @code count_incomplete==true @endcode
+		@warning An incomplete trailing sequence will not be counted unless @c count_incomplete==true.
 		@warning The input range is not checked for invalid code points; it will provide exactly the required number of code points to store the input range if it were entirely valid.
 		@returns The number of code points in the range.
 		@param begin Beginning iterator.

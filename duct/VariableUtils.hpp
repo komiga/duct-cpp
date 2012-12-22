@@ -31,10 +31,10 @@ static detail::var_config::string_type const s_sv_null{"null"};
 /**
 	Convert string to appropriate type and set Variable value.
 	@note Conversion is (case sensitive):
-		@c "false" morphs to a @c VARTYPE_BOOL with @c false
-		@c "true" morphs to a @c VARTYPE_BOOL with @c true
-		@c "null" morphs to a @c VARTYPE_NULL
-		else morphs to a @c VARTYPE_STRING with @c value
+	- @c "false" morphs to a @c VARTYPE_BOOL with @c false
+	- @c "true" morphs to a @c VARTYPE_BOOL with @c true
+	- @c "null" morphs to a @c VARTYPE_NULL
+	- else morphs to a @c VARTYPE_STRING with @c value
 	@param var Variable to modify.
 	@param value String value to convert.
 */
@@ -53,10 +53,10 @@ void convert_typed(Variable& var, detail::var_config::string_type value) {
 /**
 	Convert string to appropriate Variable.
 	@note Conversion is (case sensitive):
-		@c "false" returns a @c VARTYPE_BOOL with @c false
-		@c "true" returns a @c VARTYPE_BOOL with @c true
-		@c "null" returns a @c VARTYPE_NULL
-		else returns a @c VARTYPE_STRING with @c value
+	- @c "false" returns a @c VARTYPE_BOOL with @c false
+	- @c "true" returns a @c VARTYPE_BOOL with @c true
+	- @c "null" returns a @c VARTYPE_NULL
+	- else returns a @c VARTYPE_STRING with @c value
 	@returns String converted to either a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
 	@param value String value to convert.
 */
@@ -75,10 +75,10 @@ Variable convert_typed(detail::var_config::string_type value) {
 /**
 	Convert string to appropriate Variable with name.
 	@note Conversion is (case sensitive):
-		@c "false" returns a @c VARTYPE_BOOL with @c false
-		@c "true" returns a @c VARTYPE_BOOL with @c true
-		@c "null" returns a @c VARTYPE_NULL
-		else returns a @c VARTYPE_STRING with @c value
+	- @c "false" returns a @c VARTYPE_BOOL with @c false
+	- @c "true" returns a @c VARTYPE_BOOL with @c true
+	- @c "null" returns a @c VARTYPE_NULL
+	- else returns a @c VARTYPE_STRING with @c value
 	@returns String converted to either a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
 	@param name Name of constructed variable.
 	@param value String value to convert.

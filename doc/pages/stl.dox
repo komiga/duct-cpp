@@ -6,6 +6,6 @@
 
 Configuration defines:
 
-	- %DUCT_CONFIG_STL_ALLOCATOR
+- #DUCT_CONFIG_STL_ALLOCATOR
 
 */

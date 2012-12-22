@@ -4,14 +4,15 @@
 @defgroup variable Variable class and utilities
 @details
 
-@note The @c valtype constructs here are only defined for @c VARCLASS_VALUE @c VariableTypes:
-	-# VARTYPE_STRING
-	-# VARTYPE_INTEGER
-	-# VARTYPE_FLOAT
-	-# VARTYPE_BOOL
+@note The @c valtype constructs here are only defined for VARCLASS_VALUE types:
+
+- @c VARTYPE_STRING
+- @c VARTYPE_INTEGER
+- @c VARTYPE_FLOAT
+- @c VARTYPE_BOOL
 
 Configuration defines:
 
-	- %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
+- #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
 
 */

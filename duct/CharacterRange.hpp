@@ -30,7 +30,8 @@ class CharacterRange;
 
 /**
 	A range of characters.
-	@note The range defined is end-inclusive; for a code point @em cp and CharacterRange @em range, will match: @code cp>=range.start() && cp<=range.end() @endcode
+	@note The range defined is end-inclusive; for a code point @em cp and CharacterRange @em range, will match:
+	@code cp>=range.start() && cp<=range.end() @endcode
 */
 class CharacterRange {
 private:

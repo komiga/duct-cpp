@@ -25,7 +25,7 @@ namespace duct {
 
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 	/**
-		When defined, ensure all @c DUCT_DEBUG and @c DUCT_DEBUG_ASSERT macros are not no-ops.
+		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT macros to be defined (regardless of @c NDEBUG presence).
 	*/
 	#define DUCT_CONFIG_FORCE_DEBUG_MACROS
 #endif

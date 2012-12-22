@@ -195,7 +195,7 @@ public:
 	}
 	/**
 		Copy operator.
-		@note %reset() is called if @a other's type and the current type are both unequal and not collections.
+		@note #reset() is called if @a other's type and the current type are both unequal and not collections.
 		@returns @c *this.
 		@param other Variable to copy.
 	*/
@@ -225,7 +225,7 @@ public:
 	/**
 		Get type.
 		@returns The current type.
-		@sa morph(VariableType const)
+		@sa morph(T const)
 	*/
 	inline VariableType get_type() const { return m_type; }
 
@@ -295,7 +295,7 @@ public:
 		Change type.
 		@returns @c *this.
 		@param type New type.
-		@param discard_children Whether to discard children (%reset()) when changing between @c VARCLASS_COLLECTION types; @c false by default.
+		@param discard_children Whether to discard children (#reset()) when changing between @c VARCLASS_COLLECTION types; @c false by default.
 	*/
 	Variable& morph(VariableType const type, bool const discard_children=false) {
 		if (type!=m_type) {
@@ -309,7 +309,7 @@ public:
 
 	/**
 		Change type to collection and set children.
-		@note %reset() is called when the type is changed <em>only</em> if the current type is not a collection.
+		@note #reset() is called when the type is changed <em>only</em> if the current type is not a collection.
 		@warning An assertion will fail if @a type is not a @c VARCLASS_COLLECTION.
 		@returns @c *this.
 		@param type New collection type.
@@ -329,7 +329,7 @@ public:
 
 	/**
 		Change type and set value.
-		@note %reset() is called if the type is changed.
+		@note #reset() is called if the type is changed.
 		@returns @c *this.
 		@tparam T Value type; inferred from @a value.
 		@param value New value; the new variable type is inferred.
@@ -347,7 +347,7 @@ public:
 	}
 	/**
 		Change type and set string value.
-		@note %reset() is called if the type is changed.
+		@note #reset() is called if the type is changed.
 		@returns @c *this.
 		@param value New string value.
 	*/
@@ -523,7 +523,7 @@ public:
 	/**
 		Get value as string.
 		@returns The current value as a string.
-		@sa get_as_str(stringT&)
+		@sa get_as_str(stringT&) const
 	*/
 	inline detail::var_config::string_type get_as_str() const {
 		return get_as_str<detail::var_config::string_type>();
@@ -532,7 +532,7 @@ public:
 		Get value as string.
 		@returns The current value as a string.
 		@tparam stringT String type to convert to.
-		@sa get_as_str(stringT&)
+		@sa get_as_str(stringT&) const
 	*/
 	template<class stringT>
 	stringT get_as_str() const {

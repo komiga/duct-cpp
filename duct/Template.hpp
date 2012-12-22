@@ -27,7 +27,7 @@ namespace duct {
 
 /**
 	Layout field flags.
-	@note See @c Template::validate_layout() for usage notes.
+	@note See Template::validate_layout() for usage notes.
 */
 enum LayoutFieldFlag : unsigned int {
 	/** Optional field. */
@@ -115,26 +115,26 @@ public:
 	/**
 		Set type mask.
 		@param type_mask New type mask.
-		@sa validate_type(Variable const&)
+		@sa validate_type(Variable const&) const
 	*/
 	inline void set_type_mask(unsigned int const type_mask) { m_type_mask=type_mask; }
 	/**
 		Get type mask.
 		@returns The current type mask.
-		@sa validate_type(Variable const&)
+		@sa validate_type(Variable const&) const
 	*/
 	inline unsigned int get_type_mask() const { return m_type_mask; }
 
 	/**
 		Set identity.
 		@param identity New identity.
-		@sa validate_identity(Variable const&)
+		@sa validate_identity(Variable const&) const
 	*/
 	inline void set_identity(identity_vector_type identity) { m_identity=std::move(identity); }
 	/**
 		Get identity.
 		@returns The current identity.
-		@sa validate_identity(Variable const&)
+		@sa validate_identity(Variable const&) const
 	*/
 	inline identity_vector_type& get_identity() { return m_identity; }
 	/** @copydoc get_identity() */
@@ -143,13 +143,13 @@ public:
 	/**
 		Set layout.
 		@param layout New layout.
-		@sa validate_layout(Variable const&)
+		@sa validate_layout(Variable const&) const
 	*/
 	inline void set_layout(layout_vector_type layout) { m_layout=std::move(layout); }
 	/**
 		Get layout.
 		@returns The current layout.
-		@sa validate_layout(Variable const&)
+		@sa validate_layout(Variable const&) const
 	*/
 	inline layout_vector_type& get_layout() { return m_layout; }
 	/** @copydoc get_layout() */
@@ -162,7 +162,7 @@ public:
 		@note If @c validate_type(var) is @c true, layout validation is only done if @a var is a collection.
 		@returns @c true iff @a var matches template in type, identity, and layout.
 		@param var Variable to validate.
-		@sa validate_type(Variable const&), validate_identity(Variable const&), validate_layout(Variable const&)
+		@sa validate_type(Variable const&) const, validate_identity(Variable const&) const, validate_layout(Variable const&) const
 	*/
 	bool validate(Variable const& var) const {
 		return

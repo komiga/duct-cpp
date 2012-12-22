@@ -24,9 +24,8 @@ namespace duct {
 /**
 	Make string literal UTF-8 encoded.
 	For supporting compilers, takes a string literal and makes it UTF-8 encoded; otherwise equivalent to @a x.
-	@note This is <em>almost</em>, but not entirely guaranteed to make @a x UTF-8 encoded if #DUCT_USING_CPP11_CHAR_TYPES is defined.
+	@note This is <em>almost</em> - but not entirely - guaranteed to make @a x UTF-8 encoded if #DUCT_USING_CPP11_CHAR_TYPES is defined.
 	@param x String literal.
-	@sa u8string
 */
 #define DUCT_STR_U8(x)
 

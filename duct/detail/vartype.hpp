@@ -19,13 +19,18 @@
 
 namespace duct {
 
+// Forward declarations
+enum VariableType : unsigned int;
+enum VariableClass : unsigned int;
+enum VariableMasks : unsigned int;
+
 /**
 	@addtogroup variable
 	@{
 */
 
 /**
-	Variable value type.
+	Variable types.
 	@note @c VARTYPE_NULL is a special type to indicate nullness; it has no associated data field.
 	@sa VariableClass, VariableMasks
 */
@@ -83,7 +88,7 @@ enum VariableClass : unsigned int {
 };
 
 /**
-	Various @c VariableType masks.
+	Various VariableType masks.
 	@sa VariableType, VariableClass
 */
 enum VariableMasks : unsigned int {
@@ -97,7 +102,7 @@ enum VariableMasks : unsigned int {
 		|VARCLASS_COLLECTION
 		|VARTYPE_NULL
 	,
-	/** Matches @c VARCLASS_VALUE or @c VARTYPE_NULL. */
+	/** Matches VARCLASS_VALUE or VARTYPE_NULL. */
 	VARMASK_VALUE_OR_NULL
 		=VARCLASS_VALUE
 		|VARTYPE_NULL
@@ -115,7 +120,7 @@ namespace detail {
 #endif
 
 /**
-	@c Variable configuration.
+	Variable configuration.
 */
 struct var_config {
 	/** typename for Variable names */
@@ -126,12 +131,12 @@ struct var_config {
 #if (0==DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 	/**
 		typename for @c VARTYPE_INTEGER.
-		@c int32_t by default; @c int64_t with %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c int32_t by default; @c int64_t with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef int32_t		int_type;
 	/**
 		typename for @c VARTYPE_FLOAT.
-		@c float by default; @c double with %DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c float by default; @c double with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef float		float_type;
 #else

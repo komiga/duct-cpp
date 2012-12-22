@@ -38,21 +38,21 @@
 /**
 	Platform flags.
 	Defined to a bit-wise OR of one OS:
-	-# %DUCT_FLAG_PLATFORM_WINDOWS
-	-# %DUCT_FLAG_PLATFORM_LINUX
-	-# %DUCT_FLAG_PLATFORM_MACOS
+	-# #DUCT_FLAG_PLATFORM_WINDOWS
+	-# #DUCT_FLAG_PLATFORM_LINUX
+	-# #DUCT_FLAG_PLATFORM_MACOS
 
 	and one model:
-	-# %DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
-	-# %DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
+	-# #DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
+	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
 */
 #define DUCT_PLATFORM system_dependent
 
 /**
 	Equals one of:
-	-# %DUCT_FLAG_PLATFORM_WINDOWS
-	-# %DUCT_FLAG_PLATFORM_LINUX
-	-# %DUCT_FLAG_PLATFORM_MACOS
+	-# #DUCT_FLAG_PLATFORM_WINDOWS
+	-# #DUCT_FLAG_PLATFORM_LINUX
+	-# #DUCT_FLAG_PLATFORM_MACOS
 */
 #define DUCT_PLATFORM_SYSTEM system_dependent
 
@@ -66,8 +66,8 @@
 /**
 	Platform processor model: 32-bit (x86) or 64-bit (x86-64).
 	Equals one of:
-	-# %DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
-	-# %DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
+	-# #DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
+	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
 */
 #define DUCT_PLATFORM_MODEL system_dependent
 /**	Defined when the platform is 32-bit: @code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_32) @endcode */
@@ -119,8 +119,8 @@
 /**
 	System byteorder.
 	Equals one of:
-	-# %DUCT_ENDIAN_LITTLE - little-endian architecture
-	-# %DUCT_ENDIAN_BIG - big-endian architecture
+	-# #DUCT_ENDIAN_LITTLE (little-endian architecture)
+	-# #DUCT_ENDIAN_BIG (big-endian architecture)
 */
 #define DUCT_BYTEORDER
 /**
@@ -160,8 +160,8 @@
 /**
 	Detailed function signature.
 	Alias to either:
-	-# @c __FUNCSIG__ - Windows
-	-# @c __PRETTY_FUNCTION__ - UNIX-based
+	-# @c __FUNCSIG__ (Windows)
+	-# @c __PRETTY_FUNCTION__ (UNIX-based)
 */
 #define DUCT_FUNC_SIG system_dependent
 /**

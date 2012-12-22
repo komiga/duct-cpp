@@ -73,13 +73,13 @@ public:
 	/**
 		Get size.
 		@returns The number of characters in the buffer.
-		@sa get_capacity().
+		@sa get_capacity()
 	*/
 	inline std::size_t get_size() const { return m_buffer.size(); }
 	/**
 		Get capacity.
 		@returns The reserved size of the buffer.
-		@sa get_size().
+		@sa get_size()
 	*/
 	inline std::size_t get_capacity() const { return m_buffer.capacity(); }
 /// @}
@@ -150,7 +150,7 @@ public:
 	}
 /// @}
 
-/** @name Output */ /// @{
+/** @name Extraction */ /// @{
 	/**
 		Convert buffer to a string.
 		@returns Cache string converted to @a stringT.
