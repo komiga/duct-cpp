@@ -24,14 +24,6 @@ namespace stl {
 	@{
 */
 
-#ifndef DUCT_CONFIG_STL_ALLOCATOR
-	/**
-		Allocator class for all STL classes used by duct.
-		@note Defaults to @c std::allocator.
-	*/
-	#define DUCT_CONFIG_STL_ALLOCATOR std::allocator
-#endif
-
 /**
 	Template for @c std::vector using the configured allocator.
 */
