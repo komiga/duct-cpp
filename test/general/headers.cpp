@@ -3,7 +3,7 @@
 #include <duct/debug.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
-#include <duct/stl.hpp>
+#include <duct/aux.hpp>
 #include <duct/detail/string_traits.hpp>
 #include <duct/detail/vartype.hpp>
 #include <duct/CharBuf.hpp>

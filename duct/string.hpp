@@ -10,7 +10,7 @@
 #define DUCT_STRING_HPP_
 
 #include "./config.hpp"
-#include "./stl.hpp"
+#include "./aux.hpp"
 
 namespace duct {
 
@@ -45,7 +45,7 @@ namespace duct {
 	Implies UTF-8 encoded data.
 	@note There is nothing special about this type; it is merely a @c std::basic_string<char, ...> used as a convenient container.
 */
-typedef duct::stl::basic_string<char>::type u8string;
+typedef duct::aux::basic_string<char>::type u8string;
 
 /** @} */ // end of doc-group text
 

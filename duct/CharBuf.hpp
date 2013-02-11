@@ -10,7 +10,7 @@
 #define DUCT_CHARBUF_HPP_
 
 #include "./config.hpp"
-#include "./stl.hpp"
+#include "./aux.hpp"
 #include "./char.hpp"
 #include "./CharacterSet.hpp"
 #include "./EncodingUtils.hpp"
@@ -40,7 +40,7 @@ public:
 /// @}
 
 private:
-	duct::stl::vector<char_type>::type m_buffer;
+	duct::aux::vector<char_type>::type m_buffer;
 	bool m_cached;
 	u8string m_cache_string;
 
@@ -203,7 +203,7 @@ public:
 	bool to_arithmetic(T& value) {
 		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 		cache();
-		duct::stl::istringstream stream(m_cache_string);
+		duct::aux::istringstream stream(m_cache_string);
 		stream>>value;
 		if (stream.fail()) {
 			value=T();

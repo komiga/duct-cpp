@@ -11,7 +11,7 @@
 
 #include "./config.hpp"
 #include "./debug.hpp"
-#include "./stl.hpp"
+#include "./aux.hpp"
 #include "./char.hpp"
 #include "./CharacterSet.hpp"
 #include "./StringUtils.hpp"
@@ -65,7 +65,7 @@ public:
 */
 class ScriptParser /*final*/ : public Parser {
 private:
-	duct::stl::deque<Variable*>::type m_stack;
+	duct::aux::deque<Variable*>::type m_stack;
 	u8string m_varname;
 	unsigned int m_states;
 

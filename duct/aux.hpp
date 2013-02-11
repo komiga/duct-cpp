@@ -1,13 +1,13 @@
 /**
-@file stl.hpp
-@brief STL types and configuration.
+@file aux.hpp
+@brief Auxiliary stdlib specializations.
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_STL_HPP_
-#define DUCT_STL_HPP_
+#ifndef DUCT_AUX_HPP_
+#define DUCT_AUX_HPP_
 
 #include "./config.hpp"
 
@@ -17,10 +17,10 @@
 #include <sstream>
 
 namespace duct {
-namespace stl {
+namespace aux {
 
 /**
-	@addtogroup stl
+	@addtogroup aux
 	@{
 */
 
@@ -30,7 +30,7 @@ namespace stl {
 template<typename T>
 struct vector {
 	/** The full type. */
-	typedef std::vector<T, DUCT_CONFIG_STL_ALLOCATOR<T> > type;
+	typedef std::vector<T, DUCT_CONFIG_ALLOCATOR<T> > type;
 };
 
 /**
@@ -39,7 +39,7 @@ struct vector {
 template<typename T>
 struct deque {
 	/** The full type. */
-	typedef std::deque<T, DUCT_CONFIG_STL_ALLOCATOR<T> > type;
+	typedef std::deque<T, DUCT_CONFIG_ALLOCATOR<T> > type;
 };
 
 /**
@@ -48,7 +48,7 @@ struct deque {
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_string {
 	/** The full type. */
-	typedef std::basic_string<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
+	typedef std::basic_string<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
 };
 
 /**
@@ -57,7 +57,7 @@ struct basic_string {
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_istringstream {
 	/** The full type. */
-	typedef std::basic_istringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
+	typedef std::basic_istringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
 };
 
 /**
@@ -66,7 +66,7 @@ struct basic_istringstream {
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_ostringstream {
 	/** The full type. */
-	typedef std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
+	typedef std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
 };
 
 /**
@@ -75,7 +75,7 @@ struct basic_ostringstream {
 template<typename charT, class traitsT=std::char_traits<charT> >
 struct basic_stringstream {
 	/** The full type. */
-	typedef std::basic_stringstream<charT, traitsT, DUCT_CONFIG_STL_ALLOCATOR<charT> > type;
+	typedef std::basic_stringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
 };
 
 /**	Alias for @c basic_istringstream<char>. */
@@ -85,9 +85,9 @@ typedef basic_ostringstream<char>::type ostringstream;
 /**	Alias for @c basic_stringstream<char>. */
 typedef basic_stringstream<char>::type stringstream;
 
-/** @} */ // end of doc-group stl
+/** @} */ // end of doc-group aux
 
-} // namespace stl
+} // namespace aux
 } // namespace duct
 
-#endif // DUCT_STL_HPP_
+#endif // DUCT_AUX_HPP_

@@ -1,6 +1,6 @@
 
 #include <duct/config.hpp>
-#include <duct/stl.hpp>
+#include <duct/aux.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
 #include <duct/detail/vartype.hpp>
@@ -111,7 +111,7 @@ void do_test(duct::Variable& root, TestData const& td) {
 	duct::IO::imemstream in_stream{td.data, td.size};
 	std::printf("  Testing `%*s`:\n", static_cast<int>(td.size), td.data);
 	parse_stream(root, in_stream, td.valid);
-	duct::stl::stringstream out_stream;
+	duct::aux::stringstream out_stream;
 	write_var(root, out_stream);
 	std::cout<<"          `"<<out_stream.str()<<"`\n\n";
 }

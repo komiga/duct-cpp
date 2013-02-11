@@ -1,6 +1,6 @@
 /**
 @file IO.hpp
-@brief I/O utilities and Standard Library iostream extensions.
+@brief I/O utilities and iostream extensions.
 
 @author Tim Howard
 @copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.

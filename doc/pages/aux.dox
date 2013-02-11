@@ -1,0 +1,11 @@
+
+/**
+
+@defgroup aux Auxiliary stdlib specializations
+@details
+
+Configuration defines:
+
+- #DUCT_CONFIG_ALLOCATOR (actually defaulted in <duct/config.hpp> since it is sort-of global)
+
+*/

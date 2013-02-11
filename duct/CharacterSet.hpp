@@ -11,7 +11,7 @@
 
 #include "./config.hpp"
 #include "./debug.hpp"
-#include "./stl.hpp"
+#include "./aux.hpp"
 #include "./char.hpp"
 #include "./string.hpp"
 #include "./detail/string_traits.hpp"
@@ -37,7 +37,7 @@ class CharacterSet;
 class CharacterSet {
 public:
 	/** CharacterRange vector. */
-	typedef duct::stl::vector<CharacterRange>::type vector_type;
+	typedef duct::aux::vector<CharacterRange>::type vector_type;
 	/** CharacterRange iterator. */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator */

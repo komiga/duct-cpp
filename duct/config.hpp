@@ -158,10 +158,10 @@
 */
 
 /**
-	Allocator class for all STL classes used by duct.
+	Allocator class for all auxiliary stdlib specializations.
 	@note Defaults to @c std::allocator.
 */
-#define DUCT_CONFIG_STL_ALLOCATOR
+#define DUCT_CONFIG_ALLOCATOR
 
 /**
 	Detailed function signature.
@@ -422,8 +422,8 @@
 	DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)
 // -
 
-#ifndef DUCT_CONFIG_STL_ALLOCATOR
-	#define DUCT_CONFIG_STL_ALLOCATOR std::allocator
+#ifndef DUCT_CONFIG_ALLOCATOR
+	#define DUCT_CONFIG_ALLOCATOR std::allocator
 #endif
 
 // etc
