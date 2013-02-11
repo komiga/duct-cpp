@@ -157,13 +157,11 @@
 	@{
 */
 
-#ifndef DUCT_CONFIG_STL_ALLOCATOR
-	/**
-		Allocator class for all STL classes used by duct.
-		@note Defaults to @c std::allocator.
-	*/
-	#define DUCT_CONFIG_STL_ALLOCATOR std::allocator
-#endif
+/**
+	Allocator class for all STL classes used by duct.
+	@note Defaults to @c std::allocator.
+*/
+#define DUCT_CONFIG_STL_ALLOCATOR
 
 /**
 	Detailed function signature.
@@ -423,6 +421,10 @@
 	~TypeName();								\
 	DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)
 // -
+
+#ifndef DUCT_CONFIG_STL_ALLOCATOR
+	#define DUCT_CONFIG_STL_ALLOCATOR std::allocator
+#endif
 
 // etc
 #ifdef DUCT_PLATFORM_SYSTEM_WINDOWS
