@@ -25,65 +25,63 @@ namespace aux {
 */
 
 /**
-	Template for @c std::vector using the configured allocator.
+	Alias for @c std::vector<T> using the configured allocator.
 */
-template<typename T>
-struct vector {
-	/** The full type. */
-	typedef std::vector<T, DUCT_CONFIG_ALLOCATOR<T> > type;
-};
+template<
+	typename T
+>
+using vector=std::vector<T, DUCT_CONFIG_ALLOCATOR<T> >;
 
 /**
-	Template for @c std::deque using the configured allocator.
+	Alias for @c std::deque<T> using the configured allocator.
 */
-template<typename T>
-struct deque {
-	/** The full type. */
-	typedef std::deque<T, DUCT_CONFIG_ALLOCATOR<T> > type;
-};
+template<
+	typename T
+>
+using deque=std::deque<T, DUCT_CONFIG_ALLOCATOR<T> >;
 
 /**
-	Template for @c std::basic_string using the configured allocator.
+	Alias for @c std::basic_string<charT, traitsT> using the configured allocator.
 */
-template<typename charT, class traitsT=std::char_traits<charT> >
-struct basic_string {
-	/** The full type. */
-	typedef std::basic_string<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
-};
+template<
+	typename charT,
+	class traitsT=std::char_traits<charT>
+>
+using basic_string=std::basic_string<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
 
 /**
-	Template for @c std::basic_istringstream using the configured allocator.
+	Alias for @c std::basic_istringstream<charT, traitsT> using the configured allocator.
 */
-template<typename charT, class traitsT=std::char_traits<charT> >
-struct basic_istringstream {
-	/** The full type. */
-	typedef std::basic_istringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
-};
+template<
+	typename charT,
+	class traitsT=std::char_traits<charT>
+>
+using basic_istringstream=std::basic_istringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
 
 /**
-	Template for @c std::basic_ostringstream using the configured allocator.
+	Alias for @c std::basic_ostringstream<charT, traitsT> using the configured allocator.
 */
-template<typename charT, class traitsT=std::char_traits<charT> >
-struct basic_ostringstream {
-	/** The full type. */
-	typedef std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
-};
+template<
+	typename charT,
+	class traitsT=std::char_traits<charT>
+>
+using basic_ostringstream=std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
 
 /**
-	Template for @c std::basic_stringstream using the configured allocator.
+	Alias for @c std::basic_stringstream<charT, traitsT> using the configured allocator.
 */
-template<typename charT, class traitsT=std::char_traits<charT> >
-struct basic_stringstream {
-	/** The full type. */
-	typedef std::basic_stringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> > type;
-};
+template<
+	typename charT,
+	class traitsT=std::char_traits<charT>
+>
+using basic_stringstream=std::basic_stringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
 
 /**	Alias for @c basic_istringstream<char>. */
-typedef basic_istringstream<char>::type istringstream;
+typedef basic_istringstream<char> istringstream;
 /**	Alias for @c basic_ostringstream<char>. */
-typedef basic_ostringstream<char>::type ostringstream;
+typedef basic_ostringstream<char> ostringstream;
 /**	Alias for @c basic_stringstream<char>. */
-typedef basic_stringstream<char>::type stringstream;
+typedef basic_stringstream<char> stringstream;
 
 /** @} */ // end of doc-group aux
 

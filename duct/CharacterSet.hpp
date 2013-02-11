@@ -37,7 +37,7 @@ class CharacterSet;
 class CharacterSet {
 public:
 	/** CharacterRange vector. */
-	typedef duct::aux::vector<CharacterRange>::type vector_type;
+	typedef duct::aux::vector<CharacterRange> vector_type;
 	/** CharacterRange iterator. */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator */

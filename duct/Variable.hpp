@@ -35,7 +35,7 @@ class Variable;
 class Variable /*final*/ {
 public:
 	/** Children vector. */
-	typedef duct::aux::vector<Variable>::type vector_type;
+	typedef duct::aux::vector<Variable> vector_type;
 	/** Children iterator.  */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator  */

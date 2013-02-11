@@ -40,7 +40,7 @@ public:
 /// @}
 
 private:
-	duct::aux::vector<char_type>::type m_buffer;
+	duct::aux::vector<char_type> m_buffer;
 	bool m_cached;
 	u8string m_cache_string;
 

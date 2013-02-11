@@ -65,7 +65,7 @@ public:
 */
 class ScriptParser /*final*/ : public Parser {
 private:
-	duct::aux::deque<Variable*>::type m_stack;
+	duct::aux::deque<Variable*> m_stack;
 	u8string m_varname;
 	unsigned int m_states;
 

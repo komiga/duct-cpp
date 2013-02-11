@@ -43,9 +43,9 @@ enum LayoutFieldFlag : unsigned int {
 class Template {
 public:
 	/** Identity vector type. */
-	typedef duct::aux::vector<u8string>::type identity_vector_type;
+	typedef duct::aux::vector<u8string> identity_vector_type;
 	/** Layout vector type. */
-	typedef duct::aux::vector<unsigned int>::type layout_vector_type;
+	typedef duct::aux::vector<unsigned int> layout_vector_type;
 
 protected:
 	unsigned int m_type_mask; /**< Type mask. */
