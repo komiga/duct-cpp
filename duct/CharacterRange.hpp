@@ -30,66 +30,73 @@ class CharacterRange;
 
 /**
 	A range of characters.
-	@note The range defined is end-inclusive; for a code point @em cp and CharacterRange @em range, will match:
-	@code cp>=range.start() && cp<=range.end() @endcode
+	@note The range is inclusive and can thus map the entire UTF-32 space.
 */
 class CharacterRange {
 private:
-	char32 m_start;
-	char32 m_end;
+	char32 m_first;
+	char32 m_last;
 
 public:
 /** @name Constructors */ /// @{
+	/**
+		Construct null.
+		@note Equivalent to @c CharacterRange(0).
+	*/
+	CharacterRange()
+		: m_first(0)
+		, m_last(0)
+	{}
 	/**
 		Construct with single code point.
 		@note Equivalent to @c CharacterRange(cp, 0).
 		@param cp Code point.
 	*/
 	explicit CharacterRange(char32 const cp)
-		: m_start(cp)
-		, m_end(cp)
+		: m_first(cp)
+		, m_last(cp)
 	{}
 	/**
 		Construct with range.
-		@note A @a length of 0 will still match @a start.
-		@param start First code point of the range.
+		@note A @a length of 0 will still match @a first.
+		@param first First code point of the range.
 		@param length Length of the range.
 	*/
-	CharacterRange(char32 const start, unsigned int const length)
-		: m_start(start)
-		, m_end(start+length)
+	CharacterRange(char32 const first, unsigned int const length)
+		: m_first(first)
+		, m_last(first+length)
 	{}
 	/**
 		Copy constructor.
 		@param other Range to copy.
 	*/
 	CharacterRange(CharacterRange const& other)
-		: m_start(other.m_start)
-		, m_end(other.m_end)
+		: m_first(other.m_first)
+		, m_last(other.m_last)
 	{}
 /// @}
 
 /** @name Properties */ /// @{
 	/**
-		Set the start of the range.
-		@param start New starting code point.
+		Set first code point.
+		@param first New first code point.
 	*/
-	inline void set_start(char32 const start) { m_start=start; }
+	inline void set_first(char32 const first) { m_first=first; }
 	/**
-		Get the start of the range.
-		@returns First code point in range.
+		Get first code point.
+		@returns The first code point in range.
 	*/
-	inline char32 start() const { return m_start; }
+	inline char32 first() const { return m_first; }
 	/**
-		Set the end of the range.
-		@param end New ending code point.
+		Set last code point.
+		@param last New last code point.
 	*/
-	inline void set_end(char32 const end) { m_end=end; }
+	inline void set_last(char32 const last) { m_last=last; }
 	/**
-		Get the end of the range.
-		@returns Last code point in range.
+		Get last code point.
+		@returns The last code point in range.
 	*/
-	inline char32 end() const { return m_end; }
+	inline char32 last() const { return m_last; }
 /// @}
 
 /** @name Comparison */ /// @{
@@ -99,7 +106,7 @@ public:
 		@param cp Code point to test.
 	*/
 	inline bool contains(char32 const cp) const {
-		return cp>=m_start && cp<=m_end;
+		return cp>=m_first && cp<=m_last;
 	}
 	/**
 		Compare against another range.
@@ -107,16 +114,16 @@ public:
 		@param other Range to compare against.
 	*/
 	int compare(CharacterRange const& other) const {
-		int const sd=m_end-m_start;
-		int const od=other.m_end-other.m_start;
+		int const sd=m_last-m_first;
+		int const od=other.m_last-other.m_first;
 		if (sd<od) {
 			return -1;
 		} else if (sd>od) {
 			return 1;
 		}
-		if (m_start<other.m_start) {
+		if (m_first<other.m_first) {
 			return -1;
-		} else if (m_start>other.m_start) {
+		} else if (m_first>other.m_first) {
 			return 1;
 		}
 		return 0;
@@ -130,12 +137,12 @@ public:
 		if (0==compare(other)) {
 			return true;
 		}
-		if (m_end==(other.m_start-1)) {
+		if (m_last==(other.m_first-1)) {
 			return true;
-		} else if ((m_start-1)==other.m_end) {
+		} else if ((m_first-1)==other.m_last) {
 			return true;
 		}
-		return !(m_start>other.m_end || m_end<other.m_start);
+		return !(m_first>other.m_last || m_last<other.m_first);
 	}
 
 	/**

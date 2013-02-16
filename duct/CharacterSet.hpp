@@ -302,11 +302,11 @@ public:
 				for (iterator it=begin(); end()!=it; ++it) {
 					CharacterRange& cr=(*it);
 					if (new_range.intersects(cr)) {
-						if (new_range.start()<cr.start()) {
-							cr.set_start(new_range.start());
+						if (new_range.first()<cr.first()) {
+							cr.set_first(new_range.first());
 						}
-						if (new_range.end()>cr.end()) {
-							cr.set_end(new_range.end());
+						if (new_range.last()>cr.last()) {
+							cr.set_last(new_range.last());
 						}
 						return *this;
 					}
