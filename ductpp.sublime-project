@@ -4,7 +4,7 @@
 		{
 			"name": "Root",
 			"path": "./",
-			"folder_exclude_patterns": ["doc/html"]
+			"folder_exclude_patterns": ["doc", "duct", "test"]
 		},
 		{
 			"name": "- Doc",
@@ -17,7 +17,9 @@
 		},
 		{
 			"name": "- Test",
-			"path": "./test/"
+			"path": "./test/",
+			"folder_exclude_patterns": ["out"],
+			"file_exclude_patterns": ["Makefile", "*.make"]
 		}
 	],
 	"settings":
