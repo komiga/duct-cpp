@@ -3,11 +3,13 @@
 	[
 		{
 			"name": "Root",
-			"path": "./"
+			"path": "./",
+			"folder_exclude_patterns": ["doc/html"]
 		},
 		{
 			"name": "- Doc",
-			"path": "./doc/"
+			"path": "./doc/",
+			"folder_exclude_patterns": ["html"]
 		},
 		{
 			"name": "- Source",
