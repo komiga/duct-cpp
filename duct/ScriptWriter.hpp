@@ -18,6 +18,7 @@
 #include "./StringUtils.hpp"
 #include "./IO.hpp"
 
+#include <utility>
 #include <ostream>
 
 namespace duct {
@@ -86,9 +87,9 @@ public:
 		@param flags Writer flags.
 		@param context StreamContext to copy.
 	*/
-	ScriptWriter(ScriptWriterFlags const flags, IO::StreamContext const& context)
+	ScriptWriter(ScriptWriterFlags const flags, IO::StreamContext context)
 		: m_flags(flags)
-		, m_stream_ctx(context)
+		, m_stream_ctx(std::move(context))
 	{}
 /// @}
 
