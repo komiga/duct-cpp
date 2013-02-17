@@ -115,7 +115,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, int const value)
+	Variable(detail::var_config::name_type name, detail::var_config::int_type const value)
 		: m_type(VARTYPE_INTEGER)
 		, m_name(std::move(name))
 		, m_children()
@@ -126,7 +126,7 @@ public:
 		Construct nameless @c VARTYPE_INTEGER with value.
 		@param value Value.
 	*/
-	explicit Variable(int const value)
+	explicit Variable(detail::var_config::int_type const value)
 		: m_type(VARTYPE_INTEGER)
 		, m_name()
 		, m_children()
@@ -138,7 +138,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, float const value)
+	Variable(detail::var_config::name_type name, detail::var_config::float_type const value)
 		: m_type(VARTYPE_FLOAT)
 		, m_name(std::move(name))
 		, m_children()
@@ -149,7 +149,7 @@ public:
 		Construct nameless @c VARTYPE_FLOAT with value.
 		@param value Value.
 	*/
-	explicit Variable(float const value)
+	explicit Variable(detail::var_config::float_type const value)
 		: m_type(VARTYPE_FLOAT)
 		, m_name()
 		, m_children()
@@ -161,7 +161,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, bool const value)
+	Variable(detail::var_config::name_type name, detail::var_config::bool_type const value)
 		: m_type(VARTYPE_BOOL)
 		, m_name(std::move(name))
 		, m_children()
@@ -172,7 +172,7 @@ public:
 		Construct nameless @c VARTYPE_BOOL with value.
 		@param value Value.
 	*/
-	explicit Variable(bool const value)
+	explicit Variable(detail::var_config::bool_type const value)
 		: m_type(VARTYPE_BOOL)
 		, m_name()
 		, m_children()
