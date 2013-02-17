@@ -14,6 +14,7 @@
 #include "./IO.hpp"
 #include "./Token.hpp"
 
+#include <utility>
 #include <istream>
 
 namespace duct {
@@ -76,14 +77,14 @@ public:
 		Constructor with StreamContext.
 		@param context StreamContext to copy.
 	*/
-	Parser(IO::StreamContext const& context)
+	explicit Parser(IO::StreamContext context)
 		: m_line(1)
 		, m_column(0)
 		, m_curchar(CHAR_EOF)
 		, m_peekchar(CHAR_EOF)
 		, m_peeked(false)
 		, m_stream(nullptr)
-		, m_stream_ctx(context)
+		, m_stream_ctx(std::move(context))
 	{}
 	/**
 		Destructor.

@@ -97,8 +97,8 @@ public:
 		Constructor with StreamContext.
 		@param context StreamContext to copy.
 	*/
-	ScriptParser(IO::StreamContext const& context)
-		: Parser(context)
+	explicit ScriptParser(IO::StreamContext context)
+		: Parser(std::move(context))
 		, m_stack(32)
 		, m_varname()
 		, m_states(0)
