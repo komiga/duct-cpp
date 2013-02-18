@@ -1019,7 +1019,7 @@ public:
 		case Encoding::UTF8:	return (::duct::IO::write_char<UTF8Utils>(stream, cp, num, replacement, m_endian));
 		case Encoding::UTF16:	return (::duct::IO::write_char<UTF16Utils>(stream, cp, num, replacement, m_endian));
 		case Encoding::UTF32:	return (::duct::IO::write_char<UTF32Utils>(stream, cp, num, replacement, m_endian));
-		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return replacement;
+		default: DUCT_DEBUG_ASSERT(false, "Somehow the context has an invalid encoding; shame on you!"); return 0;
 	}}
 
 	/** See @c duct::IO::read_string(). */
