@@ -289,6 +289,10 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_FLAG_COMPILER_CLANG31		0x30000060
 #define DUCT_FLAG_COMPILER_CLANG32		0x30000070
 #define DUCT_FLAG_COMPILER_CLANG33		0x30000080
+#define DUCT_FLAG_COMPILER_CLANG34		0x30000090
+#define DUCT_FLAG_COMPILER_CLANG35		0x300000A0
+#define DUCT_FLAG_COMPILER_CLANG36		0x300000B0
+#define DUCT_FLAG_COMPILER_CLANG37		0x300000C0
 
 // LLVM GCC
 #define DUCT_FLAG_COMPILER_LLVM_GCC		0x40000000
@@ -338,6 +342,14 @@ see @ref index or the accompanying LICENSE file for full text.
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG32
 	#elif(__clang_major__ == 3) && (__clang_minor__ == 3)
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG33
+	#elif(__clang_major__ == 3) && (__clang_minor__ == 4)
+		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG34
+	#elif(__clang_major__ == 3) && (__clang_minor__ == 5)
+		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG35
+	#elif(__clang_major__ == 3) && (__clang_minor__ == 6)
+		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG36
+	#elif(__clang_major__ == 3) && (__clang_minor__ == 7)
+		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG37
 	#else
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_CLANG
 	#endif
