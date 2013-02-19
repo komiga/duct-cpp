@@ -18,7 +18,7 @@ All it needs is a shiny C++11-compliant compiler. That's not too much to ask for
 duct++ carries the MIT license, meaning you can do whatever you want to with it.
 
 ```
-Copyright (c) 2010-2012 Tim Howard
+Copyright (c) 2010-2013 Tim Howard
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

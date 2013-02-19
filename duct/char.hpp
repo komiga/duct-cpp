@@ -3,7 +3,8 @@
 @brief Character types and constants.
 
 @author Tim Howard
-@copyright 2010-2012 Tim Howard under the MIT license; see @ref index or the accompanying LICENSE file for full text.
+@copyright 2010-2013 Tim Howard under the MIT license;
+see @ref index or the accompanying LICENSE file for full text.
 */
 
 #ifndef DUCT_CHAR_HPP_
