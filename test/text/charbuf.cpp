@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
-int main(int, char*[]) {
+signed main(signed, char*[]) {
 	duct::CharBuf buf;
 	buf.push_back(0x3042);
 	std::cout<<"size: "<<buf.get_size()<<"  capacity: "<<buf.get_capacity()<<"  str: \""<<buf.to_string<duct::u8string>()<<'\"'<<std::endl;

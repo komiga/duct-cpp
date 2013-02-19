@@ -20,6 +20,6 @@
 #include <duct/Parser.hpp>
 #include <duct/ScriptParser.hpp>
 
-int main(int, char*[]) {
+signed main(signed, char*[]) {
 	return 0;
 }

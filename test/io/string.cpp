@@ -18,7 +18,7 @@ void print_states(std::basic_ios<charT, traitsT>& stream) {
 	);
 }
 
-static duct::char8_strict const utf8_data[]={
+static duct::char8_strict const utf8_data[]{
 	0xE3,0x81,0x82,	// U+3042
 	0xE3,0x80,0x82,	// U+3002
 	0xE2,0x80,0xA6,	// U+2026
@@ -31,7 +31,7 @@ static duct::char8_strict const utf8_data[]={
 	0xC2,0xAC		// U+00AC
 };
 
-static duct::char16_strict const utf16_data[]={
+static duct::char16_strict const utf16_data[]{
 	0x3042,
 	0x3002,
 	0x2026,
@@ -44,7 +44,7 @@ static duct::char16_strict const utf16_data[]={
 	0x00AC
 };
 
-static duct::char32_strict const utf32_data[]={
+static duct::char32_strict const utf32_data[]{
 	0x3042,
 	0x3002,
 	0x2026,
@@ -100,7 +100,7 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 	}
 }
 
-int main(int, char*[]) {
+signed main(signed, char*[]) {
 	duct::u8string str;
 	std::puts("Reading");
 	read_s<duct::UTF8Utils>(str, utf8_data, sizeof(utf8_data)/sizeof(*utf8_data));

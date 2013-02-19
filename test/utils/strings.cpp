@@ -46,30 +46,30 @@
 
 #define do_series(x_) (0==series || x_==series)
 
-static duct::char8_strict const utf8_diay[]			={0xC3,0xBF}; // U+FF; ÿ
-static duct::char8_strict const utf8_hirigana[]		={0xE3,0x81,0x82}; // U+3042; あ
-static duct::char8_strict const utf8_olditalic[]	={0xF0,0x90,0x8C,0x82}; // U+10302; 𐌂
-static duct::char8_strict const utf8_highest[]		={0xF4,0x8F,0xBF,0xBD}; // U+10FFFD
-static duct::char8_strict const utf8_invalid1[]		={0xEF,0xBF,0xBF}; // U+FFFF
-static duct::char8_strict const utf8_invalid2[]		={0xF4,0x8F,0xBF,0xBE}; // U+10FFFE
+static duct::char8_strict const utf8_diay[]			{0xC3,0xBF}; // U+FF; ÿ
+static duct::char8_strict const utf8_hirigana[]		{0xE3,0x81,0x82}; // U+3042; あ
+static duct::char8_strict const utf8_olditalic[]	{0xF0,0x90,0x8C,0x82}; // U+10302; 𐌂
+static duct::char8_strict const utf8_highest[]		{0xF4,0x8F,0xBF,0xBD}; // U+10FFFD
+static duct::char8_strict const utf8_invalid1[]		{0xEF,0xBF,0xBF}; // U+FFFF
+static duct::char8_strict const utf8_invalid2[]		{0xF4,0x8F,0xBF,0xBE}; // U+10FFFE
 
-static duct::char16_strict const utf16_diay[]		={0x00FF};
-static duct::char16_strict const utf16_hirigana[]	={0x3042};
-static duct::char16_strict const utf16_olditalic[]	={0xD800,0xDF02};
-static duct::char16_strict const utf16_highest[]	={0xDBFF,0xDFFD};
-static duct::char16_strict const utf16_invalid1[]	={0xFFFF};
-static duct::char16_strict const utf16_invalid2[]	={0xDBFF,0xDFFE};
+static duct::char16_strict const utf16_diay[]		{0x00FF};
+static duct::char16_strict const utf16_hirigana[]	{0x3042};
+static duct::char16_strict const utf16_olditalic[]	{0xD800,0xDF02};
+static duct::char16_strict const utf16_highest[]	{0xDBFF,0xDFFD};
+static duct::char16_strict const utf16_invalid1[]	{0xFFFF};
+static duct::char16_strict const utf16_invalid2[]	{0xDBFF,0xDFFE};
 
-static duct::char32_strict const utf32_diay[]		={0x0000FF};
-static duct::char32_strict const utf32_hirigana[]	={0x003042};
-static duct::char32_strict const utf32_olditalic[]	={0x010302};
-static duct::char32_strict const utf32_highest[]	={0x10FFFD};
-static duct::char32_strict const utf32_invalid1[]	={0x00FFFF};
-static duct::char32_strict const utf32_invalid2[]	={0x10FFFE};
+static duct::char32_strict const utf32_diay[]		{0x0000FF};
+static duct::char32_strict const utf32_hirigana[]	{0x003042};
+static duct::char32_strict const utf32_olditalic[]	{0x010302};
+static duct::char32_strict const utf32_highest[]	{0x10FFFD};
+static duct::char32_strict const utf32_invalid1[]	{0x00FFFF};
+static duct::char32_strict const utf32_invalid2[]	{0x10FFFE};
 
-int main(int argc, char* argv[]) {
+signed main(signed argc, char* argv[]) {
 	DUCT_ASSERT(argc>1, "requires series argument (pass 0 for all)");
-	unsigned int
+	unsigned
 		series=atoi(argv[1]),
 		offset=argc>2 ? atoi(argv[2]) : 4;
 	duct::char32 cp;

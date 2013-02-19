@@ -1,11 +1,11 @@
 
-void tabulate(int count) {
+void tabulate(signed count) {
 	while (count--) {
 		std::cout<<"  ";
 	}
 }
 
-void print_var(duct::Variable const& var, int tab_count=0, bool const newline=true) {
+void print_var(duct::Variable const& var, signed tab_count=0, bool const newline=true) {
 	tabulate(tab_count);
 	std::cout<<'('<<std::left<<std::setw(10)<<duct::detail::get_vartype_name(var.get_type())<<") '"<<var.get_name()<<"' = ";
 	switch (var.get_type()) {

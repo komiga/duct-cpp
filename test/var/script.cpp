@@ -25,11 +25,11 @@ struct TestData {
 #define TDV(data) {data, std::strlen(data), true},
 #define TDN(data) {data, std::strlen(data), false},
 
-static duct::ScriptParser s_parser{
+static duct::ScriptParser g_parser{
 	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
 };
 
-static TestData const s_test_data[]={
+static TestData const g_test_data[]{
 	// Values
 	TDV("name=value")
 	TDV("name=1234567890")
@@ -113,10 +113,10 @@ static TestData const s_test_data[]={
 void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) {
 	assert(stream.good());
 	if (valid) {
-		s_parser.process(root, stream);
+		g_parser.process(root, stream);
 	} else {
 		try {
-			s_parser.process(root, stream);
+			g_parser.process(root, stream);
 			std::cout<<"Received no exception when one was expected\n"<<std::endl;
 			assert(false);
 		} catch (duct::ScriptParserException& e) {
@@ -131,16 +131,16 @@ void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) 
 
 void do_test(duct::Variable& root, TestData const& td) {
 	duct::IO::imemstream stream{td.data, td.size};
-	std::printf("  Testing `%*s`:\n", static_cast<int>(td.size), td.data);
+	std::printf("  Testing `%*s`:\n", static_cast<signed>(td.size), td.data);
 	parse_stream(root, stream, td.valid);
 }
 
-int main(int argc, char* argv[]) {
+signed main(signed argc, char* argv[]) {
 	duct::Variable root{duct::VARTYPE_NODE};
 	if (1<argc) {
 		TestData td{nullptr, 0, true};
 		std::ifstream fs{};
-		for (int index=1; argc>index; ++index) {
+		for (signed index=1; argc>index; ++index) {
 			fs.open(argv[index]);
 			if (fs.is_open()) {
 				parse_stream(root, fs, false);
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	} else {
-		for (TestData const* td=s_test_data; nullptr!=td->data; ++td) {
+		for (TestData const* td=g_test_data; nullptr!=td->data; ++td) {
 			root.reset(); do_test(root, *td);
 		}
 	}
