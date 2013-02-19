@@ -94,14 +94,6 @@ public:
 	/** Default constructor. */
 	ScriptParser()=default;
 	/**
-		Constructor with StreamContext properties.
-		@param encoding Encoding to use for StreamContext.
-		@param endian Endian to use for StreamContext.
-	*/
-	ScriptParser(Encoding const encoding, Endian const endian)
-		: Parser(encoding, endian)
-	{}
-	/**
 		Constructor with StreamContext.
 		@param context StreamContext to copy.
 	*/

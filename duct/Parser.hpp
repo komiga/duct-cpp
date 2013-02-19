@@ -48,14 +48,6 @@ public:
 	/** Default constructor. */
 	Parser()=default;
 	/**
-		Construct with StreamContext properties.
-		@param encoding Encoding to use for StreamContext.
-		@param endian Endian to use for StreamContext.
-	*/
-	Parser(Encoding const encoding, Endian const endian)
-		: m_stream_ctx{encoding, endian}
-	{}
-	/**
 		Constructor with StreamContext.
 		@param context StreamContext to copy.
 	*/

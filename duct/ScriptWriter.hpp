@@ -66,16 +66,6 @@ public:
 	/** Default constructor. */
 	ScriptWriter()=default;
 	/**
-		Constructor with flags and StreamContext properties.
-		@param flags Writer flags.
-		@param encoding Encoding to use for StreamContext.
-		@param endian Endian to use for StreamContext.
-	*/
-	ScriptWriter(ScriptWriterFlags const flags, Encoding const encoding, Endian const endian)
-		: m_flags(flags)
-		, m_stream_ctx(encoding, endian)
-	{}
-	/**
 		Constructor with flags and StreamContext.
 		@param flags Writer flags.
 		@param context StreamContext to copy.

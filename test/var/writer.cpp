@@ -26,8 +26,13 @@ struct TestData {
 
 #define TDV(data) {data, std::strlen(data), true},
 
-static duct::ScriptParser s_parser{duct::Encoding::UTF8, duct::Endian::SYSTEM};
-static duct::ScriptWriter s_writer{duct::DSWF_ESCAPE_WHITESPACE, duct::Encoding::UTF8, duct::Endian::SYSTEM};
+static duct::ScriptParser s_parser{
+	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
+};
+static duct::ScriptWriter s_writer{
+	duct::DSWF_ESCAPE_WHITESPACE,
+	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
+};
 
 static TestData const s_test_data[]={
 	// Values
