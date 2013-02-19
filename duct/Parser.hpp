@@ -33,63 +33,47 @@ class Parser;
 */
 class Parser {
 protected:
-	int m_line; /**< Line position. */
-	int m_column; /**< Column position. */
-	char32 m_curchar; /**< Current code point. */
-	char32 m_peekchar; /**< Peeked code point. */
-	bool m_peeked; /**< Whether a code point has been peeked. */
-	Token m_token; /**< Current token. */
-	std::istream* m_stream; /**< Current stream. */
-	IO::StreamContext m_stream_ctx; /**< Stream context. */
-
-private:
-	DUCT_DISALLOW_COPY_AND_ASSIGN(Parser);
+	signed m_line{1}; /**< Line position. */
+	signed m_column{0}; /**< Column position. */
+	char32 m_curchar{CHAR_EOF}; /**< Current code point. */
+	char32 m_peekchar{CHAR_EOF}; /**< Peeked code point. */
+	bool m_peeked{false}; /**< Whether a code point has been peeked. */
+	Token m_token{}; /**< Current token. */
+	std::istream* m_stream{nullptr}; /**< Current stream. */
+	IO::StreamContext m_stream_ctx{}; /**< Stream context. */
 
 public:
 /** @name Constructor and destructor */ /// @{
+	/** Default constructor. */
+	Parser()=default;
 	/**
-		Default constructor.
-	*/
-	Parser()
-		: m_line(1)
-		, m_column(0)
-		, m_curchar(CHAR_EOF)
-		, m_peekchar(CHAR_EOF)
-		, m_peeked(false)
-		, m_stream(nullptr)
-		, m_stream_ctx()
-	{}
-	/**
-		Constructor with StreamContext properties.
+		Construct with StreamContext properties.
 		@param encoding Encoding to use for StreamContext.
 		@param endian Endian to use for StreamContext.
 	*/
 	Parser(Encoding const encoding, Endian const endian)
-		: m_line(1)
-		, m_column(0)
-		, m_curchar(CHAR_EOF)
-		, m_peekchar(CHAR_EOF)
-		, m_peeked(false)
-		, m_stream(nullptr)
-		, m_stream_ctx(encoding, endian)
+		: m_stream_ctx{encoding, endian}
 	{}
 	/**
 		Constructor with StreamContext.
 		@param context StreamContext to copy.
 	*/
 	explicit Parser(IO::StreamContext context)
-		: m_line(1)
-		, m_column(0)
-		, m_curchar(CHAR_EOF)
-		, m_peekchar(CHAR_EOF)
-		, m_peeked(false)
-		, m_stream(nullptr)
-		, m_stream_ctx(std::move(context))
+		: m_stream_ctx{std::move(context)}
 	{}
-	/**
-		Destructor.
-	*/
-	virtual ~Parser() {}
+	/** Copy constructor (deleted). */
+	Parser(Parser const&)=delete;
+	/** Move constructor. */
+	Parser(Parser&&)=default;
+	/** Destructor. */
+	inline virtual ~Parser()=0;
+/// @}
+
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	Parser& operator=(Parser const&)=delete;
+	/** Move assignment operator. */
+	Parser& operator=(Parser&&)=default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -97,12 +81,12 @@ public:
 		Get current line.
 		@returns The current line position.
 	*/
-	int get_line() const { return m_line; }
+	signed get_line() const { return m_line; }
 	/**
 		Get current column.
 		@returns The current column position.
 	*/
-	int get_column() const { return m_column; }
+	signed get_column() const { return m_column; }
 
 	/**
 		Get token.
@@ -128,12 +112,14 @@ public:
 
 /** @name State */ /// @{
 	/**
-		Initialize the parser.
+		Initialize.
 		@note This will @c reset() the current state and call @c next_char().
-		@note The input stream is not owned by the parser; its lifetime must be guaranteed by the callee until @c reset() is called.
+		@note The input stream is not owned by the parser; its lifetime must be guaranteed
+		by the callee until @c reset() is called.
 		@returns
 		- @c true if the parser was initialized; or
-		- @c false if an error occurred (in the base implementation: if @c stream.good()==false).
+		- @c false if an error occurred (in the base implementation: if
+		  @c stream.good()==false).
 		@param stream Input stream.
 	*/
 	virtual bool initialize(std::istream& stream) {
@@ -166,7 +152,8 @@ public:
 	/**
 		Get the next code point from the stream and advance the parser's position.
 		@note If @c m_peeked==true, @c m_curchar is set to @c m_peekchar.
-		@note If there is no more data in the input stream, @c m_curchar is set to @c CHAR_EOF.
+		@note If there is no more data in the input stream, @c m_curchar is set
+		to @c CHAR_EOF.
 		@returns The next code point from the input stream.
 	*/
 	virtual char32 next_char() {
@@ -243,7 +230,8 @@ public:
 		Parse the next token in the stream.
 		@returns
 		- @c true if there is more data to parse; or
-		- @c false if there is no more data to parse (generally meaning an EOF token was met).
+		- @c false if there is no more data to parse (generally meaning an EOF token
+		  was met).
 	*/
 	virtual bool parse()=0;
 
@@ -262,6 +250,7 @@ public:
 	virtual void handle_token()=0;
 /// @}
 };
+inline Parser::~Parser()=default;
 
 /** @} */ // end of doc-group parser
 

@@ -6,18 +6,20 @@
 */
 
 namespace {
-static CharacterSet const s_set_number_inner{"0-9."};
-static CharacterSet const s_set_number_front{"0-9.\\-+"};
-static CharacterSet const s_set_req_quotation{"\n\t ,=[]{}\"\'"};
-static char const* const s_esc_quotes_alone[]={"\"\'", "\"\'"};
-static char const* const s_esc_whitespace[]={"\n\r\t\"\'", "nrt\"\'"};
-static char const* const s_esc_control[]={",=[]{}\"\'", ",=[]{}\"\'"};
-static char const* const s_esc_all[]={"\n\r\t,=[]{}\"\'", "nrt,=[]{}\"\'"};
+static CharacterSet const
+	g_set_number_inner{"0-9."},
+	g_set_number_front{"0-9.\\-+"},
+	g_set_req_quotation{"\n\t ,=[]{}\"\'"};
+static char const
+	*const g_esc_quotes_alone[]{"\"\'", "\"\'"},
+	*const g_esc_whitespace[]{"\n\r\t\"\'", "nrt\"\'"},
+	*const g_esc_control[]{",=[]{}\"\'", ",=[]{}\"\'"},
+	*const g_esc_all[]{"\n\r\t,=[]{}\"\'", "nrt,=[]{}\"\'"};
 } // anonymous namespace
 
 // class ScriptWriter implementation
 
-bool ScriptWriter::write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned int const tab_level) const {
+bool ScriptWriter::write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned const tab_level) const {
 	if (dest.good()) {
 		if (VARTYPE_NODE!=source.get_type() || !treat_as_root) {
 			m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
@@ -40,27 +42,44 @@ bool ScriptWriter::write(std::ostream& dest, Variable const& source, bool const 
 	return false;
 }
 
-template<class stringT, class stringU>
-bool ScriptWriter::write_string(std::ostream& dest, stringT const& str, bool const is_name) const {
+template<
+	class StringT,
+	class StringU
+>
+bool ScriptWriter::write_string(std::ostream& dest, StringT const& str, bool const is_name) const {
 	char32 first_cp=CHAR_NULL;
 	auto dec_iter=str.cbegin();
 	if (!str.empty()) {
-		dec_iter=stringU::decode(dec_iter, str.cend(), first_cp, CHAR_NULL);
+		dec_iter=StringU::decode(dec_iter, str.cend(), first_cp, CHAR_NULL);
 	}
 	bool const add_quotation=
-		0!=(m_flags&(is_name ? DSWF_NAME_QUOTE : DSWF_VALUE_STRING_QUOTE)) // Whether to always quote based on token type
-		||str.empty() // Empty string must be quoted
-		||(str.cend()!=s_set_req_quotation.find(str, str.cbegin())) // Whitespace and control characters require quotation
-		||(s_set_number_inner.sequence_matches<stringU>(dec_iter, str.cend()) && (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str) && s_set_number_front.contains(first_cp))); // If parseable as a number token, must be quoted
+		// Whether to always quote based on token type
+		0!=(m_flags&(is_name ? DSWF_NAME_QUOTE : DSWF_VALUE_STRING_QUOTE))
+		// Empty string must be quoted
+		|| str.empty()
+		// Whitespace and control characters require quotation
+		||(str.cend()!=g_set_req_quotation.find(str, str.cbegin()))
+		// If parseable as a number token, must be quoted
+		||(
+			g_set_number_inner.sequence_matches<StringU>(dec_iter, str.cend())
+			&& (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str) &&
+				g_set_number_front.contains(first_cp)))
+	;
 	StringUtils::EscapeablePair esc_pair;
-	auto const str_esc_pair=
+	auto const& str_esc_pair=
 		(add_quotation
-			? (m_flags&DSWF_ESCAPE_WHITESPACE ? s_esc_whitespace : s_esc_quotes_alone) // ? whitespace is always escaped : don't have to escape control characters when quoted
-			: (s_esc_all) // Everything must be escaped
+			? (m_flags&DSWF_ESCAPE_WHITESPACE
+				// Whitespace is always escaped
+				? g_esc_whitespace
+				// Don't have to escape control characters when quoted
+				: g_esc_quotes_alone)
+			// Everything must be escaped
+			: (g_esc_all)
 		);
 	esc_pair.first=str_esc_pair[0]; esc_pair.second=str_esc_pair[1];
-	stringT normalized;
-	normalized.reserve(str.size()+(add_quotation ? 2 : 0)+20); // A little overhead for quotations and escaped characters
+	StringT normalized;
+	// A little overhead for quotations and escaped characters
+	normalized.reserve(str.size()+(add_quotation ? 2 : 0)+20);
 	if (add_quotation) {
 		normalized.append(1, CHAR_QUOTE);
 	}
@@ -85,8 +104,9 @@ bool ScriptWriter::write_value(std::ostream& dest, Variable const& var, bool con
 	case VARTYPE_INTEGER:
 	case VARTYPE_FLOAT:
 	case VARTYPE_BOOL: {
-		// All non-VARTYPE_STRING values are representable in single UTF-8 code units.
-		// Also, the target encoding is most likely going to be UTF-8, so this is optimal.
+		// All non-VARTYPE_STRING values are representable in single UTF-8
+		// code units. Also, the target encoding is most likely going to
+		// be UTF-8, so this is optimal.
 		auto const vstr=var.get_as_str<u8string>();
 		m_stream_ctx.write_string(dest, vstr);
 		break;
@@ -128,7 +148,7 @@ bool ScriptWriter::write_array(std::ostream& dest, Variable const& var, bool con
 	return dest.good();
 }
 
-bool ScriptWriter::write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned int tab_level) const {
+bool ScriptWriter::write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned tab_level) const {
 	if (!treat_as_root) {
 		//m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
 		if (!var.get_name().empty()) {

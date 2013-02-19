@@ -10,6 +10,7 @@
 #define DUCT_DETAIL_VARTYPE_HPP_
 
 #include "./../config.hpp"
+#include "./../traits.hpp"
 #include "./../string.hpp"
 
 #include <strings.h>
@@ -20,9 +21,9 @@
 namespace duct {
 
 // Forward declarations
-enum VariableType : unsigned int;
-enum VariableClass : unsigned int;
-enum VariableMasks : unsigned int;
+enum VariableType : unsigned;
+enum VariableClass : unsigned;
+enum VariableMasks : unsigned;
 
 /**
 	@addtogroup variable
@@ -31,10 +32,11 @@ enum VariableMasks : unsigned int;
 
 /**
 	Variable types.
-	@note @c VARTYPE_NULL is a special type to indicate nullness; it has no associated data field.
+	@note @c VARTYPE_NULL is a special type to indicate nullness; it has no
+	associated data field.
 	@sa VariableClass, VariableMasks
 */
-enum VariableType : unsigned int {
+enum VariableType : unsigned {
 	/** Null; value-less. */
 	VARTYPE_NULL		=1<<0,
 	/** Value type: String. */
@@ -55,13 +57,15 @@ enum VariableType : unsigned int {
 
 /**
 	Variable classes.
-	@note @c VARTYPE_NULL is essentially its own class and is thus not included in any defined classes.
+	@note @c VARTYPE_NULL is essentially its own class and is thus not included
+	in any defined classes.
 	@sa VariableType, VariableMasks
 */
-enum VariableClass : unsigned int {
+enum VariableClass : unsigned {
 	/**
 		Numerical variable types.
-		Equal to: @code VARTYPE_INTEGER|VARTYPE_FLOAT @endcode
+		Equal to:
+		@code VARTYPE_INTEGER|VARTYPE_FLOAT @endcode
 	*/
 	VARCLASS_NUMERICAL
 		=VARTYPE_INTEGER
@@ -69,7 +73,8 @@ enum VariableClass : unsigned int {
 	,
 	/**
 		Value variable types.
-		Equal to: @code VARTYPE_STRING|VARTYPE_INTEGER|VARTYPE_FLOAT|VARTYPE_BOOL @endcode
+		Equal to:
+		@code VARTYPE_STRING|VARTYPE_INTEGER|VARTYPE_FLOAT|VARTYPE_BOOL @endcode
 	*/
 	VARCLASS_VALUE
 		=VARTYPE_STRING
@@ -79,7 +84,8 @@ enum VariableClass : unsigned int {
 	,
 	/**
 		Collection variable types.
-		Equal to: @code VARTYPE_ARRAY|VARTYPE_NODE|VARTYPE_IDENTIFIER @endcode
+		Equal to:
+		@code VARTYPE_ARRAY|VARTYPE_NODE|VARTYPE_IDENTIFIER @endcode
 	*/
 	VARCLASS_COLLECTION
 		=VARTYPE_ARRAY
@@ -91,7 +97,7 @@ enum VariableClass : unsigned int {
 	Various VariableType masks.
 	@sa VariableType, VariableClass
 */
-enum VariableMasks : unsigned int {
+enum VariableMasks : unsigned {
 	/** Matches no types. */
 	VARMASK_NONE
 		=0x00
@@ -112,7 +118,8 @@ namespace detail {
 
 #ifndef DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
 	/**
-		Whether to use 64-bit and double-precision for VARTYPE_INTEGER and VARTYPE_FLOAT, respectively.
+		Whether to use 64-bit and double-precision for VARTYPE_INTEGER and
+		VARTYPE_FLOAT, respectively.
 		@note Defaults to 0.
 		@sa var_config
 	*/
@@ -122,7 +129,7 @@ namespace detail {
 /**
 	Variable configuration.
 */
-struct var_config {
+struct var_config /*final*/ : public traits::restrict_all {
 	/** typename for Variable names */
 	typedef u8string	name_type;
 	/** typename for @c VARTYPE_STRING */
@@ -154,7 +161,7 @@ struct var_config {
 	@param type Variable type.
 */
 char const* get_vartype_name(VariableType const type) {
-	static char const* const names[]={
+	static char const* const names[]{
 		"NULL",
 		"STRING",
 		"INTEGER",
@@ -164,19 +171,19 @@ char const* get_vartype_name(VariableType const type) {
 		"NODE",
 		"IDENTIFIER"
 	};
-	return names[ffs((int)type)-1];
+	return names[ffs((signed)type)-1];
 }
 
 /**
 	Check if a typename has an associated @c VARCLASS_VALUE type.
 */
 template<typename T>
-struct is_valtype : public std::false_type {};
+struct is_valtype /*final*/ : public traits::restrict_all, public std::false_type {};
 
 /**
 	Translate a @c VARCLASS_VALUE type to a typename.
 */
-template<VariableType const VType_>
+template<VariableType const VType>
 struct valtype_to_type;
 
 /**
@@ -188,19 +195,25 @@ struct type_to_valtype;
 /**
 	VariableType traits for @c VARCLASS_VALUE.
 */
-template<VariableType const VType_>
-struct valtype_traits {
+template<VariableType const VType>
+struct valtype_traits /*final*/ : public traits::restrict_all {
 	/** Whether the typename is POD. */
-	static constexpr bool is_pod=std::is_pod<typename valtype_to_type<VType_>::type>::value;
+	static constexpr bool is_pod=std::is_pod<typename valtype_to_type<VType>::type>::value;
 	/** The value typename for the VariableType. */
-	typedef typename valtype_to_type<VType_>::type value_type;
+	typedef typename valtype_to_type<VType>::type value_type;
 };
 
 /** @cond INTERNAL */
 #define DUCT_DETAIL_TRAITS_(VT, T)	\
-	template<> struct is_valtype<T> : public std::true_type {}; \
-	template<> struct valtype_to_type<VT> {typedef T type;}; \
-	template<> struct type_to_valtype<T> {static constexpr VariableType value=VT;} /**/
+	template<> struct valtype_to_type<VT> /*final*/ \
+	: public traits::restrict_all \
+	{ typedef T type; }; \
+	template<> struct is_valtype<T> /*final*/ \
+	: public traits::restrict_all, public std::true_type \
+	{}; \
+	template<> struct type_to_valtype<T> /*final*/ \
+	: public traits::restrict_all \
+	{ static constexpr VariableType value=VT; } /**/
 
 DUCT_DETAIL_TRAITS_(VARTYPE_STRING, var_config::string_type);
 DUCT_DETAIL_TRAITS_(VARTYPE_INTEGER, var_config::int_type);
@@ -210,8 +223,12 @@ DUCT_DETAIL_TRAITS_(VARTYPE_BOOL, var_config::bool_type);
 #undef DUCT_DETAIL_TRAITS_
 
 #define DUCT_DETAIL_TRAITS_(VT, T)	\
-	template<> struct is_valtype<T> : public std::true_type {}; \
-	template<> struct type_to_valtype<T> {static constexpr VariableType value=VT;} /**/
+	template<> struct is_valtype<T> /*final*/ \
+	: public traits::restrict_all, public std::true_type \
+	{}; \
+	template<> struct type_to_valtype<T> /*final*/ \
+	: public traits::restrict_all \
+	{ static constexpr VariableType value=VT; } /**/
 
 #if (0!=DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES)
 	// Define smaller variants, for convenience

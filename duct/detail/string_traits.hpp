@@ -10,6 +10,7 @@
 #define DUCT_DETAIL_STRING_TRAITS_HPP_
 
 #include "./../config.hpp"
+#include "./../traits.hpp"
 #include "./../EncodingUtils.hpp"
 
 #include <type_traits>
@@ -20,16 +21,19 @@ namespace detail {
 
 /**
 	@addtogroup text
+	@ingroup traits
 	@{
 */
 
 /**
 	String type traits.
-	@note @c std::wstring will get either UTF-16 or UTF-32 @c EncodingUtils depending on the system; @c u16string and @c u32string should be used when possible since they actually specify the use of these encodings.
+	@note @c std::wstring will get either UTF-16 or UTF-32 @c EncodingUtils
+	depending on the system; @c u16string and @c u32string should be used when
+	possible since they actually specify the use of these encodings.
 	@tparam T String type.
 */
 template<class T>
-struct string_traits {
+struct string_traits /*final*/ : public traits::restrict_all {
 	/** String type; equivalent to @a T. */
 	typedef T string_type;
 	/** The string type's character type. */

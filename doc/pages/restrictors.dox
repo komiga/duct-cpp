@@ -1,0 +1,10 @@
+
+/**
+
+@addtogroup traits
+@defgroup restrictors Construction restrictors
+@details
+
+These classes will disallow specific forms of construction when inherited.
+
+*/

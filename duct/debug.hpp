@@ -25,16 +25,21 @@ namespace duct {
 
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 	/**
-		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT macros to be defined (regardless of @c NDEBUG presence).
+		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT macros
+		to be defined (regardless of @c NDEBUG presence).
 	*/
 	#define DUCT_CONFIG_FORCE_DEBUG_MACROS
 #endif
 
 /**
 	@name Non-debug assertion
-	@note These macros mimic @c assert(), and will @c std::abort() the program if @a expr evaluates to @c false.
+	@note These macros mimic @c assert(), and will @c std::abort() the program
+	if @a expr evaluates to @c false.
 	@note These macros are always defined.
-	@sa DUCT_DEBUG_ASSERT(), DUCT_DEBUG_ASSERTF(), DUCT_DEBUG_ASSERTP(), DUCT_DEBUG_ASSERTPF()
+	@sa DUCT_DEBUG_ASSERT(),
+		DUCT_DEBUG_ASSERTF(),
+		DUCT_DEBUG_ASSERTP(),
+		DUCT_DEBUG_ASSERTPF()
 */ /// @{
 /**
 	Assertion with message.
@@ -42,7 +47,9 @@ namespace duct {
 	@param mesg Message.
 */
 #define DUCT_ASSERT(expr, mesg) \
-	((expr) ? void(0) : (fprintf(stderr, "assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+	((expr) ? void(0) : (fprintf(stderr, \
+		"assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+		__FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
 
 /**
 	Assertion with formatted message.
@@ -51,7 +58,9 @@ namespace duct {
 	@param ... Format arguments.
 */
 #define DUCT_ASSERTF(expr, format, ...) \
-	((expr) ? void(0) : (fprintf(stderr, "assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", __VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+	((expr) ? void(0) : (fprintf(stderr, \
+		"assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+		__VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
 
 /**
 	Assertion with pointer and message.
@@ -73,7 +82,8 @@ namespace duct {
 	DUCT_ASSERTF(expr, "[%p] " format, (void const* const)p, __VA_ARGS__)
 /// @}
 
-#if (defined(NDEBUG) && !defined(DUCT_CONFIG_FORCE_DEBUG_MACROS)) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
+#if (defined(NDEBUG) && !defined(DUCT_CONFIG_FORCE_DEBUG_MACROS)) \
+	|| defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 /** @name Message */ /// @{
 	/**
 		Print debug message.
@@ -145,7 +155,8 @@ namespace duct {
 	*/
 	#define DUCT_DEBUGNCP(p, mesg)
 	/**
-		Print formatted debug message with no newline, function signature, and pointer.
+		Print formatted debug message with no newline, function signature,
+		and pointer.
 		@param p Pointer.
 		@param format Format string.
 		@param ... Format arguments.
@@ -168,7 +179,10 @@ namespace duct {
 /**
 	@name Debug assertion
 	@note These route to the non-debug assertion macros.
-	@sa DUCT_ASSERT(), DUCT_ASSERTF(), DUCT_ASSERTP(), DUCT_ASSERTPF()
+	@sa DUCT_ASSERT(),
+		DUCT_ASSERTF(),
+		DUCT_ASSERTP(),
+		DUCT_ASSERTPF()
 */ /// @{
 	/** @copydoc DUCT_ASSERT() */
 	#define DUCT_DEBUG_ASSERT(expr, mesg)
@@ -216,14 +230,16 @@ namespace duct {
 		DUCT_DEBUGF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUGCPF(p, format, ...) \
-		DUCT_DEBUGF("[%p] in %s: " format, (void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
+		DUCT_DEBUGF("[%p] in %s: " format, \
+			(void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
 	
 	// - signature and pointer and no newline
 	#define DUCT_DEBUGNCP(p, mesg) \
 		DUCT_DEBUGNF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUGNCPF(p, format, ...) \
-		DUCT_DEBUGNF("[%p] in %s: " format, (void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
+		DUCT_DEBUGNF("[%p] in %s: " format, \
+			(void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
 	
 	// Call
 	#define DUCT_DEBUG_CALLED() \

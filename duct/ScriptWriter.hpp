@@ -29,13 +29,13 @@ namespace duct {
 */
 
 // Forward declarations
-enum ScriptWriterFlags : unsigned int;
+enum ScriptWriterFlags : unsigned;
 class ScriptWriter;
 
 /**
 	ScriptWriter flags.
 */
-enum ScriptWriterFlags : unsigned int {
+enum ScriptWriterFlags : unsigned {
 	/** Always surround names in quotation marks. */
 	DSWF_NAME_QUOTE=1<<0,
 	/** Always surround string values in quotation marks. */
@@ -55,23 +55,15 @@ enum ScriptWriterFlags : unsigned int {
 /**
 	ductScript writer.
 */
-class ScriptWriter {
+class ScriptWriter /*final*/ {
 private:
-	ScriptWriterFlags m_flags;
-	IO::StreamContext m_stream_ctx;
-
-	DUCT_DISALLOW_COPY_AND_ASSIGN(ScriptWriter);
+	ScriptWriterFlags m_flags{DSWF_DEFAULT};
+	IO::StreamContext m_stream_ctx{};
 
 public:
 /** @name Constructors */ /// @{
-	/**
-		Default constructor.
-		@note Uses @c DSWF_DEFAULT and the default StreamContext constructor.
-	*/
-	ScriptWriter()
-		: m_flags(DSWF_DEFAULT)
-		, m_stream_ctx()
-	{}
+	/** Default constructor. */
+	ScriptWriter()=default;
 	/**
 		Constructor with flags and StreamContext properties.
 		@param flags Writer flags.
@@ -91,6 +83,19 @@ public:
 		: m_flags(flags)
 		, m_stream_ctx(std::move(context))
 	{}
+	/** Copy constructor (deleted). */
+	ScriptWriter(ScriptWriter const&)=delete;
+	/** Move constructor. */
+	ScriptWriter(ScriptWriter&&)=default;
+	/** Destructor. */
+	~ScriptWriter()=default;
+/// @}
+
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	ScriptWriter& operator=(ScriptWriter const&)=delete;
+	/** Move assignment operator. */
+	ScriptWriter& operator=(ScriptWriter&&)=default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -98,19 +103,19 @@ public:
 		Set formatting flags.
 		@param flags New formatting flags.
 	*/
-	inline void set_flags(ScriptWriterFlags const flags) { m_flags=flags; }
+	void set_flags(ScriptWriterFlags const flags) { m_flags=flags; }
 	/**
 		Get formatting flags.
 		@returns The current formatting flags.
 	*/
-	inline ScriptWriterFlags get_flags() const { return m_flags; }
+	ScriptWriterFlags get_flags() const { return m_flags; }
 	/**
 		Get stream context.
 		@returns The current stream context.
 	*/
-	inline IO::StreamContext& get_stream_context() { return m_stream_ctx; }
+	IO::StreamContext& get_stream_context() { return m_stream_ctx; }
 	/** @copydoc get_stream_context() */
-	inline IO::StreamContext const& get_stream_context() const { return m_stream_ctx; }
+	IO::StreamContext const& get_stream_context() const { return m_stream_ctx; }
 /// @}
 
 /** @name Operations */ /// @{
@@ -122,15 +127,18 @@ public:
 		@param treat_as_root Whether to treat @a source as a root node if it is a node (if both are true, only the node's contents are written).
 		@param tab_level Tabulation level; defaults to @c 0.
 	*/
-	bool write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned int const tab_level=0) const;
+	bool write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned const tab_level=0) const;
 /// @}
 
 private:
-	template<class stringT, class stringU=typename detail::string_traits<stringT>::encoding_utils>
-	bool write_string(std::ostream& dest, stringT const& str, bool const is_name) const;
+	template<
+		class StringT,
+		class StringU=typename detail::string_traits<StringT>::encoding_utils
+	>
+	bool write_string(std::ostream& dest, StringT const& str, bool const is_name) const;
 	bool write_value(std::ostream& dest, Variable const& var, bool const with_name) const;
 	bool write_array(std::ostream& dest, Variable const& var, bool const with_name) const;
-	bool write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned int tab_level) const;
+	bool write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned tab_level) const;
 	bool write_identifier(std::ostream& dest, Variable const& var) const;
 };
 

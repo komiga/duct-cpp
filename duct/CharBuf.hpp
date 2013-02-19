@@ -21,13 +21,13 @@
 
 namespace duct {
 
+// Forward declarations
+class CharBuf;
+
 /**
 	@addtogroup text
 	@{
 */
-
-// Forward declarations
-class CharBuf;
 
 /**
 	Character buffer.
@@ -40,33 +40,34 @@ public:
 /// @}
 
 private:
-	duct::aux::vector<char_type> m_buffer;
-	bool m_cached;
-	u8string m_cache_string;
-
-	DUCT_DISALLOW_COPY_AND_ASSIGN(CharBuf);
+	duct::aux::vector<char_type> m_buffer{};
+	bool m_cached{false};
+	u8string m_cache_string{};
 
 public:
-/** @name Constructors */ /// @{
-	/**
-		Construct empty.
-	*/
-	CharBuf()
-		: m_buffer()
-		, m_cached(false)
-		, m_cache_string()
-	{}
+/** @name Constructors and destructor */ /// @{
+	/** Construct empty. */
+	CharBuf()=default;
 	/**
 		Construct with capacity.
 		@param capacity Capacity of buffer.
 	*/
-	explicit CharBuf(std::size_t const capacity)
-		: m_buffer()
-		, m_cached(false)
-		, m_cache_string()
-	{
+	explicit CharBuf(std::size_t const capacity) {
 		m_buffer.reserve(capacity);
 	}
+	/** Copy constructor (deleted). */
+	CharBuf(CharBuf const&)=delete;
+	/** Move constructor. */
+	CharBuf(CharBuf&&)=default;
+	/** Destructor. */
+	~CharBuf()=default;
+/// @}
+
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	CharBuf& operator=(CharBuf const&)=delete;
+	/** Move assignment operator. */
+	CharBuf& operator=(CharBuf&&)=default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -75,13 +76,13 @@ public:
 		@returns The number of characters in the buffer.
 		@sa get_capacity()
 	*/
-	inline std::size_t get_size() const { return m_buffer.size(); }
+	std::size_t get_size() const { return m_buffer.size(); }
 	/**
 		Get capacity.
 		@returns The reserved size of the buffer.
 		@sa get_size()
 	*/
-	inline std::size_t get_capacity() const { return m_buffer.capacity(); }
+	std::size_t get_capacity() const { return m_buffer.capacity(); }
 /// @}
 
 /** @name Operations and comparison */ /// @{
@@ -99,7 +100,9 @@ public:
 	*/
 	u8string const& cache() {
 		if (!m_cached) {
-			StringUtils::convert<UTF32Utils>(m_cache_string, m_buffer.cbegin(), m_buffer.cend());
+			StringUtils::convert<UTF32Utils>(
+				m_cache_string, m_buffer.cbegin(), m_buffer.cend()
+			);
 			m_cached=true;
 		}
 		return m_cache_string;
@@ -122,14 +125,16 @@ public:
 
 	/**
 		Compare all characters in the buffer to a character.
-		@returns @c true if all characters match the character; @c false otherwise.
-		@tparam charT Character type; inferred from @a c.
+		@returns
+		- @c true if all characters match the character;
+		- @c false otherwise.
+		@tparam CharT Character type; inferred from @a c.
 		@param c Character to compare against.
 	*/
-	template<typename charT>
-	bool compare(charT const c) const {
-		for (unsigned int i=0; get_size()>i; ++i) {
-			if (m_buffer[i]!=c) {
+	template<typename CharT>
+	bool compare(CharT const c) const {
+		for (char_type const x : m_buffer) {
+			if (x!=c) {
 				return false;
 			}
 		}
@@ -137,12 +142,14 @@ public:
 	}
 	/**
 		Compare buffer to a character set.
-		@returns @c true if all characters match a character from @a char_set; @c false otherwise.
+		@returns
+		- @c true if all characters match a character from @a char_set;
+		- @c false otherwise.
 		@param char_set Character set to compare against.
 	*/
 	bool compare(CharacterSet const& char_set) const {
-		for (unsigned int i=0; get_size()>i; ++i) {
-			if (!char_set.contains(m_buffer[i])) {
+		for (char_type const x : m_buffer) {
+			if (!char_set.contains(x)) {
 				return false;
 			}
 		}
@@ -153,13 +160,16 @@ public:
 /** @name Extraction */ /// @{
 	/**
 		Convert buffer to a string.
-		@returns Cache string converted to @a stringT.
-		@tparam stringT String type to convert to. Encoding is inferred from the type's character size.
+		@returns Cache string converted to @a StringT.
+		@tparam StringT String type to convert to. Encoding is inferred from
+		the type's character size.
 	*/
-	template<class stringT>
-	stringT to_string() {
-		stringT str;
-		StringUtils::convert<UTF32Utils>(str, m_buffer.cbegin(), m_buffer.cend(), true);
+	template<class StringT>
+	StringT to_string() {
+		StringT str;
+		StringUtils::convert<UTF32Utils>(
+			str, m_buffer.cbegin(), m_buffer.cend(), true
+		);
 		return str;
 	}
 	/**
@@ -172,13 +182,44 @@ public:
 	/**
 		Convert buffer to a string (by-ref).
 		@param[out] str Output string.
-		@param append Whether to append to @a str; defaults to @c false (@a str is cleared on entry).
+		@param append Whether to append to @a str; defaults to @c false
+		(@a str is cleared on entry).
 	*/
-	template<class stringT>
-	void to_string(stringT& str, bool append=false) {
-		StringUtils::convert<UTF32Utils>(str, m_buffer.cbegin(), m_buffer.cend(), append);
+	template<class StringT>
+	void to_string(StringT& str, bool append=false) {
+		StringUtils::convert<UTF32Utils>(
+			str, m_buffer.cbegin(), m_buffer.cend(), append
+		);
 	}
 
+	/**
+		Convert the buffer to an arithmetic type with error return.
+		@note @a value is guaranteed to be equal to @c T() if extraction failed.
+		@returns
+		- @c true if the buffer was convertible to @a T (@a value is set); or
+		- @c false otherwise (@a value equals @c T(0)).
+		@tparam T An arithmetic type; inferred from @a value.
+		@param[out] value Output value.
+	*/
+	template<typename T>
+	bool to_arithmetic(T& value) {
+		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
+		cache();
+		// FIXME: Clang 3.2 has a defect (with libstdc++ 4.6.3?) in that it
+		// believes the istringstream copy ctor is being used if aggregate
+		// initialization is used here.
+		//
+		// It oddly only occurs when inside of a function template.
+		// GCC 4.6.3 doesn't even care.
+		aux::istringstream stream(m_cache_string);
+		stream>>value;
+		if (stream.fail()) {
+			value=T();
+			return false;
+		} else {
+			return true;
+		}
+	}
 	/**
 		Convert the buffer to an arithmetic type.
 		@returns The buffer converted to arithmetic type @a T.
@@ -191,26 +232,6 @@ public:
 		T val;
 		to_arithmetic(val);
 		return val;
-	}
-	/**
-		Convert the buffer to a 32-bit integer with error return.
-		@note @a value is guaranteed to be equal to @c T() if extraction failed.
-		@returns @c true if the buffer was convertible to @a T (@a value is set); @c false otherwise (@a value equals @c T(0)).
-		@tparam T An arithmetic type; inferred from @a value.
-		@param[out] value Output value.
-	*/
-	template<typename T>
-	bool to_arithmetic(T& value) {
-		static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-		cache();
-		duct::aux::istringstream stream(m_cache_string);
-		stream>>value;
-		if (stream.fail()) {
-			value=T();
-			return false;
-		} else {
-			return true;
-		}
 	}
 /// @}
 

@@ -56,11 +56,20 @@
 */
 #define DUCT_PLATFORM_SYSTEM system_dependent
 
-/** Defined when: @code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_WINDOWS) @endcode */
+/**
+	Defined when:
+	@code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_WINDOWS) @endcode
+*/
 #define DUCT_PLATFORM_SYSTEM_WINDOWS
-/** Defined when: @code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_LINUX) @endcode */
+/**
+	Defined when:
+	@code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_LINUX) @endcode
+*/
 #define DUCT_PLATFORM_SYSTEM_LINUX
-/** Defined when: @code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_MACOS) @endcode */
+/**
+	Defined when:
+	@code (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_MACOS) @endcode
+*/
 #define DUCT_PLATFORM_SYSTEM_MACOS
 
 /**
@@ -70,9 +79,15 @@
 	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
 */
 #define DUCT_PLATFORM_MODEL system_dependent
-/**	Defined when the platform is 32-bit: @code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_32) @endcode */
+/**
+	Defined when the platform is 32-bit:
+	@code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_32) @endcode
+*/
 #define DUCT_PLATFORM_MODEL_32
-/**	Defined when the platform is 64-bit: @code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_64) @endcode */
+/**
+	Defined when the platform is 64-bit:
+	@code (DUCT_PLATFORM_MODEL==DUCT_FLAG_PLATFORM_MODEL_64) @endcode
+*/
 #define DUCT_PLATFORM_MODEL_64
 
 // Compiler
@@ -138,15 +153,19 @@
 
 /**
 	@name Class utilities
+	@deprecated These are deprecated. They have been replaced by explicit
+	in-class exposition and base-class @ref restrictors "restrictors".
+	Both macros currently use the @c =delete; notation instead of relying on
+	private protection.
 	@{
 */
 
 /**
-	Disallow copy and assign for the given typename (intended to be placed within a private section of a class definition).
+	Disallow copy and copy assignment for the given typename.
 */
 #define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)
 /**
-	Disallow all construction for the given typename (intended to be placed within a private section of a class definition).
+	Disallow all construction for the given typename.
 */
 #define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)
 
@@ -206,7 +225,10 @@
 	#define DUCT_PLATFORM_SYSTEM_MACOS
 #endif
 
-#if (defined(__WORDSIZE) && (__WORDSIZE == 64)) || defined(__arch64__) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
+#if (defined(__WORDSIZE) && (__WORDSIZE == 64)) \
+	|| defined(__arch64__) || defined(__LP64__) \
+	|| defined(_M_X64) || defined(__ppc64__) \
+	|| defined(__x86_64__)
 	#define DUCT_PLATFORM_MODEL DUCT_FLAG_PLATFORM_MODEL_64
 	#define DUCT_PLATFORM_MODEL_64
 #elif (defined(__i386__) || defined(__ppc__))
@@ -322,11 +344,11 @@
 // G++
 #elif defined(__GNUC__) || defined(__MINGW32__)
 	#if defined (__llvm__)
-		#define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_LLVM
+		#define DUCT_GCC_FLAG_EXTRA__ DUCT_FLAG_COMPILER_GCC_LLVM
 	#elif defined (__clang__)
-		#define DUCT_FLAG_COMPILER_GCC_EXTRA DUCT_FLAG_COMPILER_GCC_CLANG
+		#define DUCT_GCC_FLAG_EXTRA__ DUCT_FLAG_COMPILER_GCC_CLANG
 	#else
-		#define DUCT_FLAG_COMPILER_GCC_EXTRA 0
+		#define DUCT_GCC_FLAG_EXTRA__ 0
 	#endif
 
 	#if   (__GNUC__ == 3) && (__GNUC_MINOR__ == 2)
@@ -338,29 +360,29 @@
 	#elif (__GNUC__ == 3) && (__GNUC_MINOR__ == 5)
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_GCC35
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 0)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC40 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC40 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 1)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC41 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC41 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 2)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC42 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC42 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 3)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC43 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC43 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 4)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC44 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC44 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 5)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC45 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC45 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 6)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC46 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC46 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 7)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC47 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC47 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC48 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC48 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 9)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC49 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC49 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 5) && (__GNUC_MINOR__ == 0)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC50 | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC50 | DUCT_GCC_FLAG_EXTRA__)
 	#else
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC | DUCT_FLAG_COMPILER_GCC_EXTRA)
+		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC | DUCT_GCC_FLAG_EXTRA__)
 	#endif
 #endif // compiler tree
 
@@ -374,24 +396,28 @@
 #endif
 
 #ifndef bswap_16
-	#define bswap_16(x)	\
-		((((x)>>8)&0xFFu)|(((x)&0xFFu)<<8))
+#define bswap_16(x)	\
+	((((x)>>8)&0xFFu)|(((x)&0xFFu)<<8))
 #endif
 
 #ifndef bswap_32
-	#define bswap_32(x)	\
-		((((x)&0xFF000000u)>>24)|(((x)&0x00FF0000u)>>8)|(((x)&0x0000FF00u)<<8)|(((x)&0x000000FFu)<<24))
+#define bswap_32(x)	\
+	((((x)&0xFF000000u)>>24) | (((x)&0x00FF0000u)>>8 ) | \
+	 (((x)&0x0000FF00u)<<8 ) | (((x)&0x000000FFu)<<24))
 #endif
 
 #ifndef bswap_64
-	#define bswap_64(x)	\
-		(((((x)&0xFF00000000000000ULL)>>56) | (((x)&0x00FF000000000000ULL)>>40) | \
-		  (((x)&0x0000FF0000000000ULL)>>24) | (((x)&0x000000FF00000000ULL)>> 8) | \
-		  (((x)&0x00000000FF000000ULL)<< 8) | (((x)&0x0000000000FF0000ULL)<<24) | \
-		  (((x)&0x000000000000FF00ULL)<<40) | (((x)&0x00000000000000FFULL)<<56)))
+#define bswap_64(x)	\
+	((((x)&0xFF00000000000000ull)>>56) | (((x)&0x00FF000000000000ull)>>40) | \
+	 (((x)&0x0000FF0000000000ull)>>24) | (((x)&0x000000FF00000000ull)>> 8) | \
+	 (((x)&0x00000000FF000000ull)<< 8) | (((x)&0x0000000000FF0000ull)<<24) | \
+	 (((x)&0x000000000000FF00ull)<<40) | (((x)&0x00000000000000FFull)<<56))
 #endif
 
-/* This byte order stuff was lifted from PhysFS, which was lifted from SDL. http://www.libsdl.org/ */
+/*
+	This byte order stuff was lifted from PhysFS, which was lifted from SDL.
+	http://www.libsdl.org
+*/
 #define DUCT_ENDIAN_LITTLE	1234
 #define DUCT_ENDIAN_BIG		4321
 
@@ -412,14 +438,17 @@
 
 // Class utilities
 #define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)	\
-	TypeName(TypeName const&);					\
-	void operator=(TypeName const&)
+	TypeName(TypeName const&)=delete;			\
+	TypeName& operator=(TypeName const&)=delete
 // -
 
 #define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)\
-	TypeName();									\
-	~TypeName();								\
-	DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)
+	TypeName()=delete;							\
+	TypeName(TypeName const&)=delete;			\
+	TypeName(TypeName&&)=delete;				\
+	~TypeName()=delete;							\
+	TypeName& operator=(TypeName const&)=delete;\
+	TypeName& operator=(TypeName&&)=delete
 // -
 
 #ifndef DUCT_CONFIG_ALLOCATOR

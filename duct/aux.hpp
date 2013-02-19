@@ -41,40 +41,40 @@ template<
 using deque=std::deque<T, DUCT_CONFIG_ALLOCATOR<T> >;
 
 /**
-	Alias for @c std::basic_string<charT, traitsT> using the configured allocator.
+	Alias for @c std::basic_string<CharT, TraitsT> using the configured allocator.
 */
 template<
-	typename charT,
-	class traitsT=std::char_traits<charT>
+	typename CharT,
+	class TraitsT=std::char_traits<CharT>
 >
-using basic_string=std::basic_string<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
+using basic_string=std::basic_string<CharT, TraitsT, DUCT_CONFIG_ALLOCATOR<CharT> >;
 
 /**
-	Alias for @c std::basic_istringstream<charT, traitsT> using the configured allocator.
+	Alias for @c std::basic_istringstream<CharT, TraitsT> using the configured allocator.
 */
 template<
-	typename charT,
-	class traitsT=std::char_traits<charT>
+	typename CharT,
+	class TraitsT=std::char_traits<CharT>
 >
-using basic_istringstream=std::basic_istringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
+using basic_istringstream=std::basic_istringstream<CharT, TraitsT, DUCT_CONFIG_ALLOCATOR<CharT> >;
 
 /**
-	Alias for @c std::basic_ostringstream<charT, traitsT> using the configured allocator.
+	Alias for @c std::basic_ostringstream<CharT, TraitsT> using the configured allocator.
 */
 template<
-	typename charT,
-	class traitsT=std::char_traits<charT>
+	typename CharT,
+	class TraitsT=std::char_traits<CharT>
 >
-using basic_ostringstream=std::basic_ostringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
+using basic_ostringstream=std::basic_ostringstream<CharT, TraitsT, DUCT_CONFIG_ALLOCATOR<CharT> >;
 
 /**
-	Alias for @c std::basic_stringstream<charT, traitsT> using the configured allocator.
+	Alias for @c std::basic_stringstream<CharT, TraitsT> using the configured allocator.
 */
 template<
-	typename charT,
-	class traitsT=std::char_traits<charT>
+	typename CharT,
+	class TraitsT=std::char_traits<CharT>
 >
-using basic_stringstream=std::basic_stringstream<charT, traitsT, DUCT_CONFIG_ALLOCATOR<charT> >;
+using basic_stringstream=std::basic_stringstream<CharT, TraitsT, DUCT_CONFIG_ALLOCATOR<CharT> >;
 
 /**	Alias for @c basic_istringstream<char>. */
 typedef basic_istringstream<char> istringstream;

@@ -6,8 +6,8 @@
 */
 
 /*
-	The following is a heavily modified version of the Unicode utils in the SFML working tree (as of 17/06/2011)
-	See:
+	The following is a heavily modified version of the Unicode utils in the SFML working
+	tree (as of 17/06/2011). See:
 	* http://github.com/LaurentGomila/SFML/blob/67455e1a16f797a6e724c701cd9e6a2481384442/include/SFML/System/Utf.hpp
 	* http://github.com/LaurentGomila/SFML/blob/67455e1a16f797a6e724c701cd9e6a2481384442/include/SFML/System/Utf.inl
 */
@@ -44,7 +44,18 @@
 
 // specialization UTF8Utils implementation
 
-static unsigned int const g_utf8_trailing[256]={
+/*
+	from_latin1 and to_latin1:
+	Latin-1 is directly compatible with Unicode encodings, and can thus be treated as
+	(a subset of) UTF-32.
+
+	UTF32Utils' decode_wide and encode_wide:
+	The encoding of wide characters is undefined. We assume that it is UCS-2 on Windows
+	and UCS-4 on Unix systems.
+*/
+
+namespace {
+static uint8_t const g_utf8_trailing[256]{
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -54,11 +65,14 @@ static unsigned int const g_utf8_trailing[256]={
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
 };
+} // anonymous namespace
 
-template<typename InputIterator>
-InputIterator UTF8Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
-	static uint32_t const offsets[6]={0x00000000, 0x00003080, 0x000E2080, 0x03C82080, 0xFA082080, 0x82082080};
-	unsigned int trailing_units=g_utf8_trailing[static_cast<char8_strict>(*pos)];
+template<typename RandomAccessIt>
+RandomAccessIt UTF8Utils::decode(RandomAccessIt pos, RandomAccessIt const end, char32& output, char32 const replacement) {
+	static uint32_t const offsets[6]
+		{0x00000000, 0x00003080, 0x000E2080, 0x03C82080, 0xFA082080, 0x82082080};
+	unsigned const trailing_units=
+		static_cast<uint8_t>(g_utf8_trailing[static_cast<char8_strict>(*pos)]);
 	if (end>pos+trailing_units) {
 		output=0;
 		switch (trailing_units) {
@@ -77,18 +91,19 @@ InputIterator UTF8Utils::decode(InputIterator pos, InputIterator const end, char
 	return pos;
 }
 
-template<typename OutputIterator>
-OutputIterator UTF8Utils::encode(char32 input, OutputIterator output, char32 const replacement) {
-	static char8_strict const utf8_first_bytes[7]={0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
-	if (!DUCT_UNI_IS_CP_VALID(input)) { // Invalid character
-		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) { // Valid and non-null replacement
+template<typename OutputIt>
+OutputIt UTF8Utils::encode(char32 input, OutputIt output, char32 const replacement) {
+	static char8_strict const utf8_first_bytes[7]
+		{0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
+	if (!DUCT_UNI_IS_CP_VALID(input)) {
+		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) {
 			input=replacement;
 		} else { // Invalid or null replacement
 			return output;
 		}
 	}
 	// Valid code point (input or replaced)
-	unsigned int to_write=required(input);
+	unsigned to_write=required(input);
 	// Extract bytes
 	char8_strict bytes[4];
 	switch (to_write) {
@@ -108,20 +123,22 @@ OutputIterator UTF8Utils::encode(char32 input, OutputIterator output, char32 con
 	return output;
 }
 
-template<typename RandomAccessIterator>
-RandomAccessIterator UTF8Utils::next(RandomAccessIterator const from, RandomAccessIterator const end) {
-	unsigned int units=required_first_whole(*from);
-	return ((end-from)<units)
+template<typename RandomAccessIt>
+RandomAccessIt UTF8Utils::next(RandomAccessIt const from, RandomAccessIt const end) {
+	unsigned units=required_first_whole(*from);
+	return (std::distance(end, from)<units)
 		? from
 		: from+units;
 }
 
-template<typename RandomAccessIterator>
-RandomAccessIterator UTF8Utils::prev(RandomAccessIterator from, RandomAccessIterator const begin) {
-	RandomAccessIterator pos=from;
-	if (begin<=from) { // Quick exit: invalid or unsteppable position
+template<typename RandomAccessIt>
+RandomAccessIt UTF8Utils::prev(RandomAccessIt from, RandomAccessIt const begin) {
+	RandomAccessIt pos=from;
+	if (begin<=from) {
+		// Quick exit: invalid or unsteppable position
 		return from;
-	} else if (DUCT_UTF8_IS_LEAD(*pos)) { // Already aligned to a sequence; move outside it
+	} else if (DUCT_UTF8_IS_LEAD(*pos)) {
+		// Already aligned to a sequence; move outside it
 		--pos;
 	}
 	while (begin<pos && DUCT_UTF8_IS_TRAIL(*pos)) {
@@ -134,28 +151,30 @@ RandomAccessIterator UTF8Utils::prev(RandomAccessIterator from, RandomAccessIter
 	}
 }
 
-inline unsigned int UTF8Utils::required_first(char_type const first) {
+inline unsigned UTF8Utils::required_first(char_type const first) {
 	return g_utf8_trailing[static_cast<char8_strict>(first)];
 }
 
-inline unsigned int UTF8Utils::required_first_whole(char_type const first) {
+inline unsigned UTF8Utils::required_first_whole(char_type const first) {
 	return 1u+g_utf8_trailing[static_cast<char8_strict>(first)];
 }
 
-inline unsigned int UTF8Utils::required(char32 const c) {
-	if 		(c< 0x80 || c>0x10FFFF) return 1u; // If greater than 0x10FFFF, the character is invalid and would be replaced with a single unit or skipped
+inline unsigned UTF8Utils::required(char32 const c) {
+	// If greater than 0x10FFFF, the character is invalid and would be replaced
+	// with a single unit or skipped
+	if 		(c< 0x80 || c>0x10FFFF) return 1u;
 	else if (c< 0x800)		return 2u;
 	else if (c< 0x10000)	return 3u;
 	else   /*c<=0x10FFFF*/	return 4u;
 }
 
-template<typename RandomAccessIterator>
-std::size_t UTF8Utils::count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete) {
+template<typename RandomAccessIt>
+std::size_t UTF8Utils::count(RandomAccessIt begin, RandomAccessIt const end, bool const count_incomplete) {
 	std::size_t length=0;
-	unsigned int units;
+	unsigned units;
 	while (end>begin) {
 		units=required_first_whole(*begin);
-		if ((end-begin)<units) { // Incomplete sequence
+		if (std::distance(end, begin)<units) { // Incomplete sequence
 			length+=(count_incomplete ? 1 : 0);
 			break;
 		} else {
@@ -166,16 +185,22 @@ std::size_t UTF8Utils::count(RandomAccessIterator begin, RandomAccessIterator co
 	return length;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=UTF16Utils::decode(begin, end, codepoint);
@@ -184,29 +209,38 @@ OutputIterator UTF8Utils::from_utf16(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		output=encode(*begin++, output);
 	}
 	return output;
 }
 
-template<class outU, typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<class outU, typename RandomAccessIt, typename OutputIt>
+inline OutputIt UTF8Utils::to_other(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	return outU::from_utf8(begin, end, output);
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -215,8 +249,11 @@ OutputIterator UTF8Utils::to_utf16(InputIterator begin, InputIterator const end,
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -225,8 +262,11 @@ OutputIterator UTF8Utils::to_utf32(InputIterator begin, InputIterator const end,
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, std::locale const& locale) {
 	while (end>begin) {
 		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
 		output=encode(codepoint, output);
@@ -234,8 +274,11 @@ OutputIterator UTF8Utils::from_locale(InputIterator begin, InputIterator const e
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_wide(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		char32 codepoint=UTF32Utils::decode_wide(*begin++);
 		output=encode(codepoint, output);
@@ -243,18 +286,22 @@ OutputIterator UTF8Utils::from_wide(InputIterator begin, InputIterator const end
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::from_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		output=encode(*begin++, output);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement, std::locale const& locale) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -263,8 +310,11 @@ OutputIterator UTF8Utils::to_locale(InputIterator begin, InputIterator const end
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char32 const replacement) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -273,10 +323,11 @@ OutputIterator UTF8Utils::to_wide(InputIterator begin, InputIterator const end, 
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF8Utils::to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF8Utils::to_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -287,37 +338,43 @@ OutputIterator UTF8Utils::to_latin1(InputIterator begin, InputIterator const end
 
 // specialization UTF16Utils implementation
 
-template<typename InputIterator>
-InputIterator UTF16Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
-	if (end<=pos) { // Don't try to do anything if we're given an overrun
+template<typename RandomAccessIt>
+RandomAccessIt UTF16Utils::decode(RandomAccessIt pos, RandomAccessIt const end, char32& output, char32 const replacement) {
+	if (end<=pos) {
+		// Don't try to do anything if we're given an overrun
 		return pos;
 	}
+	RandomAccessIt orig_pos=pos;
 	char16 first=*pos++;
-	if (DUCT_UTF16_IS_LEAD_SURROGATE(first)) { // Lead surrogate
+	if (DUCT_UTF16_IS_LEAD_SURROGATE(first)) {
 		if (end>pos) {
 			char16 second=*pos++;
-			if (DUCT_UTF16_IS_TRAIL_SURROGATE(second)) { // Trail surrogate; we have a pair! Decode that sasquatch
+			if (DUCT_UTF16_IS_TRAIL_SURROGATE(second)) {
+				// Trail surrogate; we have a pair! Decode that sasquatch
 				output=static_cast<char32>(((first-0xD800)<<10)+(second-0xDC00)+0x10000);
 			} else { // Invalid character
 				output=replacement;
-				return pos; // Skip invalidity check
+				return pos;
 			}
 		} else { // Incomplete sequence
-			return --pos; // Prevent output from being modified
+			// Prevent output from being modified
+			return orig_pos;
 		}
-	} else { // Not a surrogate; directly copy (trail surrogate is captured as invalid below with DUCT_UNI_IS_CP_VALID)
+	} else {
+		// Not a surrogate; directly copy (trail surrogate is captured as
+		// invalid below)
 		output=first;
 	}
-	if (!DUCT_UNI_IS_CP_VALID(output)) { // Test invalidity
+	if (!DUCT_UNI_IS_CP_VALID(output)) {
 		output=replacement;
 	}
 	return pos;
 }
 
-template<typename OutputIterator>
-OutputIterator UTF16Utils::encode(char32 input, OutputIterator output, char32 const replacement) {
-	if (!DUCT_UNI_IS_CP_VALID(input)) { // Invalid character
-		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) { // Valid and non-null replacement
+template<typename OutputIt>
+OutputIt UTF16Utils::encode(char32 input, OutputIt output, char32 const replacement) {
+	if (!DUCT_UNI_IS_CP_VALID(input)) {
+		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) {
 			input=replacement;
 		} else { // Invalid or null replacement
 			return output;
@@ -333,49 +390,55 @@ OutputIterator UTF16Utils::encode(char32 input, OutputIterator output, char32 co
 	return output;
 }
 
-template<typename RandomAccessIterator>
-RandomAccessIterator UTF16Utils::next(RandomAccessIterator const from, RandomAccessIterator const end) {
-	unsigned int units=DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
-	return ((end-from)<units)
+template<typename RandomAccessIt>
+RandomAccessIt UTF16Utils::next(RandomAccessIt const from, RandomAccessIt const end) {
+	unsigned units=DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
+	return (std::distance(end, from)<units)
 		? from
 		: from+units;
 }
 
-template<typename RandomAccessIterator>
-RandomAccessIterator UTF16Utils::prev(RandomAccessIterator from, RandomAccessIterator const begin) {
-	RandomAccessIterator pos=from;
-	if (begin>=from) { // Quick exit: invalid or unsteppable position
+template<typename RandomAccessIt>
+RandomAccessIt UTF16Utils::prev(RandomAccessIt from, RandomAccessIt const begin) {
+	RandomAccessIt pos=from;
+	if (begin>=from) {
+		// Quick exit: invalid or unsteppable position
 		return from;
 	}
-	--pos; // Either @a from is a lead unit or a trail surrogate
-	if (DUCT_UTF16_IS_LEAD(*pos)) { // Already at the preceeding sequence
+	// Two cases: @a from is either a lead unit or a trail surrogate
+	--pos;
+	if (DUCT_UTF16_IS_LEAD(*pos)) {
+		// Already at the preceeding sequence
 		return pos;
-	} else if (begin<pos) { // Step back once more; true==DUCT_UTF16_IS_TRAIL_SURROGATE(*pos)
+	} else if (begin<pos) {
+		// Step back once more; true==DUCT_UTF16_IS_TRAIL_SURROGATE(*pos)
 		return --pos;
-	} else { // Incomplete sequence
+	} else {
+		// Incomplete sequence
 		return from;
 	}
 }
 
-inline unsigned int UTF16Utils::required_first(char_type const first) {
+inline unsigned UTF16Utils::required_first(char_type const first) {
 	return DUCT_UTF16_IS_SURROGATE(first) ? 1 : 0;
 }
 
-inline unsigned int UTF16Utils::required_first_whole(char_type const first) {
+inline unsigned UTF16Utils::required_first_whole(char_type const first) {
 	return DUCT_UTF16_IS_SURROGATE(first) ? 2 : 1;
 }
 
-inline unsigned int UTF16Utils::required(char32 const c) {
+inline unsigned UTF16Utils::required(char32 const c) {
 	return (0xFFFF>=c) ? 1 : 2;
 }
 
-template<typename RandomAccessIterator>
-std::size_t UTF16Utils::count(RandomAccessIterator begin, RandomAccessIterator const end, bool const count_incomplete) {
+template<typename RandomAccessIt>
+std::size_t UTF16Utils::count(RandomAccessIt begin, RandomAccessIt const end, bool const count_incomplete) {
 	std::size_t length=0;
-	unsigned int units;
+	unsigned units;
 	while (end>begin) {
 		units=DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
-		if ((end-begin)<units) { // Incomplete sequence
+		if (std::distance(end, begin)<units) {
+			// Incomplete sequence
 			length+=(count_incomplete ? 1 : 0);
 			break;
 		} else {
@@ -386,8 +449,11 @@ std::size_t UTF16Utils::count(RandomAccessIterator begin, RandomAccessIterator c
 	return length;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=UTF8Utils::decode(begin, end, codepoint);
@@ -396,29 +462,38 @@ OutputIterator UTF16Utils::from_utf8(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		output=encode(*begin++, output);
 	}
 	return output;
 }
 
-template<class outU, typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<class outU, typename RandomAccessIt, typename OutputIt>
+inline OutputIt UTF16Utils::to_other(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	return outU::from_utf16(begin, end, output);
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -427,16 +502,22 @@ OutputIterator UTF16Utils::to_utf8(InputIterator begin, InputIterator const end,
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -445,8 +526,11 @@ OutputIterator UTF16Utils::to_utf32(InputIterator begin, InputIterator const end
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, std::locale const& locale) {
 	while (end>begin) {
 		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
 		output=encode(codepoint, output);
@@ -454,8 +538,11 @@ OutputIterator UTF16Utils::from_locale(InputIterator begin, InputIterator const 
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_wide(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		char32 codepoint=UTF32Utils::decode_wide(*begin++);
 		output=encode(codepoint, output);
@@ -463,18 +550,22 @@ OutputIterator UTF16Utils::from_wide(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::from_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement, std::locale const& locale) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -483,8 +574,11 @@ OutputIterator UTF16Utils::to_locale(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char32 const replacement) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=decode(begin, end, codepoint);
@@ -493,10 +587,11 @@ OutputIterator UTF16Utils::to_wide(InputIterator begin, InputIterator const end,
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF16Utils::to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF16Utils::to_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement) {
 	while (end>begin) {
 		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
 		++begin;
@@ -506,8 +601,8 @@ OutputIterator UTF16Utils::to_latin1(InputIterator begin, InputIterator const en
 
 // specialization UTF32Utils implementation
 
-template<typename InputIterator>
-InputIterator UTF32Utils::decode(InputIterator pos, InputIterator const end, char32& output, char32 const replacement) {
+template<typename RandomAccessIt>
+inline RandomAccessIt UTF32Utils::decode(RandomAccessIt pos, RandomAccessIt const end, char32& output, char32 const replacement) {
 	if (end>pos) { // Don't try to do anything if we're given an overrun
 		output=*pos++;
 		if (!DUCT_UNI_IS_CP_VALID(output)) {
@@ -517,8 +612,8 @@ InputIterator UTF32Utils::decode(InputIterator pos, InputIterator const end, cha
 	return pos;
 }
 
-template<typename OutputIterator>
-OutputIterator UTF32Utils::encode(char32 input, OutputIterator output, char32 const replacement) {
+template<typename OutputIt>
+inline OutputIt UTF32Utils::encode(char32 input, OutputIt output, char32 const replacement) {
 	if (DUCT_UNI_IS_CP_VALID(input)) {
 		*output++=input;
 	} else if (CHAR_NULL!=replacement && DUCT_UNI_IS_CP_VALID(replacement)) {
@@ -527,46 +622,45 @@ OutputIterator UTF32Utils::encode(char32 input, OutputIterator output, char32 co
 	return output;
 }
 
-template<typename RandomAccessIterator>
-inline RandomAccessIterator UTF32Utils::next(RandomAccessIterator const from, RandomAccessIterator const end) {
+template<typename RandomAccessIt>
+inline RandomAccessIt UTF32Utils::next(RandomAccessIt const from, RandomAccessIt const end) {
 	return (end>from)
 		? from+1
 		: from;
 }
 
-template<typename RandomAccessIterator>
-inline RandomAccessIterator UTF32Utils::prev(RandomAccessIterator from, RandomAccessIterator const begin) {
+template<typename RandomAccessIt>
+inline RandomAccessIt UTF32Utils::prev(RandomAccessIt from, RandomAccessIt const begin) {
 	return (begin<from)
 		? --from
 		: from;
 }
 
-inline unsigned int UTF32Utils::required_first(char_type const) {
+inline unsigned UTF32Utils::required_first(char_type const) {
 	return 0;
 }
 
-inline unsigned int UTF32Utils::required_first_whole(char_type const) {
+inline unsigned UTF32Utils::required_first_whole(char_type const) {
 	return 1;
 }
 
-inline unsigned int UTF32Utils::required(char32 const) {
+inline unsigned UTF32Utils::required(char32 const) {
 	return 1;
 }
 
-template<typename RandomAccessIterator>
-inline std::size_t UTF32Utils::count(RandomAccessIterator begin, RandomAccessIterator const end, bool const) {
-	return end-begin;
+template<typename RandomAccessIt>
+inline std::size_t UTF32Utils::count(RandomAccessIt begin, RandomAccessIt const end, bool const) {
+	return std::distance(end, begin);
 }
 
-template<typename InputIterator>
-char32 UTF32Utils::decode_locale(InputIterator input, std::locale const& locale) {
-	// On Windows, gcc's standard library (glibc++) has almost
-	// no support for Unicode stuff. As a consequence, in this
-	// context we can only use the default locale and ignore
-	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&						/* if Windows ... */						  \
-	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
-	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
+template<typename RandomAccessIt>
+char32 UTF32Utils::decode_locale(RandomAccessIt input, std::locale const& locale) {
+	// On Windows, gcc's standard library (glibc++) has almost no support for Unicode
+	// stuff. As a consequence, in this context we can only use the default locale and
+	// ignore the one passed as parameter.
+	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&			\
+		 (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&	\
+		!(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
 		wchar_t character=0;
 		mbtowc(&character, &input, 1);
 		return static_cast<char32>(character);
@@ -578,15 +672,14 @@ char32 UTF32Utils::decode_locale(InputIterator input, std::locale const& locale)
 	#endif
 }
 
-template<typename OutputIterator>
-OutputIterator UTF32Utils::encode_locale(char32 input, OutputIterator output, char8 const replacement, std::locale const& locale) {
-	// On Windows, gcc's standard library (glibc++) has almost
-	// no support for Unicode stuff. As a consequence, in this
-	// context we can only use the default locale and ignore
-	// the one passed as parameter.
-	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&						/* if Windows ... */						  \
-	   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&		/* ... and standard library is glibc++ ... */ \
-	  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))	/* ... and STLPort is not used on top of it */
+template<typename OutputIt>
+OutputIt UTF32Utils::encode_locale(char32 input, OutputIt output, char8 const replacement, std::locale const& locale) {
+	// On Windows, gcc's standard library (glibc++) has almost no support for Unicode
+	// stuff. As a consequence, in this context we can only use the default locale and
+	// ignore the one passed as parameter.
+	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&			\
+		 (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&	\
+		!(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
 		char8 character=0;
 		if (wctomb(&character, static_cast<wchar_t>(input))>=0) {
 			*output++=character;
@@ -603,28 +696,22 @@ OutputIterator UTF32Utils::encode_locale(char32 input, OutputIterator output, ch
 	#endif
 }
 
-template<typename InputIterator>
-char32 UTF32Utils::decode_wide(InputIterator input) {
-	// The encoding of wide characters is not well defined and is left to the system;
-	// however we can safely assume that it is UCS-2 on Windows and
-	// UCS-4 on Unix systems.
-	// InputIterator both cases, a simple copy is enough (UCS-2 is a subset of UCS-4,
-	// and UCS-4 *is* UTF-32).
+template<typename RandomAccessIt>
+inline char32 UTF32Utils::decode_wide(RandomAccessIt input) {
+	// For both UCS-2 and UCS-4, a copy is sufficient (UCS-2 is a subset of UCS-4, and
+	// UCS-4 *is* UTF-32).
 	return input;
 }
 
-template<typename OutputIterator>
-OutputIterator UTF32Utils::encode_wide(char32 input, OutputIterator output, char32 const replacement) {
-	// The encoding of wide characters is not well defined and is left to the system;
-	// however we can safely assume that it is UCS-2 on Windows and
-	// UCS-4 on Unix systems.
-	// For UCS-2 we need to check if the source characters fits in (UCS-2 is a subset of UCS-4).
-	// For UCS-4 we can do a direct copy (UCS-4 *is* UTF-32).
+template<typename OutputIt>
+OutputIt UTF32Utils::encode_wide(char32 input, OutputIt output, char32 const replacement) {
 	switch (sizeof(wchar_t)) {
+		// UCS-4 == UTF-32
 		case 4: {
 			*output++=static_cast<wchar_t>(input);
 			break;
 		}
+		// UCS-2: Need to check if the source code point fits
 		default: { // TODO: replace with encoding the code point to two code units?
 			if ((input<=0xFFFF) && ((input<0xD800) || (input>0xDFFF))) {
 				*output++=static_cast<wchar_t>(input);
@@ -637,52 +724,66 @@ OutputIterator UTF32Utils::encode_wide(char32 input, OutputIterator output, char
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_locale(InputIterator begin, InputIterator const end, OutputIterator output, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, std::locale const& locale) {
 	while (end>begin) {
 		*output++=decode_locale(*begin++, locale);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_wide(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=decode_wide(*begin++);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_latin1(InputIterator begin, InputIterator const end, OutputIterator output) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_locale(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement, std::locale const& locale) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_locale(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement, std::locale const& locale) {
 	while (end>begin) {
 		output=encode_locale(*begin++, output, replacement, locale);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_wide(InputIterator begin, InputIterator const end, OutputIterator output, char32 const replacement) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_wide(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char32 const replacement) {
 	while (end>begin) {
 		output=encode_wide(*begin++, output, replacement);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_latin1(InputIterator begin, InputIterator const end, OutputIterator output, char8 const replacement) {
-	// Latin-1 is directly compatible with Unicode encodings,
-	// and can thus be treated as (a sub-range of) UTF-32
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_latin1(RandomAccessIt begin, RandomAccessIt const end, OutputIt output, char8 const replacement) {
 	while (end>begin) {
 		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
 		++begin;
@@ -690,8 +791,11 @@ OutputIterator UTF32Utils::to_latin1(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=UTF8Utils::decode(begin, end, codepoint);
@@ -700,8 +804,11 @@ OutputIterator UTF32Utils::from_utf8(InputIterator begin, InputIterator const en
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	char32 codepoint;
 	while (end>begin) {
 		begin=UTF16Utils::decode(begin, end, codepoint);
@@ -710,37 +817,49 @@ OutputIterator UTF32Utils::from_utf16(InputIterator begin, InputIterator const e
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::from_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::from_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}
 	return output;
 }
 
-template<class outU, typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_other(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<class outU, typename RandomAccessIt, typename OutputIt>
+inline OutputIt UTF32Utils::to_other(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	return outU::from_utf32(begin, end, output);
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_utf8(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_utf8(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		output=UTF8Utils::encode(*begin++, output);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_utf16(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_utf16(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		output=UTF16Utils::encode(*begin++, output);
 	}
 	return output;
 }
 
-template<typename InputIterator, typename OutputIterator>
-OutputIterator UTF32Utils::to_utf32(InputIterator begin, InputIterator const end, OutputIterator output) {
+template<
+	typename RandomAccessIt,
+	typename OutputIt
+>
+OutputIt UTF32Utils::to_utf32(RandomAccessIt begin, RandomAccessIt const end, OutputIt output) {
 	while (end>begin) {
 		*output++=*begin++;
 	}

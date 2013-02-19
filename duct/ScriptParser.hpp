@@ -36,7 +36,7 @@ class ScriptParser;
 /**
 	ScriptParser exception.
 */
-class ScriptParserException : public std::exception {
+class ScriptParserException /*final*/ : public std::exception {
 private:
 	char const* m_scope;
 	Token const* m_token;
@@ -44,20 +44,39 @@ private:
 	char m_message[512];
 
 public:
+	/** Default constructor (deleted). */
+	ScriptParserException()=delete;
 	/**
-		Detailed constructor.
+		Construct with details.
+		@param scope Scope of exception.
+		@param token Token.
+		@param parser Parser.
+		@param fmt Message format string.
+		@param ... Message parameters.
 	*/
 	ScriptParserException(char const scope[], Token const* token, ScriptParser const* const parser, char const fmt[], ...);
-	/**
-		Destructor.
-	*/
-	~ScriptParserException() throw() {}
+	/** Copy constructor (deleted). */
+	ScriptParserException(ScriptParserException const&)=delete;
+	/** Move constructor. */
+	ScriptParserException(ScriptParserException&&)=default;
+	/** Destructor. */
+	~ScriptParserException()=default;
+/// @}
 
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	ScriptParserException& operator=(ScriptParserException const&)=delete;
+	/** Move assignment operator. */
+	ScriptParserException& operator=(ScriptParserException&&)=default;
+/// @}
+
+/** @name Properties */ /// @{
 	/**
 		Get error message.
 		@returns The error message.
 	*/
-	inline char const* what() const throw() { return m_message; }
+	char const* what() const noexcept override { return m_message; }
+/// @}
 };
 
 /**
@@ -65,23 +84,14 @@ public:
 */
 class ScriptParser /*final*/ : public Parser {
 private:
-	duct::aux::deque<Variable*> m_stack;
-	u8string m_varname;
-	unsigned int m_states;
-
-	DUCT_DISALLOW_COPY_AND_ASSIGN(ScriptParser);
+	duct::aux::deque<Variable*> m_stack{32};
+	u8string m_varname{};
+	unsigned m_states{0};
 
 public:
 /** @name Constructors */ /// @{
-	/**
-		Default constructor.
-	*/
-	ScriptParser()
-		: Parser()
-		, m_stack(32)
-		, m_varname()
-		, m_states(0)
-	{}
+	/** Default constructor. */
+	ScriptParser()=default;
 	/**
 		Constructor with StreamContext properties.
 		@param encoding Encoding to use for StreamContext.
@@ -89,9 +99,6 @@ public:
 	*/
 	ScriptParser(Encoding const encoding, Endian const endian)
 		: Parser(encoding, endian)
-		, m_stack(32)
-		, m_varname()
-		, m_states(0)
 	{}
 	/**
 		Constructor with StreamContext.
@@ -99,14 +106,24 @@ public:
 	*/
 	explicit ScriptParser(IO::StreamContext context)
 		: Parser(std::move(context))
-		, m_stack(32)
-		, m_varname()
-		, m_states(0)
 	{}
+	/** Copy constructor (deleted). */
+	ScriptParser(ScriptParser const&)=delete;
+	/** Move constructor. */
+	ScriptParser(ScriptParser&&)=default;
+	/** Destructor. */
+	~ScriptParser() override=default;
+/// @}
+
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	ScriptParser& operator=(ScriptParser const&)=delete;
+	/** Move assignment operator. */
+	ScriptParser& operator=(ScriptParser&&)=default;
 /// @}
 
 /** @name State */ /// @{
-	void reset();
+	void reset() override;
 private:
 	void finish();
 public:
@@ -127,28 +144,28 @@ public:
 	*/
 	bool process(Variable& node, std::istream& stream);
 
-	bool parse();
-	void discern_token();
-	void read_token();
-	void handle_token();
+	bool parse() override;
+	void discern_token() override;
+	void read_token() override;
+	void handle_token() override;
 /// @}
 
 private:
 	void read_tok_integer();
 	void read_tok_floating();
-	void read_tok_literal(char32 const match_str[], unsigned int length);
+	void read_tok_literal(char32 const match_str[], unsigned length);
 	void read_tok_string();
 	void read_tok_string_quoted();
 	void read_tok_comment_block();
 
-	void assign_states(unsigned int const states) { m_states|=states; }
-	void remove_states(unsigned int const states) { m_states&=~states; }
+	void assign_states(unsigned const states) { m_states|=states; }
+	void remove_states(unsigned const states) { m_states&=~states; }
 	void clear_all_states() { m_states=0; }
-	bool has_states(unsigned int const states) const { return states==(m_states&states); }
-	bool has_states_any(unsigned int const states) const { return 0!=(m_states&states); }
+	bool has_states(unsigned const states) const { return states==(m_states&states); }
+	bool has_states_any(unsigned const states) const { return 0!=(m_states&states); }
 
 	bool at_root() const;
-	bool in_scope(unsigned int const type);
+	bool in_scope(unsigned const type);
 	Variable& get_current_collection();
 	void push(Variable& collection);
 	void pop();
@@ -157,7 +174,7 @@ private:
 	void make_name();
 	void make_collection(VariableType const type, bool push_collection=true);
 	void make_value();
-	void make_nameless_value(int override_type=NULL_TOKEN);
+	void make_nameless_value(signed override_type=NULL_TOKEN);
 };
 
 #include "./impl/ScriptParser.inl"

@@ -30,22 +30,31 @@ class Variable;
 
 /**
 	Multi-type variable.
-	@warning This class is relatively heavy since it serves the purposes of every variable type — use it wisely.
+	@warning This class is relatively heavy since it serves the purposes of
+	every variable type — use it wisely.
 */
 class Variable /*final*/ {
 public:
+/** @name Types */ /// @{
 	/** Children vector. */
 	typedef duct::aux::vector<Variable> vector_type;
 	/** Children iterator.  */
 	typedef vector_type::iterator iterator;
 	/** @copydoc iterator  */
 	typedef vector_type::const_iterator const_iterator;
+	/** Initializer list. */
+	typedef std::initializer_list<Variable> initializer_list_type;
+/// @}
 
 private:
-	VariableType m_type;
-	detail::var_config::name_type m_name;
-	vector_type m_children;
-	detail::var_config::string_type m_strv;
+	VariableType m_type{VARTYPE_NULL};
+	detail::var_config::name_type m_name{};
+	vector_type m_children{};
+	detail::var_config::string_type m_strv{};
+	// NB: union is zero-initialized.
+	// GCC 4.7.0 (and probably other versions) has a defect which does
+	// not allow a ctor to be `=default` when a union member is
+	// aggregate-intialized.
 	union {
 		detail::var_config::int_type m_intv;
 		detail::var_config::float_type m_floatv;
@@ -57,58 +66,68 @@ public:
 	/**
 		Construct nameless @c VARTYPE_NULL.
 	*/
-	Variable()
-		: m_type(VARTYPE_NULL)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_intv(0)
-	{}
+	Variable()=default;
 	/**
 		Construct named with type (default value).
 		@param name Name.
 		@param type Type.
 	*/
 	Variable(detail::var_config::name_type name, VariableType const type)
-		: m_type(type)
-		, m_name(std::move(name))
-		, m_children()
-		, m_strv()
-		, m_intv(0)
+		: m_type{type}
+		, m_name{std::move(name)}
 	{}
 	/**
 		Construct nameless with type (default value).
 		@param type Type.
 	*/
 	explicit Variable(VariableType const type)
-		: m_type(type)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_intv(0)
+		: m_type{type}
 	{}
+	/**
+		Construct nameless with collection type and children.
+		@warning An assertion will fail if @a type is not a collection type.
+		@warning In ductScript, identifiers must have a name.
+		@param type Type.
+		@param ilist Initializer list.
+	*/
+	Variable(VariableType const type, initializer_list_type ilist)
+		: m_type{type}
+		, m_children{std::move(ilist)}
+	{
+		assert(is_class(VARCLASS_COLLECTION));
+	}
+	/**
+		Construct named with collection type and children.
+		@warning An assertion will fail if @a type is not a collection type.
+		@warning In ductScript, identifiers must have a name.
+		@param name Name.
+		@param type Type.
+		@param ilist Initializer list.
+	*/
+	Variable(detail::var_config::name_type name, VariableType const type, initializer_list_type ilist)
+		: m_type{type}
+		, m_name{std::move(name)}
+		, m_children{std::move(ilist)}
+	{
+		assert(is_class(VARCLASS_COLLECTION));
+	}
 	/**
 		Construct named @c VARTYPE_STRING with value.
 		@param name Name.
 		@param value Value.
 	*/
 	Variable(detail::var_config::name_type name, detail::var_config::string_type value)
-		: m_type(VARTYPE_STRING)
-		, m_name(std::move(name))
-		, m_children()
-		, m_strv(std::move(value))
-		, m_intv()
+		: m_type{VARTYPE_STRING}
+		, m_name{std::move(name)}
+		, m_strv{std::move(value)}
 	{}
 	/**
 		Construct nameless @c VARTYPE_STRING with value.
 		@param value Value.
 	*/
 	explicit Variable(detail::var_config::string_type value)
-		: m_type(VARTYPE_STRING)
-		, m_name()
-		, m_children()
-		, m_strv(std::move(value))
-		, m_intv()
+		: m_type{VARTYPE_STRING}
+		, m_strv{std::move(value)}
 	{}
 	/**
 		Construct named @c VARTYPE_INTEGER with value.
@@ -116,22 +135,17 @@ public:
 		@param value Value.
 	*/
 	Variable(detail::var_config::name_type name, detail::var_config::int_type const value)
-		: m_type(VARTYPE_INTEGER)
-		, m_name(std::move(name))
-		, m_children()
-		, m_strv()
-		, m_intv(value)
+		: m_type{VARTYPE_INTEGER}
+		, m_name{std::move(name)}
+		, m_intv{value}
 	{}
 	/**
 		Construct nameless @c VARTYPE_INTEGER with value.
 		@param value Value.
 	*/
 	explicit Variable(detail::var_config::int_type const value)
-		: m_type(VARTYPE_INTEGER)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_intv(value)
+		: m_type{VARTYPE_INTEGER}
+		, m_intv{value}
 	{}
 	/**
 		Construct named @c VARTYPE_FLOAT with value.
@@ -139,22 +153,17 @@ public:
 		@param value Value.
 	*/
 	Variable(detail::var_config::name_type name, detail::var_config::float_type const value)
-		: m_type(VARTYPE_FLOAT)
-		, m_name(std::move(name))
-		, m_children()
-		, m_strv()
-		, m_floatv(value)
+		: m_type{VARTYPE_FLOAT}
+		, m_name{std::move(name)}
+		, m_floatv{value}
 	{}
 	/**
 		Construct nameless @c VARTYPE_FLOAT with value.
 		@param value Value.
 	*/
 	explicit Variable(detail::var_config::float_type const value)
-		: m_type(VARTYPE_FLOAT)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_floatv(value)
+		: m_type{VARTYPE_FLOAT}
+		, m_floatv{value}
 	{}
 	/**
 		Construct named @c VARTYPE_BOOL with value.
@@ -162,45 +171,39 @@ public:
 		@param value Value.
 	*/
 	Variable(detail::var_config::name_type name, detail::var_config::bool_type const value)
-		: m_type(VARTYPE_BOOL)
-		, m_name(std::move(name))
-		, m_children()
-		, m_strv()
-		, m_boolv(value)
+		: m_type{VARTYPE_BOOL}
+		, m_name{std::move(name)}
+		, m_boolv{value}
 	{}
 	/**
 		Construct nameless @c VARTYPE_BOOL with value.
 		@param value Value.
 	*/
 	explicit Variable(detail::var_config::bool_type const value)
-		: m_type(VARTYPE_BOOL)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_boolv(value)
+		: m_type{VARTYPE_BOOL}
+		, m_boolv{value}
 	{}
 
+	/** Copy constructor. */
+	Variable(Variable const&)=default;
+	/** Move constructor. */
+	Variable(Variable&&)=default;
+	/** Destructor. */
+	~Variable()=default;
+/// @}
+
+/** @name Operators */ /// @{
 	/**
-		Copy constructor.
-		@param other Variable to copy.
-	*/
-	Variable(Variable const& other)
-		: m_type(other.m_type)
-		, m_name()
-		, m_children()
-		, m_strv()
-		, m_intv(0)
-	{
-		this->operator=(other);
-	}
-	/**
-		Copy operator.
-		@note #reset() is called if @a other's type and the current type are both unequal and not collections.
+		Copy assignment operator.
+		@note #reset() is called if @a other's type and the current type are
+		both unequal and not collections.
 		@returns @c *this.
 		@param other Variable to copy.
 	*/
 	Variable& operator=(Variable const& other) {
-		if (other.m_type!=m_type && !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&other.m_type))) {
+		if (other.m_type!=m_type
+			&& !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&other.m_type))
+		) {
 			reset();
 		}
 		m_type=other.m_type;
@@ -219,6 +222,8 @@ public:
 		}
 		return *this;
 	}
+	/** Move assignment operator. */
+	Variable& operator=(Variable&&)=default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -227,37 +232,40 @@ public:
 		@returns The current type.
 		@sa morph(T const)
 	*/
-	inline VariableType get_type() const { return m_type; }
+	VariableType get_type() const { return m_type; }
 
 	/**
 		Set name.
 		@returns @c *this.
 		@param name New name.
 	*/
-	inline Variable& set_name(detail::var_config::name_type name) { m_name.assign(std::move(name)); return *this; }
+	Variable& set_name(detail::var_config::name_type name) {
+		m_name.assign(std::move(name));
+		return *this;
+	}
 	/**
 		Get name.
 		@returns The current name.
 	*/
-	inline detail::var_config::name_type const& get_name() const { return m_name; }
+	detail::var_config::name_type const& get_name() const { return m_name; }
 
 	/**
 		Test the variable's type.
 		@returns @c true if @c get_type()==type.
 		@param type Type to test against.
 	*/
-	inline bool is_type(VariableType const type) const { return (type==m_type); }
+	bool is_type(VariableType const type) const { return (type==m_type); }
 	/**
 		Test the variable's class.
 		@returns @c true if the variable's type is of @a vclass.
 		@param vclass Variable class to test against.
 	*/
-	inline bool is_class(VariableClass const vclass) const { return (m_type&vclass); }
+	bool is_class(VariableClass const vclass) const { return (m_type&vclass); }
 	/**
 		Check if the variable is null.
-		@returns @c true if @c is_type(VARTYPE_NULL).
+		@returns @c is_type(VARTYPE_NULL).
 	*/
-	inline bool is_null() const { return is_type(VARTYPE_NULL); }
+	bool is_null() const { return is_type(VARTYPE_NULL); }
 /// @}
 
 /** @name Operations */ /// @{
@@ -266,10 +274,11 @@ public:
 		Equivalent to @c morph(VARTYPE_NULL).
 		@returns @c *this.
 	*/
-	inline Variable& nullify() { return morph(VARTYPE_NULL); }
+	Variable& nullify() { return morph(VARTYPE_NULL); }
 
 	/**
-		Reset @c VARCLASS_VALUE types to default value; clear children for @c VARCLASS_COLLECTION types.
+		Reset @c VARCLASS_VALUE types to default value; clear children
+		for @c VARCLASS_COLLECTION types.
 		@note Does nothing when @c is_null()==true.
 		@returns @c *this.
 	*/
@@ -295,11 +304,14 @@ public:
 		Change type.
 		@returns @c *this.
 		@param type New type.
-		@param discard_children Whether to discard children (#reset()) when changing between @c VARCLASS_COLLECTION types; @c false by default.
+		@param discard_children Whether to discard children (#reset()) when
+		changing between @c VARCLASS_COLLECTION types; @c false by default.
 	*/
 	Variable& morph(VariableType const type, bool const discard_children=false) {
 		if (type!=m_type) {
-			if (discard_children || !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&type))) {
+			if (discard_children
+				|| !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&type))
+			) {
 				reset();
 			}
 			m_type=type;
@@ -309,8 +321,9 @@ public:
 
 	/**
 		Change type to collection and set children.
-		@note #reset() is called when the type is changed <em>only</em> if the current type is not a collection.
-		@warning An assertion will fail if @a type is not a @c VARCLASS_COLLECTION.
+		@note #reset() is called when the type is changed <em>only</em> if the
+		current type is not a collection.
+		@warning An assertion will fail if @a type is nota @c VARCLASS_COLLECTION.
 		@returns @c *this.
 		@param type New collection type.
 		@param children New child collection.
@@ -336,8 +349,10 @@ public:
 	*/
 	template<typename T>
 	Variable& morph(T const value) {
-		static_assert(true==detail::is_valtype<T>::value, "T does not have a corresponding VariableType");
-		VariableType const type=static_cast<VariableType>(detail::type_to_valtype<T>::value);
+		static_assert(
+			true==detail::is_valtype<T>::value,
+			"T does not have a corresponding VariableType");
+		VariableType const type=detail::type_to_valtype<T>::value;
 		if (type!=m_type) {
 			reset();
 			m_type=type;
@@ -364,7 +379,8 @@ public:
 /** @name Comparison */ /// @{
 	/**
 		Name and value equality to another variable.
-		@returns @c true if name and value of @c this and name and value of @a other are equivalent.
+		@returns @c true if name and value of @c this and name and value
+		of @a other are equivalent.
 		@param other Variable to compare against.
 	*/
 	bool equals(Variable const& other) const {
@@ -381,14 +397,14 @@ public:
 
 	/**
 		Name and value comparison to another variable.
-		@returns A value which is
-		- @c <0 if name or value of @c this is less than name or value of @a other
-		- @c 0 if name or value of @c this is equal to name or value of @a other
-		- @c >0 if name or value of @c this is greater than name or value of @a other
+		@returns
+		- @c <0 if name of @c this is less than name of @a other; or
+		- @c >0 if name of @c this is greater than name of @a other; or
+		- the result of @c this->compare_value(other) if their names are equal.
 		@param other Variable to compare against.
 	*/
-	int compare(Variable const& other) const {
-		int const diff=m_name.compare(other.m_name);
+	signed compare(Variable const& other) const {
+		signed const diff=m_name.compare(other.m_name);
 		return (0!=diff)
 			? diff
 			: compare_value(other);
@@ -396,18 +412,34 @@ public:
 
 	/**
 		Value comparison to another variable.
-		@returns A value which is
-		- @c <0 if value of @c this is less than value of @a other
-		- @c 0 if value of @c this is equal to value of @a other
-		- @c >0 if value of @c this is greater than value of @a other
+		@remark Two empty collections of the same type will be equal.
+		@returns
+
+		For @c VARCLASS_VALUE types:
+		- @c <0 if value of @c this is less than value of @a other; or
+		- @c 0 if value of @c this is equal to value of @a other; or
+		- @c >0 if value of @c this is greater than value of @a other.
+
+		For @c VARCLASS_COLLECTION types
+		- of equal size:
+			- @c 0 if their children are equal; or
+			- @c compare_value() of the first non-equal pair.
+		- of unequal size:
+			- the difference between the size of @c this and the size of @a other.
+
+		For unequal types, the difference between the type of @c this and the
+		type of @a other.
 		@param other Variable to compare against.
 	*/
-	int compare_value(Variable const& other) const {
+	signed compare_value(Variable const& other) const {
 		switch (m_type|other.m_type) {
 		case VARTYPE_NULL: return 0;
 		case VARTYPE_STRING: return m_strv.compare(other.m_strv);
 		case VARTYPE_INTEGER: return m_intv-other.m_intv;
-		case VARTYPE_FLOAT: return (m_floatv>other.m_floatv) ? 1 : ((m_floatv<other.m_floatv) ? -1 : 0);
+		case VARTYPE_FLOAT:
+			return (m_floatv>other.m_floatv)
+				?  1 : (m_floatv<other.m_floatv)
+				? -1 : 0;
 		case VARTYPE_BOOL: return m_boolv-other.m_boolv;
 		case VARTYPE_ARRAY:
 		case VARTYPE_NODE:
@@ -416,31 +448,43 @@ public:
 			if (0!=sdiff || 0==size()) { // If not equivalent or both 0
 				return sdiff;
 			} else { // If equivalent and not 0
-				int vdiff;
-				for (auto ti=m_children.cbegin(), oi=other.m_children.cbegin(); m_children.cend()!=ti; ++ti, ++oi) {
-					vdiff=(*ti).compare_value(*oi);
+				signed vdiff;
+				auto oi=other.m_children.cbegin();
+				for (auto const& tv : m_children) {
+					vdiff=tv.compare_value(*oi);
 					if (0!=vdiff) {
 						return vdiff;
 					}
+					++oi;
 				}
 				return 0; // All children equivalent
 			}
 		}
-		default: return m_type-other.m_type; // Bitwise OR of both types equals not a single type, therefore: types are unequal
+		// Bitwise OR of both types equals not a single type,
+		// therefore: types are unequal
+		default: return m_type-other.m_type;
 		}
 	}
 /// @}
 
 /**
 	@name Value set/get
-	@warning All <em>value</em> get/set methods (except for @c get_as_str() — it has a different rule) are type-strict; an assertion will fail if @c get_type() does not equal:
+	@warning All <em>value</em> get/set functions (except for @c get_as_str() —
+	it has a different rule) are type-strict; an assertion will fail
+	if @c get_type() does not equal:
 	-# the type of assignment; or
 	-# the type of retrieval.
 	@{
 */
-	/** @cond INTERNAL */
-	#define DUCT_V_set_value_() assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_=value; return *this;
-	#define DUCT_V_get_value_() assert(DUCT_V_TYPE_==m_type); return DUCT_V_FIELD_
+	/** @cond */
+	#define DUCT_V_set_value_()			\
+		assert(DUCT_V_TYPE_==m_type);	\
+		DUCT_V_FIELD_=value;			\
+		return *this;
+	#define DUCT_V_get_value_()			\
+		assert(DUCT_V_TYPE_==m_type);	\
+		return DUCT_V_FIELD_
+
 	#define DUCT_V_TYPE_ VARTYPE_STRING
 	#define DUCT_V_FIELD_ m_strv
 	/** @endcond */
@@ -451,7 +495,11 @@ public:
 		@param value New value.
 		@sa morph(T const)
 	*/
-	Variable& assign(detail::var_config::string_type value) { assert(DUCT_V_TYPE_==m_type); DUCT_V_FIELD_.assign(std::move(value)); return *this; }
+	Variable& assign(detail::var_config::string_type value) {
+		assert(DUCT_V_TYPE_==m_type);
+		DUCT_V_FIELD_.assign(std::move(value));
+		return *this;
+	}
 	/**
 		Get string value.
 		@returns The current string value.
@@ -462,7 +510,7 @@ public:
 	/** @copydoc get_string() */
 	detail::var_config::string_type const& get_string_ref() const { DUCT_V_get_value_(); }
 
-	/** @cond INTERNAL */
+	/** @cond */
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VARTYPE_INTEGER
@@ -470,16 +518,17 @@ public:
 	/** @endcond */
 
 	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable& assign(detail::var_config::int_type const value) { DUCT_V_set_value_(); }
+	Variable& assign(detail::var_config::int_type const value)
+		{ DUCT_V_set_value_(); }
 	/**
-		Get int value.
-		@returns The current int value.
+		Get integer value.
+		@returns The current integer value.
 	*/
 	detail::var_config::int_type get_int() const { DUCT_V_get_value_(); }
 	/** @copydoc get_int() */
 	detail::var_config::int_type& get_int_ref() { DUCT_V_get_value_(); }
 
-	/** @cond INTERNAL */
+	/** @cond */
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VARTYPE_FLOAT
@@ -487,16 +536,17 @@ public:
 	/** @endcond */
 
 	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable& assign(detail::var_config::float_type const value) { DUCT_V_set_value_(); }
+	Variable& assign(detail::var_config::float_type const value)
+		{ DUCT_V_set_value_(); }
 	/**
-		Get float value.
-		@returns The current float value.
+		Get floating-point value.
+		@returns The current floating-point value.
 	*/
 	detail::var_config::float_type get_float() const { DUCT_V_get_value_(); }
 	/** @copydoc get_float() */
 	detail::var_config::float_type& get_float_ref() { DUCT_V_get_value_(); }
 
-	/** @cond INTERNAL */
+	/** @cond */
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VARTYPE_BOOL
@@ -504,7 +554,8 @@ public:
 	/** @endcond */
 
 	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable& assign(detail::var_config::bool_type const value) { DUCT_V_set_value_(); }
+	Variable& assign(detail::var_config::bool_type const value)
+		{ DUCT_V_set_value_(); }
 	/**
 		Get boolean value.
 		@returns The current boolean value.
@@ -513,7 +564,7 @@ public:
 	/** @copydoc get_bool() */
 	detail::var_config::bool_type& get_bool_ref() { DUCT_V_get_value_(); }
 
-	/** @cond INTERNAL */
+	/** @cond */
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#undef DUCT_V_get_value_
@@ -523,34 +574,35 @@ public:
 	/**
 		Get value as string.
 		@returns The current value as a string.
-		@sa get_as_str(stringT&) const
+		@sa get_as_str(StringT&) const
 	*/
-	inline detail::var_config::string_type get_as_str() const {
+	detail::var_config::string_type get_as_str() const {
 		return get_as_str<detail::var_config::string_type>();
 	}
 	/**
 		Get value as string.
 		@returns The current value as a string.
-		@tparam stringT String type to convert to.
-		@sa get_as_str(stringT&) const
+		@tparam StringT String type to convert to.
+		@sa get_as_str(StringT&) const
 	*/
-	template<class stringT>
-	stringT get_as_str() const {
-		stringT str;
+	template<class StringT>
+	StringT get_as_str() const {
+		StringT str;
 		get_as_str(str);
 		return str;
 	}
 	/**
 		Get value as string with output parameter.
-		@warning An assertion will fail if the variable is not a @c VARCLASS_VALUE type nor a @c VARTYPE_NULL.
+		@warning An assertion will fail if the variable is not
+		a @c VARCLASS_VALUE type nor a @c VARTYPE_NULL.
 		@note
 		- A @c VARTYPE_NULL will result in @c "null".
 		- A @c VARTYPE_BOOL will result in either @c "false" or @c "true".
-		@tparam stringT String type to convert to; inferred from @a out_str.
+		@tparam StringT String type to convert to; inferred from @a out_str.
 		@param[out] out_str Output value.
 	*/
-	template<class stringT>
-	void get_as_str(stringT& out_str) const {
+	template<class StringT>
+	void get_as_str(StringT& out_str) const {
 		assert(m_type&(VARCLASS_VALUE|VARTYPE_NULL));
 		switch (m_type) {
 		case VARTYPE_NULL: out_str="null"; break;
@@ -572,48 +624,76 @@ public:
 
 /**
 	@name Child properties and insertion
-	@warning An assertion will fail for all methods defined in this group if @c is_class(VARCLASS_COLLECTION)==false.
+	@warning An assertion will fail for all functions defined in this group
+	if @c is_class(VARCLASS_COLLECTION)==false.
 	@{
 */
 	/**
 		Get beginning child iterator.
 		@returns The beginning child iterator.
 	*/
-	iterator begin() { assert(is_class(VARCLASS_COLLECTION)); return m_children.begin(); }
+	iterator begin() {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.begin();
+	}
 	/** @copydoc begin() */
-	const_iterator cbegin() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.cbegin(); }
+	const_iterator cbegin() const {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.cbegin();
+	}
 
 	/**
 		Get ending child iterator.
 		@returns The ending child iterator.
 	*/
-	iterator end() { assert(is_class(VARCLASS_COLLECTION)); return m_children.end(); }
+	iterator end() {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.end();
+	}
 	/** @copydoc end() */
-	const_iterator cend() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.cend(); }
+	const_iterator cend() const {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.cend();
+	}
 
 	/**
 		Check if the child collection is empty.
 		@returns @c true if the child collection is empty.
 	*/
-	inline bool empty() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.empty(); }
+	bool empty() const {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.empty();
+	}
 	/**
 		Get number of children.
 		@returns The current number of children.
 	*/
-	inline vector_type::size_type size() const { assert(is_class(VARCLASS_COLLECTION)); return m_children.size(); }
+	vector_type::size_type size() const {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children.size();
+	}
 
 	/**
 		Set children.
 		@param new_children New child collection.
 	*/
-	inline void set_children(vector_type new_children) { assert(is_class(VARCLASS_COLLECTION)); m_children=new_children; }
+	void set_children(vector_type new_children) {
+		assert(is_class(VARCLASS_COLLECTION));
+		m_children=new_children;
+	}
 	/**
 		Get children.
 		@returns The current child collection.
 	*/
-	inline vector_type& get_children() { assert(is_class(VARCLASS_COLLECTION)); return m_children; }
+	vector_type& get_children() {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children;
+	}
 	/** @copydoc get_children() */
-	inline vector_type const& get_children() const { assert(is_class(VARCLASS_COLLECTION)); return m_children; }
+	vector_type const& get_children() const {
+		assert(is_class(VARCLASS_COLLECTION));
+		return m_children;
+	}
 
 	/**
 		Append to end of child collection.
@@ -629,13 +709,13 @@ public:
 	/**
 		Emplace to end of child collection.
 		@returns @c *this.
-		@tparam ...Args_ Parameter pack for constructor; see @c Variable().
+		@tparam ...ArgP Parameter pack for constructor; see @c Variable().
 		@param args Parameter pack for constructor.
 	*/
-	template<class ...Args_>
-	Variable& emplace_back(Args_&&... args) {
+	template<typename ...ArgP>
+	Variable& emplace_back(ArgP&&... args) {
 		assert(is_class(VARCLASS_COLLECTION));
-		m_children.emplace_back(std::forward<Args_>(args)...);
+		m_children.emplace_back(std::forward<ArgP>(args)...);
 		return *this;
 	}
 /** @} */
