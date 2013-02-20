@@ -759,17 +759,24 @@ exit_f:
 */
 template<typename CharT, typename TraitsT>
 class basic_memstreambuf : public std::basic_streambuf<CharT, TraitsT> {
+private:
+	typedef std::basic_streambuf<CharT, TraitsT> base_type;
+
 public:
 /** @name Types */ /// @{
-	typedef CharT char_type; /**< Character type. */
-	typedef TraitsT traits_type; /**< Traits type. */
-	typedef typename traits_type::pos_type pos_type; /**< Position type. */
-	typedef typename traits_type::off_type off_type; /**< Offset type. */
+	/** Character type. */
+	typedef CharT char_type;
+	/** Traits type. */
+	typedef TraitsT traits_type;
+	/** @c traits_type::int_type. */
+	typedef typename traits_type::int_type int_type;
+	/** @c traits_type::pos_type. */
+	typedef typename traits_type::pos_type pos_type;
+	/** @c traits_type::off_type. */
+	typedef typename traits_type::off_type off_type;
 /// @}
 
 private:
-	typedef std::basic_streambuf<CharT, TraitsT> base_streambuf_type_;
-
 	std::ios_base::openmode m_mode;
 
 public:
@@ -784,8 +791,8 @@ public:
 		forces @c std::ios_base::in; removes @c std::ios_base::out.
 	*/
 	basic_memstreambuf(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
-		: base_streambuf_type_()
-		, m_mode((mode&~std::ios_base::out)|std::ios_base::in)
+		: base_type{}
+		, m_mode{(mode&~std::ios_base::out)|std::ios_base::in}
 	{
 		assign(const_cast<void*>(buffer), size);
 	}
@@ -797,8 +804,8 @@ public:
 		forces @c std::ios_base::out.
 	*/
 	basic_memstreambuf(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
-		: base_streambuf_type_()
-		, m_mode(mode|std::ios_base::out)
+		: base_type{}
+		, m_mode{mode|std::ios_base::out}
 	{
 		assign(buffer, size);
 	}
@@ -905,16 +912,26 @@ private:
 */
 template<typename CharT, typename TraitsT>
 class basic_imemstream : public std::basic_istream<CharT, TraitsT> {
+private:
+	typedef std::basic_istream<CharT, TraitsT> base_type;
+
 public:
 /** @name Types */ /// @{
-	typedef CharT char_type; /**< Character type. */
-	typedef TraitsT traits_type; /**< Traits type. */
-	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+	/** Character type. */
+	typedef CharT char_type;
+	/** Traits type. */
+	typedef TraitsT traits_type;
+	/** @c traits_type::int_type. */
+	typedef typename traits_type::int_type int_type;
+	/** @c traits_type::pos_type. */
+	typedef typename traits_type::pos_type pos_type;
+	/** @c traits_type::off_type. */
+	typedef typename traits_type::off_type off_type;
+	/** Memory buffer type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type;
 /// @}
 
 private:
-	typedef std::basic_istream<CharT, TraitsT> base_stream_type_;
-
 	membuf_type m_membuf;
 
 public:
@@ -929,8 +946,8 @@ public:
 		forces @c std::ios_base::in; removes @c std::ios_base::out.
 	*/
 	basic_imemstream(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
-		: base_stream_type_()
-		, m_membuf(buffer, size, (mode&~std::ios_base::out)|std::ios_base::in)
+		: base_type{}
+		, m_membuf{buffer, size, (mode&~std::ios_base::out)|std::ios_base::in}
 	{ this->init(&m_membuf); }
 	/** Copy constructor (deleted). */
 	basic_imemstream(basic_imemstream const&)=delete;
@@ -960,16 +977,26 @@ public:
 */
 template<typename CharT, typename TraitsT>
 class basic_omemstream : public std::basic_ostream<CharT, TraitsT> {
+private:
+	typedef std::basic_ostream<CharT, TraitsT> base_type;
+
 public:
 /** @name Types */ /// @{
-	typedef CharT char_type; /**< Character type. */
-	typedef TraitsT traits_type; /**< Traits type. */
-	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+	/** Character type. */
+	typedef CharT char_type;
+	/** Traits type. */
+	typedef TraitsT traits_type;
+	/** @c traits_type::int_type. */
+	typedef typename traits_type::int_type int_type;
+	/** @c traits_type::pos_type. */
+	typedef typename traits_type::pos_type pos_type;
+	/** @c traits_type::off_type. */
+	typedef typename traits_type::off_type off_type;
+	/** Memory buffer type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type;
 /// @}
 
 private:
-	typedef std::basic_ostream<CharT, TraitsT> base_stream_type_;
-
 	membuf_type m_membuf;
 
 public:
@@ -984,8 +1011,8 @@ public:
 		forces @c std::ios_base::out; removes @c std::ios_base::in.
 	*/
 	basic_omemstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
-		: base_stream_type_()
-		, m_membuf(buffer, size, (mode&~std::ios_base::in)|std::ios_base::out)
+		: base_type{}
+		, m_membuf{buffer, size, (mode&~std::ios_base::in)|std::ios_base::out}
 	{ this->init(&m_membuf); }
 	/** Copy constructor (deleted). */
 	basic_omemstream(basic_omemstream const&)=delete;
@@ -1015,16 +1042,26 @@ public:
 */
 template<typename CharT, typename TraitsT>
 class basic_memstream : public std::basic_iostream<CharT, TraitsT> {
+private:
+	typedef std::basic_iostream<CharT, TraitsT> base_type;
+
 public:
 /** @name Types */ /// @{
-	typedef CharT char_type; /**< Character type. */
-	typedef TraitsT traits_type; /**< Traits type. */
-	typedef basic_memstreambuf<char_type, traits_type> membuf_type; /**< Memory buffer type. */
+	/** Character type. */
+	typedef CharT char_type;
+	/** Traits type. */
+	typedef TraitsT traits_type;
+	/** @c traits_type::int_type. */
+	typedef typename traits_type::int_type int_type;
+	/** @c traits_type::pos_type. */
+	typedef typename traits_type::pos_type pos_type;
+	/** @c traits_type::off_type. */
+	typedef typename traits_type::off_type off_type;
+	/** Memory buffer type. */
+	typedef basic_memstreambuf<char_type, traits_type> membuf_type;
 /// @}
 
 private:
-	typedef std::basic_iostream<CharT, TraitsT> base_stream_type_;
-	
 	membuf_type m_membuf;
 
 public:
@@ -1039,8 +1076,8 @@ public:
 		forces @c std::ios_base::in and @c std::ios_base::out.
 	*/
 	basic_memstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in|std::ios_base::out)
-		: base_stream_type_()
-		, m_membuf(buffer, size, mode|std::ios_base::in|std::ios_base::out)
+		: base_type{}
+		, m_membuf{buffer, size, mode|std::ios_base::in|std::ios_base::out}
 	{ this->init(&m_membuf); }
 	/** Copy constructor (deleted). */
 	basic_memstream(basic_memstream const&)=delete;
@@ -1083,14 +1120,14 @@ public:
 		@param encoding An encoding.
 	*/
 	explicit StreamContext(Encoding const encoding)
-		: m_encoding(encoding)
+		: m_encoding{encoding}
 	{}
 	/**
 		Constructor with endian and default UTF-8 encoding.
 		@param endian An endian.
 	*/
 	explicit StreamContext(Endian const endian)
-		: m_endian(endian)
+		: m_endian{endian}
 	{}
 	/**
 		Constructor with encoding and endian.
@@ -1098,8 +1135,8 @@ public:
 		@param endian An endian.
 	*/
 	StreamContext(Encoding const encoding, Endian const endian)
-		: m_encoding(encoding)
-		, m_endian(endian)
+		: m_encoding{encoding}
+		, m_endian{endian}
 	{}
 	/** Copy constructor. */
 	StreamContext(StreamContext const&)=default;
