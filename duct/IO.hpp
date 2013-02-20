@@ -759,7 +759,7 @@ exit_f:
 	@warning Reassigning the buffer will not clear stream state.
 */
 template<typename CharT, typename TraitsT>
-class basic_memstreambuf : public std::basic_streambuf<CharT, TraitsT> {
+class basic_memstreambuf /*final*/ : public std::basic_streambuf<CharT, TraitsT> {
 private:
 	typedef std::basic_streambuf<CharT, TraitsT> base_type;
 
@@ -848,7 +848,7 @@ public:
 
 protected:
 	/** @cond INTERNAL */
-	virtual pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+	pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
 		bool const
 			do_in =m_mode&which&std::ios_base::in,
 			do_out=m_mode&which&std::ios_base::out;
@@ -876,7 +876,7 @@ protected:
 		return pos_type{off_type{-1}};
 	}
 
-	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+	pos_type seekpos(pos_type pos, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
 		// pos_type should be std::streampos, which should be std::fpos<>,
 		// which stores an off_type, which should be std::streamoff.
 		// Pass to seekoff() instead of duplicating code.
@@ -910,7 +910,7 @@ private:
 	@sa basic_omemstream, basic_memstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_imemstream : public std::basic_istream<CharT, TraitsT> {
+class basic_imemstream /*final*/ : public std::basic_istream<CharT, TraitsT> {
 private:
 	typedef std::basic_istream<CharT, TraitsT> base_type;
 
@@ -953,7 +953,7 @@ public:
 	/** Move constructor. */
 	basic_imemstream(basic_imemstream&&)=default;
 	/** Destructor. */
-	virtual ~basic_imemstream() override=default;
+	~basic_imemstream() override=default;
 /// @}
 
 /** @name Operators */ /// @{
@@ -975,7 +975,7 @@ public:
 	@sa basic_imemstream, basic_memstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_omemstream : public std::basic_ostream<CharT, TraitsT> {
+class basic_omemstream /*final*/ : public std::basic_ostream<CharT, TraitsT> {
 private:
 	typedef std::basic_ostream<CharT, TraitsT> base_type;
 
@@ -1018,7 +1018,7 @@ public:
 	/** Move constructor. */
 	basic_omemstream(basic_omemstream&&)=default;
 	/** Destructor. */
-	virtual ~basic_omemstream() override=default;
+	~basic_omemstream() override=default;
 /// @}
 
 /** @name Operators */ /// @{
@@ -1040,7 +1040,7 @@ public:
 	@sa basic_imemstream, basic_omemstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_memstream : public std::basic_iostream<CharT, TraitsT> {
+class basic_memstream /*final*/ : public std::basic_iostream<CharT, TraitsT> {
 private:
 	typedef std::basic_iostream<CharT, TraitsT> base_type;
 
@@ -1083,7 +1083,7 @@ public:
 	/** Move constructor. */
 	basic_memstream(basic_memstream&&)=default;
 	/** Destructor. */
-	virtual ~basic_memstream() override=default;
+	~basic_memstream() override=default;
 /// @}
 
 /** @name Operators */ /// @{
