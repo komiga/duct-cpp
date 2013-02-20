@@ -63,24 +63,14 @@ class StreamContext;
 	@{
 */
 
-/** Narrow memory streambuf. */
-typedef basic_memstreambuf<char> mem_streambuf;
-/** Wide memory streambuf. */
-typedef basic_memstreambuf<wchar_t> wmem_streambuf;
-/** Narrow input memory stream. */
+/** Memory streambuf. */
+typedef basic_memstreambuf<char> memstreambuf;
+/** Input memory stream. */
 typedef basic_imemstream<char> imemstream;
-/** Wide input memory stream. */
-typedef basic_imemstream<wchar_t> wimemstream;
-
-/** Narrow output memory stream. */
+/** Output memory stream. */
 typedef basic_omemstream<char> omemstream;
-/** Wide output memory stream. */
-typedef basic_omemstream<wchar_t> womemstream;
-
-/** Narrow input/output memory stream. */
+/** Input/output memory stream. */
 typedef basic_memstream<char> memstream;
-/** Wide input/output memory stream. */
-typedef basic_memstream<wchar_t> wmemstream;
 
 /** @} */ // end of name-group Helper classes
 
