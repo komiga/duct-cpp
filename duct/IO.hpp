@@ -19,6 +19,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./detail/string_traits.hpp"
 #include "./EndianUtils.hpp"
 
+#include <cassert>
 #include <cstring>
 #include <type_traits>
 #include <limits>
@@ -835,7 +836,7 @@ public:
 			this->setg(nullptr, nullptr, nullptr);
 			this->setp(nullptr, nullptr);
 		} else {
-			char_type* cbuf=reinterpret_cast<char_type*>(buffer);
+			char_type* const cbuf=reinterpret_cast<char_type*>(buffer);
 			if (m_mode&std::ios_base::in) {
 				this->setg(cbuf, cbuf, cbuf+size);
 			}
@@ -847,62 +848,60 @@ public:
 
 protected:
 	/** @cond INTERNAL */
-	virtual pos_type seekoff(off_type soff, std::ios_base::seekdir direction, std::ios_base::openmode mode=std::ios_base::in|std::ios_base::out) override {
-		pos_type ret_pos=pos_type(off_type(-1));
-		bool const do_in=m_mode&std::ios_base::in && mode&std::ios_base::in;
-		bool const do_out=m_mode&std::ios_base::out && mode&std::ios_base::out;
+	virtual pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+		bool const
+			do_in =m_mode&which&std::ios_base::in,
+			do_out=m_mode&which&std::ios_base::out;
 		char_type *beg=nullptr, *cur, *end;
+		// NB: memstreambuf will only ever point to a single buffer.
+		// m_mode reflects the active modes: if either do_in or do_out are
+		// true, their respective pointers are non-null, so it doesn't
+		// matter which one is picked.
 		if (do_in) {
+			// eback? stdlib is schizo
 			beg=this->eback(); cur=this->gptr(); end=this->egptr();
 		} else if (do_out) {
 			beg=this->pbase(); cur=this->pptr(); end=this->epptr();
 		}
 		if (nullptr!=beg) {
-			off_type new_off=soff;
-			if (std::ios_base::cur==direction) {
-				new_off+=cur-beg;
-			} else if (std::ios_base::end==direction) {
-				new_off+=end-beg;
-			}
-			if (0<=new_off && (end-beg)>=new_off) {
-				if (do_in) { this->setg(beg, beg+new_off, end); }
-				if (do_out) { priv_pmove(beg, end, new_off); }
-				ret_pos=pos_type(new_off);
+			// std::ios_base::beg is just beg+off
+			if 		(std::ios_base::cur==way) { off+=cur-beg; }
+			else if (std::ios_base::end==way) { off+=end-beg; }
+			if (0<=off && (end-beg)>=off) {
+				if (do_in) { this->setg(beg, beg+off, end); }
+				if (do_out) { setp_all(beg, beg+off, end); }
+				return pos_type{off};
 			}
 		}
-		return ret_pos;
+		return pos_type{off_type{-1}};
 	}
 
-	virtual pos_type seekpos(pos_type spos, std::ios_base::openmode mode=std::ios_base::in|std::ios_base::out) override {
-		pos_type ret_pos=pos_type(off_type(-1));
-		bool const do_in=m_mode&std::ios_base::in && mode&std::ios_base::in;
-		bool const do_out=m_mode&std::ios_base::out && mode&std::ios_base::out;
-		char_type *beg=nullptr, *end;
-		if (do_in) {
-			beg=this->eback(); end=this->egptr();
-		} else if (do_out) {
-			beg=this->pbase(); end=this->epptr();
-		}
-		if (nullptr!=beg) {
-			off_type new_off=off_type(spos);
-			if (0<=new_off && (end-beg)>=new_off) {
-				if (do_in) { this->setg(beg, beg+new_off, end); }
-				if (do_out) { priv_pmove(beg, end, new_off); }
-				ret_pos=pos_type(new_off);
-			}
-		}
-		return ret_pos;
+	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+		// pos_type should be std::streampos, which should be std::fpos<>,
+		// which stores an off_type, which should be std::streamoff.
+		// Pass to seekoff() instead of duplicating code.
+		return seekoff(static_cast<off_type>(pos), std::ios_base::beg, which);
 	}
 	/** @endcond */ // INTERNAL
 
 private:
-	void priv_pmove(char_type* const beg, char_type* const end, off_type soff) {
+	// The setp that should have been (for some arcane reason, setp
+	// doesn't take a new current pointer like setg does).
+	// Also, the stdlib hates us. pbump just _has to_ take an int
+	// instead of off_type (it's even signed for you! come on!).
+	void setp_all(char_type* const beg, char_type* cur, char_type* const end) {
+		// May the hammermaestro have mercy on your femur(s)
+		assert(beg<=cur && end>=cur);
 		this->setp(beg, end);
-		while (std::numeric_limits<signed>::max()<soff) {
+		std::ptrdiff_t off=cur-beg;
+		// std::ptrdiff_t can be 64 bits of signed goodness
+		// while int could be only 32, which means we have
+		// to chip away at it.
+		while (std::numeric_limits<signed>::max()<off) {
 			this->pbump(std::numeric_limits<signed>::max());
-			soff-=std::numeric_limits<signed>::max();
+			off-=std::numeric_limits<signed>::max();
 		}
-		this->pbump(soff);
+		this->pbump(static_cast<signed>(off));
 	}
 };
 
