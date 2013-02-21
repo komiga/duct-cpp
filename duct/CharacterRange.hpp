@@ -39,7 +39,7 @@ private:
 	char32 m_last;
 
 public:
-/** @name Constructors */ /// @{
+/** @name Constructors and destructor */ /// @{
 	/**
 		Construct null.
 		@note Equivalent to @c CharacterRange('\0').

@@ -45,6 +45,7 @@ private:
 	char m_message[512];
 
 public:
+/** @name Constructors and destructor */ /// @{
 	/** Default constructor (deleted). */
 	ScriptParserException()=delete;
 	/**
@@ -90,7 +91,7 @@ private:
 	unsigned m_states{0};
 
 public:
-/** @name Constructors */ /// @{
+/** @name Constructors and destructor */ /// @{
 	/** Default constructor. */
 	ScriptParser()=default;
 	/**

@@ -50,7 +50,7 @@ private:
 	vector_type m_ranges{};
 
 public:
-/** @name Constructors */ /// @{
+/** @name Constructors and destructor */ /// @{
 	/** Construct empty set. */
 	CharacterSet()=default;
 	/**

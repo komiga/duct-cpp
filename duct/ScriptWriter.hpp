@@ -62,7 +62,7 @@ private:
 	IO::StreamContext m_stream_ctx{};
 
 public:
-/** @name Constructors */ /// @{
+/** @name Constructors and destructor */ /// @{
 	/** Default constructor. */
 	ScriptWriter()=default;
 	/**
