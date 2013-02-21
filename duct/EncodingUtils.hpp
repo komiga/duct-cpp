@@ -16,7 +16,6 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./char.hpp"
 #include "./traits.hpp"
 
-#include <stdexcept>
 #include <iterator>
 #include <locale>
 
