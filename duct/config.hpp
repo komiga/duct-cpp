@@ -192,9 +192,9 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_FUNC_SIG system_dependent
 /**
 	Function name.
-	Alias to @c __FUNCTION__.
+	Alias to @c __func__.
 */
-#define DUCT_FUNC_NAME __FUNCTION__
+#define DUCT_FUNC_NAME __func__
 
 /** @} */ // end of name-group etc
 
@@ -475,7 +475,7 @@ see @ref index or the accompanying LICENSE file for full text.
 	#define DUCT_FUNC_SIG __PRETTY_FUNCTION__
 #endif
 
-#define DUCT_FUNC_NAME __FUNCTION__
+#define DUCT_FUNC_NAME __func__
 
 #endif // DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
