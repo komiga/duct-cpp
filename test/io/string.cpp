@@ -100,7 +100,7 @@ void write_s(stringT& str, typename toU::strict_char_type const* data, std::size
 	}
 }
 
-signed main(signed, char*[]) {
+signed main() {
 	duct::u8string str;
 	std::puts("Reading");
 	read_s<duct::UTF8Utils>(str, utf8_data, sizeof(utf8_data)/sizeof(*utf8_data));

@@ -134,7 +134,7 @@ public:
 	}
 };
 
-signed main(signed, char*[]) {
+signed main() {
 	DynamicEncoder u8{duct::Encoding::UTF8};
 	DynamicEncoder u16{duct::Encoding::UTF16};
 	DynamicEncoder u32{duct::Encoding::UTF32};

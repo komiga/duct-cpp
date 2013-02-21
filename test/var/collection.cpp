@@ -9,7 +9,7 @@
 
 #include "common.inl"
 
-signed main(signed, char*[]) {
+signed main() {
 	duct::Variable top{
 	{"top"}, duct::VARTYPE_ARRAY, {
 		{{"string_var"}, {"bar"}},

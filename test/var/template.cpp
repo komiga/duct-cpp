@@ -108,7 +108,7 @@ void validate(
 	do_validation_single(tpl, not_match, false, vt_not_match, vi_not_match, vl_not_match); \
 }
 
-signed main(signed, char*[]) {
+signed main() {
 	std::cout<<std::boolalpha;
 
 	bool expected[4];

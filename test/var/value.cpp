@@ -8,7 +8,7 @@
 
 #include "common.inl"
 
-signed main(signed, char*[]) {
+signed main() {
 	duct::Variable string_var(duct::u8string("string_var"), duct::u8string("bar"));
 	duct::Variable int_var(duct::u8string("int_var"), 12341234);
 	duct::Variable float_var(duct::u8string("float_var"), 3.14159f);

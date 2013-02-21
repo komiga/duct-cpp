@@ -9,7 +9,7 @@ void test(duct::CharacterSet const& cs, char const c) {
 	std::cout<<'\''<<c<<"': "<<cs.contains(c)<<'\n';
 }
 
-signed main(signed, char*[]) {
+signed main() {
 	duct::CharacterSet cs;
 	cs.add_alphanumeric();
 	std::cout<<std::boolalpha;

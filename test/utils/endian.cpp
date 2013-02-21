@@ -48,7 +48,7 @@ void do_test_floating(T const value) {
 	;
 }
 
-signed main(signed, char*[]) {
+signed main() {
 	do_test_integral(INTEGRAL16);
 	do_test_integral(INTEGRAL32);
 	do_test_integral(INTEGRAL64);
