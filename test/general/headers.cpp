@@ -1,6 +1,7 @@
 
 #include <duct/config.hpp>
 #include <duct/debug.hpp>
+#include <duct/traits.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
 #include <duct/aux.hpp>
