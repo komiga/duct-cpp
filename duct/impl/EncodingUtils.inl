@@ -126,7 +126,9 @@ OutputIt UTF8Utils::encode(char32 input, OutputIt output, char32 const replaceme
 
 template<typename RandomAccessIt>
 RandomAccessIt UTF8Utils::next(RandomAccessIt const from, RandomAccessIt const end) {
-	unsigned units=required_first_whole(*from);
+	using diff_type=
+		typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type units=static_cast<diff_type>(required_first_whole(*from));
 	return (std::distance(end, from)<units)
 		? from
 		: from+units;
@@ -172,9 +174,11 @@ inline unsigned UTF8Utils::required(char32 const c) {
 template<typename RandomAccessIt>
 std::size_t UTF8Utils::count(RandomAccessIt begin, RandomAccessIt const end, bool const count_incomplete) {
 	std::size_t length=0;
-	unsigned units;
+	using diff_type=
+		typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type units;
 	while (end>begin) {
-		units=required_first_whole(*begin);
+		units=static_cast<diff_type>(required_first_whole(*begin));
 		if (std::distance(end, begin)<units) { // Incomplete sequence
 			length+=(count_incomplete ? 1 : 0);
 			break;
@@ -393,7 +397,9 @@ OutputIt UTF16Utils::encode(char32 input, OutputIt output, char32 const replacem
 
 template<typename RandomAccessIt>
 RandomAccessIt UTF16Utils::next(RandomAccessIt const from, RandomAccessIt const end) {
-	unsigned units=DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
+	using diff_type=
+		typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type units=DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
 	return (std::distance(end, from)<units)
 		? from
 		: from+units;
@@ -435,7 +441,9 @@ inline unsigned UTF16Utils::required(char32 const c) {
 template<typename RandomAccessIt>
 std::size_t UTF16Utils::count(RandomAccessIt begin, RandomAccessIt const end, bool const count_incomplete) {
 	std::size_t length=0;
-	unsigned units;
+	using diff_type=
+		typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type units;
 	while (end>begin) {
 		units=DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
 		if (std::distance(end, begin)<units) {
