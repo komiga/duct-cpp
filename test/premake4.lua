@@ -38,7 +38,7 @@ function setup_test(name, src)
 	
 	configuration {"linux"}
 		buildoptions {
-			--"-Wextra",
+			"-Wextra",
 			"-Wunused-parameter",
 			"-Wuninitialized",
 			"-Wmissing-field-initializers",
