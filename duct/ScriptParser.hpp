@@ -20,8 +20,10 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./Variable.hpp"
 #include "./VariableUtils.hpp"
 
+#include <cstdio>
 #include <utility>
 #include <exception>
+#include <type_traits>
 
 namespace duct {
 
@@ -56,7 +58,13 @@ public:
 		@param fmt Message format string.
 		@param ... Message parameters.
 	*/
-	ScriptParserException(char const scope[], Token const* token, ScriptParser const* const parser, char const fmt[], ...);
+	ScriptParserException(
+		char const scope[],
+		Token const* token,
+		ScriptParser const* const parser,
+		char const fmt[],
+		...
+	);
 	/** Copy constructor (deleted). */
 	ScriptParserException(ScriptParserException const&)=delete;
 	/** Move constructor. */
@@ -131,9 +139,11 @@ public:
 
 	/**
 		Process a stream.
-		@warning The state of @a node is undefined if either @c false is returned or if an exception is thrown whilst processing.
+		@warning The state of @a node is undefined if either @c false
+		is returned or if an exception is thrown whilst processing.
 		@returns @c true on success.
-		@param[out] node Output node; will be morphed to @c VARTYPE_NODE and existing children will not be removed.
+		@param[out] node Output node; will be morphed to @c VARTYPE_NODE
+		and existing children will not be removed.
 		@param stream Stream to process.
 	*/
 	bool process(Variable& node, std::istream& stream);
@@ -155,8 +165,12 @@ private:
 	void assign_states(unsigned const states) { m_states|=states; }
 	void remove_states(unsigned const states) { m_states&=~states; }
 	void clear_all_states() { m_states=0; }
-	bool has_states(unsigned const states) const { return states==(m_states&states); }
-	bool has_states_any(unsigned const states) const { return 0!=(m_states&states); }
+	bool has_states(unsigned const states) const {
+		return states==(m_states&states);
+	}
+	bool has_states_any(unsigned const states) const {
+		return 0!=(m_states&states);
+	}
 
 	bool at_root() const;
 	bool in_scope(unsigned const type);
