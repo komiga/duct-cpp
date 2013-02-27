@@ -30,7 +30,8 @@ class Parser;
 
 /**
 	Base parser class.
-	@note This class and deriving classes shall not take ownership of input streams.
+	@note This class and deriving classes shall not take ownership of
+	input streams.
 */
 class Parser {
 protected:
@@ -98,17 +99,19 @@ public:
 		Get stream context.
 		@returns The current stream context.
 	*/
-	IO::StreamContext& get_stream_context() { return m_stream_ctx; }
+	IO::StreamContext& get_stream_context()
+		{ return m_stream_ctx; }
 	/** @copydoc get_stream_context() */
-	IO::StreamContext const& get_stream_context() const { return m_stream_ctx; }
+	IO::StreamContext const& get_stream_context() const
+		{ return m_stream_ctx; }
 /// @}
 
 /** @name State */ /// @{
 	/**
 		Initialize.
 		@note This will @c reset() the current state and call @c next_char().
-		@note The input stream is not owned by the parser; its lifetime must be guaranteed
-		by the callee until @c reset() is called.
+		@note The input stream is not owned by the parser; its lifetime must
+		be guaranteed by the callee until @c reset() is called.
 		@returns
 		- @c true if the parser was initialized; or
 		- @c false if an error occurred (in the base implementation: if
@@ -143,14 +146,18 @@ public:
 
 /** @name Operations */ /// @{
 	/**
-		Get the next code point from the stream and advance the parser's position.
+		Get the next code point from the stream and advance the parser's
+		position.
 		@note If @c m_peeked==true, @c m_curchar is set to @c m_peekchar.
 		@note If there is no more data in the input stream, @c m_curchar is set
 		to @c CHAR_EOF.
 		@returns The next code point from the input stream.
 	*/
 	virtual char32 next_char() {
-		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		DUCT_DEBUG_ASSERTP(
+			nullptr!=m_stream, this,
+			"Input stream must not be null"
+		);
 		if (CHAR_NEWLINE==m_curchar) {
 			++m_line;
 			m_column=0;
@@ -171,12 +178,16 @@ public:
 		return m_curchar;
 	}
 	/**
-		Peek the next code point in the stream, without advancing the parser's position.
+		Peek the next code point in the stream, without advancing the parser's
+		position.
 		@note Will peek multiple points if invalid code points are encountered.
 		@returns The next code point in the input stream.
 	*/
 	virtual char32 peek_char() {
-		DUCT_DEBUG_ASSERTP(nullptr!=m_stream, this, "Input stream must not be null");
+		DUCT_DEBUG_ASSERTP(
+			nullptr!=m_stream, this,
+			"Input stream must not be null"
+		);
 		if (!m_peeked) {
 			if (m_stream->good()) {
 				m_peekchar=m_stream_ctx.read_char(*m_stream, CHAR_SENTINEL);
@@ -195,7 +206,8 @@ public:
 
 	/**
 		Skip data in the input stream until a code point is met.
-		@note This will check the current code point before stepping the stream.
+		@note This will check the current code point before stepping
+		the stream.
 		@returns
 		- @c true if @c cp was met (even if @c cp==CHAR_EOF); or
 		- @c false if @c CHAR_EOF was met (only if @c cp!=CHAR_EOF).
@@ -223,13 +235,14 @@ public:
 		Parse the next token in the stream.
 		@returns
 		- @c true if there is more data to parse; or
-		- @c false if there is no more data to parse (generally meaning an EOF token
-		  was met).
+		- @c false if there is no more data to parse (generally meaning an
+		  EOF token was met).
 	*/
 	virtual bool parse()=0;
 
 	/**
-		Determine and set the current token type based on the current code point.
+		Determine and set the current token type based on the current code
+		point.
 	*/
 	virtual void discern_token()=0;
 	/**

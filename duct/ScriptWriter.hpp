@@ -104,21 +104,32 @@ public:
 		Get stream context.
 		@returns The current stream context.
 	*/
-	IO::StreamContext& get_stream_context() { return m_stream_ctx; }
+	IO::StreamContext& get_stream_context()
+		{ return m_stream_ctx; }
 	/** @copydoc get_stream_context() */
-	IO::StreamContext const& get_stream_context() const { return m_stream_ctx; }
+	IO::StreamContext const& get_stream_context() const
+		{ return m_stream_ctx; }
 /// @}
 
 /** @name Operations */ /// @{
 	/**
 		Write a variable to a stream.
-		@returns @c true if the variable was written to the stream, or @c false if at some point a stream operation failed.
+		@returns
+		- @c true if the variable was written to the stream, or
+		- @c false if at some point a stream operation failed.
 		@param dest Destination stream.
 		@param source Source variable. Can be any type.
-		@param treat_as_root Whether to treat @a source as a root node if it is a node (if both are true, only the node's contents are written).
+		@param treat_as_root Whether to treat @a source as a root node
+		if it is a node (if both are true, only the node's contents are
+		written).
 		@param tab_level Tabulation level; defaults to @c 0.
 	*/
-	bool write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned const tab_level=0) const;
+	bool write(
+		std::ostream& dest,
+		Variable const& source,
+		bool const treat_as_root,
+		unsigned const tab_level=0
+	) const;
 /// @}
 
 private:
@@ -126,10 +137,26 @@ private:
 		class StringT,
 		class StringU=typename detail::string_traits<StringT>::encoding_utils
 	>
-	bool write_string(std::ostream& dest, StringT const& str, bool const is_name) const;
-	bool write_value(std::ostream& dest, Variable const& var, bool const with_name) const;
-	bool write_array(std::ostream& dest, Variable const& var, bool const with_name) const;
-	bool write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned tab_level) const;
+	bool write_string(
+		std::ostream& dest,
+		StringT const& str,
+		bool const is_name
+	) const;
+	bool write_value(
+		std::ostream& dest,
+		Variable const& var,
+		bool const with_name
+	) const;
+	bool write_array(
+		std::ostream& dest,
+		Variable const& var,
+		bool const with_name
+	) const;
+	bool write_node(
+		std::ostream& dest,
+		Variable const& var,
+		bool const treat_as_root, unsigned tab_level
+	) const;
 	bool write_identifier(std::ostream& dest, Variable const& var) const;
 };
 

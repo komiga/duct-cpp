@@ -29,12 +29,13 @@ namespace detail {
 	@ingroup traits
 	String type traits.
 	@note @c std::wstring will get either UTF-16 or UTF-32 @c EncodingUtils
-	depending on the system; @c u16string and @c u32string should be used when
-	possible since they actually specify the use of these encodings.
+	depending on the system; @c u16string and @c u32string should be used
+	when possible since they actually specify the use of these encodings.
 	@tparam T String type.
 */
 template<class T>
-struct string_traits /*final*/ : public traits::restrict_all {
+struct string_traits /*final*/
+	: public traits::restrict_all {
 	/** String type; equivalent to @a T. */
 	typedef T string_type;
 	/** The string type's character type. */

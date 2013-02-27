@@ -8,10 +8,14 @@
 #include <type_traits>
 #include <iostream>
 
-template<typename CharT, class TraitsT>
+template<
+	typename CharT,
+	class TraitsT
+>
 void print_states(std::basic_ios<CharT, TraitsT>& stream) {
 	auto const states=stream.rdstate();
-	std::printf("stream states: [goodbit: %s, failbit: %s, badbit: %s, eofbit: %s]\n",
+	std::printf(
+		"stream states: [goodbit: %s, failbit: %s, badbit: %s, eofbit: %s]\n",
 		states==std::ios_base::goodbit ? "true" : "false",
 		0!=(states& std::ios_base::failbit) ? "true" : "false",
 		0!=(states& std::ios_base::badbit) ? "true" : "false",
@@ -58,14 +62,18 @@ static duct::char32_strict const utf32_data[]{
 	0x00AC
 };
 
-template<class FromU, class StringT>
+template<
+	class FromU,
+	class StringT
+>
 void read_s(StringT& str, void const* data, std::size_t const size) {
 	duct::IO::StreamContext ctx(FromU::id, duct::Endian::SYSTEM);
 	duct::IO::imemstream stream(data, size*FromU::char_size);
 	std::printf("stream size: %lu\n",
 		static_cast<unsigned long>(duct::IO::size(stream)));
 	assert(stream.good());
-	ctx.read_string(stream, str, static_cast<std::streamsize>(size), duct::CHAR_NULL);
+	ctx.read_string(
+		stream, str, static_cast<std::streamsize>(size), duct::CHAR_NULL);
 	assert(stream.good());
 	print_states(stream);
 	std::printf(
@@ -78,8 +86,15 @@ void read_s(StringT& str, void const* data, std::size_t const size) {
 	str.clear();
 }
 
-template<class ToU, class StringT>
-void write_s(StringT& str, typename ToU::strict_char_type const* data, std::size_t const size) {
+template<
+	class ToU,
+	class StringT
+>
+void write_s(
+	StringT& str,
+	typename ToU::strict_char_type const* data,
+	std::size_t const size
+) {
 	typename ToU::strict_char_type out_buffer[512];
 	duct::IO::StreamContext ctx(ToU::id, duct::Endian::SYSTEM);
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
@@ -118,15 +133,21 @@ void write_s(StringT& str, typename ToU::strict_char_type const* data, std::size
 signed main() {
 	duct::u8string str;
 	std::puts("Reading");
-	read_s<duct::UTF8Utils>(str, utf8_data, std::extent<decltype(utf8_data)>::value);
-	read_s<duct::UTF16Utils>(str, utf16_data, std::extent<decltype(utf16_data)>::value);
-	read_s<duct::UTF32Utils>(str, utf32_data, std::extent<decltype(utf32_data)>::value);
+	read_s<duct::UTF8Utils>(
+		str, utf8_data, std::extent<decltype(utf8_data)>::value);
+	read_s<duct::UTF16Utils>(
+		str, utf16_data, std::extent<decltype(utf16_data)>::value);
+	read_s<duct::UTF32Utils>(
+		str, utf32_data, std::extent<decltype(utf32_data)>::value);
 
 	std::puts("\nWriting");
 	str.assign(reinterpret_cast<char const*>(utf8_data), sizeof(utf8_data));
-	write_s<duct::UTF8Utils>(str, utf8_data, std::extent<decltype(utf8_data)>::value);
-	write_s<duct::UTF16Utils>(str, utf16_data, std::extent<decltype(utf16_data)>::value);
-	write_s<duct::UTF32Utils>(str, utf32_data, std::extent<decltype(utf32_data)>::value);
+	write_s<duct::UTF8Utils>(
+		str, utf8_data, std::extent<decltype(utf8_data)>::value);
+	write_s<duct::UTF16Utils>(
+		str, utf16_data, std::extent<decltype(utf16_data)>::value);
+	write_s<duct::UTF32Utils>(
+		str, utf32_data, std::extent<decltype(utf32_data)>::value);
 	std::cout<<std::endl;
 	return 0;
 }

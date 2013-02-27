@@ -25,7 +25,8 @@ namespace duct {
 
 /**
 	When defined, force using the C++11 @c char16_t and @c char32_t types
-	instead of @c uint16_t and @c uint32_t for the char16 and char32 typedefs.
+	instead of @c uint16_t and @c uint32_t for the char16 and char32
+	typedefs.
 	This should only be used when duct fails to recognize support.
 */
 #define DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
@@ -44,10 +45,10 @@ namespace duct {
 	@name Unicode character types
 	@note The C++11 @c char16_t and @c char32_t types will be used when
 	available; otherwise, @c uint16_t and @c uint32_t are used.
-	@note The strictly-sized character types (@c char8_strict, @c char16_strict,
-	and @c char32_strict) are integral non-character types; in addition, they
-	will probably never be unequal in size to the @c char8, @c char16,
-	and @c char32 types.
+	@note The strictly-sized character types
+	(@c char8_strict, @c char16_strict, and @c char32_strict)
+	are integral non-character types; in addition, they will probably
+	never be unequal in size to the @c char8, @c char16, and @c char32 types.
 	@sa #DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES, #DUCT_USING_CPP11_CHAR_TYPES
 	@{
 */
@@ -60,7 +61,8 @@ typedef uint32_t char32_strict;
 
 /**
 	(Very likely an) 8-bit character; UTF-8 code unit.
-	@note This is always typedef'd to @c char and merely exists for consistency.
+	@note This is always typedef'd to @c char and merely
+	exists for consistency.
 */
 typedef char char8;
 
@@ -74,11 +76,14 @@ typedef system_dependent char32;
 #else
 
 #if	(defined(DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES)) || \
-	((DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) >= DUCT_FLAG_COMPILER_GCC44) || \
-	((DUCT_COMPILER & DUCT_FLAG_COMPILER_CLANG) >= DUCT_FLAG_COMPILER_CLANG29)/* || \
+	((DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) \
+		>= DUCT_FLAG_COMPILER_GCC44) || \
+	((DUCT_COMPILER & DUCT_FLAG_COMPILER_CLANG) \
+		>= DUCT_FLAG_COMPILER_CLANG29)/* || \
 	// FIXME: VC2011 lies; currently aliases to uint16_t and uint32_t.
 	// What about the CTP?
-	((DUCT_COMPILER & DUCT_FLAG_COMPILER_VC) >= DUCT_FLAG_COMPILER_VC2011)*/
+	((DUCT_COMPILER & DUCT_FLAG_COMPILER_VC) \
+		>= DUCT_FLAG_COMPILER_VC2011)*/
 
 	typedef char16_t char16;
 	typedef char32_t char32;
@@ -101,9 +106,12 @@ typedef system_dependent char32;
 /**
 	Check if a code point is a valid Unicode character.
 	Non-characters and reserved characters include:
-	- Surrogate pairs: @verbatim U+D800 … U+DFFF @endverbatim
-	- Unicode 3.2: @verbatim U+FDD0 … U+FDEF @endverbatim
-	- Last two code points on each plane: @verbatim U+xxFFFE, U+xxFFFF @endverbatim
+	- Surrogate pairs:
+	  @verbatim U+D800 … U+DFFF @endverbatim
+	- Unicode 3.2:
+	  @verbatim U+FDD0 … U+FDEF @endverbatim
+	- Last two code points on each plane:
+	  @verbatim U+xxFFFE, U+xxFFFF @endverbatim
 	- Any code point above @c U+10FFFF
 	@returns
 	- @c true if the code point is valid;
@@ -133,7 +141,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c Code point or UTF-16 code unit to test.
 */
-#define DUCT_UNI_IS_SURROGATE(c) (((c)&0xFFFFF800)==0xD800)
+#define DUCT_UNI_IS_SURROGATE(c) ( \
+	((c)&0xFFFFF800)==0xD800 \
+)
 
 /**
 	Check if a UTF-8 code unit is a lead unit.
@@ -142,7 +152,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-8 code unit to test.
 */
-#define DUCT_UTF8_IS_LEAD(c) (static_cast<uint8_t>((c)-0xC0)<0x3E)
+#define DUCT_UTF8_IS_LEAD(c) ( \
+	static_cast<uint8_t>((c)-0xC0)<0x3E \
+)
 /**
 	Check if a UTF-8 code unit is a trail unit.
 	@returns
@@ -150,7 +162,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-8 code unit to test.
 */
-#define DUCT_UTF8_IS_TRAIL(c) (((c)&0xC0)==0x80)
+#define DUCT_UTF8_IS_TRAIL(c) ( \
+	((c)&0xC0)==0x80 \
+)
 
 /**
 	Check if a UTF-16 code unit is a non-surrogate (that is, encodes a code
@@ -161,7 +175,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-16 code unit to test.
 */
-#define DUCT_UTF16_IS_SINGLE(c) (!DUCT_UTF16_IS_SURROGATE(c))
+#define DUCT_UTF16_IS_SINGLE(c) ( \
+	!DUCT_UTF16_IS_SURROGATE(c) \
+)
 /**
 	Check if a UTF-16 code units is a lead unit (either a non-surrogate or
 	a lead surrogate).
@@ -170,7 +186,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-16 code unit to test.
 */
-#define DUCT_UTF16_IS_LEAD(c) (DUCT_UTF16_IS_SINGLE(c) || DUCT_UTF16_IS_LEAD_SURROGATE(c))
+#define DUCT_UTF16_IS_LEAD(c) ( \
+	DUCT_UTF16_IS_SINGLE(c) || DUCT_UTF16_IS_LEAD_SURROGATE(c) \
+)
 /**
 	Check if a UTF-16 code unit is a surrogate.
 	@returns
@@ -179,7 +197,8 @@ typedef system_dependent char32;
 	@param c UTF-16 code unit to test.
 	@sa DUCT_UNI_IS_SURROGATE
 */
-#define DUCT_UTF16_IS_SURROGATE(c) DUCT_UNI_IS_SURROGATE(c)
+#define DUCT_UTF16_IS_SURROGATE(c) \
+	DUCT_UNI_IS_SURROGATE(c)
 /**
 	Check if a UTF-16 code unit is a lead surrogate.
 	@returns
@@ -187,7 +206,9 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-16 code unit to test.
 */
-#define DUCT_UTF16_IS_LEAD_SURROGATE(c) (((c)&0xFFFFFC00)==0xD800)
+#define DUCT_UTF16_IS_LEAD_SURROGATE(c) ( \
+	((c)&0xFFFFFC00)==0xD800 \
+)
 /**
 	Check if a UTF-16 code unit is a trail surrogate.
 	@returns
@@ -195,16 +216,18 @@ typedef system_dependent char32;
 	- @c false otherwise.
 	@param c UTF-16 code unit to test.
 */
-#define DUCT_UTF16_IS_TRAIL_SURROGATE(c) (((c)&0xFFFFFC00)==0xDC00)
+#define DUCT_UTF16_IS_TRAIL_SURROGATE(c) ( \
+	((c)&0xFFFFFC00)==0xDC00 \
+)
 
 /** @} */ // end of name-group Unicode character utilities
 
 /**
 	Various character constants.
-	@warning The special-use constants @c CHAR_SENTINEL and @c CHAR_EOF are
-	invalid Unicode characters which can be unsafely narrowed to a valid UTF-8
-	code unit (@c U+FF, y with diaeresis). These are only useful for indicating
-	state with UTF-16 and UTF-32.
+	@warning The special-use constants @c CHAR_SENTINEL and @c CHAR_EOF
+	are invalid Unicode characters which can be unsafely narrowed to
+	a valid UTF-8 code unit (@c U+FF, y with diaeresis). These are only
+	useful for indicating state with UTF-16 and UTF-32.
 */
 enum Chars {
 	/** NUL. */

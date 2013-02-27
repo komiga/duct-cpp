@@ -18,8 +18,10 @@ public:
 		: m_encoding{encoding}
 	{}
 
-	void set_encoding(duct::Encoding const encoding) { m_encoding=encoding; }
-	duct::Encoding get_encoding() const { return m_encoding; }
+	void set_encoding(duct::Encoding const encoding)
+		{ m_encoding=encoding; }
+	duct::Encoding get_encoding() const
+		{ return m_encoding; }
 
 	template<typename RandomAccessIt>
 	RandomAccessIt decode(

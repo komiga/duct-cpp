@@ -39,8 +39,8 @@ enum LayoutFieldFlag : unsigned {
 
 /**
 	Variable validator.
-	@warning Every layout field after an optional field (@c LAYOUT_FIELD_OPTIONAL) is
-	considered optional.
+	@warning Every layout field after an optional field
+	(@c LAYOUT_FIELD_OPTIONAL) is considered optional.
 */
 class Template {
 public:
@@ -59,7 +59,8 @@ protected:
 public:
 /** @name Constructors and destructor */ /// @{
 	/**
-		Construct with @c VARMASK_NONE type mask, empty identity, and empty layout.
+		Construct with @c VARMASK_NONE type mask, empty identity,
+		and empty layout.
 	*/
 	Template()=default;
 	/**
@@ -93,7 +94,11 @@ public:
 		@param identity Identity.
 		@param layout Layout.
 	*/
-	Template(unsigned const type_mask, identity_vector_type identity, layout_vector_type layout)
+	Template(
+		unsigned const type_mask,
+		identity_vector_type identity,
+		layout_vector_type layout
+	)
 		: m_type_mask{type_mask}
 		, m_identity{std::move(identity)}
 		, m_layout{std::move(layout)}
@@ -132,7 +137,8 @@ public:
 		@param identity New identity.
 		@sa validate_identity(Variable const&) const
 	*/
-	void set_identity(identity_vector_type identity) { m_identity=std::move(identity); }
+	void set_identity(identity_vector_type identity)
+		{ m_identity=std::move(identity); }
 	/**
 		Get identity.
 		@returns The current identity.
@@ -147,7 +153,8 @@ public:
 		@param layout New layout.
 		@sa validate_layout(Variable const&) const
 	*/
-	void set_layout(layout_vector_type layout) { m_layout=std::move(layout); }
+	void set_layout(layout_vector_type layout)
+		{ m_layout=std::move(layout); }
 	/**
 		Get layout.
 		@returns The current layout.
@@ -161,9 +168,10 @@ public:
 /** @name Validation */ /// @{
 	/**
 		Validate a variable.
-		@note If @c validate_type(var) is @c true, layout validation is only done
-		if @a var is a collection.
-		@returns @c true iff @a var matches template in type, identity, and layout.
+		@note If @c validate_type(var) is @c true, layout validation
+		is only done if @a var is a collection.
+		@returns @c true iff @a var matches template in type, identity,
+		and layout.
 		@param var Variable to validate.
 		@sa validate_type(Variable const&) const,
 		validate_identity(Variable const&) const,
@@ -179,8 +187,8 @@ public:
 
 	/**
 		Validate a variable by type.
-		@returns @c true iff bitwise-and of @a var type and template type mask is
-		non-zero.
+		@returns @c true iff bitwise-and of @a var type and template
+		type mask is non-zero.
 		@param var Variable to validate.
 	*/
 	virtual bool validate_type(Variable const& var) const {
@@ -191,7 +199,8 @@ public:
 		Validate a variable by identity.
 		@returns @c true iff:
 		-# identity is empty (permits any name),
-		-# variable name matches any name from identity (including empty name).
+		-# variable name matches any name from identity
+		   (including empty name).
 		@param var Variable to validate.
 	*/
 	virtual bool validate_identity(Variable const& var) const {
@@ -212,21 +221,22 @@ public:
 
 	/**
 		Validate a variable by layout.
-		@note The @c LAYOUT_FIELD_OPTIONAL flag will cause all succeeding fields to be
-		considered optional.
-		@note The @c LAYOUT_FIELD_EMPTY flag is only considered when layout contains a
-		single field.
+		@note The @c LAYOUT_FIELD_OPTIONAL flag will cause all succeeding
+		fields to be considered optional.
+		@note The @c LAYOUT_FIELD_EMPTY flag is only considered when layout
+		contains a single field.
 		@returns
 		- @c false iff:
 			-# variable is not a @c VARCLASS_COLLECTION,
 			-# variable has more children than layout;
 		- @c true iff:
 			-# layout is empty (permits any collection),
-			-# layout contains a single field with flag @c LAYOUT_FIELD_EMPTY and
-			   variable has no children,
+			-# layout contains a single field with flag
+			   @c LAYOUT_FIELD_EMPTY and variable has no children,
 			-# children sequentially match layout fields exactly,
-			-# children sequentially match [0..var.size()] layout fields if a field from
-			   [0..var.size()+1] is optional (thus making all subsequent fields optional).
+			-# children sequentially match [0..var.size()] layout fields
+			   if a field from [0..var.size()+1] is optional
+			   (thus making all subsequent fields optional).
 		@param var Variable to validate.
 	*/
 	virtual bool validate_layout(Variable const& var) const {
@@ -237,7 +247,10 @@ public:
 			} else if (var.size()>get_layout().size()) {
 				// Collection cannot be larger than layout
 				return false;
-			} else if (1==m_layout.size() && (LAYOUT_FIELD_EMPTY&m_layout[0])) {
+			} else if (
+				1==m_layout.size() &&
+				(LAYOUT_FIELD_EMPTY&m_layout[0])
+			) {
 				return var.empty();
 			} else {
 				auto vc_iter=var.cbegin();
@@ -252,15 +265,15 @@ public:
 					}
 				}
 				if (optional_met || get_layout().cend()==lo_iter) {
-					// Collection sequentially matches layout fields exactly or any
-					// trailing fields are optional
+					// Collection sequentially matches layout fields
+					// exactly or any trailing fields are optional
 					return true;
 				} else {
-					// No optional field has been met, and there are unchecked trailing
-					// field(s)
+					// No optional field has been met, and there are
+					// unchecked trailing field(s)
 					if (LAYOUT_FIELD_OPTIONAL&(*lo_iter)) {
-						// First trailing field is optional (therefore all following
-						// fields are optional)
+						// First trailing field is optional (therefore
+						// all following fields are optional)
 						return true;
 					} else {
 						// First trailing field is not optional

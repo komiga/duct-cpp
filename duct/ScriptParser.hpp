@@ -39,7 +39,8 @@ class ScriptParser;
 /**
 	ScriptParser exception.
 */
-class ScriptParserException /*final*/ : public std::exception {
+class ScriptParserException /*final*/
+	: public std::exception {
 private:
 	char const* m_scope;
 	Token const* m_token;
@@ -92,7 +93,8 @@ public:
 /**
 	ductScript parser.
 */
-class ScriptParser /*final*/ : public Parser {
+class ScriptParser /*final*/
+	: public Parser {
 private:
 	duct::aux::deque<Variable*> m_stack{32};
 	u8string m_varname{};

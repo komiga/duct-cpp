@@ -92,7 +92,11 @@ static TestData const g_test_data[]{
 	{nullptr, 0, false}
 };
 
-void parse_stream(duct::Variable& root, std::istream& stream, bool const /*valid*/) {
+void parse_stream(
+	duct::Variable& root,
+	std::istream& stream,
+	bool const /*valid*/
+) {
 	assert(stream.good());
 	try {
 		g_parser.process(root, stream);
@@ -114,11 +118,19 @@ void write_var(duct::Variable const& var, std::ostream& stream) {
 
 void do_test(duct::Variable& root, TestData const& td) {
 	duct::IO::imemstream in_stream{td.data, td.size};
-	std::printf("  Testing `%*s`:\n", static_cast<signed>(td.size), td.data);
+	std::printf(
+		"  Testing `%*s`:\n",
+		static_cast<signed>(td.size),
+		td.data
+	);
 	parse_stream(root, in_stream, td.valid);
 	duct::aux::stringstream out_stream;
 	write_var(root, out_stream);
-	std::cout<<"          `"<<out_stream.str()<<"`\n\n";
+	std::cout
+		<<"          `"
+		<<out_stream.str()
+		<<"`\n\n"
+	;
 }
 
 signed main(signed argc, char* argv[]) {

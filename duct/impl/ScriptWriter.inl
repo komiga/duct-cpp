@@ -20,7 +20,12 @@ static char const
 
 // class ScriptWriter implementation
 
-bool ScriptWriter::write(std::ostream& dest, Variable const& source, bool const treat_as_root, unsigned const tab_level) const {
+bool ScriptWriter::write(
+	std::ostream& dest,
+	Variable const& source,
+	bool const treat_as_root,
+	unsigned const tab_level
+) const {
 	if (dest.good()) {
 		if (VARTYPE_NODE!=source.get_type() || !treat_as_root) {
 			m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
@@ -47,7 +52,11 @@ template<
 	class StringT,
 	class StringU
 >
-bool ScriptWriter::write_string(std::ostream& dest, StringT const& str, bool const is_name) const {
+bool ScriptWriter::write_string(
+	std::ostream& dest,
+	StringT const& str,
+	bool const is_name
+) const {
 	char32 first_cp=CHAR_NULL;
 	auto dec_iter=str.cbegin();
 	if (!str.empty()) {
@@ -62,9 +71,10 @@ bool ScriptWriter::write_string(std::ostream& dest, StringT const& str, bool con
 		||(str.cend()!=g_set_req_quotation.find(str, str.cbegin()))
 		// If parseable as a number token, must be quoted
 		||(
-			g_set_number_inner.sequence_matches<StringU>(dec_iter, str.cend())
-			&& (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str) &&
-				g_set_number_front.contains(first_cp)))
+			g_set_number_inner.sequence_matches<StringU>(
+				dec_iter, str.cend())
+			&& (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str)
+				&& g_set_number_front.contains(first_cp)))
 	;
 	StringUtils::EscapeablePair esc_pair;
 	auto const& str_esc_pair=
@@ -92,7 +102,11 @@ bool ScriptWriter::write_string(std::ostream& dest, StringT const& str, bool con
 	return dest.good();
 }
 
-bool ScriptWriter::write_value(std::ostream& dest, Variable const& var, bool const with_name) const {
+bool ScriptWriter::write_value(
+	std::ostream& dest,
+	Variable const& var,
+	bool const with_name
+) const {
 	if (with_name) {
 		write_string(dest, var.get_name(), true);
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
@@ -117,7 +131,11 @@ bool ScriptWriter::write_value(std::ostream& dest, Variable const& var, bool con
 	return dest.good();
 }
 
-bool ScriptWriter::write_array(std::ostream& dest, Variable const& var, bool const with_name) const {
+bool ScriptWriter::write_array(
+	std::ostream& dest,
+	Variable const& var,
+	bool const with_name
+) const {
 	if (with_name && !var.get_name().empty()) {
 		write_string(dest, var.get_name(), true);
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
@@ -149,7 +167,12 @@ bool ScriptWriter::write_array(std::ostream& dest, Variable const& var, bool con
 	return dest.good();
 }
 
-bool ScriptWriter::write_node(std::ostream& dest, Variable const& var, bool const treat_as_root, unsigned tab_level) const {
+bool ScriptWriter::write_node(
+	std::ostream& dest,
+	Variable const& var,
+	bool const treat_as_root,
+	unsigned tab_level
+) const {
 	if (!treat_as_root) {
 		//m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
 		if (!var.get_name().empty()) {
@@ -180,7 +203,10 @@ bool ScriptWriter::write_node(std::ostream& dest, Variable const& var, bool cons
 	return dest.good();
 }
 
-bool ScriptWriter::write_identifier(std::ostream& dest, Variable const& var) const {
+bool ScriptWriter::write_identifier(
+	std::ostream& dest,
+	Variable const& var
+) const {
 	write_string(dest, var.get_name(), true);
 	if (0<var.size()) {
 		m_stream_ctx.write_char(dest, ' ');

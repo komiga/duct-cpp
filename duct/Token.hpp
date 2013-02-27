@@ -129,10 +129,10 @@ public:
 		Reset the token.
 		@note This will reset the character buffer and set the type (and
 		call @c set_position(-1, -1) if @c position==true).
-		@param type Type to reset to (generic @c NULL_TOKEN is provided for invalidity
-		purposes).
-		@param position Whether to reset the token's position; if @c true, will
-		call @c set_position(-1, -1).
+		@param type Type to reset to (generic @c NULL_TOKEN is
+		provided for invalidity purposes).
+		@param position Whether to reset the token's position;
+		if @c true, will call @c set_position(-1, -1).
 	*/
 	void reset(signed const type, bool const position) {
 		m_buffer.reset();

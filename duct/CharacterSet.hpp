@@ -178,7 +178,8 @@ public:
 		return sequence_find<StringU>(pos, str.cend());
 	}
 
-	/** @copydoc CharacterRange::sequence_matches(InputIt,InputIt const) const */
+	/** @copydoc CharacterRange::sequence_matches(
+		InputIt,InputIt const) const */
 	template<
 		class StringU,
 		typename InputIt
@@ -188,7 +189,8 @@ public:
 		InputIt next;
 		for (; end!=pos; pos=next) {
 			next=StringU::decode(pos, end, cp, CHAR_SENTINEL);
-			if (next==pos || CHAR_SENTINEL==cp) { // Incomplete or bad sequence
+			if (next==pos || CHAR_SENTINEL==cp) {
+				// Incomplete or bad sequence
 				return false;
 			} else {
 				for (auto const& r : m_ranges) {
@@ -282,7 +284,8 @@ public:
 		}
 		if (CHAR_SENTINEL!=lastcp) {
 			if (isrange) {
-				DUCT_DEBUG("CharacterSet::add_from_string: Invalid range in string");
+				DUCT_DEBUG(
+					"CharacterSet::add_from_string: Invalid range in string");
 			}
 			add_range(lastcp, 0);
 		}

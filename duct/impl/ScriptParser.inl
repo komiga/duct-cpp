@@ -262,8 +262,8 @@ void ScriptParser::discern_token() {
 	case CHAR_NEWLINE: m_token.set_type(TOK_EOL); break;
 	case CHAR_EOF: m_token.set_type(TOK_EOF); break;
 
-	// None of the above; guess whether it's a string or an integer depending
-	// on first character
+	// None of the above; guess whether it's a string or an integer
+	// depending on first character
 	default:
 		m_token.set_type(
 			(g_set_numeral.contains(m_curchar))
@@ -607,8 +607,8 @@ void ScriptParser::read_tok_string() {
 		if (CHAR_QUOTE==m_curchar) {
 			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (CHAR_BACKSLASH==m_curchar) {
-			char32 const cp=
-				StringUtils::get_escape_char(next_char(), g_esc_pair);
+			char32 const cp
+				=StringUtils::get_escape_char(next_char(), g_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -639,8 +639,8 @@ void ScriptParser::read_tok_string_quoted() {
 		if (CHAR_EOF==m_curchar) {
 			DUCT_SP_THROW__("Encountered EOF whilst reading quoted string");
 		} else if (CHAR_BACKSLASH==m_curchar) {
-			char32 const cp=
-				StringUtils::get_escape_char(next_char(), g_esc_pair);
+			char32 const cp
+				=StringUtils::get_escape_char(next_char(), g_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -793,25 +793,40 @@ void ScriptParser::make_value() {
 	switch (m_token.get_type()) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
-		get_current_collection().emplace_back(m_varname,
-			m_token.get_buffer().to_string<detail::var_config::string_type>()
+		get_current_collection().emplace_back(
+			m_varname,
+			m_token.get_buffer()
+				.to_string<detail::var_config::string_type>()
 		); break;
 	case TOK_INTEGER:
-		get_current_collection().emplace_back(m_varname,
-			m_token.get_buffer().to_arithmetic<detail::var_config::int_type>()
+		get_current_collection().emplace_back(
+			m_varname,
+			m_token.get_buffer()
+				.to_arithmetic<detail::var_config::int_type>()
 		); break;
 	case TOK_FLOATING:
-		get_current_collection().emplace_back(m_varname,
-			m_token.get_buffer().to_arithmetic<detail::var_config::float_type>()
+		get_current_collection().emplace_back(
+			m_varname,
+			m_token.get_buffer()
+				.to_arithmetic<detail::var_config::float_type>()
 		); break;
 	case TOK_LITERAL_TRUE:
-		get_current_collection().emplace_back(m_varname, true);
+		get_current_collection().emplace_back(
+			m_varname,
+			true
+		);
 		break;
 	case TOK_LITERAL_FALSE:
-		get_current_collection().emplace_back(m_varname, false);
+		get_current_collection().emplace_back(
+			m_varname,
+			false
+		);
 		break;
 	case TOK_LITERAL_NULL:
-		get_current_collection().emplace_back(m_varname, VARTYPE_NULL);
+		get_current_collection().emplace_back(
+			m_varname,
+			VARTYPE_NULL
+		);
 		break;
 	}
 	remove_states(STATE_EQUALS);
@@ -838,25 +853,31 @@ void ScriptParser::make_nameless_value(signed override_type) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
 		get_current_collection().emplace_back(
-			m_token.get_buffer().to_string<detail::var_config::string_type>()
+			m_token.get_buffer()
+				.to_string<detail::var_config::string_type>()
 		); break;
 	case TOK_INTEGER:
 		get_current_collection().emplace_back(
-			m_token.get_buffer().to_arithmetic<detail::var_config::int_type>()
+			m_token.get_buffer()
+				.to_arithmetic<detail::var_config::int_type>()
 		); break;
 	case TOK_FLOATING:
 		get_current_collection().emplace_back(
-			m_token.get_buffer().to_arithmetic<detail::var_config::float_type>()
+			m_token.get_buffer()
+				.to_arithmetic<detail::var_config::float_type>()
 		); break;
 	case TOK_LITERAL_TRUE:
-		get_current_collection().emplace_back(true);
-		break;
+		get_current_collection().emplace_back(
+			true
+		); break;
 	case TOK_LITERAL_FALSE:
-		get_current_collection().emplace_back(false);
-		break;
+		get_current_collection().emplace_back(
+			false
+		); break;
 	case TOK_LITERAL_NULL:
-		get_current_collection().emplace_back(VARTYPE_NULL);
-		break;
+		get_current_collection().emplace_back(
+			VARTYPE_NULL
+		); break;
 	}
 	remove_states(STATE_COMMA|STATE_OPEN_ARRAY);
 }

@@ -94,8 +94,11 @@ template<
 	typename CharT,
 	class TraitsT
 >
-std::size_t size(std::basic_istream<CharT, TraitsT>& stream) {
-	if (stream.eof()) { // Already at eof: don't have to seek anywhere
+std::size_t size(
+	std::basic_istream<CharT, TraitsT>& stream
+) {
+	if (stream.eof()) {
+		// Already at eof: don't have to seek anywhere
 		DUCT_DEBUG("duct::IO::size: eof() initial");
 		// Get rid of all other states
 		stream.setstate(std::ios_base::eofbit);
@@ -106,9 +109,11 @@ std::size_t size(std::basic_istream<CharT, TraitsT>& stream) {
 			DUCT_DEBUG("duct::IO::size: -1==end");
 		}
 	} else {
-		stream.clear(); // Get rid of all states
+		// Toss all states
+		stream.clear();
 		auto const original=stream.tellg();
-		if (decltype(original)(-1)!=original) { // If the stream will give position
+		// If the stream will give position
+		if (decltype(original)(-1)!=original) {
 			stream.seekg(0, std::ios_base::end);
 			auto const end=stream.tellg();
 			if (decltype(end)(-1)!=end) {
@@ -138,7 +143,11 @@ std::size_t size(std::basic_istream<CharT, TraitsT>& stream) {
 	@param[out] dest Data destination.
 	@param size Number of bytes to read.
 */
-inline void read(std::istream& stream, void* dest, std::size_t const size) {
+inline void read(
+	std::istream& stream,
+	void* dest,
+	std::size_t const size
+) {
 	stream.read(reinterpret_cast<char*>(dest), size);
 }
 
@@ -149,7 +158,11 @@ inline void read(std::istream& stream, void* dest, std::size_t const size) {
 	@param src Data source.
 	@param size Number of bytes to write.
 */
-inline void write(std::ostream& stream, void const* const src, std::size_t const size) {
+inline void write(
+	std::ostream& stream,
+	void const* const src,
+	std::size_t const size
+) {
 	stream.write(reinterpret_cast<char const*>(src), size);
 }
 
@@ -163,7 +176,11 @@ inline void write(std::ostream& stream, void const* const src, std::size_t const
 	(no swapping).
 */
 template<typename T>
-inline void read_arithmetic(std::istream& stream, T& value, Endian const endian=Endian::SYSTEM) {
+inline void read_arithmetic(
+	std::istream& stream,
+	T& value,
+	Endian const endian=Endian::SYSTEM
+) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	stream.read(reinterpret_cast<char*>(&value), sizeof(T));
 	byte_swap_ref_if(value, endian);
@@ -179,7 +196,10 @@ inline void read_arithmetic(std::istream& stream, T& value, Endian const endian=
 	(no swapping).
 */
 template<typename T>
-inline T read_arithmetic(std::istream& stream, Endian const endian=Endian::SYSTEM) {
+inline T read_arithmetic(
+	std::istream& stream,
+	Endian const endian=Endian::SYSTEM
+) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	T value;
 	stream.read(reinterpret_cast<char*>(&value), sizeof(T));
@@ -199,7 +219,12 @@ inline T read_arithmetic(std::istream& stream, Endian const endian=Endian::SYSTE
 	(no swapping).
 */
 template<typename T>
-void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count, Endian const endian=Endian::SYSTEM) {
+void read_arithmetic_array(
+	std::istream& stream,
+	T* dest,
+	std::size_t const count,
+	Endian const endian=Endian::SYSTEM
+) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	if (0<count) {
 		stream.read(reinterpret_cast<char*>(dest), sizeof(T)*count);
@@ -220,7 +245,11 @@ void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const coun
 	(no swapping).
 */
 template<typename T>
-inline void write_arithmetic(std::ostream& stream, T value, Endian const endian=Endian::SYSTEM) {
+inline void write_arithmetic(
+	std::ostream& stream,
+	T value,
+	Endian const endian=Endian::SYSTEM
+) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	byte_swap_ref_if(value, endian);
 	stream.write(reinterpret_cast<char const*>(&value), sizeof(T));
@@ -237,7 +266,12 @@ inline void write_arithmetic(std::ostream& stream, T value, Endian const endian=
 	(no swapping).
 */
 template<typename T>
-void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count, Endian const endian=Endian::SYSTEM) {
+void write_arithmetic_array(
+	std::ostream& stream,
+	T const* const src,
+	std::size_t const count,
+	Endian const endian=Endian::SYSTEM
+) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	enum {BUFFER_SIZE=32u};
 	T flipbuf[BUFFER_SIZE];
@@ -284,7 +318,11 @@ template<
 	std::size_t size_=DefsT::char_size
 >
 struct rchar_impl {
-	static char32 read_char(std::istream& stream, char32 const replacement, Endian const endian) {
+	static char32 read_char(
+		std::istream& stream,
+		char32 const replacement,
+		Endian const endian
+	) {
 		typename DefsT::char_type
 			buffer[DefsT::BUFFER_SIZE],
 			*iter=buffer,
@@ -321,7 +359,11 @@ struct rchar_impl {
 // Specialize for UTF-32
 template<class DefsT>
 struct rchar_impl<DefsT, 4> {
-	static char32 read_char(std::istream& stream, char32 const replacement, Endian const endian) {
+	static char32 read_char(
+		std::istream& stream,
+		char32 const replacement,
+		Endian const endian
+	) {
 		char32 cp;
 		IO::read_arithmetic(stream, cp, endian);
 		if (!stream.good()) {
@@ -353,7 +395,11 @@ template<
 	class FromU,
 	class DefsT=rchar_defs<FromU>
 >
-inline char32 read_char(std::istream& stream, char32 const replacement=CHAR_SENTINEL, Endian const endian=Endian::SYSTEM) {
+inline char32 read_char(
+	std::istream& stream,
+	char32 const replacement=CHAR_SENTINEL,
+	Endian const endian=Endian::SYSTEM
+) {
 	return rchar_impl<DefsT>::read_char(stream, replacement, endian);
 }
 
@@ -374,7 +420,13 @@ template<
 	std::size_t size_=DefsT::char_size
 >
 struct wchar_impl {
-	static std::size_t write_char(std::ostream& stream, char32 cp, unsigned const num, char32 const replacement, Endian const endian) {
+	static std::size_t write_char(
+		std::ostream& stream,
+		char32 cp,
+		unsigned const num,
+		char32 const replacement,
+		Endian const endian
+	) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
 				return 0;
@@ -389,7 +441,8 @@ struct wchar_impl {
 		// Should not occur because both cp and replacement are checked for
 		// invalidity before encoding
 		if (out_iter==out_buffer) {
-			DUCT_DEBUG("wchar_impl<(defaults)>::write: out_iter==out_buffer; curious!");
+			DUCT_DEBUG(
+				"wchar_impl<(def)>::write: out_iter==out_buffer; curious!");
 			return 0;
 		} else {
 			unsigned idx, amt=(out_iter-out_buffer);
@@ -412,7 +465,12 @@ struct wchar_impl {
 // Specialize for UTF-32
 template<class DefsT>
 struct wchar_impl<DefsT, 4> {
-	static std::size_t write_char(std::ostream& stream, char32 cp, unsigned const num, char32 const replacement, Endian const endian) {
+	static std::size_t write_char(
+		std::ostream& stream, char32 cp,
+		unsigned const num,
+		char32 const replacement,
+		Endian const endian
+	) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
 				return 0;
@@ -448,9 +506,16 @@ template<
 	class ToU,
 	class DefsT=wchar_defs<ToU>
 >
-inline std::size_t write_char(std::ostream& stream, char32 const cp, unsigned const num=1, char32 const replacement=CHAR_NULL, Endian const endian=Endian::SYSTEM) {
+inline std::size_t write_char(
+	std::ostream& stream,
+	char32 const cp,
+	unsigned const num=1,
+	char32 const replacement=CHAR_NULL,
+	Endian const endian=Endian::SYSTEM
+) {
 	if (0<num) {
-		return wchar_impl<DefsT>::write_char(stream, cp, num, replacement, endian);
+		return wchar_impl<DefsT>
+			::write_char(stream, cp, num, replacement, endian);
 	} else {
 		return 0;
 	}
@@ -495,7 +560,13 @@ template<
 	class StringT,
 	class DefsT=rstr_defs<FromU, StringT>
 >
-void read_string(std::istream& stream, StringT& value, std::size_t size, char32 const replacement=CHAR_NULL, Endian const endian=Endian::SYSTEM) {
+void read_string(
+	std::istream& stream,
+	StringT& value,
+	std::size_t size,
+	char32 const replacement=CHAR_NULL,
+	Endian const endian=Endian::SYSTEM
+) {
 	typename DefsT::from_utils::char_type
 		// Extra space to easily deal with incomplete sequences (0<offset)
 		// instead of doing a bunch of subtraction
@@ -545,7 +616,8 @@ void read_string(std::istream& stream, StringT& value, std::size_t size, char32 
 				*next,
 				static_cast<unsigned long>(size)
 			);
-			if (0>=size) { // No sense pushing back if there's no more data to read
+			if (0>=size) {
+				// No sense pushing back if there's no more data to read
 				break;
 			} else {
 				// Push the incomplete sequence to the beginning
@@ -584,9 +656,16 @@ void read_string(std::istream& stream, StringT& value, std::size_t size, char32 
 */
 template<
 	class StringT,
-	class DefsT=rstr_defs<typename detail::string_traits<StringT>::encoding_utils, StringT>
+	class DefsT=rstr_defs<typename
+		detail::string_traits<StringT>::encoding_utils, StringT
+	>
 >
-void read_string_copy(std::istream& stream, StringT& value, std::size_t size, Endian const endian=Endian::SYSTEM) {
+void read_string_copy(
+	std::istream& stream,
+	StringT& value,
+	std::size_t size,
+	Endian const endian=Endian::SYSTEM
+) {
 	typename DefsT::from_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
 		*out_iter;
@@ -645,7 +724,12 @@ template<
 	class StringT,
 	class DefsT=wstr_defs<ToU, StringT>
 >
-std::size_t write_string(std::ostream& stream, StringT const& value, char32 const replacement=CHAR_NULL, Endian const endian=Endian::SYSTEM) {
+std::size_t write_string(
+	std::ostream& stream,
+	StringT const& value,
+	char32 const replacement=CHAR_NULL,
+	Endian const endian=Endian::SYSTEM
+) {
 	typename DefsT::to_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
 		*out_iter=out_buffer;
@@ -654,7 +738,8 @@ std::size_t write_string(std::ostream& stream, StringT const& value, char32 cons
 	std::size_t units_written=0;
 	char32 cp;
 	for (in_iter=value.cbegin(); value.cend()!=in_iter; in_iter=in_next) {
-		in_next=DefsT::from_utils::decode(in_iter, value.cend(), cp, replacement);
+		in_next=DefsT::from_utils::decode(
+			in_iter, value.cend(), cp, replacement);
 		if (in_next==in_iter) { // Incomplete sequence
 			DUCT_DEBUG("write_string: ics");
 			break;
@@ -723,9 +808,15 @@ exit_f:
 */
 template<
 	class StringT,
-	class DefsT=wstr_defs<typename detail::string_traits<StringT>::encoding_utils, StringT>
+	class DefsT=wstr_defs<typename
+		detail::string_traits<StringT>::encoding_utils, StringT
+	>
 >
-std::size_t write_string_copy(std::ostream& stream, StringT const& value, Endian const endian=Endian::SYSTEM) {
+std::size_t write_string_copy(
+	std::ostream& stream,
+	StringT const& value,
+	Endian const endian=Endian::SYSTEM
+) {
 	typename DefsT::from_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
 		*out_iter;
@@ -733,7 +824,11 @@ std::size_t write_string_copy(std::ostream& stream, StringT const& value, Endian
 	typename StringT::const_iterator str_iter=value.cbegin();
 	while (0<size) {
 		amt=DefsT::BUFFER_SIZE<size ? DefsT::BUFFER_SIZE : size;
-		for (out_iter=out_buffer; out_buffer+amt>out_iter; ++out_iter, ++str_iter) {
+		for (
+			out_iter=out_buffer;
+			out_buffer+amt>out_iter;
+			++out_iter, ++str_iter
+		) {
 			if (Endian::SYSTEM!=endian && 1!=DefsT::from_utils::char_size) {
 				*out_iter=byte_swap(*str_iter);
 			} else {
@@ -759,7 +854,8 @@ exit_f:
 	@warning Reassigning the buffer will not clear stream state.
 */
 template<typename CharT, typename TraitsT>
-class basic_memstreambuf /*final*/ : public std::basic_streambuf<CharT, TraitsT> {
+class basic_memstreambuf /*final*/
+	: public std::basic_streambuf<CharT, TraitsT> {
 private:
 	typedef std::basic_streambuf<CharT, TraitsT> base_type;
 
@@ -791,7 +887,11 @@ public:
 		@param mode @c openmode for the streambuf; defaults to and
 		forces @c std::ios_base::in; removes @c std::ios_base::out.
 	*/
-	basic_memstreambuf(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
+	basic_memstreambuf(
+		void const* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode=std::ios_base::in
+	)
 		: base_type{}
 		, m_mode{(mode&~std::ios_base::out)|std::ios_base::in}
 	{
@@ -804,7 +904,11 @@ public:
 		@param mode @c openmode for the streambuf; defaults to and
 		forces @c std::ios_base::out.
 	*/
-	basic_memstreambuf(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
+	basic_memstreambuf(
+		void* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode=std::ios_base::out
+	)
 		: base_type{}
 		, m_mode{mode|std::ios_base::out}
 	{
@@ -848,7 +952,11 @@ public:
 
 protected:
 	/** @cond INTERNAL */
-	pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+	pos_type seekoff(
+		off_type off,
+		std::ios_base::seekdir way,
+		std::ios_base::openmode which=std::ios_base::in|std::ios_base::out
+	) override {
 		bool const
 			do_in =m_mode&which&std::ios_base::in,
 			do_out=m_mode&which&std::ios_base::out;
@@ -876,7 +984,10 @@ protected:
 		return pos_type{off_type{-1}};
 	}
 
-	pos_type seekpos(pos_type pos, std::ios_base::openmode which=std::ios_base::in|std::ios_base::out) override {
+	pos_type seekpos(
+		pos_type pos,
+		std::ios_base::openmode which=std::ios_base::in|std::ios_base::out
+	) override {
 		// pos_type should be std::streampos, which should be std::fpos<>,
 		// which stores an off_type, which should be std::streamoff.
 		// Pass to seekoff() instead of duplicating code.
@@ -910,7 +1021,8 @@ private:
 	@sa basic_omemstream, basic_memstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_imemstream /*final*/ : public std::basic_istream<CharT, TraitsT> {
+class basic_imemstream /*final*/
+	: public std::basic_istream<CharT, TraitsT> {
 private:
 	typedef std::basic_istream<CharT, TraitsT> base_type;
 
@@ -944,7 +1056,11 @@ public:
 		@param mode @c openmode for the stream; defaults to and
 		forces @c std::ios_base::in; removes @c std::ios_base::out.
 	*/
-	basic_imemstream(void const* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in)
+	basic_imemstream(
+		void const* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode=std::ios_base::in
+	)
 		: base_type{}
 		, m_membuf{buffer, size, (mode&~std::ios_base::out)|std::ios_base::in}
 	{ this->init(&m_membuf); }
@@ -975,7 +1091,8 @@ public:
 	@sa basic_imemstream, basic_memstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_omemstream /*final*/ : public std::basic_ostream<CharT, TraitsT> {
+class basic_omemstream /*final*/
+	: public std::basic_ostream<CharT, TraitsT> {
 private:
 	typedef std::basic_ostream<CharT, TraitsT> base_type;
 
@@ -1009,7 +1126,11 @@ public:
 		@param mode @c openmode for the stream; defaults to and
 		forces @c std::ios_base::out; removes @c std::ios_base::in.
 	*/
-	basic_omemstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::out)
+	basic_omemstream(
+		void* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode=std::ios_base::out
+	)
 		: base_type{}
 		, m_membuf{buffer, size, (mode&~std::ios_base::in)|std::ios_base::out}
 	{ this->init(&m_membuf); }
@@ -1040,7 +1161,8 @@ public:
 	@sa basic_imemstream, basic_omemstream, basic_memstreambuf
 */
 template<typename CharT, typename TraitsT>
-class basic_memstream /*final*/ : public std::basic_iostream<CharT, TraitsT> {
+class basic_memstream /*final*/
+	: public std::basic_iostream<CharT, TraitsT> {
 private:
 	typedef std::basic_iostream<CharT, TraitsT> base_type;
 
@@ -1074,7 +1196,11 @@ public:
 		@param mode @c openmode for the stream; defaults to and
 		forces @c std::ios_base::in and @c std::ios_base::out.
 	*/
-	basic_memstream(void* const buffer, std::size_t const size, std::ios_base::openmode const mode=std::ios_base::in|std::ios_base::out)
+	basic_memstream(
+		void* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode=std::ios_base::in|std::ios_base::out
+	)
 		: base_type{}
 		, m_membuf{buffer, size, mode|std::ios_base::in|std::ios_base::out}
 	{ this->init(&m_membuf); }
@@ -1207,7 +1333,11 @@ public:
 	}
 	/** See @c duct::IO::read_arithmetic_array(). */
 	template<typename T>
-	void read_arithmetic_array(std::istream& stream, T* dest, std::size_t const count) const {
+	void read_arithmetic_array(
+		std::istream& stream,
+		T* dest,
+		std::size_t const count
+	) const {
 		::duct::IO::read_arithmetic_array<T>(
 			stream, dest, count, m_endian);
 	}
@@ -1220,7 +1350,11 @@ public:
 	}
 	/** See @c duct::IO::write_arithmetic_array(). */
 	template<typename T>
-	void write_arithmetic_array(std::ostream& stream, T const* src, std::size_t const count) const {
+	void write_arithmetic_array(
+		std::ostream& stream,
+		T const* const src,
+		std::size_t const count
+	) const {
 		::duct::IO::write_arithmetic_array<T>(
 			stream, src, count, m_endian);
 	}
@@ -1228,7 +1362,10 @@ public:
 
 /** @name Unicode */ /// @{
 	/** See @c duct::IO::read_char(). */
-	char32 read_char(std::istream& stream, char32 const replacement=CHAR_SENTINEL) const {
+	char32 read_char(
+		std::istream& stream,
+		char32 const replacement=CHAR_SENTINEL
+	) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:
 			return ::duct::IO::read_char<UTF8Utils>(
@@ -1246,7 +1383,12 @@ public:
 		}
 	}
 	/** See @c duct::IO::write_char(). */
-	std::size_t write_char(std::ostream& stream, char32 const cp, unsigned const num=1, char32 const replacement=CHAR_NULL) const {
+	std::size_t write_char(
+		std::ostream& stream,
+		char32 const cp,
+		unsigned const num=1,
+		char32 const replacement=CHAR_NULL
+	) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:
 			return ::duct::IO::write_char<UTF8Utils>(
@@ -1266,7 +1408,12 @@ public:
 
 	/** See @c duct::IO::read_string(). */
 	template<class StringT>
-	void read_string(std::istream& stream, StringT& value, std::size_t size, char32 const replacement=CHAR_NULL) const {
+	void read_string(
+		std::istream& stream,
+		StringT& value,
+		std::size_t size,
+		char32 const replacement=CHAR_NULL
+	) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:
 			::duct::IO::read_string<UTF8Utils>(
@@ -1288,7 +1435,11 @@ public:
 	}
 	/** See @c duct::IO::write_string(). */
 	template<class StringT>
-	std::size_t write_string(std::ostream& stream, StringT const& value, char32 const replacement=CHAR_NULL) const {
+	std::size_t write_string(
+		std::ostream& stream,
+		StringT const& value,
+		char32 const replacement=CHAR_NULL
+	) const {
 		switch (m_encoding) {
 		case Encoding::UTF8:
 			return ::duct::IO::write_string<UTF8Utils>(

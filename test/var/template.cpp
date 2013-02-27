@@ -104,8 +104,10 @@ void validate(
 	vt_not_match, vi_not_match, vl_not_match \
 ) { \
 	std::cout<< "\n# " series ":\n"; \
-	do_validation_single(tpl, match, true, vt_match, vi_match, vl_match); \
-	do_validation_single(tpl, not_match, false, vt_not_match, vi_not_match, vl_not_match); \
+	do_validation_single( \
+		tpl, match, true, vt_match, vi_match, vl_match); \
+	do_validation_single( \
+		tpl, not_match, false, vt_not_match, vi_not_match, vl_not_match); \
 }
 
 signed main() {

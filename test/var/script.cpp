@@ -110,14 +110,21 @@ static TestData const g_test_data[]{
 	{nullptr, 0, false}
 };
 
-void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) {
+void parse_stream(
+	duct::Variable& root,
+	std::istream& stream,
+	bool const valid
+) {
 	assert(stream.good());
 	if (valid) {
 		g_parser.process(root, stream);
 	} else {
 		try {
 			g_parser.process(root, stream);
-			std::cout<<"Received no exception when one was expected\n"<<std::endl;
+			std::cout
+				<<"Received no exception when one was expected\n"
+				<<std::endl
+			;
 			assert(false);
 		} catch (duct::ScriptParserException& e) {
 			std::cout<<e.what()<<"\n\n";
@@ -131,7 +138,11 @@ void parse_stream(duct::Variable& root, std::istream& stream, bool const valid) 
 
 void do_test(duct::Variable& root, TestData const& td) {
 	duct::IO::imemstream stream{td.data, td.size};
-	std::printf("  Testing `%*s`:\n", static_cast<signed>(td.size), td.data);
+	std::printf(
+		"  Testing `%*s`:\n",
+		static_cast<signed>(td.size),
+		td.data
+	);
 	parse_stream(root, stream, td.valid);
 }
 

@@ -33,8 +33,8 @@ enum VariableMasks : unsigned;
 
 /**
 	Variable types.
-	@note @c VARTYPE_NULL is a special type to indicate nullness; it has no
-	associated data field.
+	@note @c VARTYPE_NULL is a special type to indicate nullness;
+	it has no associated data field.
 	@sa VariableClass, VariableMasks
 */
 enum VariableType : unsigned {
@@ -58,8 +58,8 @@ enum VariableType : unsigned {
 
 /**
 	Variable classes.
-	@note @c VARTYPE_NULL is essentially its own class and is thus not included
-	in any defined classes.
+	@note @c VARTYPE_NULL is essentially its own class and is
+	thus not included in any defined classes.
 	@sa VariableType, VariableMasks
 */
 enum VariableClass : unsigned {
@@ -75,7 +75,9 @@ enum VariableClass : unsigned {
 	/**
 		Value variable types.
 		Equal to:
-		@code VARTYPE_STRING|VARTYPE_INTEGER|VARTYPE_FLOAT|VARTYPE_BOOL @endcode
+		@code
+			VARTYPE_STRING|VARTYPE_INTEGER|VARTYPE_FLOAT|VARTYPE_BOOL
+		@endcode
 	*/
 	VARCLASS_VALUE
 		=VARTYPE_STRING
@@ -130,21 +132,26 @@ namespace detail {
 /**
 	Variable configuration.
 */
-struct var_config /*final*/ : public traits::restrict_all {
+struct var_config /*final*/
+	: public traits::restrict_all {
+public:
 	/** typename for Variable names */
 	typedef u8string	name_type;
 	/** typename for @c VARTYPE_STRING */
 	typedef u8string	string_type;
 
-#if (0==DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES) || defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
+#if (0==DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES) \
+	|| defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 	/**
 		typename for @c VARTYPE_INTEGER.
-		@c int32_t by default; @c int64_t with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c int32_t by default; @c int64_t
+		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef int32_t		int_type;
 	/**
 		typename for @c VARTYPE_FLOAT.
-		@c float by default; @c double with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
+		@c float by default; @c double
+		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	typedef float		float_type;
 #else
@@ -179,7 +186,10 @@ char const* get_vartype_name(VariableType const type) {
 	Check if a typename has an associated @c VARCLASS_VALUE type.
 */
 template<typename T>
-struct is_valtype /*final*/ : public traits::restrict_all, public std::false_type {};
+struct is_valtype /*final*/
+	: public traits::restrict_all
+	, public std::false_type
+{};
 
 /**
 	Translate a @c VARCLASS_VALUE type to a typename.
@@ -197,9 +207,12 @@ struct type_to_valtype;
 	VariableType traits for @c VARCLASS_VALUE.
 */
 template<VariableType const VType>
-struct valtype_traits /*final*/ : public traits::restrict_all {
+struct valtype_traits /*final*/
+	: public traits::restrict_all {
+public:
 	/** Whether the typename is POD. */
-	static constexpr bool is_pod=std::is_pod<typename valtype_to_type<VType>::type>::value;
+	static constexpr bool is_pod
+		=std::is_pod<typename valtype_to_type<VType>::type>::value;
 	/** The value typename for the VariableType. */
 	typedef typename valtype_to_type<VType>::type value_type;
 };
@@ -210,7 +223,8 @@ struct valtype_traits /*final*/ : public traits::restrict_all {
 	: public traits::restrict_all \
 	{ typedef T type; }; \
 	template<> struct is_valtype<T> /*final*/ \
-	: public traits::restrict_all, public std::true_type \
+	: public traits::restrict_all \
+	, public std::true_type \
 	{}; \
 	template<> struct type_to_valtype<T> /*final*/ \
 	: public traits::restrict_all \
@@ -225,7 +239,8 @@ DUCT_DETAIL_TRAITS_(VARTYPE_BOOL, var_config::bool_type);
 
 #define DUCT_DETAIL_TRAITS_(VT, T)	\
 	template<> struct is_valtype<T> /*final*/ \
-	: public traits::restrict_all, public std::true_type \
+	: public traits::restrict_all \
+	, public std::true_type \
 	{}; \
 	template<> struct type_to_valtype<T> /*final*/ \
 	: public traits::restrict_all \

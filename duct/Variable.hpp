@@ -73,7 +73,10 @@ public:
 		@param name Name.
 		@param type Type.
 	*/
-	Variable(detail::var_config::name_type name, VariableType const type)
+	Variable(
+		detail::var_config::name_type name,
+		VariableType const type
+	)
 		: m_type{type}
 		, m_name{std::move(name)}
 	{}
@@ -81,7 +84,9 @@ public:
 		Construct nameless with type (default value).
 		@param type Type.
 	*/
-	explicit Variable(VariableType const type)
+	explicit Variable(
+		VariableType const type
+	)
 		: m_type{type}
 	{}
 	/**
@@ -91,7 +96,10 @@ public:
 		@param type Type.
 		@param ilist Initializer list.
 	*/
-	Variable(VariableType const type, initializer_list_type ilist)
+	Variable(
+		VariableType const type,
+		initializer_list_type ilist
+	)
 		: m_type{type}
 		, m_children{std::move(ilist)}
 	{
@@ -105,7 +113,11 @@ public:
 		@param type Type.
 		@param ilist Initializer list.
 	*/
-	Variable(detail::var_config::name_type name, VariableType const type, initializer_list_type ilist)
+	Variable(
+		detail::var_config::name_type name,
+		VariableType const type,
+		initializer_list_type ilist
+	)
 		: m_type{type}
 		, m_name{std::move(name)}
 		, m_children{std::move(ilist)}
@@ -117,7 +129,10 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, detail::var_config::string_type value)
+	Variable(
+		detail::var_config::name_type name,
+		detail::var_config::string_type value
+	)
 		: m_type{VARTYPE_STRING}
 		, m_name{std::move(name)}
 		, m_strv{std::move(value)}
@@ -126,7 +141,9 @@ public:
 		Construct nameless @c VARTYPE_STRING with value.
 		@param value Value.
 	*/
-	explicit Variable(detail::var_config::string_type value)
+	explicit Variable(
+		detail::var_config::string_type value
+	)
 		: m_type{VARTYPE_STRING}
 		, m_strv{std::move(value)}
 	{}
@@ -135,7 +152,10 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, detail::var_config::int_type const value)
+	Variable(
+		detail::var_config::name_type name,
+		detail::var_config::int_type const value
+	)
 		: m_type{VARTYPE_INTEGER}
 		, m_name{std::move(name)}
 		, m_intv{value}
@@ -144,7 +164,9 @@ public:
 		Construct nameless @c VARTYPE_INTEGER with value.
 		@param value Value.
 	*/
-	explicit Variable(detail::var_config::int_type const value)
+	explicit Variable(
+		detail::var_config::int_type const value
+	)
 		: m_type{VARTYPE_INTEGER}
 		, m_intv{value}
 	{}
@@ -153,7 +175,10 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, detail::var_config::float_type const value)
+	Variable(
+		detail::var_config::name_type name,
+		detail::var_config::float_type const value
+	)
 		: m_type{VARTYPE_FLOAT}
 		, m_name{std::move(name)}
 		, m_floatv{value}
@@ -162,7 +187,9 @@ public:
 		Construct nameless @c VARTYPE_FLOAT with value.
 		@param value Value.
 	*/
-	explicit Variable(detail::var_config::float_type const value)
+	explicit Variable(
+		detail::var_config::float_type const value
+	)
 		: m_type{VARTYPE_FLOAT}
 		, m_floatv{value}
 	{}
@@ -171,7 +198,10 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(detail::var_config::name_type name, detail::var_config::bool_type const value)
+	Variable(
+		detail::var_config::name_type name,
+		detail::var_config::bool_type const value
+	)
 		: m_type{VARTYPE_BOOL}
 		, m_name{std::move(name)}
 		, m_boolv{value}
@@ -180,7 +210,9 @@ public:
 		Construct nameless @c VARTYPE_BOOL with value.
 		@param value Value.
 	*/
-	explicit Variable(detail::var_config::bool_type const value)
+	explicit Variable(
+		detail::var_config::bool_type const value
+	)
 		: m_type{VARTYPE_BOOL}
 		, m_boolv{value}
 	{}
@@ -196,14 +228,15 @@ public:
 /** @name Operators */ /// @{
 	/**
 		Copy assignment operator.
-		@note #reset() is called if @a other's type and the current type are
-		both unequal and not collections.
+		@note #reset() is called if @a other's type and the current type
+		are both unequal and not collections.
 		@returns @c *this.
 		@param other Variable to copy.
 	*/
 	Variable& operator=(Variable const& other) {
 		if (other.m_type!=m_type
-			&& !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&other.m_type))
+			&& !((VARCLASS_COLLECTION&m_type)
+				&& (VARCLASS_COLLECTION&other.m_type))
 		) {
 			reset();
 		}
@@ -217,7 +250,10 @@ public:
 		case VARTYPE_ARRAY:
 		case VARTYPE_NODE:
 		case VARTYPE_IDENTIFIER:
-			m_children.assign(other.m_children.cbegin(), other.m_children.cend());
+			m_children.assign(
+				other.m_children.cbegin(),
+				other.m_children.cend()
+			);
 			break;
 		default: break;
 		}
@@ -248,25 +284,29 @@ public:
 		Get name.
 		@returns The current name.
 	*/
-	detail::var_config::name_type const& get_name() const { return m_name; }
+	detail::var_config::name_type const& get_name() const
+		{ return m_name; }
 
 	/**
 		Test the variable's type.
 		@returns @c true if @c get_type()==type.
 		@param type Type to test against.
 	*/
-	bool is_type(VariableType const type) const { return (type==m_type); }
+	bool is_type(VariableType const type) const
+		{ return (type==m_type); }
 	/**
 		Test the variable's class.
 		@returns @c true if the variable's type is of @a vclass.
 		@param vclass Variable class to test against.
 	*/
-	bool is_class(VariableClass const vclass) const { return (m_type&vclass); }
+	bool is_class(VariableClass const vclass) const
+		{ return (m_type&vclass); }
 	/**
 		Check if the variable is null.
 		@returns @c is_type(VARTYPE_NULL).
 	*/
-	bool is_null() const { return is_type(VARTYPE_NULL); }
+	bool is_null() const
+		{ return is_type(VARTYPE_NULL); }
 /// @}
 
 /** @name Operations */ /// @{
@@ -308,10 +348,14 @@ public:
 		@param discard_children Whether to discard children (#reset()) when
 		changing between @c VARCLASS_COLLECTION types; @c false by default.
 	*/
-	Variable& morph(VariableType const type, bool const discard_children=false) {
+	Variable& morph(
+		VariableType const type,
+		bool const discard_children=false
+	) {
 		if (type!=m_type) {
 			if (discard_children
-				|| !((VARCLASS_COLLECTION&m_type) && (VARCLASS_COLLECTION&type))
+				|| !((VARCLASS_COLLECTION&m_type)
+					&& (VARCLASS_COLLECTION&type))
 			) {
 				reset();
 			}
@@ -322,9 +366,10 @@ public:
 
 	/**
 		Change type to collection and set children.
-		@note #reset() is called when the type is changed <em>only</em> if the
-		current type is not a collection.
-		@warning An assertion will fail if @a type is nota @c VARCLASS_COLLECTION.
+		@note #reset() is called when the type is changed
+		<em>only</em> if the current type is not a collection.
+		@warning An assertion will fail if @a type is
+		not a @c VARCLASS_COLLECTION.
 		@returns @c *this.
 		@param type New collection type.
 		@param children New child collection.
@@ -380,8 +425,8 @@ public:
 /** @name Comparison */ /// @{
 	/**
 		Name and value equality to another variable.
-		@returns @c true if name and value of @c this and name and value
-		of @a other are equivalent.
+		@returns @c true if name and value
+		of @c this and name and value of @a other are equivalent.
 		@param other Variable to compare against.
 	*/
 	bool equals(Variable const& other) const {
@@ -389,7 +434,8 @@ public:
 	}
 	/**
 		Value equality to another variable.
-		@returns @c true if value of @c this and value of @a other are equivalent.
+		@returns @c true if value of @c this and value
+		of @a other are equivalent.
 		@param other Variable to compare against.
 	*/
 	bool equals_value(Variable const& other) const {
@@ -426,10 +472,11 @@ public:
 			- @c 0 if their children are equal; or
 			- @c compare_value() of the first non-equal pair.
 		- of unequal size:
-			- the difference between the size of @c this and the size of @a other.
+			- the difference between the size of @c this
+			  and the size of @a other.
 
-		For unequal types, the difference between the type of @c this and the
-		type of @a other.
+		For unequal types, the difference between the type
+		of @c this and the type of @a other.
 		@param other Variable to compare against.
 	*/
 	signed compare_value(Variable const& other) const {
@@ -470,9 +517,10 @@ public:
 
 /**
 	@name Value set/get
-	@warning All <em>value</em> get/set functions (except for @c get_as_str() —
-	it has a different rule) are type-strict; an assertion will fail
-	if @c get_type() does not equal:
+	@warning All <em>value</em> get/set
+	functions (except for @c get_as_str() — it has a different rule)
+	are type-strict; an assertion will fail if @c get_type() does not equal:
+
 	-# the type of assignment; or
 	-# the type of retrieval.
 	@{
@@ -505,11 +553,14 @@ public:
 		Get string value.
 		@returns The current string value.
 	*/
-	detail::var_config::string_type get_string() const { DUCT_V_get_value_(); }
+	detail::var_config::string_type get_string() const
+		{ DUCT_V_get_value_(); }
 	/** @copydoc get_string() */
-	detail::var_config::string_type& get_string_ref() { DUCT_V_get_value_(); }
+	detail::var_config::string_type& get_string_ref()
+		{ DUCT_V_get_value_(); }
 	/** @copydoc get_string() */
-	detail::var_config::string_type const& get_string_ref() const { DUCT_V_get_value_(); }
+	detail::var_config::string_type const& get_string_ref() const
+		{ DUCT_V_get_value_(); }
 
 	/** @cond */
 	#undef DUCT_V_TYPE_
@@ -625,8 +676,8 @@ public:
 
 /**
 	@name Child properties and insertion
-	@warning An assertion will fail for all functions defined in this group
-	if @c is_class(VARCLASS_COLLECTION)==false.
+	@warning An assertion will fail for all functions defined in this
+	group if @c is_class(VARCLASS_COLLECTION)==false.
 	@{
 */
 	/**

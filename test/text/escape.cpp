@@ -53,7 +53,11 @@ signed main(signed argc, char* argv[]) {
 		test_equivalent(true, {"\\a"});
 		test_string(false, {"\\a"}, {"\\\\a"});
 		test_string(false, {"\\"}, {"\\\\"});
-		test_string(true, {"\r\n\t,=[]{}\"\'\\z"}, {"\\r\\n\\t\\,\\=\\[\\]\\{\\}\\\"\\\'\\z"});
+		test_string(
+			true,
+			{"\r\n\t,=[]{}\"\'\\z"},
+			{"\\r\\n\\t\\,\\=\\[\\]\\{\\}\\\"\\\'\\z"}
+		);
 	}
 	std::cout.flush();
 	return 0;

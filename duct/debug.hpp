@@ -26,16 +26,16 @@ namespace duct {
 
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 	/**
-		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT macros
-		to be defined (regardless of @c NDEBUG presence).
+		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT
+		macros to be defined (regardless of @c NDEBUG presence).
 	*/
 	#define DUCT_CONFIG_FORCE_DEBUG_MACROS
 #endif
 
 /**
 	@name Non-debug assertion
-	@note These macros mimic @c assert(), and will @c std::abort() the program
-	if @a expr evaluates to @c false.
+	@note These macros mimic @c assert(), and will @c std::abort()
+	the program if @a expr evaluates to @c false.
 	@note These macros are always defined.
 	@sa DUCT_DEBUG_ASSERT(),
 		DUCT_DEBUG_ASSERTF(),
@@ -47,10 +47,16 @@ namespace duct {
 	@param expr Expression to evaluate.
 	@param mesg Message.
 */
-#define DUCT_ASSERT(expr, mesg) \
-	((expr) ? void(0) : (fprintf(stderr, \
-		"assertion failure: " mesg "\n in %s:%d: %s: Assertion: `" #expr "`\n", \
-		__FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+#define DUCT_ASSERT(expr, mesg) ( \
+	(expr) ? void(0) : ( \
+		fprintf( \
+			stderr, "assertion failure: " mesg \
+			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+			__FILE__, __LINE__, DUCT_FUNC_SIG \
+		), \
+		std::abort() \
+	) \
+)
 
 /**
 	Assertion with formatted message.
@@ -58,10 +64,16 @@ namespace duct {
 	@param format Format string.
 	@param ... Format arguments.
 */
-#define DUCT_ASSERTF(expr, format, ...) \
-	((expr) ? void(0) : (fprintf(stderr, \
-		"assertion failure: " format "\n in %s:%d: %s: Assertion: `" #expr "`\n", \
-		__VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG), std::abort()))
+#define DUCT_ASSERTF(expr, format, ...) ( \
+	(expr) ? void(0) : ( \
+		fprintf( \
+			stderr, "assertion failure: " format \
+			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+			__VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG \
+		), \
+		std::abort() \
+	) \
+)
 
 /**
 	Assertion with pointer and message.

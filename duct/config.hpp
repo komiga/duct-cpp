@@ -212,7 +212,8 @@ see @ref index or the accompanying LICENSE file for full text.
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_WINDOWS
 #elif defined(__linux) || defined(linux)
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_LINUX
-#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
+#elif defined(__APPLE__) || defined(MACOSX) || \
+	  defined(macintosh) || defined(Macintosh)
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_MACOS
 #else
 	#error "Unsupported or unrecognized operating system"
@@ -373,29 +374,41 @@ see @ref index or the accompanying LICENSE file for full text.
 	#elif (__GNUC__ == 3) && (__GNUC_MINOR__ == 5)
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_GCC35
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 0)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC40 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC40 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 1)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC41 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC41 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 2)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC42 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC42 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 3)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC43 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC43 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 4)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC44 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC44 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 5)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC45 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC45 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 6)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC46 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC46 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 7)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC47 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC47 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC48 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC48 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 9)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC49 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC49 | DUCT_GCC_FLAG_EXTRA__)
 	#elif (__GNUC__ == 5) && (__GNUC_MINOR__ == 0)
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC50 | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC50 | DUCT_GCC_FLAG_EXTRA__)
 	#else
-		#define DUCT_COMPILER (DUCT_FLAG_COMPILER_GCC | DUCT_GCC_FLAG_EXTRA__)
+		#define DUCT_COMPILER \
+			(DUCT_FLAG_COMPILER_GCC | DUCT_GCC_FLAG_EXTRA__)
 	#endif
 #endif // compiler tree
 

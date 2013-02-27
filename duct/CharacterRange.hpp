@@ -193,8 +193,8 @@ public:
 		- @c str.cend() if the sequence had no matching code points.
 		@tparam StringT String type; inferred from @a str.
 		@param str String to search.
-		@param pos Start iterator. Behavior is undefined if this does not point
-		to the lead unit for a code unit sequence.
+		@param pos Start iterator. Behavior is undefined if this does not
+		point to the lead unit for a code unit sequence.
 	*/
 	template<
 		class StringT,
