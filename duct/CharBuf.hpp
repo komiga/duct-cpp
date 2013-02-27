@@ -161,12 +161,14 @@ public:
 /** @name Extraction */ /// @{
 	/**
 		Convert buffer to a string.
-		@returns Cache string converted to @a StringT.
+		@note The explicit u8string-returning to_string() is more efficient if
+		the buffer is often needed as a string.
+		@returns Buffer converted to @a StringT.
 		@tparam StringT String type to convert to. Encoding is inferred from
 		the type's character size.
 	*/
 	template<class StringT>
-	StringT to_string() {
+	StringT to_string() const {
 		StringT str;
 		StringUtils::convert<UTF32Utils>(
 			str, m_buffer.cbegin(), m_buffer.cend(), true
@@ -175,6 +177,9 @@ public:
 	}
 	/**
 		Convert buffer to a @c u8string.
+		@note This will cache the current buffer as a u8string if needed. It is
+		more efficient to use this than it is to directly convert to other
+		string types.
 		@returns Cache string.
 	*/
 	u8string to_string() {
@@ -182,12 +187,14 @@ public:
 	}
 	/**
 		Convert buffer to a string (by-ref).
+		@note The explicit u8string-returning to_string() is more efficient if
+		the buffer is often needed as a string.
 		@param[out] str Output string.
 		@param append Whether to append to @a str; defaults to @c false
 		(@a str is cleared on entry).
 	*/
 	template<class StringT>
-	void to_string(StringT& str, bool append=false) {
+	void to_string(StringT& str, bool const append=false) const {
 		StringUtils::convert<UTF32Utils>(
 			str, m_buffer.cbegin(), m_buffer.cend(), append
 		);
@@ -198,7 +205,7 @@ public:
 		@note @a value is guaranteed to be equal to @c T() if extraction failed.
 		@returns
 		- @c true if the buffer was convertible to @a T (@a value is set); or
-		- @c false otherwise (@a value equals @c T(0)).
+		- @c false otherwise (@a value equals @c T()).
 		@tparam T An arithmetic type; inferred from @a value.
 		@param[out] value Output value.
 	*/
