@@ -22,11 +22,11 @@ namespace detail {
 
 /**
 	@addtogroup text
-	@ingroup traits
 	@{
 */
 
 /**
+	@ingroup traits
 	String type traits.
 	@note @c std::wstring will get either UTF-16 or UTF-32 @c EncodingUtils
 	depending on the system; @c u16string and @c u32string should be used when
