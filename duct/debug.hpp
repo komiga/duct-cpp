@@ -26,6 +26,7 @@ namespace duct {
 
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 	/**
+		@ingroup config
 		When defined, force all #DUCT_DEBUG and #DUCT_DEBUG_ASSERT
 		macros to be defined (regardless of @c NDEBUG presence).
 	*/

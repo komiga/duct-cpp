@@ -24,6 +24,7 @@ namespace duct {
 #ifdef DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
 /**
+	@ingroup config
 	When defined, force using the C++11 @c char16_t and @c char32_t types
 	instead of @c uint16_t and @c uint32_t for the char16 and char32
 	typedefs.
@@ -32,6 +33,7 @@ namespace duct {
 #define DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES
 
 /**
+	@ingroup config
 	Defined when the proper C++11 @c char16_t and @c char32_t types are used
 	for @c char16 and @c char32.
 	@note This is always defined when #DUCT_CONFIG_FORCE_CPP11_CHAR_TYPES

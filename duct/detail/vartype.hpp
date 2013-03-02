@@ -121,6 +121,7 @@ namespace detail {
 
 #ifndef DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES
 	/**
+		@ingroup config
 		Whether to use 64-bit and double-precision for VARTYPE_INTEGER and
 		VARTYPE_FLOAT, respectively.
 		@note Defaults to 0.
