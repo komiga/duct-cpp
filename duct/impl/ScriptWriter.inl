@@ -8,14 +8,14 @@ see @ref index or the accompanying LICENSE file for full text.
 
 namespace {
 static CharacterSet const
-	g_set_number_inner{"0-9."},
-	g_set_number_front{"0-9.\\-+"},
-	g_set_req_quotation{"\n\t ,=[]{}\"\'"};
+	s_set_number_inner{"0-9."},
+	s_set_number_front{"0-9.\\-+"},
+	s_set_req_quotation{"\n\t ,=[]{}\"\'"};
 static char const
-	*const g_esc_quotes_alone[]{"\"\'", "\"\'"},
-	*const g_esc_whitespace[]{"\n\r\t\"\'", "nrt\"\'"},
-	*const g_esc_control[]{",=[]{}\"\'", ",=[]{}\"\'"},
-	*const g_esc_all[]{"\n\r\t,=[]{}\"\'", "nrt,=[]{}\"\'"};
+	*const s_esc_quotes_alone[]{"\"\'", "\"\'"},
+	*const s_esc_whitespace[]{"\n\r\t\"\'", "nrt\"\'"},
+	*const s_esc_control[]{",=[]{}\"\'", ",=[]{}\"\'"},
+	*const s_esc_all[]{"\n\r\t,=[]{}\"\'", "nrt,=[]{}\"\'"};
 } // anonymous namespace
 
 // class ScriptWriter implementation
@@ -68,24 +68,24 @@ bool ScriptWriter::write_string(
 		// Empty string must be quoted
 		|| str.empty()
 		// Whitespace and control characters require quotation
-		||(str.cend()!=g_set_req_quotation.find(str, str.cbegin()))
+		||(str.cend()!=s_set_req_quotation.find(str, str.cbegin()))
 		// If parseable as a number token, must be quoted
 		||(
-			g_set_number_inner.sequence_matches<StringU>(
+			s_set_number_inner.sequence_matches<StringU>(
 				dec_iter, str.cend())
 			&& (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str)
-				&& g_set_number_front.contains(first_cp)))
+				&& s_set_number_front.contains(first_cp)))
 	;
 	StringUtils::EscapeablePair esc_pair;
 	auto const& str_esc_pair=
 		(add_quotation
 			? (m_flags&DSWF_ESCAPE_WHITESPACE
 				// Whitespace is always escaped
-				? g_esc_whitespace
+				? s_esc_whitespace
 				// Don't have to escape control characters when quoted
-				: g_esc_quotes_alone)
+				: s_esc_quotes_alone)
 			// Everything must be escaped
-			: (g_esc_all)
+			: (s_esc_all)
 		);
 	esc_pair.first=str_esc_pair[0]; esc_pair.second=str_esc_pair[1];
 	StringT normalized;

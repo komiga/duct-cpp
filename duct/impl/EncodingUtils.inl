@@ -57,7 +57,7 @@ see @ref index or the accompanying LICENSE file for full text.
 */
 
 namespace {
-static uint8_t const g_utf8_trailing[256]{
+static uint8_t const s_utf8_trailing[256]{
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -81,7 +81,7 @@ RandomAccessIt UTF8Utils::decode(
 		0x03C82080, 0xFA082080, 0x82082080
 	};
 	unsigned const trailing_units
-		=static_cast<uint8_t>(g_utf8_trailing[static_cast<char8_strict>(*pos)]);
+		=static_cast<uint8_t>(s_utf8_trailing[static_cast<char8_strict>(*pos)]);
 	if (end>pos+trailing_units) {
 		output=0;
 		switch (trailing_units) {
@@ -176,13 +176,13 @@ RandomAccessIt UTF8Utils::prev(
 inline unsigned UTF8Utils::required_first(
 	char_type const first
 ) {
-	return g_utf8_trailing[static_cast<char8_strict>(first)];
+	return s_utf8_trailing[static_cast<char8_strict>(first)];
 }
 
 inline unsigned UTF8Utils::required_first_whole(
 	char_type const first
 ) {
-	return 1u+g_utf8_trailing[static_cast<char8_strict>(first)];
+	return 1u+s_utf8_trailing[static_cast<char8_strict>(first)];
 }
 
 inline unsigned UTF8Utils::required(

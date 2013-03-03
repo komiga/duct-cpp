@@ -26,9 +26,9 @@ namespace VariableUtils {
 
 namespace {
 static detail::string_traits<detail::var_config::string_type>::char_type const
-	g_sv_false[]{"false"},
-	g_sv_true[]{"true"},
-	g_sv_null[]{"null"}
+	s_sv_false[]{"false"},
+	s_sv_true[]{"true"},
+	s_sv_null[]{"null"}
 ;
 } // anonymous namespace
 
@@ -46,11 +46,11 @@ void convert_typed(
 	Variable& var,
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(g_sv_false)) {
+	if (0==value.compare(s_sv_false)) {
 		var.morph(false);
-	} else if (0==value.compare(g_sv_true)) {
+	} else if (0==value.compare(s_sv_true)) {
 		var.morph(true);
-	} else if (0==value.compare(g_sv_null)) {
+	} else if (0==value.compare(s_sv_null)) {
 		var.nullify();
 	} else {
 		var.morph(std::move(value));
@@ -71,11 +71,11 @@ void convert_typed(
 Variable convert_typed(
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(g_sv_false)) {
+	if (0==value.compare(s_sv_false)) {
 		return Variable(false);
-	} else if (0==value.compare(g_sv_true)) {
+	} else if (0==value.compare(s_sv_true)) {
 		return Variable(true);
-	} else if (0==value.compare(g_sv_null)) {
+	} else if (0==value.compare(s_sv_null)) {
 		return Variable(VARTYPE_NULL);
 	} else {
 		return Variable(std::move(value));
@@ -98,11 +98,11 @@ Variable convert_typed(
 	detail::var_config::name_type name,
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(g_sv_false)) {
+	if (0==value.compare(s_sv_false)) {
 		return Variable(std::move(name), false);
-	} else if (0==value.compare(g_sv_true)) {
+	} else if (0==value.compare(s_sv_true)) {
 		return Variable(std::move(name), true);
-	} else if (0==value.compare(g_sv_null)) {
+	} else if (0==value.compare(s_sv_null)) {
 		return Variable(std::move(name), VARTYPE_NULL);
 	} else {
 		return Variable(std::move(name), std::move(value));

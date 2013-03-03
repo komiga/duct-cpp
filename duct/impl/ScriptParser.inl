@@ -73,19 +73,19 @@ char const* get_token_name(Token const& token) {
 }
 
 static CharacterSet const
-	g_set_whitespace{"\t "},
-	g_set_sign{"\\-+"},
-	g_set_numeral{"0-9"},
-	// Linefeed, g_set_whitespace, and functors
-	g_set_terminator{"\n\t ,=[]{}"};
-static StringUtils::EscapeablePair const g_esc_pair{
+	s_set_whitespace{"\t "},
+	s_set_sign{"\\-+"},
+	s_set_numeral{"0-9"},
+	// Linefeed, s_set_whitespace, and functors
+	s_set_terminator{"\n\t ,=[]{}"};
+static StringUtils::EscapeablePair const s_esc_pair{
 	"\n\r\t,=[]{}\"\'\\",
 	"nrt,=[]{}\"\'\\"
 };
 
-static char32 const g_lit_true[]{'t','r','u','e'};
-static char32 const g_lit_false[]{'f','a','l','s','e'};
-static char32 const g_lit_null[]{'n','u','l','l'};
+static char32 const s_lit_true[]{'t','r','u','e'};
+static char32 const s_lit_false[]{'f','a','l','s','e'};
+static char32 const s_lit_null[]{'n','u','l','l'};
 } // anonymous namespace
 
 #define DUCT_SP_THROW__(fmt_) \
@@ -175,7 +175,7 @@ void ScriptParser::finish() {
 }
 
 void ScriptParser::skip_whitespace() {
-	while (CHAR_EOF!=m_curchar && g_set_whitespace.contains(m_curchar)) {
+	while (CHAR_EOF!=m_curchar && s_set_whitespace.contains(m_curchar)) {
 		next_char();
 	}
 }
@@ -266,7 +266,7 @@ void ScriptParser::discern_token() {
 	// depending on first character
 	default:
 		m_token.set_type(
-			(g_set_numeral.contains(m_curchar))
+			(s_set_numeral.contains(m_curchar))
 			? TOK_INTEGER
 			: TOK_STRING
 		);
@@ -298,13 +298,13 @@ void ScriptParser::read_token() {
 		read_tok_floating();
 		break;
 	case TOK_LITERAL_TRUE:
-		read_tok_literal(g_lit_true, 4u);
+		read_tok_literal(s_lit_true, 4u);
 		break;
 	case TOK_LITERAL_FALSE:
-		read_tok_literal(g_lit_false, 5u);
+		read_tok_literal(s_lit_false, 5u);
 		break;
 	case TOK_LITERAL_NULL:
-		read_tok_literal(g_lit_null, 4u);
+		read_tok_literal(s_lit_null, 4u);
 		break;
 
 	// Scope/functors
@@ -342,12 +342,12 @@ void ScriptParser::read_token() {
 	// signs or periods
 	switch (m_token.get_type()) {
 	case TOK_INTEGER:
-		if (m_token.get_buffer().compare(g_set_sign)) {
+		if (m_token.get_buffer().compare(s_set_sign)) {
 			m_token.set_type(TOK_STRING);
 		}
 		break;
 	case TOK_FLOATING:
-		if (m_token.get_buffer().compare(g_set_sign) ||
+		if (m_token.get_buffer().compare(s_set_sign) ||
 			m_token.get_buffer().compare(CHAR_DECIMALPOINT)
 		) {
 			m_token.set_type(TOK_STRING);
@@ -521,10 +521,10 @@ void ScriptParser::read_tok_integer() {
 				read_tok_string();
 				return;
 			}
-		} else if (g_set_terminator.contains(m_curchar)) {
+		} else if (s_set_terminator.contains(m_curchar)) {
 			// Single terminators
 			break;
-		} else if (g_set_numeral.contains(m_curchar)) {
+		} else if (s_set_numeral.contains(m_curchar)) {
 			m_token.get_buffer().push_back(m_curchar);
 		} else if (CHAR_DECIMALPOINT==m_curchar) {
 			m_token.get_buffer().push_back(m_curchar);
@@ -554,10 +554,10 @@ void ScriptParser::read_tok_floating() {
 				read_tok_string();
 				return;
 			}
-		} else if (g_set_terminator.contains(m_curchar)) {
+		} else if (s_set_terminator.contains(m_curchar)) {
 			// Single terminators
 			break;
-		} else if (g_set_numeral.contains(m_curchar)) {
+		} else if (s_set_numeral.contains(m_curchar)) {
 			m_token.get_buffer().push_back(m_curchar);
 		} else {
 			m_token.set_type(TOK_STRING);
@@ -578,7 +578,7 @@ void ScriptParser::read_tok_literal(
 			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (
 			// Single terminators
-			g_set_terminator.contains(m_curchar) ||
+			s_set_terminator.contains(m_curchar) ||
 			// Comment or comment block terminate
 			(CHAR_SLASH==m_curchar
 			&& (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar))
@@ -608,7 +608,7 @@ void ScriptParser::read_tok_string() {
 			DUCT_SP_THROW__("Unexpected quotation mark");
 		} else if (CHAR_BACKSLASH==m_curchar) {
 			char32 const cp
-				=StringUtils::get_escape_char(next_char(), g_esc_pair);
+				=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -619,7 +619,7 @@ void ScriptParser::read_tok_string() {
 			}
 		} else if (
 			// Single terminators
-			g_set_terminator.contains(m_curchar) ||
+			s_set_terminator.contains(m_curchar) ||
 			// Comment or comment block terminate
 			(CHAR_SLASH==m_curchar
 			&& (CHAR_SLASH==peek_char() || CHAR_ASTERISK==m_peekchar))
@@ -640,7 +640,7 @@ void ScriptParser::read_tok_string_quoted() {
 			DUCT_SP_THROW__("Encountered EOF whilst reading quoted string");
 		} else if (CHAR_BACKSLASH==m_curchar) {
 			char32 const cp
-				=StringUtils::get_escape_char(next_char(), g_esc_pair);
+				=StringUtils::get_escape_char(next_char(), s_esc_pair);
 			if (CHAR_EOF==m_curchar || CHAR_NEWLINE==m_curchar) {
 				DUCT_SP_THROW__("Expected escape sequence, got EOL/EOF");
 			} else if (CHAR_NULL==cp) {
@@ -655,7 +655,7 @@ void ScriptParser::read_tok_string_quoted() {
 			}
 			if (CHAR_NEWLINE==m_curchar) {
 				eol_reached=true;
-			} else if (eol_reached && !g_set_whitespace.contains(m_curchar)) {
+			} else if (eol_reached && !s_set_whitespace.contains(m_curchar)) {
 				eol_reached=false;
 				m_token.get_buffer().push_back(m_curchar);
 			}
