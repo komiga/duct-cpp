@@ -13,7 +13,7 @@ signed main() {
 	std::cout
 		<<"size: "<<buf.get_size()<<'\n'
 		<<"capacity: "<<buf.get_capacity()<<'\n'
-		<<"cache: \""<<buf.to_string()<<'\"\n'
+		<<"cache: \""<<buf.to_string()<<"\"\n"
 		<<"str: \""<<buf.to_string<duct::u8string>()<<"\"\n"
 	; std::cout.flush();
 
