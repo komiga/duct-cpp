@@ -1,8 +1,3 @@
--- duct++ tests premake file
-
---[[if _ACTION=="clean" then
-	os.rmdir(outpath)
-end]]
 
 newoption {
 	trigger="clang",
@@ -25,35 +20,45 @@ function setup_test(name, src)
 	local proj=project(group.."_"..name)
 	proj.language="C++"
 	proj.kind="ConsoleApp"
-	
+
 	targetname(name)
-	
+
 	configuration {"debug"}
 		defines {"DEBUG", "_DEBUG"}
 		flags {"ExtraWarnings", "Symbols"}
-	
+
 	configuration {"release"}
 		defines {"NDEBUG"}
 		flags {"ExtraWarnings", "Optimize"}
-	
+
 	configuration {"linux"}
 		buildoptions {
+			"-pedantic-errors",
+			"-Werror",
 			"-Wextra",
-			"-Wunused-parameter",
+
 			"-Wuninitialized",
+			"-Winit-self",
+
 			"-Wmissing-field-initializers",
 			"-Wredundant-decls",
-			"-Wfloat-equal"
-		}
-		buildoptions {"-std=c++0x", "-pedantic"}
-	
-	configuration {"linux" and "clang"}
-		buildoptions {"-stdlib=libstdc++"}
 
-	configuration {"clang"}
-		links {
-			"stdc++"
+			"-Wfloat-equal",
+			"-Wold-style-cast",
+
+			"-Wnon-virtual-dtor",
+			"-Woverloaded-virtual",
+
+			"-Wunused"
 		}
+
+	configuration {"linux", "not clang"}
+		buildoptions {"-std=c++0x"}
+
+	configuration {"linux", "clang"}
+		buildoptions {"-std=c++11"}
+		buildoptions {"-stdlib=libstdc++"}
+		links {"stdc++"}
 
 	configuration {}
 		targetdir(".")
@@ -80,4 +85,3 @@ if _ACTION=="clean" then
 		os.rmdir(prj.basedir.."/out")
 	end
 end
-
