@@ -50,7 +50,7 @@ namespace duct {
 */
 #define DUCT_ASSERT(expr, mesg) ( \
 	(expr) ? void(0) : ( \
-		fprintf( \
+		std::fprintf( \
 			stderr, "assertion failure: " mesg \
 			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
 			__FILE__, __LINE__, DUCT_FUNC_SIG \
@@ -67,7 +67,7 @@ namespace duct {
 */
 #define DUCT_ASSERTF(expr, format, ...) ( \
 	(expr) ? void(0) : ( \
-		fprintf( \
+		std::fprintf( \
 			stderr, "assertion failure: " format \
 			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
 			__VA_ARGS__, __FILE__, __LINE__, DUCT_FUNC_SIG \
@@ -213,17 +213,17 @@ namespace duct {
 	
 	// Debug
 	#define DUCT_DEBUG(mesg) \
-		printf(DUCT_DEBUG_PREFIX__ mesg "\n")
+		std::printf(DUCT_DEBUG_PREFIX__ mesg "\n")
 	
 	#define DUCT_DEBUGF(format, ...) \
-		printf(DUCT_DEBUG_PREFIX__ format "\n", __VA_ARGS__)
+		std::printf(DUCT_DEBUG_PREFIX__ format "\n", __VA_ARGS__)
 	
 	// - no newline
 	#define DUCT_DEBUGN(mesg) \
-		printf(DUCT_DEBUG_PREFIX__ mesg)
+		std::printf(DUCT_DEBUG_PREFIX__ mesg)
 	
 	#define DUCT_DEBUGNF(format, ...) \
-		printf(DUCT_DEBUG_PREFIX__ format, __VA_ARGS__)
+		std::printf(DUCT_DEBUG_PREFIX__ format, __VA_ARGS__)
 	
 	// - signature
 	#define DUCT_DEBUGC(mesg) \
