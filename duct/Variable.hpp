@@ -459,7 +459,7 @@ public:
 
 	/**
 		Value comparison to another variable.
-		@remark Two empty collections of the same type will be equal.
+		@remarks Two empty collections of the same type will be equal.
 		@returns
 
 		For @c VARCLASS_VALUE types:
