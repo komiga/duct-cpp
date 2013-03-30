@@ -40,64 +40,66 @@ enum class Endian : unsigned {
 
 /** @cond INTERNAL */
 namespace {
-	// Can't do partial template function specialization (grumble grumble);
-	// using a struct instead for the sneaky magics
-	template<typename T, std::size_t size_=sizeof(T)>
-	struct bs_impl;
 
-	// Convenience
-	template<typename T>
-	struct bs_impl<T, 1> {
-		static constexpr T swap(T value) {
-			return value;
-		}
-	};
+// Can't do partial template function specialization
+// (grumble grumble)
+template<typename T, std::size_t=sizeof(T)>
+struct bs_impl;
 
-	// Specialize for floating-point types
-	template<>
-	struct bs_impl<float> {
-		static float swap(float value) {
-			char& b=reinterpret_cast<char&>(value);
-			std::reverse(&b, &b+sizeof(float));
-			return value;
-		}
-	};
+// Convenience
+template<typename T>
+struct bs_impl<T, 1> {
+	static constexpr T swap(T value) {
+		return value;
+	}
+};
 
-	// *long* double, you say? Never heard of such an arcane thing!
-	template<>
-	struct bs_impl<double> {
-		static double swap(double value) {
-			char& b=reinterpret_cast<char&>(value);
-			std::reverse(&b, &b+sizeof(double));
-			return value;
-		}
-	};
+// Specialize for floating-point types
+template<>
+struct bs_impl<float> {
+	static float swap(float value) {
+		char& b=reinterpret_cast<char&>(value);
+		std::reverse(&b, &b+sizeof(float));
+		return value;
+	}
+};
 
-	// NB: These cannot be constexpr; the bswap macros can potentially
-	// use asm instructions
-	template<typename T>
-	struct bs_impl<T, 2> {
-		static T swap(T value) {
-			return static_cast<T>(
-				bswap_16(reinterpret_cast<uint16_t&>(value)));
-		}
-	};
+// *long* double, you say? Never heard of such an arcane thing!
+template<>
+struct bs_impl<double> {
+	static double swap(double value) {
+		char& b=reinterpret_cast<char&>(value);
+		std::reverse(&b, &b+sizeof(double));
+		return value;
+	}
+};
 
-	template<typename T>
-	struct bs_impl<T, 4> {
-		static T swap(T value) {
-			return static_cast<T>(
-				bswap_32(reinterpret_cast<uint32_t&>(value)));
-		}
-	};
+// NB: These cannot be constexpr; the bswap macros can potentially
+// use asm instructions
+template<typename T>
+struct bs_impl<T, 2> {
+	static T swap(T value) {
+		return static_cast<T>(
+			bswap_16(reinterpret_cast<uint16_t&>(value)));
+	}
+};
 
-	template<typename T>
-	struct bs_impl<T, 8> {
-		static T swap(T value) {
-			return static_cast<T>(
-				bswap_64(reinterpret_cast<uint64_t&>(value)));
-		}
-	};
+template<typename T>
+struct bs_impl<T, 4> {
+	static T swap(T value) {
+		return static_cast<T>(
+			bswap_32(reinterpret_cast<uint32_t&>(value)));
+	}
+};
+
+template<typename T>
+struct bs_impl<T, 8> {
+	static T swap(T value) {
+		return static_cast<T>(
+			bswap_64(reinterpret_cast<uint64_t&>(value)));
+	}
+};
+
 } // anonymous namespace
 /** @endcond */ // INTERNAL
 
@@ -109,7 +111,10 @@ namespace {
 */
 template<typename T>
 inline T byte_swap(T value) {
-	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
+	static_assert(
+		std::is_arithmetic<T>::value,
+		"T must be an arithmetic type"
+	);
 	return bs_impl<T, sizeof(T)>::swap(value);
 }
 
