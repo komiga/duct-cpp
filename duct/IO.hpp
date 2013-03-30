@@ -226,7 +226,7 @@ void read_arithmetic_array(
 	Endian const endian=Endian::SYSTEM
 ) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-	if (0<count) {
+	if (0u<count) {
 		stream.read(reinterpret_cast<char*>(dest), sizeof(T)*count);
 		if (Endian::SYSTEM!=endian && 1u!=sizeof(T)) {
 			for (std::size_t idx=0u; count>idx; ++idx) {
@@ -275,8 +275,8 @@ void write_arithmetic_array(
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	enum {BUFFER_SIZE=64u};
 	T flipbuf[BUFFER_SIZE];
-	if (count) {
-		if (Endian::SYSTEM!=endian && 1u!=sizeof(T)) {
+	if (0u<count) {
+		if (Endian::SYSTEM!=endian && 1u<sizeof(T)) {
 			unsigned chunk;
 			unsigned idx;
 			for (chunk=0u; count>chunk; chunk+=idx) {
@@ -284,7 +284,7 @@ void write_arithmetic_array(
 					flipbuf[idx]=byte_swap(src[chunk+idx]);
 				}
 				stream.write(
-					reinterpret_cast<char const*>(src),
+					reinterpret_cast<char const*>(flipbuf),
 					sizeof(T)*idx
 				);
 				if (!stream.good()) {
