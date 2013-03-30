@@ -67,8 +67,8 @@ namespace duct {
 #define DUCT_ASSERTE(expr) ( \
 	(expr) ? void(0) : ( \
 		std::fprintf( \
-			stderr, \
-			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+			stderr, "assertion failure "\
+			"in %s:%d: %s: `" #expr "`\n", \
 			__FILE__, __LINE__, DUCT_FUNC_SIG \
 		), \
 		std::abort() \
