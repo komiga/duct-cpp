@@ -126,7 +126,7 @@ std::size_t size(
 			DUCT_DEBUG("duct::IO::size: -1==original");
 		}
 	}
-	return 0;
+	return 0u;
 }
 
 /** @} */ // end of name-group Utilities
@@ -221,15 +221,15 @@ inline T read_arithmetic(
 template<typename T>
 void read_arithmetic_array(
 	std::istream& stream,
-	T* dest,
+	T* const dest,
 	std::size_t const count,
 	Endian const endian=Endian::SYSTEM
 ) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
 	if (0<count) {
 		stream.read(reinterpret_cast<char*>(dest), sizeof(T)*count);
-		if (Endian::SYSTEM!=endian && 1!=sizeof(T)) {
-			for (unsigned idx=0; count>idx; ++idx) {
+		if (Endian::SYSTEM!=endian && 1u!=sizeof(T)) {
+			for (std::size_t idx=0u; count>idx; ++idx) {
 				byte_swap_ref(dest[idx]);
 			}
 		}
@@ -273,23 +273,30 @@ void write_arithmetic_array(
 	Endian const endian=Endian::SYSTEM
 ) {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic");
-	enum {BUFFER_SIZE=32u};
+	enum {BUFFER_SIZE=64u};
 	T flipbuf[BUFFER_SIZE];
 	if (count) {
-		if (Endian::SYSTEM!=endian && 1!=sizeof(T)) {
-			unsigned chunk, idx;
-			for (chunk=0; count>chunk; chunk+=idx) {
-				for (idx=0; BUFFER_SIZE>idx && count>chunk+idx; ++idx) {
+		if (Endian::SYSTEM!=endian && 1u!=sizeof(T)) {
+			unsigned chunk;
+			unsigned idx;
+			for (chunk=0u; count>chunk; chunk+=idx) {
+				for (idx=0u; BUFFER_SIZE>idx && count>chunk+idx; ++idx) {
 					flipbuf[idx]=byte_swap(src[chunk+idx]);
 				}
-				stream.write(reinterpret_cast<char const*>(src), sizeof(T)*idx);
+				stream.write(
+					reinterpret_cast<char const*>(src),
+					sizeof(T)*idx
+				);
 				if (!stream.good()) {
 					DUCT_DEBUG("write_arithmetic: !stream.good()");
 					return;
 				}
 			}
 		} else {
-			stream.write(reinterpret_cast<char const*>(src), sizeof(T)*count);
+			stream.write(
+				reinterpret_cast<char const*>(src),
+				sizeof(T)*count
+			);
 		}
 	}
 }
@@ -315,7 +322,7 @@ struct rchar_defs {
 
 template<
 	class DefsT,
-	std::size_t size_=DefsT::char_size
+	std::size_t=DefsT::char_size
 >
 struct rchar_impl {
 	static char32 read_char(
@@ -329,12 +336,12 @@ struct rchar_impl {
 			*next;
 		unsigned amt;
 		char32 cp;
-		IO::read_arithmetic(stream, buffer[0], endian);
+		IO::read_arithmetic(stream, buffer[0u], endian);
 		if (!stream.good()) {
 			//DUCT_DEBUG("rchar_impl<(defaults)>::read: !stream.good()");
 			return replacement;
 		}
-		amt=DefsT::from_utils::required_first(buffer[0]);
+		amt=DefsT::from_utils::required_first(buffer[0u]);
 		if (amt) {
 			IO::read_arithmetic_array(stream, buffer+1u, amt, endian);
 			if (!stream.good()) {
@@ -358,7 +365,7 @@ struct rchar_impl {
 
 // Specialize for UTF-32
 template<class DefsT>
-struct rchar_impl<DefsT, 4> {
+struct rchar_impl<DefsT, 4u> {
 	static char32 read_char(
 		std::istream& stream,
 		char32 const replacement,
@@ -417,7 +424,7 @@ struct wchar_defs {
 
 template<
 	class DefsT,
-	std::size_t size_=DefsT::char_size
+	std::size_t=DefsT::char_size
 >
 struct wchar_impl {
 	static std::size_t write_char(
@@ -429,7 +436,7 @@ struct wchar_impl {
 	) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
-				return 0;
+				return 0u;
 			} else {
 				cp=replacement;
 			}
@@ -443,11 +450,11 @@ struct wchar_impl {
 		if (out_iter==out_buffer) {
 			DUCT_DEBUG(
 				"wchar_impl<(def)>::write: out_iter==out_buffer; curious!");
-			return 0;
+			return 0u;
 		} else {
 			unsigned idx, amt=(out_iter-out_buffer);
 			if (Endian::SYSTEM!=endian && 1u!=DefsT::char_size) {
-				for (idx=0; amt>idx; ++idx) {
+				for (idx=0u; amt>idx; ++idx) {
 					byte_swap_ref(out_buffer[idx]);
 				}
 			}
@@ -464,7 +471,7 @@ struct wchar_impl {
 
 // Specialize for UTF-32
 template<class DefsT>
-struct wchar_impl<DefsT, 4> {
+struct wchar_impl<DefsT, 4u> {
 	static std::size_t write_char(
 		std::ostream& stream, char32 cp,
 		unsigned const num,
@@ -473,7 +480,7 @@ struct wchar_impl<DefsT, 4> {
 	) {
 		if (!DUCT_UNI_IS_CP_VALID(cp)) {
 			if (CHAR_NULL==replacement || !DUCT_UNI_IS_CP_VALID(replacement)) {
-				return 0;
+				return 0u;
 			} else {
 				cp=replacement;
 			}
@@ -509,15 +516,15 @@ template<
 inline std::size_t write_char(
 	std::ostream& stream,
 	char32 const cp,
-	unsigned const num=1,
+	unsigned const num=1u,
 	char32 const replacement=CHAR_NULL,
 	Endian const endian=Endian::SYSTEM
 ) {
-	if (0<num) {
+	if (0u<num) {
 		return wchar_impl<DefsT>
 			::write_char(stream, cp, num, replacement, endian);
 	} else {
-		return 0;
+		return 0u;
 	}
 }
 
@@ -570,15 +577,15 @@ void read_string(
 	typename DefsT::from_utils::char_type
 		// Extra space to easily deal with incomplete sequences (0<offset)
 		// instead of doing a bunch of subtraction
-		buffer[DefsT::BUFFER_SIZE+6],
+		buffer[DefsT::BUFFER_SIZE+6u],
 		*end, *iter, *next;
 	typename DefsT::to_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
 		*out_iter=out_buffer;
-	unsigned offset=0, amt;
+	unsigned offset=0u, amt;
 	char32 cp;
 	value.clear();
-	while (0<size) {
+	while (0u<size) {
 		amt=DefsT::BUFFER_SIZE<size ? DefsT::BUFFER_SIZE : size;
 		IO::read(stream, buffer+offset, amt*DefsT::from_utils::char_size);
 		if (!stream.good()) {
@@ -586,12 +593,12 @@ void read_string(
 			break;
 		}
 		end=buffer+offset+amt;
-		if (Endian::SYSTEM!=endian && 1!=DefsT::from_utils::char_size) {
+		if (Endian::SYSTEM!=endian && 1u!=DefsT::from_utils::char_size) {
 			for (iter=buffer+offset; end>iter; ++iter) {
 				byte_swap_ref(*iter);
 			}
 		}
-		offset=0;
+		offset=0u;
 		for (iter=buffer; end>iter; iter=next) {
 			next=DefsT::from_utils::decode(iter, end, cp, replacement);
 			if (next==iter) { // Incomplete sequence
@@ -602,13 +609,13 @@ void read_string(
 			}
 			out_iter=DefsT::to_utils::encode(cp, out_iter, replacement);
 			// Prevent output overrun
-			if (DefsT::BUFFER_SIZE<=6+(out_iter-out_buffer)) {
+			if (DefsT::BUFFER_SIZE<=6u+(out_iter-out_buffer)) {
 				value.append(out_buffer, out_iter);
 				out_iter=out_buffer;
 			}
 		}
 		size-=amt;
-		if (0!=offset) { // Handle incomplete sequence
+		if (0u!=offset) { // Handle incomplete sequence
 			DUCT_DEBUGF(
 				"read_string: ics - pos: %lu offset: %u iter: 0x%X left: %lu",
 				static_cast<unsigned long>(next-buffer),
@@ -616,7 +623,7 @@ void read_string(
 				*next,
 				static_cast<unsigned long>(size)
 			);
-			if (0>=size) {
+			if (0u>=size) {
 				// No sense pushing back if there's no more data to read
 				break;
 			} else {
@@ -630,10 +637,10 @@ void read_string(
 		DUCT_DEBUG("read_string: flush out_buffer");
 		value.append(out_buffer, out_iter);
 	}
-	if (0!=offset && CHAR_NULL!=replacement) {
+	if (0u!=offset && CHAR_NULL!=replacement) {
 		// End of specified size with a trailing incomplete sequence
 		DUCT_DEBUG("read_string: eos with trailing ics");
-		value.append(1, replacement);
+		value.append(1u, replacement);
 	} else {
 		DUCT_DEBUGF("read_string: eos; offset: %u size: %lu replacement: 0x%X",
 			offset, static_cast<unsigned long>(size), replacement);
@@ -671,14 +678,14 @@ void read_string_copy(
 		*out_iter;
 	unsigned amt;
 	value.clear();
-	while (0<size) {
+	while (0u<size) {
 		amt=DefsT::BUFFER_SIZE<size ? DefsT::BUFFER_SIZE : size;
 		IO::read(stream, out_buffer, amt*DefsT::from_utils::char_size);
 		if (!stream.good()) {
 			DUCT_DEBUG("read_string_copy: !stream.good()");
 			return;
 		}
-		if (Endian::SYSTEM!=endian && 1!=DefsT::from_utils::char_size) {
+		if (Endian::SYSTEM!=endian && 1u!=DefsT::from_utils::char_size) {
 			for (out_iter=out_buffer; out_buffer+amt>out_iter; ++out_iter) {
 				byte_swap_ref(*out_iter);
 			}
@@ -735,7 +742,7 @@ std::size_t write_string(
 		*out_iter=out_buffer;
 	typename DefsT::string_type::const_iterator
 		in_iter, in_next;
-	std::size_t units_written=0;
+	std::size_t units_written=0u;
 	char32 cp;
 	for (in_iter=value.cbegin(); value.cend()!=in_iter; in_iter=in_next) {
 		in_next=DefsT::from_utils::decode(
@@ -754,8 +761,8 @@ std::size_t write_string(
 		);*/
 		out_iter=DefsT::to_utils::encode(cp, out_iter, replacement);
 		// Prevent output overrun
-		if (DefsT::BUFFER_SIZE<=6+(out_iter-out_buffer)) {
-			if (Endian::SYSTEM!=endian && 1!=DefsT::to_utils::char_size) {
+		if (DefsT::BUFFER_SIZE<=6u+(out_iter-out_buffer)) {
+			if (Endian::SYSTEM!=endian && 1u!=DefsT::to_utils::char_size) {
 				for (auto iter=out_buffer; out_iter>iter; ++iter) {
 					byte_swap_ref(*iter);
 				}
@@ -774,7 +781,7 @@ std::size_t write_string(
 	}
 	// Flush if there's any data left in the buffer
 	if (out_buffer!=out_iter) {
-		if (Endian::SYSTEM!=endian && 1!=DefsT::to_utils::char_size) {
+		if (Endian::SYSTEM!=endian && 1u!=DefsT::to_utils::char_size) {
 			for (auto iter=out_buffer; out_iter>iter; ++iter) {
 				byte_swap_ref(*iter);
 			}
@@ -822,14 +829,14 @@ std::size_t write_string_copy(
 		*out_iter;
 	unsigned amt, size=value.size();
 	typename StringT::const_iterator str_iter=value.cbegin();
-	while (0<size) {
+	while (0u<size) {
 		amt=DefsT::BUFFER_SIZE<size ? DefsT::BUFFER_SIZE : size;
 		for (
 			out_iter=out_buffer;
 			out_buffer+amt>out_iter;
 			++out_iter, ++str_iter
 		) {
-			if (Endian::SYSTEM!=endian && 1!=DefsT::from_utils::char_size) {
+			if (Endian::SYSTEM!=endian && 1u!=DefsT::from_utils::char_size) {
 				*out_iter=byte_swap(*str_iter);
 			} else {
 				*out_iter=*str_iter;
@@ -1386,7 +1393,7 @@ public:
 	std::size_t write_char(
 		std::ostream& stream,
 		char32 const cp,
-		unsigned const num=1,
+		unsigned const num=1u,
 		char32 const replacement=CHAR_NULL
 	) const {
 		switch (m_encoding) {
