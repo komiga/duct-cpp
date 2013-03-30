@@ -39,6 +39,7 @@ namespace duct {
 	the program if @a expr evaluates to @c false.
 	@note These macros are always defined.
 	@sa DUCT_DEBUG_ASSERT(),
+		DUCT_DEBUG_ASSERTE(),
 		DUCT_DEBUG_ASSERTF(),
 		DUCT_DEBUG_ASSERTP(),
 		DUCT_DEBUG_ASSERTPF()
@@ -52,6 +53,21 @@ namespace duct {
 	(expr) ? void(0) : ( \
 		std::fprintf( \
 			stderr, "assertion failure: " mesg \
+			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
+			__FILE__, __LINE__, DUCT_FUNC_SIG \
+		), \
+		std::abort() \
+	) \
+)
+
+/**
+	Assertion with expression.
+	@param expr Expression to evaluate.
+*/
+#define DUCT_ASSERTE(expr) ( \
+	(expr) ? void(0) : ( \
+		std::fprintf( \
+			stderr, \
 			"\n in %s:%d: %s: Assertion: `" #expr "`\n", \
 			__FILE__, __LINE__, DUCT_FUNC_SIG \
 		), \
@@ -194,12 +210,15 @@ namespace duct {
 	@name Debug assertion
 	@note These route to the non-debug assertion macros.
 	@sa DUCT_ASSERT(),
+		DUCT_ASSERTE(),
 		DUCT_ASSERTF(),
 		DUCT_ASSERTP(),
 		DUCT_ASSERTPF()
 */ /// @{
 	/** @copydoc DUCT_ASSERT() */
 	#define DUCT_DEBUG_ASSERT(expr, mesg)
+	/** @copydoc DUCT_ASSERTE() */
+	#define DUCT_DEBUG_ASSERTE(expr)
 	/** @copydoc DUCT_ASSERTF() */
 	#define DUCT_DEBUG_ASSERTF(expr, format, ...)
 	/** @copydoc DUCT_ASSERTP() */
@@ -210,61 +229,65 @@ namespace duct {
 
 #else
 	#define DUCT_DEBUG_PREFIX__ "debug: "
-	
+
 	// Debug
 	#define DUCT_DEBUG(mesg) \
 		std::printf(DUCT_DEBUG_PREFIX__ mesg "\n")
-	
+
 	#define DUCT_DEBUGF(format, ...) \
 		std::printf(DUCT_DEBUG_PREFIX__ format "\n", __VA_ARGS__)
-	
+
 	// - no newline
 	#define DUCT_DEBUGN(mesg) \
 		std::printf(DUCT_DEBUG_PREFIX__ mesg)
-	
+
 	#define DUCT_DEBUGNF(format, ...) \
 		std::printf(DUCT_DEBUG_PREFIX__ format, __VA_ARGS__)
-	
+
 	// - signature
 	#define DUCT_DEBUGC(mesg) \
 		DUCT_DEBUGF("in %s: " mesg, DUCT_FUNC_SIG)
-	
+
 	#define DUCT_DEBUGCF(format, ...) \
 		DUCT_DEBUGF("in %s: " format, DUCT_FUNC_SIG, __VA_ARGS__)
-	
+
 	// - signature and no newline
 	#define DUCT_DEBUGNC(mesg) \
 		DUCT_DEBUGNF("in %s: " mesg, DUCT_FUNC_SIG)
 	
 	#define DUCT_DEBUGNCF(format, ...) \
 		DUCT_DEBUGNF("in %s: " format, DUCT_FUNC_SIG, __VA_ARGS__)
-	
+
 	// - signature and pointer
 	#define DUCT_DEBUGCP(p, mesg) \
 		DUCT_DEBUGF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
-	
+
 	#define DUCT_DEBUGCPF(p, format, ...) \
 		DUCT_DEBUGF("[%p] in %s: " format, \
 			(void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
-	
+
 	// - signature and pointer and no newline
 	#define DUCT_DEBUGNCP(p, mesg) \
 		DUCT_DEBUGNF("[%p] in %s: " mesg, (void const* const)p, DUCT_FUNC_SIG)
-	
+
 	#define DUCT_DEBUGNCPF(p, format, ...) \
 		DUCT_DEBUGNF("[%p] in %s: " format, \
 			(void const* const)p, DUCT_FUNC_SIG, __VA_ARGS__)
-	
+
 	// Call
 	#define DUCT_DEBUG_CALLED() \
 		DUCT_DEBUGF("called: %s", DUCT_FUNC_SIG)
-	
+
 	#define DUCT_DEBUG_CALLEDP(p) \
 		DUCT_DEBUGF("called: [%p] %s", (void const* const)p, DUCT_FUNC_SIG)
-	
+
 	// Assert
 	#define DUCT_DEBUG_ASSERT(expr, mesg) \
 		DUCT_ASSERT(expr, mesg)
+
+	// Assert
+	#define DUCT_DEBUG_ASSERTE(expr) \
+		DUCT_ASSERTE(expr)
 
 	#define DUCT_DEBUG_ASSERTF(expr, format, ...) \
 		DUCT_ASSERTF(expr, format, __VA_ARGS__)
@@ -275,7 +298,7 @@ namespace duct {
 
 	#define DUCT_DEBUG_ASSERTPF(expr, p, format, ...) \
 		DUCT_ASSERTPF(expr, p, format, __VA_ARGS__)
-	
+
 #endif
 
 /** @} */ // end doc-group debug
