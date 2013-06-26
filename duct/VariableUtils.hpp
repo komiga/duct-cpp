@@ -34,6 +34,7 @@ static detail::string_traits<detail::var_config::string_type>::char_type const
 
 /**
 	Convert string to appropriate type and set Variable value.
+
 	@note Conversion is (case sensitive):
 	- @c "false" morphs to a @c VARTYPE_BOOL with @c false
 	- @c "true" morphs to a @c VARTYPE_BOOL with @c true
@@ -42,15 +43,16 @@ static detail::string_traits<detail::var_config::string_type>::char_type const
 	@param var Variable to modify.
 	@param value String value to convert.
 */
-void convert_typed(
+void
+convert_typed(
 	Variable& var,
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(s_sv_false)) {
+	if (0 == value.compare(s_sv_false)) {
 		var.morph(false);
-	} else if (0==value.compare(s_sv_true)) {
+	} else if (0 == value.compare(s_sv_true)) {
 		var.morph(true);
-	} else if (0==value.compare(s_sv_null)) {
+	} else if (0 == value.compare(s_sv_null)) {
 		var.nullify();
 	} else {
 		var.morph(std::move(value));
@@ -59,23 +61,25 @@ void convert_typed(
 
 /**
 	Convert string to appropriate Variable.
+
 	@note Conversion is (case sensitive):
 	- @c "false" returns a @c VARTYPE_BOOL with @c false
 	- @c "true" returns a @c VARTYPE_BOOL with @c true
 	- @c "null" returns a @c VARTYPE_NULL
 	- else returns a @c VARTYPE_STRING with @c value
-	@returns String converted to either a @c VARTYPE_BOOL, @c VARTYPE_NULL
-	or @c VARTYPE_STRING Variable.
+	@returns String converted to either
+	a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
 	@param value String value to convert.
 */
-Variable convert_typed(
+Variable
+convert_typed(
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(s_sv_false)) {
+	if (0 == value.compare(s_sv_false)) {
 		return Variable(false);
-	} else if (0==value.compare(s_sv_true)) {
+	} else if (0 == value.compare(s_sv_true)) {
 		return Variable(true);
-	} else if (0==value.compare(s_sv_null)) {
+	} else if (0 == value.compare(s_sv_null)) {
 		return Variable(VARTYPE_NULL);
 	} else {
 		return Variable(std::move(value));
@@ -84,25 +88,27 @@ Variable convert_typed(
 
 /**
 	Convert string to appropriate Variable with name.
+
 	@note Conversion is (case sensitive):
 	- @c "false" returns a @c VARTYPE_BOOL with @c false
 	- @c "true" returns a @c VARTYPE_BOOL with @c true
 	- @c "null" returns a @c VARTYPE_NULL
 	- else returns a @c VARTYPE_STRING with @c value
-	@returns String converted to either a @c VARTYPE_BOOL, @c VARTYPE_NULL
-	or @c VARTYPE_STRING Variable.
+	@returns String converted to either
+	a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
 	@param name Name of constructed variable.
 	@param value String value to convert.
 */
-Variable convert_typed(
+Variable
+convert_typed(
 	detail::var_config::name_type name,
 	detail::var_config::string_type value
 ) {
-	if (0==value.compare(s_sv_false)) {
+	if (0 == value.compare(s_sv_false)) {
 		return Variable(std::move(name), false);
-	} else if (0==value.compare(s_sv_true)) {
+	} else if (0 == value.compare(s_sv_true)) {
 		return Variable(std::move(name), true);
-	} else if (0==value.compare(s_sv_null)) {
+	} else if (0 == value.compare(s_sv_null)) {
 		return Variable(std::move(name), VARTYPE_NULL);
 	} else {
 		return Variable(std::move(name), std::move(value));

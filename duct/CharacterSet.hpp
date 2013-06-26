@@ -35,15 +35,15 @@ class CharacterSet;
 /**
 	A set of CharacterRanges.
 */
-class CharacterSet /*final*/ {
+class CharacterSet final {
 public:
 /** @name Types */ /// @{
 	/** CharacterRange vector. */
-	typedef duct::aux::vector<CharacterRange> vector_type;
+	using vector_type = duct::aux::vector<CharacterRange>;
 	/** CharacterRange iterator. */
-	typedef vector_type::iterator iterator;
+	using iterator = vector_type::iterator;
 	/** @copydoc iterator */
-	typedef vector_type::const_iterator const_iterator;
+	using const_iterator = vector_type::const_iterator;
 /// @}
 
 private:
@@ -52,17 +52,23 @@ private:
 public:
 /** @name Constructors and destructor */ /// @{
 	/** Construct empty set. */
-	CharacterSet()=default;
+	CharacterSet() = default;
 	/**
 		Construct with string ranges.
 		@param str String of ranges.
 	*/
-	explicit CharacterSet(u8string const& str)
+	explicit
+	CharacterSet(
+		u8string const& str
+	)
 	{
 		add_from_string(str);
 	}
 	/** @copydoc CharacterSet(u8string const&) */
-	explicit CharacterSet(char const* str)
+	explicit
+	CharacterSet(
+		char const* str
+	)
 	{
 		add_from_string(u8string{str});
 	}
@@ -71,7 +77,10 @@ public:
 		@param start First code point of range.
 		@param length Number of code points in the range.
 	*/
-	CharacterSet(char32 const start, unsigned const length)
+	CharacterSet(
+		char32 const start,
+		unsigned const length
+	)
 	{
 		add_range(start, length);
 	}
@@ -79,58 +88,84 @@ public:
 		Construct with single code point.
 		@param cp Code point.
 	*/
-	explicit CharacterSet(char32 const cp)
+	explicit
+	CharacterSet(
+		char32 const cp
+	)
 	{
 		add_range(cp, 0);
 	}
 	/** Copy constructor. */
-	CharacterSet(CharacterSet const& other)=default;
+	CharacterSet(CharacterSet const& other) = default;
 	/** Move constructor. */
-	CharacterSet(CharacterSet&& other)=default;
+	CharacterSet(CharacterSet&& other) = default;
 	/** Destructor. */
-	~CharacterSet()=default;
+	~CharacterSet() = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy assignment operator. */
-	CharacterSet& operator=(CharacterSet const&)=default;
+	CharacterSet& operator=(CharacterSet const&) = default;
 	/** Move assignment operator. */
-	CharacterSet& operator=(CharacterSet&&)=default;
+	CharacterSet& operator=(CharacterSet&&) = default;
 /// @}
 
 /** @name Properties */ /// @{
 	/**
 		Get number of ranges.
+
 		@returns The current number of ranges.
 	*/
-	vector_type::size_type size() const { return m_ranges.size(); }
+	vector_type::size_type
+	size() const noexcept {
+		return m_ranges.size();
+	}
 
 	/**
 		Get beginning range iterator.
+
 		@returns The beginning range iterator.
 	*/
-	iterator begin() { return m_ranges.begin(); }
+	iterator
+	begin() noexcept {
+		return m_ranges.begin();
+	}
+
 	/** @copydoc begin() */
-	const_iterator cbegin() const { return m_ranges.cbegin(); }
+	const_iterator
+	cbegin() const noexcept {
+		return m_ranges.cbegin();
+	}
 
 	/**
 		Get ending range iterator.
 		@returns The ending range iterator.
 	*/
-	iterator end() { return m_ranges.end(); }
+	iterator
+	end() noexcept {
+		return m_ranges.end();
+	}
+
 	/** @copydoc end() */
-	const_iterator cend() const { return m_ranges.cend(); }
+	const_iterator
+	cend() const noexcept {
+		return m_ranges.cend();
+	}
 /// @}
 
 /** @name Comparison */ /// @{
 	/**
 		Check if the set contains a code point.
+
 		@returns
 		- @c true if @a cp is contained, or
 		- @c false if it was not.
 		@param cp Code point to test.
 	*/
-	bool contains(char32 const cp) const {
+	bool
+	contains(
+		char32 const cp
+	) const noexcept {
 		for (auto const& r : m_ranges) {
 			if (r.contains(cp)) {
 				return true;
@@ -145,9 +180,12 @@ public:
 		- @c false if it was not.
 		@param range Range to test.
 	*/
-	bool contains(CharacterRange const& range) const {
+	bool
+	contains(
+		CharacterRange const& range
+	) const noexcept {
 		for (auto const& r : m_ranges) {
-			if (0==range.compare(r)) {
+			if (0 == range.compare(r)) {
 				return true;
 			}
 		}
@@ -159,22 +197,31 @@ public:
 		class StringU,
 		typename InputIt
 	>
-	InputIt sequence_find(InputIt pos, InputIt const end) const {
+	InputIt
+	sequence_find(
+		InputIt pos,
+		InputIt const end
+	) const noexcept {
 		for (auto const& r : m_ranges) {
-			InputIt sit=r.sequence_find<StringU>(pos, end);
-			if (end!=sit) {
+			InputIt const sit = r.sequence_find<StringU>(pos, end);
+			if (sit != end) {
 				return sit;
 			}
 		}
 		return end;
 	}
+
 	/** @copydoc CharacterRange::find(StringT const&,StringI) const */
 	template<
 		class StringT,
-		class StringU=typename detail::string_traits<StringT>::encoding_utils,
-		class StringI=typename StringT::const_iterator
+		class StringU = typename detail::string_traits<StringT>::encoding_utils,
+		class StringI = typename StringT::const_iterator
 	>
-	StringI find(StringT const& str, StringI pos) const {
+	StringI
+	find(
+		StringT const& str,
+		StringI pos
+	) const noexcept {
 		return sequence_find<StringU>(pos, str.cend());
 	}
 
@@ -184,12 +231,16 @@ public:
 		class StringU,
 		typename InputIt
 	>
-	bool sequence_matches(InputIt pos, InputIt const end) const {
+	bool
+	sequence_matches(
+		InputIt pos,
+		InputIt const end
+	) const noexcept {
 		char32 cp;
 		InputIt next;
-		for (; end!=pos; pos=next) {
-			next=StringU::decode(pos, end, cp, CHAR_SENTINEL);
-			if (next==pos || CHAR_SENTINEL==cp) {
+		for (; end != pos; pos = next) {
+			next = StringU::decode(pos, end, cp, CHAR_SENTINEL);
+			if (next == pos || CHAR_SENTINEL == cp) {
 				// Incomplete or bad sequence
 				return false;
 			} else {
@@ -208,10 +259,14 @@ public:
 	/** @copydoc CharacterRange::matches(StringT const&,StringI) const */
 	template<
 		class StringT,
-		class StringU=typename detail::string_traits<StringT>::encoding_utils,
-		class StringI=typename StringT::const_iterator
+		class StringU = typename detail::string_traits<StringT>::encoding_utils,
+		class StringI = typename StringT::const_iterator
 	>
-	bool matches(StringT const& str, StringI pos) const {
+	bool
+	matches(
+		StringT const& str,
+		StringI pos
+	) const noexcept {
 		return sequence_matches<StringU>(pos, str.cend());
 	}
 /// @}
@@ -220,7 +275,10 @@ public:
 	/**
 		Remove all ranges.
 	*/
-	void clear() { m_ranges.clear(); }
+	void
+	clear() noexcept {
+		m_ranges.clear();
+	}
 
 	/**
 		Add string ranges.
@@ -230,62 +288,67 @@ public:
 	*/
 	template<
 		class StringT,
-		class StringU=typename detail::string_traits<StringT>::encoding_utils,
-		class StringI=typename StringT::const_iterator
+		class StringU = typename detail::string_traits<StringT>::encoding_utils,
+		class StringI = typename StringT::const_iterator
 	>
-	CharacterSet& add_from_string(StringT const& str) {
-		char32 lastcp=CHAR_SENTINEL;
-		char32 cp=CHAR_SENTINEL;
-		bool isrange=false;
-		bool escape=false;
+	CharacterSet&
+	add_from_string(
+		StringT const& str
+	) {
+		char32 lastcp = CHAR_SENTINEL;
+		char32 cp = CHAR_SENTINEL;
+		bool isrange = false;
+		bool escape = false;
 		StringI it, next;
-		for (it=str.cbegin(); str.cend()!=it; it=next) {
+		for (it = str.cbegin(); str.cend() != it; it = next) {
 			next=StringU::decode(it, str.cend(), cp, CHAR_SENTINEL);
-			if (next==it) { // Incomplete sequence
+			if (next == it) { // Incomplete sequence
 				DUCT_DEBUG("CharacterSet::add_from_string: ics");
 				break;
-			} else if (CHAR_SENTINEL==cp) { // Invalid code point
+			} else if (CHAR_SENTINEL == cp) { // Invalid code point
 				DUCT_DEBUGF(
 					"CharacterSet::add_from_string"
 					": Invalid code point in string at %lu",
-					(unsigned long)(str.cend()-it)
+					static_cast<unsigned long>(str.cend() - it)
 				);
-				escape=isrange=false;
-				lastcp=CHAR_SENTINEL;
+				escape = isrange = false;
+				lastcp = CHAR_SENTINEL;
 				continue;
 			}
 			if (escape) {
-				escape=false;
-			} else if (CHAR_BACKSLASH==cp) {
-				escape=true;
+				escape = false;
+			} else if (CHAR_BACKSLASH == cp) {
+				escape = true;
 				continue;
-			} else if (CHAR_SENTINEL!=lastcp && CHAR_DASH==cp && !isrange) {
-				isrange=true;
+			} else if (CHAR_SENTINEL != lastcp && CHAR_DASH == cp && !isrange) {
+				isrange = true;
 				continue;
 			}
-			if (CHAR_SENTINEL!=lastcp) {
+			if (CHAR_SENTINEL != lastcp) {
 				if (isrange) {
-					if (cp==lastcp) {
+					if (cp == lastcp) {
 						add_range(cp, 0);
 					} else if (cp<lastcp) {
 						add_range(cp, lastcp-cp);
 					} else {
 						add_range(lastcp, cp-lastcp);
 					}
-					lastcp=CHAR_SENTINEL;
-					isrange=false;
+					lastcp = CHAR_SENTINEL;
+					isrange = false;
 				} else {
 					add_range(lastcp, 0);
-					lastcp=cp;
+					lastcp = cp;
 				}
 			} else {
-				lastcp=cp;
+				lastcp = cp;
 			}
 		}
-		if (CHAR_SENTINEL!=lastcp) {
+		if (CHAR_SENTINEL != lastcp) {
 			if (isrange) {
 				DUCT_DEBUG(
-					"CharacterSet::add_from_string: Invalid range in string");
+					"CharacterSet::add_from_string"
+					": Invalid range in string"
+				);
 			}
 			add_range(lastcp, 0);
 		}
@@ -294,23 +357,28 @@ public:
 
 	/**
 		Add a length range.
+
 		@returns @c *this.
 		@param start Start of the range.
 		@param length Length of the range.
 		@sa CharacterRange::CharacterRange(char32 const, unsigned const)
 	*/
-	CharacterSet& add_range(char32 const start, unsigned const length=0) {
-		bool empty=m_ranges.empty();
+	CharacterSet&
+	add_range(
+		char32 const start,
+		unsigned const length = 0
+	) {
+		bool empty = m_ranges.empty();
 		CharacterRange const new_range{start, length};
 		// Avoid adding duplicate ranges
 		if (empty || !contains(new_range)) {
 			if (!empty) {
 				for (auto& r : m_ranges) {
 					if (new_range.intersects(r)) {
-						if (new_range.first()<r.first()) {
+						if (new_range.first() < r.first()) {
 							r.set_first(new_range.first());
 						}
-						if (new_range.last()>r.last()) {
+						if (new_range.last() > r.last()) {
 							r.set_last(new_range.last());
 						}
 						return *this;
@@ -327,52 +395,63 @@ public:
 		return, and space.
 		@returns @c *this.
 	*/
-	CharacterSet& add_whitespace() {
+	CharacterSet&
+	add_whitespace() {
 		add_range('\t', 1); // \t and \n
 		add_range('\r', 0);
 		add_range(' ', 0);
 		return *this;
 	}
+
 	/**
 		Add all alphanumberic characters: @c A-Z, @c a-z, and @c 0-9.
 		@returns @c *this.
 	*/
-	CharacterSet& add_alphanumeric() {
+	CharacterSet&
+	add_alphanumeric() {
 		add_range('A', 25);
 		add_range('a', 25);
 		add_range('0', 9);
 		return *this;
 	}
+
 	/**
 		Add @c A-Z and @c a-z.
 		@returns @c *this.
 	*/
-	CharacterSet& add_letters() {
+	CharacterSet&
+	add_letters() {
 		add_range('A', 25);
 		add_range('a', 25);
 		return *this;
 	}
+
 	/**
 		Add @c A-Z.
 		@returns @c *this.
 	*/
-	CharacterSet& add_uppercase_letters() {
+	CharacterSet&
+	add_uppercase_letters() {
 		add_range('A', 25);
 		return *this;
 	}
+
 	/**
 		Add @c a-z.
 		@returns @c *this.
 	*/
-	CharacterSet& add_lowercase_letters() {
+	CharacterSet&
+	add_lowercase_letters() {
 		add_range('a', 25);
 		return *this;
 	}
+
 	/**
 		Add @c 0-9.
 		@returns @c *this.
 	*/
-	CharacterSet& add_numbers() {
+	CharacterSet&
+	add_numbers() {
 		add_range('0', 9);
 		return *this;
 	}

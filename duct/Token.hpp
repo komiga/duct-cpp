@@ -23,9 +23,9 @@ class Token;
 	@{
 */
 
-enum {
+enum : signed {
 	/** Null/invalid Token type constant. */
-	NULL_TOKEN=(signed)0xCA11ACAB
+	NULL_TOKEN = static_cast<signed>(0xCA11ACAB)
 };
 
 /**
@@ -41,100 +41,164 @@ protected:
 public:
 /** @name Constructors and destructor */ /// @{
 	/** Construct @c NULL_TOKEN. */
-	Token()=default;
+	Token() = default;
+
 	/**
 		Construct with type.
+
 		@param type Token type.
 	*/
-	explicit Token(signed const type)
+	explicit
+	Token(
+		signed const type
+	) noexcept
 		: m_type{type}
 	{}
-	/** Copy constructor (deleted). */
-	Token(Token const&)=delete;
+
+	/** Copy constructor. */
+	Token(Token const&) = delete;
 	/** Move constructor. */
-	Token(Token&&)=default;
+	Token(Token&&) = default;
 	/** Destructor. */
-	virtual ~Token()=default;
+	virtual ~Token() = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy assignment operator (deleted). */
-	Token& operator=(Token const&)=delete;
+	Token& operator=(Token const&) = delete;
 	/** Move assignment operator. */
-	Token& operator=(Token&&)=default;
+	Token& operator=(Token&&) = default;
 /// @}
 
 /** @name Properties */ /// @{
 	/**
 		Set type.
+
 		@param type New type.
 	*/
-	void set_type(signed const type) { m_type=type; }
+	void
+	set_type(
+		signed const type
+	) noexcept {
+		m_type = type;
+	}
+
 	/**
 		Get type.
+
 		@returns The current type.
 	*/
-	signed get_type() const { return m_type; }
+	signed
+	get_type() const noexcept {
+		return m_type;
+	}
 
 	/**
 		Set position.
+
 		@param line New line position.
 		@param column New column position.
 	*/
-	void set_position(signed const line, signed const column) {
-		m_line=line;
-		m_column=column;
+	void
+	set_position(
+		signed const line,
+		signed const column
+	) noexcept {
+		m_line = line;
+		m_column = column;
 	}
 
 	/**
 		Set line position.
+
 		@param line New line position.
 	*/
-	void set_line(signed const line) { m_line=line; }
+	void
+	set_line(
+		signed const line
+	) noexcept {
+		m_line = line;
+	}
+
 	/**
 		Get line position.
+
 		@returns The current line position.
 	*/
-	signed get_line() const { return m_line; }
+	signed
+	get_line() const noexcept {
+		return m_line;
+	}
 
 	/**
 		Set column position.
+
 		@param column New column position.
 	*/
-	void set_column(signed const column) { m_column=column; }
+	void
+	set_column(
+		signed const column
+	) noexcept {
+		m_column = column;
+	}
+
 	/**
 		Get column position.
+
 		@returns The current column position.
 	*/
-	signed get_column() const { return m_column; }
+	signed
+	get_column() const noexcept {
+		return m_column;
+	}
 
 	/**
 		Get character buffer.
+
 		@returns The token's character buffer.
 	*/
-	CharBuf& get_buffer() { return m_buffer; }
+	CharBuf&
+	get_buffer() noexcept {
+		return m_buffer;
+	}
+
 	/** @copydoc get_buffer() */
-	CharBuf const& get_buffer() const { return m_buffer; }
+	CharBuf const&
+	get_buffer() const noexcept {
+		return m_buffer;
+	}
 
 	/**
 		Test the token's type.
+
 		@returns @c true if @c get_type()==type.
 		@param type Type to test against.
 	*/
-	bool is_type(signed const type) const { return type==m_type; }
+	bool
+	is_type(
+		signed const type
+	) const noexcept {
+		return type == m_type;
+	}
 /// @}
 
 /** @name Operations */ /// @{
 	/**
 		Reset the token.
-		@note This will reset the character buffer and set the type (and
-		call @c set_position(-1, -1) if @c position==true).
+
+		@note This will reset the character buffer and set the type
+		(and call @c set_position(-1, -1) if @c position==true).
+
 		@param type Type to reset to (generic @c NULL_TOKEN is
 		provided for invalidity purposes).
 		@param position Whether to reset the token's position;
 		if @c true, will call @c set_position(-1, -1).
 	*/
-	void reset(signed const type, bool const position) {
+	void
+	reset(
+		signed const type,
+		bool const position
+	) noexcept {
 		m_buffer.reset();
 		set_type(type);
 		if (position) {

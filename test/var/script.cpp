@@ -25,11 +25,13 @@ struct TestData {
 #define TDV(data) {data, std::strlen(data), true},
 #define TDN(data) {data, std::strlen(data), false},
 
-static duct::ScriptParser g_parser{
+static duct::ScriptParser
+g_parser{
 	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
 };
 
-static TestData const g_test_data[]{
+static TestData const
+g_test_data[]{
 	// Values
 	TDV("name=value")
 	TDV("name=1234567890")
@@ -110,7 +112,8 @@ static TestData const g_test_data[]{
 	{nullptr, 0, false}
 };
 
-void parse_stream(
+void
+parse_stream(
 	duct::Variable& root,
 	std::istream& stream,
 	bool const valid
@@ -122,21 +125,27 @@ void parse_stream(
 		try {
 			g_parser.process(root, stream);
 			std::cout
-				<<"Received no exception when one was expected\n"
-				<<std::endl
-			;
+				<< "Received no exception when one was expected\n"
+			<< std::endl;
 			assert(false);
 		} catch (duct::ScriptParserException& e) {
-			std::cout<<e.what()<<"\n\n";
+			std::cout
+				<< e.what()
+				<< "\n\n"
+			;
 			return;
 		}
 	}
 	assert(stream.good() || stream.eof());
 	print_var(root);
-	std::cout<<'\n';
+	std::cout << '\n';
 }
 
-void do_test(duct::Variable& root, TestData const& td) {
+void
+do_test(
+	duct::Variable& root,
+	TestData const& td
+) {
 	duct::IO::imemstream stream{td.data, td.size};
 	std::printf(
 		"  Testing `%*s`:\n",
@@ -146,24 +155,39 @@ void do_test(duct::Variable& root, TestData const& td) {
 	parse_stream(root, stream, td.valid);
 }
 
-signed main(signed argc, char* argv[]) {
+signed
+main(
+	signed argc,
+	char* argv[]
+) {
 	duct::Variable root{duct::VARTYPE_NODE};
-	if (1<argc) {
-		TestData td{nullptr, 0, true};
+	if (1 < argc) {
+		TestData td{nullptr, 0u, true};
 		std::ifstream fs{};
-		for (signed index=1; argc>index; ++index) {
+		for (
+			signed index = 1;
+			argc > index;
+			++index
+		) {
 			fs.open(argv[index]);
 			if (fs.is_open()) {
 				parse_stream(root, fs, false);
 				fs.close();
 			} else {
-				td.data=argv[index]; td.size=std::strlen(td.data);
-				root.reset(); do_test(root, td);
+				td.data = argv[index];
+				td.size = std::strlen(td.data);
+				root.reset();
+				do_test(root, td);
 			}
 		}
 	} else {
-		for (TestData const* td=g_test_data; nullptr!=td->data; ++td) {
-			root.reset(); do_test(root, *td);
+		for (
+			TestData const* td = g_test_data;
+			nullptr != td->data;
+			++td
+		) {
+			root.reset();
+			do_test(root, *td);
 		}
 	}
 	std::cout.flush();

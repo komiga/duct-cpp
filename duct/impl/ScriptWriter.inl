@@ -20,14 +20,15 @@ static char const
 
 // class ScriptWriter implementation
 
-bool ScriptWriter::write(
+bool
+ScriptWriter::write(
 	std::ostream& dest,
 	Variable const& source,
 	bool const treat_as_root,
 	unsigned const tab_level
 ) const {
 	if (dest.good()) {
-		if (VARTYPE_NODE!=source.get_type() || !treat_as_root) {
+		if (VARTYPE_NODE != source.get_type() || !treat_as_root) {
 			m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
 		}
 		switch (source.get_type()) {
@@ -52,34 +53,39 @@ template<
 	class StringT,
 	class StringU
 >
-bool ScriptWriter::write_string(
+bool
+ScriptWriter::write_string(
 	std::ostream& dest,
 	StringT const& str,
 	bool const is_name
 ) const {
-	char32 first_cp=CHAR_NULL;
-	auto dec_iter=str.cbegin();
+	char32 first_cp = CHAR_NULL;
+	auto dec_iter = str.cbegin();
 	if (!str.empty()) {
-		dec_iter=StringU::decode(dec_iter, str.cend(), first_cp, CHAR_NULL);
+		dec_iter = StringU::decode(dec_iter, str.cend(), first_cp, CHAR_NULL);
 	}
 	bool const add_quotation=
 		// Whether to always quote based on token type
-		0!=(m_flags&(is_name ? DSWF_NAME_QUOTE : DSWF_VALUE_STRING_QUOTE))
+		0 != (m_flags & (is_name ? DSWF_NAME_QUOTE : DSWF_VALUE_STRING_QUOTE))
 		// Empty string must be quoted
 		|| str.empty()
 		// Whitespace and control characters require quotation
-		||(str.cend()!=s_set_req_quotation.find(str, str.cbegin()))
+		||(str.cend() != s_set_req_quotation.find(str, str.cbegin()))
 		// If parseable as a number token, must be quoted
 		||(
 			s_set_number_inner.sequence_matches<StringU>(
-				dec_iter, str.cend())
-			&& (1>=StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str)
-				&& s_set_number_front.contains(first_cp)))
+				dec_iter, str.cend()
+			)
+			&& (1u >= StringUtils::unit_occurrences(CHAR_DECIMALPOINT, str)
+				&& s_set_number_front.contains(first_cp)
+			)
+		)
 	;
 	StringUtils::EscapeablePair esc_pair;
-	auto const& str_esc_pair=
+	auto const&
+	str_esc_pair =
 		(add_quotation
-			? (m_flags&DSWF_ESCAPE_WHITESPACE
+			? (m_flags & DSWF_ESCAPE_WHITESPACE
 				// Whitespace is always escaped
 				? s_esc_whitespace
 				// Don't have to escape control characters when quoted
@@ -87,10 +93,12 @@ bool ScriptWriter::write_string(
 			// Everything must be escaped
 			: (s_esc_all)
 		);
-	esc_pair.first=str_esc_pair[0]; esc_pair.second=str_esc_pair[1];
+	esc_pair.first  = str_esc_pair[0u];
+	esc_pair.second = str_esc_pair[1u];
+
 	StringT normalized;
 	// A little overhead for quotations and escaped characters
-	normalized.reserve(str.size()+(add_quotation ? 2 : 0)+20);
+	normalized.reserve(str.size() + (add_quotation ? 2u : 0u) + 20u);
 	if (add_quotation) {
 		normalized.append(1, CHAR_QUOTE);
 	}
@@ -102,7 +110,8 @@ bool ScriptWriter::write_string(
 	return dest.good();
 }
 
-bool ScriptWriter::write_value(
+bool
+ScriptWriter::write_value(
 	std::ostream& dest,
 	Variable const& var,
 	bool const with_name
@@ -119,10 +128,10 @@ bool ScriptWriter::write_value(
 	case VARTYPE_INTEGER:
 	case VARTYPE_FLOAT:
 	case VARTYPE_BOOL: {
-		// All non-VARTYPE_STRING values are representable in single UTF-8
-		// code units. Also, the target encoding is most likely going to
-		// be UTF-8, so this is optimal.
-		auto const vstr=var.get_as_str<u8string>();
+		// All non-VARTYPE_STRING values are representable in single
+		// UTF-8 code units. Also, the target encoding is most likely
+		// going to be UTF-8, so this is optimal.
+		auto const vstr = var.get_as_str<u8string>();
 		m_stream_ctx.write_string(dest, vstr);
 		break;
 	}
@@ -131,7 +140,8 @@ bool ScriptWriter::write_value(
 	return dest.good();
 }
 
-bool ScriptWriter::write_array(
+bool
+ScriptWriter::write_array(
 	std::ostream& dest,
 	Variable const& var,
 	bool const with_name
@@ -141,7 +151,7 @@ bool ScriptWriter::write_array(
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
 	}
 	m_stream_ctx.write_char(dest, CHAR_OPENBRACKET);
-	for (auto it=var.cbegin(); var.cend()!=it; ++it) {
+	for (auto it = var.cbegin(); var.cend() != it; ++it) {
 		switch ((*it).get_type()) {
 		case VARTYPE_IDENTIFIER:
 		case VARTYPE_NODE:
@@ -158,7 +168,7 @@ bool ScriptWriter::write_array(
 			}
 			break;
 		}
-		if (var.cend()!=it+1) {
+		if (var.cend() != it + 1) {
 			m_stream_ctx.write_char(dest, CHAR_COMMA);
 			m_stream_ctx.write_char(dest, ' ');
 		}
@@ -167,7 +177,8 @@ bool ScriptWriter::write_array(
 	return dest.good();
 }
 
-bool ScriptWriter::write_node(
+bool
+ScriptWriter::write_node(
 	std::ostream& dest,
 	Variable const& var,
 	bool const treat_as_root,
@@ -185,11 +196,11 @@ bool ScriptWriter::write_node(
 		}
 		++tab_level;
 	}
-	for (auto it=var.cbegin(); var.cend()!=it; ++it) {
+	for (auto it = var.cbegin(); var.cend() != it;  ++ it) {
 		if (!write(dest, *it, false, tab_level)) {
 			return false;
 		}
-		if (!treat_as_root || var.cend()!=it+1) {
+		if (!treat_as_root || var.cend() != it + 1) {
 			m_stream_ctx.write_char(dest, CHAR_NEWLINE);
 		}
 	}
@@ -203,15 +214,16 @@ bool ScriptWriter::write_node(
 	return dest.good();
 }
 
-bool ScriptWriter::write_identifier(
+bool
+ScriptWriter::write_identifier(
 	std::ostream& dest,
 	Variable const& var
 ) const {
 	write_string(dest, var.get_name(), true);
-	if (0<var.size()) {
+	if (0u < var.size()) {
 		m_stream_ctx.write_char(dest, ' ');
 	}
-	for (auto it=var.cbegin(); var.cend()!=it; ++it) {
+	for (auto it = var.cbegin(); var.cend() != it; ++it) {
 		switch ((*it).get_type()) {
 		case VARTYPE_IDENTIFIER:
 		case VARTYPE_NODE:
@@ -228,7 +240,7 @@ bool ScriptWriter::write_identifier(
 			}
 			break;
 		}
-		if (var.cend()!=it+1) {
+		if (var.cend() != it + 1) {
 			m_stream_ctx.write_char(dest, ' ');
 		}
 	}

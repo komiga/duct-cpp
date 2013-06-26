@@ -39,8 +39,9 @@ class ScriptParser;
 /**
 	ScriptParser exception.
 */
-class ScriptParserException /*final*/
-	: public std::exception {
+class ScriptParserException final
+	: public std::exception
+{
 private:
 	char const* m_scope;
 	Token const* m_token;
@@ -50,9 +51,11 @@ private:
 public:
 /** @name Constructors and destructor */ /// @{
 	/** Default constructor (deleted). */
-	ScriptParserException()=delete;
+	ScriptParserException() = delete;
+
 	/**
 		Construct with details.
+
 		@param scope Scope of exception.
 		@param token Token.
 		@param parser Parser.
@@ -66,35 +69,41 @@ public:
 		char const fmt[],
 		...
 	);
+
 	/** Copy constructor (deleted). */
-	ScriptParserException(ScriptParserException const&)=delete;
+	ScriptParserException(ScriptParserException const&) = delete;
 	/** Move constructor. */
-	ScriptParserException(ScriptParserException&&)=default;
+	ScriptParserException(ScriptParserException&&) = default;
 	/** Destructor. */
-	~ScriptParserException()=default;
+	~ScriptParserException() = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy assignment operator (deleted). */
-	ScriptParserException& operator=(ScriptParserException const&)=delete;
+	ScriptParserException& operator=(ScriptParserException const&) = delete;
 	/** Move assignment operator. */
-	ScriptParserException& operator=(ScriptParserException&&)=default;
+	ScriptParserException& operator=(ScriptParserException&&) = default;
 /// @}
 
 /** @name Properties */ /// @{
 	/**
 		Get error message.
+
 		@returns The error message.
 	*/
-	char const* what() const noexcept override { return m_message; }
+	char const*
+	what() const noexcept override {
+		return m_message;
+	}
 /// @}
 };
 
 /**
 	ductScript parser.
 */
-class ScriptParser /*final*/
-	: public Parser {
+class ScriptParser final
+	: public Parser
+{
 private:
 	duct::aux::deque<Variable*> m_stack{32};
 	u8string m_varname{};
@@ -103,33 +112,43 @@ private:
 public:
 /** @name Constructors and destructor */ /// @{
 	/** Default constructor. */
-	ScriptParser()=default;
+	ScriptParser() = default;
+
 	/**
 		Constructor with StreamContext.
+
 		@param context StreamContext to copy.
 	*/
-	explicit ScriptParser(IO::StreamContext context)
+	explicit
+	ScriptParser(
+		IO::StreamContext context
+	) noexcept
 		: Parser(std::move(context))
 	{}
+
 	/** Copy constructor (deleted). */
-	ScriptParser(ScriptParser const&)=delete;
+	ScriptParser(ScriptParser const&) = delete;
 	/** Move constructor. */
-	ScriptParser(ScriptParser&&)=default;
+	ScriptParser(ScriptParser&&) = default;
 	/** Destructor. */
-	~ScriptParser() override=default;
+	~ScriptParser() override = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy assignment operator (deleted). */
-	ScriptParser& operator=(ScriptParser const&)=delete;
+	ScriptParser& operator=(ScriptParser const&) = delete;
 	/** Move assignment operator. */
-	ScriptParser& operator=(ScriptParser&&)=default;
+	ScriptParser& operator=(ScriptParser&&) = default;
 /// @}
 
 /** @name State */ /// @{
-	void reset() override;
+	void
+	reset() noexcept override;
+
 private:
-	void finish();
+	void
+	finish();
+
 public:
 /// @}
 
@@ -137,54 +156,134 @@ public:
 	/**
 		Skip whitespace.
 	*/
-	void skip_whitespace();
+	void
+	skip_whitespace();
 
 	/**
 		Process a stream.
+
 		@warning The state of @a node is undefined if either @c false
 		is returned or if an exception is thrown whilst processing.
+
 		@returns @c true on success.
-		@param[out] node Output node; will be morphed to @c VARTYPE_NODE
-		and existing children will not be removed.
+		@param[out] node Output node; will be morphed
+		to @c VARTYPE_NODE and existing children will not be removed.
 		@param stream Stream to process.
 	*/
-	bool process(Variable& node, std::istream& stream);
+	bool
+	process(
+		Variable& node,
+		std::istream& stream
+	);
 
-	bool parse() override;
-	void discern_token() override;
-	void read_token() override;
-	void handle_token() override;
+	bool
+	parse() override;
+
+	void
+	discern_token() override;
+
+	void
+	read_token() override;
+
+	void
+	handle_token() override;
 /// @}
 
 private:
-	void read_tok_integer();
-	void read_tok_floating();
-	void read_tok_literal(char32 const match_str[], unsigned length);
-	void read_tok_string();
-	void read_tok_string_quoted();
-	void read_tok_comment_block();
+	void
+	read_tok_integer();
 
-	void assign_states(unsigned const states) { m_states|=states; }
-	void remove_states(unsigned const states) { m_states&=~states; }
-	void clear_all_states() { m_states=0; }
-	bool has_states(unsigned const states) const {
-		return states==(m_states&states);
+	void
+	read_tok_floating();
+
+	void
+	read_tok_literal(
+		char32 const match_str[],
+		unsigned length
+	);
+
+	void
+	read_tok_string();
+
+	void
+	read_tok_string_quoted();
+
+	void
+	read_tok_comment_block();
+
+	void
+	assign_states(
+		unsigned const states
+	) noexcept {
+		m_states |= states;
 	}
-	bool has_states_any(unsigned const states) const {
-		return 0!=(m_states&states);
+
+	void
+	remove_states(
+		unsigned const states
+	) noexcept {
+		m_states &= ~states;
 	}
 
-	bool at_root() const;
-	bool in_scope(unsigned const type);
-	Variable& get_current_collection();
-	void push(Variable& collection);
-	void pop();
+	void
+	clear_all_states() noexcept {
+		m_states = 0u;
+	}
 
-	void throwex(ScriptParserException&& e);
-	void make_name();
-	void make_collection(VariableType const type, bool push_collection=true);
-	void make_value();
-	void make_nameless_value(signed override_type=NULL_TOKEN);
+	bool
+	has_states(
+		unsigned const states
+	) const noexcept {
+		return states == (m_states & states);
+	}
+
+	bool
+	has_states_any(
+		unsigned const states
+	) const noexcept {
+		return 0u != (m_states & states);
+	}
+
+	bool
+	at_root() const noexcept;
+
+	bool
+	in_scope(
+		unsigned const type
+	) noexcept;
+
+	Variable&
+	get_current_collection() noexcept;
+
+	void
+	push(
+		Variable& collection
+	);
+
+	void
+	pop();
+
+	void
+	throwex(
+		ScriptParserException&& e
+	);
+
+	void
+	make_name();
+
+	void
+	make_collection(
+		VariableType const type,
+		bool push_collection = true
+	);
+
+	void
+	make_value();
+
+	void
+	make_nameless_value(
+		signed override_type = NULL_TOKEN
+	);
 };
 
 #include "./impl/ScriptParser.inl"

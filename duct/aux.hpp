@@ -31,7 +31,7 @@ namespace aux {
 template<
 	typename T
 >
-using vector=std::vector<
+using vector = std::vector<
 	T,
 	DUCT_CONFIG_ALLOCATOR<T>
 >;
@@ -42,7 +42,7 @@ using vector=std::vector<
 template<
 	typename T
 >
-using deque=std::deque<
+using deque = std::deque<
 	T,
 	DUCT_CONFIG_ALLOCATOR<T>
 >;
@@ -53,9 +53,9 @@ using deque=std::deque<
 */
 template<
 	typename CharT,
-	class TraitsT=std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
-using basic_string=std::basic_string<
+using basic_string = std::basic_string<
 	CharT,
 	TraitsT,
 	DUCT_CONFIG_ALLOCATOR<CharT>
@@ -67,9 +67,9 @@ using basic_string=std::basic_string<
 */
 template<
 	typename CharT,
-	class TraitsT=std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
-using basic_istringstream=std::basic_istringstream<
+using basic_istringstream = std::basic_istringstream<
 	CharT,
 	TraitsT,
 	DUCT_CONFIG_ALLOCATOR<CharT>
@@ -81,9 +81,9 @@ using basic_istringstream=std::basic_istringstream<
 */
 template<
 	typename CharT,
-	class TraitsT=std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
-using basic_ostringstream=std::basic_ostringstream<
+using basic_ostringstream = std::basic_ostringstream<
 	CharT,
 	TraitsT,
 	DUCT_CONFIG_ALLOCATOR<CharT>
@@ -95,20 +95,20 @@ using basic_ostringstream=std::basic_ostringstream<
 */
 template<
 	typename CharT,
-	class TraitsT=std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
-using basic_stringstream=std::basic_stringstream<
+using basic_stringstream = std::basic_stringstream<
 	CharT,
 	TraitsT,
 	DUCT_CONFIG_ALLOCATOR<CharT>
 >;
 
-/**	Alias for @c basic_istringstream<char>. */
-typedef basic_istringstream<char> istringstream;
-/**	Alias for @c basic_ostringstream<char>. */
-typedef basic_ostringstream<char> ostringstream;
-/**	Alias for @c basic_stringstream<char>. */
-typedef basic_stringstream<char> stringstream;
+/** Alias for @c basic_istringstream<char>. */
+using istringstream = basic_istringstream<char>;
+/** Alias for @c basic_ostringstream<char>. */
+using ostringstream = basic_ostringstream<char>;
+/** Alias for @c basic_stringstream<char>. */
+using stringstream  = basic_stringstream<char>;
 
 /** @} */ // end of doc-group aux
 

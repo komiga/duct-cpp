@@ -21,6 +21,7 @@
 #include <duct/Parser.hpp>
 #include <duct/ScriptParser.hpp>
 
-signed main() {
+signed
+main() {
 	return 0;
 }

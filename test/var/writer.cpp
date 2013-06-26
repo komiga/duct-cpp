@@ -26,15 +26,19 @@ struct TestData {
 
 #define TDV(data) {data, std::strlen(data), true},
 
-static duct::ScriptParser g_parser{
+static duct::ScriptParser
+g_parser{
 	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
 };
-static duct::ScriptWriter g_writer{
+
+static duct::ScriptWriter
+g_writer{
 	duct::DSWF_ESCAPE_WHITESPACE,
 	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
 };
 
-static TestData const g_test_data[]{
+static TestData const
+g_test_data[]{
 	// Values
 	TDV("name=value")
 	TDV("name=1234567890")
@@ -92,7 +96,8 @@ static TestData const g_test_data[]{
 	{nullptr, 0, false}
 };
 
-void parse_stream(
+void
+parse_stream(
 	duct::Variable& root,
 	std::istream& stream,
 	bool const /*valid*/
@@ -101,22 +106,34 @@ void parse_stream(
 	try {
 		g_parser.process(root, stream);
 	} catch (duct::ScriptParserException& e) {
-		std::cout<<"Unexpected exception when parsing:\n";
-		std::cout<<e.what()<<'\n'<<std::endl;
+		std::cout
+			<< "Unexpected exception when parsing:\n"
+			<< e.what() << '\n'
+		<< std::endl;
 		assert(false);
 	}
 	assert(stream.good() || stream.eof());
 	//print_var(root);
 }
 
-void write_var(duct::Variable const& var, std::ostream& stream) {
+void
+write_var(
+	duct::Variable const& var,
+	std::ostream& stream
+) {
 	if (!g_writer.write(stream, var, true)) {
-		std::cout<<"Failed to write variable"<<std::endl;
+		std::cout
+			<< "Failed to write variable"
+		<< std::endl;
 		assert(false);
 	}
 }
 
-void do_test(duct::Variable& root, TestData const& td) {
+void
+do_test(
+	duct::Variable& root,
+	TestData const& td
+) {
 	duct::IO::imemstream in_stream{td.data, td.size};
 	std::printf(
 		"  Testing `%*s`:\n",
@@ -127,30 +144,45 @@ void do_test(duct::Variable& root, TestData const& td) {
 	duct::aux::stringstream out_stream;
 	write_var(root, out_stream);
 	std::cout
-		<<"          `"
-		<<out_stream.str()
-		<<"`\n\n"
+		<< "          `"
+		<< out_stream.str()
+		<< "`\n\n"
 	;
 }
 
-signed main(signed argc, char* argv[]) {
+signed
+main(
+	signed argc,
+	char* argv[]
+) {
 	duct::Variable root{duct::VARTYPE_NODE};
-	if (1<argc) {
-		TestData td{nullptr, 0, true};
+	if (1 < argc) {
+		TestData td{nullptr, 0u, true};
 		std::ifstream fs{};
-		for (signed index=1; argc>index; ++index) {
+		for (
+			signed index = 1;
+			argc > index;
+			++index
+		) {
 			fs.open(argv[index]);
 			if (fs.is_open()) {
 				parse_stream(root, fs, false);
 				fs.close();
 			} else {
-				td.data=argv[index]; td.size=std::strlen(td.data);
-				root.reset(); do_test(root, td);
+				td.data = argv[index];
+				td.size = std::strlen(td.data);
+				root.reset();
+				do_test(root, td);
 			}
 		}
 	} else {
-		for (TestData const* td=g_test_data; nullptr!=td->data; ++td) {
-			root.reset(); do_test(root, *td);
+		for (
+			TestData const* td = g_test_data;
+			nullptr != td->data;
+			++td
+		) {
+			root.reset();
+			do_test(root, *td);
 		}
 	}
 	std::cout.flush();

@@ -38,6 +38,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	Platform flags.
+
 	Defined to a bit-wise OR of one OS:
 	-# #DUCT_FLAG_PLATFORM_WINDOWS
 	-# #DUCT_FLAG_PLATFORM_LINUX
@@ -75,6 +76,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	Platform processor model: 32-bit (x86) or 64-bit (x86-64).
+
 	Equals one of:
 	-# #DUCT_FLAG_PLATFORM_MODEL_32 (x86 processor)
 	-# #DUCT_FLAG_PLATFORM_MODEL_64 (x86-64 processor)
@@ -94,6 +96,7 @@ see @ref index or the accompanying LICENSE file for full text.
 // Compiler
 /**
 	Compiler.
+
 	See <duct/config.hpp> for possible values.
 */
 #define DUCT_COMPILER system_dependent
@@ -107,16 +110,19 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	Ensures bswap_16 is defined (Linux @c <byteswap.h>).
+
 	@sa bswap_32(), bswap_64()
 */
 #define bswap_16(x)
 /**
 	Ensures bswap_32 is defined (Linux @c <byteswap.h>).
+
 	@sa bswap_16(), bswap_64()
 */
 #define bswap_32(x)
 /**
 	Ensures bswap_64 is defined (Linux @c <byteswap.h>).
+
 	@sa bswap_16(), bswap_32()
 */
 #define bswap_64(x)
@@ -134,6 +140,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	System byteorder.
+
 	Equals one of:
 	-# #DUCT_ENDIAN_LITTLE (little-endian architecture)
 	-# #DUCT_ENDIAN_BIG (big-endian architecture)
@@ -154,10 +161,11 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	@name Class utilities
-	@deprecated These are deprecated. They have been replaced by explicit
-	in-class exposition and base-class @ref restrictors "restrictors".
-	Both macros currently use the @c =delete; notation instead of relying on
-	private protection.
+
+	@deprecated These are deprecated. They have been replaced by
+	explicit in-class exposition and base-class @ref restrictors
+	"restrictors". Both macros currently use the @c =delete; notation
+	instead of relying on private protection.
 	@{
 */
 
@@ -179,12 +187,14 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /**
 	Allocator class for all auxiliary stdlib specializations.
+
 	@note Defaults to @c std::allocator.
 */
 #define DUCT_CONFIG_ALLOCATOR
 
 /**
 	Detailed function signature.
+
 	Alias to either:
 	-# @c __FUNCSIG__ (Windows)
 	-# @c __PRETTY_FUNCTION__ (UNIX-based)
@@ -219,11 +229,11 @@ see @ref index or the accompanying LICENSE file for full text.
 	#error "Unsupported or unrecognized operating system"
 #endif
 
-#if (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_WINDOWS)
+#if (DUCT_PLATFORM_SYSTEM == DUCT_FLAG_PLATFORM_WINDOWS)
 	#define DUCT_PLATFORM_SYSTEM_WINDOWS
-#elif (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_LINUX)
+#elif (DUCT_PLATFORM_SYSTEM == DUCT_FLAG_PLATFORM_LINUX)
 	#define DUCT_PLATFORM_SYSTEM_LINUX
-#elif (DUCT_PLATFORM_SYSTEM==DUCT_FLAG_PLATFORM_MACOS)
+#elif (DUCT_PLATFORM_SYSTEM == DUCT_FLAG_PLATFORM_MACOS)
 	#define DUCT_PLATFORM_SYSTEM_MACOS
 #endif
 
@@ -423,21 +433,21 @@ see @ref index or the accompanying LICENSE file for full text.
 
 #ifndef bswap_16
 #define bswap_16(x)	\
-	((((x)>>8)&0xFFu)|(((x)&0xFFu)<<8))
+	((((x) >> 8) & 0xFFu) | (((x) & 0xFFu) << 8))
 #endif
 
 #ifndef bswap_32
 #define bswap_32(x)	\
-	((((x)&0xFF000000u)>>24) | (((x)&0x00FF0000u)>>8 ) | \
-	 (((x)&0x0000FF00u)<<8 ) | (((x)&0x000000FFu)<<24))
+	((((x) & 0xFF000000u) >> 24) | (((x) & 0x00FF0000u) >> 8 ) | \
+	 (((x) & 0x0000FF00u) << 8 ) | (((x) & 0x000000FFu) << 24))
 #endif
 
 #ifndef bswap_64
 #define bswap_64(x)	\
-	((((x)&0xFF00000000000000ull)>>56) | (((x)&0x00FF000000000000ull)>>40) | \
-	 (((x)&0x0000FF0000000000ull)>>24) | (((x)&0x000000FF00000000ull)>> 8) | \
-	 (((x)&0x00000000FF000000ull)<< 8) | (((x)&0x0000000000FF0000ull)<<24) | \
-	 (((x)&0x000000000000FF00ull)<<40) | (((x)&0x00000000000000FFull)<<56))
+	((((x) & 0xFF00000000000000ull) >> 56) | (((x) & 0x00FF000000000000ull) >> 40) | \
+	 (((x) & 0x0000FF0000000000ull) >> 24) | (((x) & 0x000000FF00000000ull) >>  8) | \
+	 (((x) & 0x00000000FF000000ull) <<  8) | (((x) & 0x0000000000FF0000ull) << 24) | \
+	 (((x) & 0x000000000000FF00ull) << 40) | (((x) & 0x00000000000000FFull) << 56))
 #endif
 
 /*
@@ -463,18 +473,18 @@ see @ref index or the accompanying LICENSE file for full text.
 #endif
 
 // Class utilities
-#define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)	\
-	TypeName(TypeName const&)=delete;			\
-	TypeName& operator=(TypeName const&)=delete
+#define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)		\
+	TypeName(TypeName const&) = delete;				\
+	TypeName& operator=(TypeName const&) = delete
 // -
 
-#define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)\
-	TypeName()=delete;							\
-	TypeName(TypeName const&)=delete;			\
-	TypeName(TypeName&&)=delete;				\
-	~TypeName()=delete;							\
-	TypeName& operator=(TypeName const&)=delete;\
-	TypeName& operator=(TypeName&&)=delete
+#define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)	\
+	TypeName() = delete;							\
+	TypeName(TypeName const&) = delete;				\
+	TypeName(TypeName&&) = delete;					\
+	~TypeName() = delete;							\
+	TypeName& operator=(TypeName const&) = delete;	\
+	TypeName& operator=(TypeName&&) = delete
 // -
 
 #ifndef DUCT_CONFIG_ALLOCATOR

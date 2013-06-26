@@ -7,18 +7,18 @@
 #include <cassert>
 #include <cstdio>
 
-#define init_decode(data_, offset_) \
-	begin=data_; \
-	end=data_+offset_; \
-	next=nullptr; \
-	cp=duct::CHAR_SENTINEL-1
+#define init_decode(data_, offset_)	\
+	begin = data_;					\
+	end = data_ + offset_;			\
+	next = nullptr;					\
+	cp = duct::CHAR_SENTINEL - 1
 // -
 
 #define print_decode(data_, enc_) \
 	std::printf( \
 		" next: %lu  end: %lu  cp: %d 0x%X  required: %u\n", \
-		static_cast<unsigned long>(next-data_), \
-		static_cast<unsigned long>(end-data_), \
+		static_cast<unsigned long>(next - data_), \
+		static_cast<unsigned long>(end - data_), \
 		cp, \
 		cp, \
 		duct:: enc_ ::required(cp) \
@@ -32,38 +32,38 @@
 	)*/
 // -
 
-#define run_decode(enc_, data_, offset_) \
-	init_decode(data_, offset_); \
-	next=duct:: enc_ ::decode(begin, end, cp, duct::CHAR_SENTINEL); \
+#define run_decode(enc_, data_, offset_)							\
+	init_decode(data_, offset_);									\
+	next=duct:: enc_ ::decode(begin, end, cp, duct::CHAR_SENTINEL);	\
 	print_decode(data_, enc_)
 // -
 
-#define init_encode(cp_) \
-	next=nullptr; \
-	output=buffer; \
-	cp=cp_
+#define init_encode(cp_)	\
+	next = nullptr;			\
+	output = buffer;		\
+	cp = cp_
 // -
 
 #define print_encode(enc_) \
 	std::printf( \
-		" next: %lu  cp: %d 0x%X  required: %u  enc: [", \
-		static_cast<unsigned long>(next-buffer), \
-		cp, \
-		cp, \
-		duct:: enc_ ::required(cp) \
-	); \
-	for (auto it_=buffer; next>it_; ++it_) { \
-		std::printf("0x%X%s", *it_, next==it_+1 ? "" : ", "); \
+		" next: %lu  cp: %d 0x%X  required: %u  enc: [",			\
+		static_cast<unsigned long>(next - buffer),					\
+		cp,															\
+		cp,															\
+		duct:: enc_ ::required(cp)									\
+	);																\
+	for (auto it_ = buffer; next > it_; ++it_) {					\
+		std::printf("0x%X%s", *it_, next == it_ + 1u ? "" : ", ");	\
 	} std::puts("]")
 // -
 
-#define run_encode(enc_, cp_) \
-	init_encode(cp_); \
-	next=duct:: enc_ ::encode(cp, output, 0); \
+#define run_encode(enc_, cp_)					\
+	init_encode(cp_);							\
+	next=duct:: enc_ ::encode(cp, output, 0);	\
 	print_encode(enc_)
 // -
 
-#define do_series(x_) (0==series || x_==series)
+#define do_series(x_) (0u == series || x_ == series)
 
 static duct::char8_strict const
 	utf8_diay[]			{0xC3,0xBF}, // U+FF; ÿ
@@ -89,15 +89,22 @@ static duct::char32_strict const
 	utf32_invalid1[]	{0x00FFFF},
 	utf32_invalid2[]	{0x10FFFE};
 
-signed main(signed argc, char* argv[]) {
-	DUCT_ASSERT(argc>1, "requires series argument (pass 0 for all)");
+signed
+main(
+	signed argc,
+	char* argv[]
+) {
+	DUCT_ASSERT(argc > 1, "requires series argument (pass 0 for all)");
 	unsigned
-		series=atoi(argv[1]),
-		offset=argc>2 ? atoi(argv[2]) : 4;
+		series = atoi(argv[1u]),
+		offset = (argc > 2)
+			? static_cast<unsigned>(atoi(argv[2u]))
+			: 4u
+	;
 	duct::char32 cp;
-	if (do_series(1)) {
+	if (do_series(1u)) {
 		std::puts("# UTF-8");
-		duct::char8_strict buffer[8];
+		duct::char8_strict buffer[8u];
 		duct::char8_strict* output;
 		duct::char8_strict const *begin, *end, *next;
 		run_decode(UTF8Utils, utf8_diay, offset);
@@ -107,16 +114,17 @@ signed main(signed argc, char* argv[]) {
 		run_decode(UTF8Utils, utf8_invalid1, offset);
 		run_decode(UTF8Utils, utf8_invalid2, offset);
 		// encode
-		run_encode(UTF8Utils, utf32_diay[0]);
-		run_encode(UTF8Utils, utf32_hirigana[0]);
-		run_encode(UTF8Utils, utf32_olditalic[0]);
-		run_encode(UTF8Utils, utf32_highest[0]);
-		run_encode(UTF8Utils, utf32_invalid1[0]);
-		run_encode(UTF8Utils, utf32_invalid2[0]);
+		run_encode(UTF8Utils, utf32_diay[0u]);
+		run_encode(UTF8Utils, utf32_hirigana[0u]);
+		run_encode(UTF8Utils, utf32_olditalic[0u]);
+		run_encode(UTF8Utils, utf32_highest[0u]);
+		run_encode(UTF8Utils, utf32_invalid1[0u]);
+		run_encode(UTF8Utils, utf32_invalid2[0u]);
 	}
-	if (do_series(2)) {
+
+	if (do_series(2u)) {
 		std::puts("# UTF-16");
-		duct::char16_strict buffer[2];
+		duct::char16_strict buffer[2u];
 		duct::char16_strict* output;
 		duct::char16_strict const *begin, *end, *next;
 		run_decode(UTF16Utils, utf16_diay, offset);
@@ -126,16 +134,17 @@ signed main(signed argc, char* argv[]) {
 		run_decode(UTF16Utils, utf16_invalid1, offset);
 		run_decode(UTF16Utils, utf16_invalid2, offset);
 		// encode
-		run_encode(UTF16Utils, utf32_diay[0]);
-		run_encode(UTF16Utils, utf32_hirigana[0]);
-		run_encode(UTF16Utils, utf32_olditalic[0]);
-		run_encode(UTF16Utils, utf32_highest[0]);
-		run_encode(UTF16Utils, utf32_invalid1[0]);
-		run_encode(UTF16Utils, utf32_invalid2[0]);
+		run_encode(UTF16Utils, utf32_diay[0u]);
+		run_encode(UTF16Utils, utf32_hirigana[0u]);
+		run_encode(UTF16Utils, utf32_olditalic[0u]);
+		run_encode(UTF16Utils, utf32_highest[0u]);
+		run_encode(UTF16Utils, utf32_invalid1[0u]);
+		run_encode(UTF16Utils, utf32_invalid2[0u]);
 	}
-	if (do_series(3)) {
+
+	if (do_series(3u)) {
 		std::puts("# UTF-32");
-		duct::char32_strict buffer[1];
+		duct::char32_strict buffer[1u];
 		duct::char32_strict* output;
 		duct::char32_strict const *begin, *end, *next;
 		run_decode(UTF32Utils, utf32_diay, offset);
@@ -145,12 +154,12 @@ signed main(signed argc, char* argv[]) {
 		run_decode(UTF32Utils, utf32_invalid1, offset);
 		run_decode(UTF32Utils, utf32_invalid2, offset);
 		// encode
-		run_encode(UTF32Utils, utf32_diay[0]);
-		run_encode(UTF32Utils, utf32_hirigana[0]);
-		run_encode(UTF32Utils, utf32_olditalic[0]);
-		run_encode(UTF32Utils, utf32_highest[0]);
-		run_encode(UTF32Utils, utf32_invalid1[0]);
-		run_encode(UTF32Utils, utf32_invalid2[0]);
+		run_encode(UTF32Utils, utf32_diay[0u]);
+		run_encode(UTF32Utils, utf32_hirigana[0u]);
+		run_encode(UTF32Utils, utf32_olditalic[0u]);
+		run_encode(UTF32Utils, utf32_highest[0u]);
+		run_encode(UTF32Utils, utf32_invalid1[0u]);
+		run_encode(UTF32Utils, utf32_invalid2[0u]);
 	}
 	return 0;
 }
