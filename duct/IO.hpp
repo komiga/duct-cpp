@@ -326,7 +326,9 @@ write_arithmetic_array(
 		std::is_arithmetic<T>::value,
 		"T must be arithmetic"
 	);
-	enum {BUFFER_SIZE = 64u};
+	static constexpr std::size_t const
+	BUFFER_SIZE = 64u;
+
 	T flipbuf[BUFFER_SIZE];
 	if (0u < count) {
 		if (Endian::SYSTEM != endian && 1u < sizeof(T)) {
@@ -373,6 +375,7 @@ template<
 struct rchar_defs {
 	using from_utils = FromU;
 	using char_type = typename from_utils::char_type;
+
 	enum {
 		char_size = from_utils::char_size,
 		BUFFER_SIZE = 6u // max UTF-8 (including invalid planes)
@@ -488,10 +491,11 @@ template<
 struct wchar_defs {
 	using to_utils = ToU;
 	using char_type = typename to_utils::char_type;
-	enum {
+
+	static constexpr std::size_t const
 		char_size = to_utils::char_size,
 		BUFFER_SIZE = to_utils::max_units
-	};
+	;
 };
 
 template<
@@ -628,7 +632,11 @@ struct rstr_defs {
 	using string_traits = detail::string_traits<string_type>;
 	using from_utils = FromU;
 	using to_utils = typename string_traits::encoding_utils;
-	enum {BUFFER_SIZE = 512u};
+
+	static constexpr std::size_t const
+	BUFFER_SIZE = 512u;
+	static constexpr std::ptrdiff_t const
+	BUFFER_SIZE_S = 512;
 };
 } // anonymous namespace
 /** @endcond */ // INTERNAL
@@ -705,7 +713,7 @@ read_string(
 			}
 			out_iter = DefsT::to_utils::encode(cp, out_iter, replacement);
 			// Prevent output overrun
-			if (DefsT::BUFFER_SIZE <= 6u + (out_iter - out_buffer)) {
+			if (DefsT::BUFFER_SIZE_S <= 6u + (out_iter - out_buffer)) {
 				value.append(out_buffer, out_iter);
 				out_iter = out_buffer;
 			}
@@ -815,7 +823,11 @@ struct wstr_defs {
 	using string_traits = detail::string_traits<string_type>;
 	using to_utils = ToU;
 	using from_utils = typename string_traits::encoding_utils;
-	enum {BUFFER_SIZE = 512u};
+
+	static constexpr std::size_t const
+	BUFFER_SIZE = 512u;
+	static constexpr std::ptrdiff_t const
+	BUFFER_SIZE_S = 512;
 };
 } // anonymous namespace
 /** @endcond */ // INTERNAL
@@ -878,7 +890,7 @@ write_string(
 		);*/
 		out_iter = DefsT::to_utils::encode(cp, out_iter, replacement);
 		// Prevent output overrun
-		if (DefsT::BUFFER_SIZE <= 6u + (out_iter - out_buffer)) {
+		if (DefsT::BUFFER_SIZE_S <= 6u + (out_iter - out_buffer)) {
 			if (Endian::SYSTEM != endian && 1u != DefsT::to_utils::char_size) {
 				for (auto iter = out_buffer; out_iter > iter; ++iter) {
 					byte_swap_ref(*iter);
