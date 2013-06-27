@@ -109,19 +109,30 @@ see @ref index or the accompanying LICENSE file for full text.
 */
 
 /**
-	Ensures bswap_16 is defined (Linux @c <byteswap.h>).
+	When defined, @c <byteswap.h> is not included.
+
+	@remarks Some @c <byteswap.h> implementations use C-style casts,
+	which tosses warnings when using GCC's
+	<strong>-Wold-style-cast</strong> (or errors with
+	<strong>-Werror</strong>). duct++ will provide nonmagical
+	bit-twiddling macros when @c <byteswap.h> is not included.
+*/
+#define DUCT_CONFIG_NO_BYTESWAP_HEADER
+
+/**
+	Ensures @c bswap_16 macro is defined (Linux @c <byteswap.h>).
 
 	@sa bswap_32(), bswap_64()
 */
 #define bswap_16(x)
 /**
-	Ensures bswap_32 is defined (Linux @c <byteswap.h>).
+	Ensures @c bswap_32 macro is defined (Linux @c <byteswap.h>).
 
 	@sa bswap_16(), bswap_64()
 */
 #define bswap_32(x)
 /**
-	Ensures bswap_64 is defined (Linux @c <byteswap.h>).
+	Ensures @c bswap_64 macro is defined (Linux @c <byteswap.h>).
 
 	@sa bswap_16(), bswap_32()
 */
@@ -224,6 +235,7 @@ see @ref index or the accompanying LICENSE file for full text.
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_LINUX
 #elif defined(__APPLE__) || defined(MACOSX) || \
 	  defined(macintosh) || defined(Macintosh)
+
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_MACOS
 #else
 	#error "Unsupported or unrecognized operating system"
@@ -237,10 +249,12 @@ see @ref index or the accompanying LICENSE file for full text.
 	#define DUCT_PLATFORM_SYSTEM_MACOS
 #endif
 
-#if (defined(__WORDSIZE) && (__WORDSIZE == 64)) \
-	|| defined(__arch64__) || defined(__LP64__) \
-	|| defined(_M_X64) || defined(__ppc64__) \
-	|| defined(__x86_64__)
+#if false										\
+|| (defined(__WORDSIZE) && (__WORDSIZE == 64))	\
+|| (defined(__arch64__)	|| defined(__LP64__))	\
+|| (defined(_M_X64)	 	|| defined(__ppc64__))	\
+|| defined(__x86_64__)
+
 	#define DUCT_PLATFORM_MODEL DUCT_FLAG_PLATFORM_MODEL_64
 	#define DUCT_PLATFORM_MODEL_64
 #elif (defined(__i386__) || defined(__ppc__))
@@ -331,9 +345,9 @@ see @ref index or the accompanying LICENSE file for full text.
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_VC2010
 	#elif _MSC_VER == 1700
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_VC2011
-	#else//_MSC_VER
+	#else
 		#define DUCT_COMPILER DUCT_FLAG_COMPILER_VC
-	#endif//_MSC_VER
+	#endif
 
 // Clang
 #elif defined(__clang__)
@@ -427,44 +441,59 @@ see @ref index or the accompanying LICENSE file for full text.
 #endif
 
 // Endian
-#ifdef DUCT_PLATFORM_SYSTEM_LINUX
-	#include <byteswap.h>
+#if !defined(DUCT_CONFIG_NO_BYTESWAP_HEADER)
+	#if defined(DUCT_PLATFORM_SYSTEM_LINUX)
+		#include <byteswap.h>
+	#endif
 #endif
 
 #ifndef bswap_16
-#define bswap_16(x)	\
-	((((x) >> 8) & 0xFFu) | (((x) & 0xFFu) << 8))
+#define bswap_16(x)	(			\
+	(((x) & 0xFF00u) >> 8 ) |	\
+	(((x) & 0x00FFu) << 8 )		\
+)
 #endif
 
 #ifndef bswap_32
-#define bswap_32(x)	\
-	((((x) & 0xFF000000u) >> 24) | (((x) & 0x00FF0000u) >> 8 ) | \
-	 (((x) & 0x0000FF00u) << 8 ) | (((x) & 0x000000FFu) << 24))
+#define bswap_32(x)	(				\
+	(((x) & 0xFF000000u) >> 24) |	\
+	(((x) & 0x00FF0000u) >> 8 ) |	\
+	(((x) & 0x0000FF00u) << 8 ) |	\
+	(((x) & 0x000000FFu) << 24)		\
+)
 #endif
 
 #ifndef bswap_64
-#define bswap_64(x)	\
-	((((x) & 0xFF00000000000000ull) >> 56) | (((x) & 0x00FF000000000000ull) >> 40) | \
-	 (((x) & 0x0000FF0000000000ull) >> 24) | (((x) & 0x000000FF00000000ull) >>  8) | \
-	 (((x) & 0x00000000FF000000ull) <<  8) | (((x) & 0x0000000000FF0000ull) << 24) | \
-	 (((x) & 0x000000000000FF00ull) << 40) | (((x) & 0x00000000000000FFull) << 56))
+#define bswap_64(x)	(						\
+	(((x) & 0xFF00000000000000ull) >> 56) |	\
+	(((x) & 0x00FF000000000000ull) >> 40) |	\
+	(((x) & 0x0000FF0000000000ull) >> 24) |	\
+	(((x) & 0x000000FF00000000ull) >>  8) |	\
+	(((x) & 0x00000000FF000000ull) <<  8) |	\
+	(((x) & 0x0000000000FF0000ull) << 24) |	\
+	(((x) & 0x000000000000FF00ull) << 40) |	\
+	(((x) & 0x00000000000000FFull) << 56)	\
+)
 #endif
 
 /*
-	This byte order stuff was lifted from PhysFS, which was lifted from SDL.
-	http://www.libsdl.org
+	This byte order stuff was lifted from PhysFS, which was lifted
+	from SDL. See http://www.libsdl.org.
 */
 #define DUCT_ENDIAN_LITTLE	1234
 #define DUCT_ENDIAN_BIG		4321
 
-#if	defined(__i386__) || defined(__ia64__) || defined(_WIN32) || \
-	(defined(__alpha__) || defined(__alpha)) || \
-	defined(__arm__) || defined(ARM) || \
-	(defined(__mips__) && defined(__MIPSEL__)) || \
-	defined(__SYMBIAN32__) || \
-	defined(__x86_64__) || \
-	defined(__LITTLE_ENDIAN__)
-	
+#if false
+|| defined(_WIN32)								\
+|| defined(__i386__)							\
+|| defined(__ia64__)							\
+|| defined(__x86_64__)							\
+|| defined(__SYMBIAN32__)						\
+|| defined(__LITTLE_ENDIAN__)					\
+|| (defined(__alpha__)	|| defined(__alpha))	\
+|| (defined(__arm__)	|| defined(ARM)	)		\
+|| (defined(__mips__)	&& defined(__MIPSEL__))
+
 	#define DUCT_BYTEORDER	DUCT_ENDIAN_LITTLE
 	#define DUCT_BYTEORDER_LE
 #else
