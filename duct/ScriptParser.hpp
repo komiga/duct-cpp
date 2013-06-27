@@ -75,7 +75,7 @@ public:
 	/** Move constructor. */
 	ScriptParserException(ScriptParserException&&) = default;
 	/** Destructor. */
-	~ScriptParserException() = default;
+	~ScriptParserException() noexcept override = default;
 /// @}
 
 /** @name Operators */ /// @{
