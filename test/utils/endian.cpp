@@ -77,19 +77,19 @@ do_test_floating(
 	auto yr = value; duct::byte_swap_ref_if(yr, ENSURE_SWAP);
 	std::cout
 		<< std::hex << std::showbase
-		<< "floating-point byte_swap  : "
+		<< "floating-point byte_swap   : "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> " << reinterpret_cast<cref_type>(x)
 		<< '\n'
-		<<"floating-point byte_swap_if: "
+		<< "floating-point byte_swap_if: "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(y)
 		<< '\n'
-		<<"floating-point byte_swap   : "
+		<< "floating-point byte_swap   : "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(xr)
 		<< '\n'
-		<<"floating-point byte_swap_if: "
+		<< "floating-point byte_swap_if: "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(yr)
 	<< std::endl;
