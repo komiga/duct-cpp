@@ -31,7 +31,9 @@ class CharacterRange;
 
 /**
 	A range of characters.
-	@note The range is inclusive and can thus map the entire UTF-32 space.
+
+	@note The range is inclusive and can thus map the entire UTF-32
+	space.
 */
 class CharacterRange final {
 private:
@@ -49,6 +51,7 @@ public:
 		: m_first{'\0'}
 		, m_last{'\0'}
 	{}
+
 	/**
 		Construct with single code point.
 
@@ -63,6 +66,7 @@ public:
 		: m_first{cp}
 		, m_last{cp}
 	{}
+
 	/**
 		Construct with range.
 
@@ -78,6 +82,7 @@ public:
 		: m_first{first}
 		, m_last{first+length}
 	{}
+
 	/** Copy constructor. */
 	CharacterRange(CharacterRange const&) = default;
 	/** Move constructor. */
@@ -182,6 +187,7 @@ public:
 		}
 		return 0;
 	}
+
 	/**
 		Check if a range intersects with this one.
 
@@ -209,12 +215,13 @@ public:
 		Find the first matching code point in a sequence.
 
 		@returns
-		- Iterator of the first matching code point in the sequence, or
+		- Iterator of the first matching code point in the sequence;
+		  or
 		- @a end if the sequence had no matching code points.
 		@tparam StringU Encoding utilities.
 		@tparam InputIt Input iterator type; inferred from @a pos.
-		@param pos Start of sequence. Behavior is undefined if this does not
-		point to the lead unit for a code unit sequence.
+		@param pos Start of sequence. Behavior is undefined if this
+		does not point to the lead unit for a code unit sequence.
 		@param end End of sequence.
 	*/
 	template<
@@ -246,8 +253,8 @@ public:
 		- @c str.cend() if the sequence had no matching code points.
 		@tparam StringT String type; inferred from @a str.
 		@param str String to search.
-		@param pos Start iterator. Behavior is undefined if this does not
-		point to the lead unit for a code unit sequence.
+		@param pos Start iterator. Behavior is undefined if this does
+		not point to the lead unit for a code unit sequence.
 	*/
 	template<
 		class StringT,
@@ -270,8 +277,8 @@ public:
 		- @c false if one does not.
 		@tparam StringU Encoding utilities.
 		@tparam InputIt Input iterator type; inferred from @a pos.
-		@param pos Start of sequence. Behavior is undefined if this does not
-		point to the lead unit for a code unit sequence.
+		@param pos Start of sequence. Behavior is undefined if this
+		does not point to the lead unit for a code unit sequence.
 		@param end End of sequence.
 	*/
 	template<
@@ -299,12 +306,12 @@ public:
 		Check if all code points in a string match.
 
 		@returns
-		- @c true if all code points in the sequence match, or
+		- @c true if all code points in the sequence match; or
 		- @c false if one does not.
 		@tparam StringT String type; inferred from @a str.
 		@param str String to search.
-		@param pos Start iterator. Behavior is undefined if @a pos does not
-		point to the lead unit for a code unit sequence.
+		@param pos Start iterator. Behavior is undefined if @a pos
+		does not point to the lead unit for a code unit sequence.
 	*/
 	template<
 		class StringT,

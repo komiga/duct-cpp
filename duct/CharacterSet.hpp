@@ -55,6 +55,7 @@ public:
 	CharacterSet() = default;
 	/**
 		Construct with string ranges.
+
 		@param str String of ranges.
 	*/
 	explicit
@@ -64,6 +65,7 @@ public:
 	{
 		add_from_string(str);
 	}
+
 	/** @copydoc CharacterSet(u8string const&) */
 	explicit
 	CharacterSet(
@@ -72,8 +74,10 @@ public:
 	{
 		add_from_string(u8string{str});
 	}
+
 	/**
 		Construct with single range.
+
 		@param start First code point of range.
 		@param length Number of code points in the range.
 	*/
@@ -84,8 +88,10 @@ public:
 	{
 		add_range(start, length);
 	}
+
 	/**
 		Construct with single code point.
+
 		@param cp Code point.
 	*/
 	explicit
@@ -95,6 +101,7 @@ public:
 	{
 		add_range(cp, 0);
 	}
+
 	/** Copy constructor. */
 	CharacterSet(CharacterSet const& other) = default;
 	/** Move constructor. */
@@ -139,6 +146,7 @@ public:
 
 	/**
 		Get ending range iterator.
+
 		@returns The ending range iterator.
 	*/
 	iterator
@@ -173,8 +181,10 @@ public:
 		}
 		return false;
 	}
+
 	/**
 		Check if the set contains a range.
+
 		@returns
 		- @c true if the range was found, or
 		- @c false if it was not.
@@ -225,8 +235,7 @@ public:
 		return sequence_find<StringU>(pos, str.cend());
 	}
 
-	/** @copydoc CharacterRange::sequence_matches(
-		InputIt,InputIt const) const */
+	/** @copydoc CharacterRange::sequence_matches(InputIt,InputIt const) const */
 	template<
 		class StringU,
 		typename InputIt
@@ -256,6 +265,7 @@ public:
 		// Every code point in the sequence matched
 		return true;
 	}
+
 	/** @copydoc CharacterRange::matches(StringT const&,StringI) const */
 	template<
 		class StringT,
@@ -282,6 +292,7 @@ public:
 
 	/**
 		Add string ranges.
+
 		@returns @c *this.
 		@tparam StringT String type; inferred from @a str.
 		@param str String ranges to add.
@@ -301,7 +312,7 @@ public:
 		bool escape = false;
 		StringI it, next;
 		for (it = str.cbegin(); str.cend() != it; it = next) {
-			next=StringU::decode(it, str.cend(), cp, CHAR_SENTINEL);
+			next = StringU::decode(it, str.cend(), cp, CHAR_SENTINEL);
 			if (next == it) { // Incomplete sequence
 				DUCT_DEBUG("CharacterSet::add_from_string: ics");
 				break;
@@ -329,9 +340,9 @@ public:
 					if (cp == lastcp) {
 						add_range(cp, 0);
 					} else if (cp<lastcp) {
-						add_range(cp, lastcp-cp);
+						add_range(cp, lastcp - cp);
 					} else {
-						add_range(lastcp, cp-lastcp);
+						add_range(lastcp, cp - lastcp);
 					}
 					lastcp = CHAR_SENTINEL;
 					isrange = false;
@@ -393,6 +404,7 @@ public:
 	/**
 		Add all whitespace characters: tab, linefeed, carriage
 		return, and space.
+
 		@returns @c *this.
 	*/
 	CharacterSet&
@@ -405,6 +417,7 @@ public:
 
 	/**
 		Add all alphanumberic characters: @c A-Z, @c a-z, and @c 0-9.
+
 		@returns @c *this.
 	*/
 	CharacterSet&
@@ -417,6 +430,7 @@ public:
 
 	/**
 		Add @c A-Z and @c a-z.
+
 		@returns @c *this.
 	*/
 	CharacterSet&
@@ -428,6 +442,7 @@ public:
 
 	/**
 		Add @c A-Z.
+
 		@returns @c *this.
 	*/
 	CharacterSet&
@@ -438,6 +453,7 @@ public:
 
 	/**
 		Add @c a-z.
+
 		@returns @c *this.
 	*/
 	CharacterSet&
@@ -448,6 +464,7 @@ public:
 
 	/**
 		Add @c 0-9.
+
 		@returns @c *this.
 	*/
 	CharacterSet&

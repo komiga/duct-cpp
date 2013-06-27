@@ -60,6 +60,7 @@ public:
 	) {
 		m_buffer.reserve(capacity);
 	}
+
 	/** Copy constructor (deleted). */
 	CharBuf(CharBuf const&) = delete;
 	/** Move constructor. */
@@ -173,7 +174,8 @@ public:
 		Compare buffer to a character set.
 
 		@returns
-		- @c true if all characters match a character from @a char_set;
+		- @c true if all characters match a character
+		  from @a char_set;
 		- @c false otherwise.
 		@param char_set Character set to compare against.
 	*/
@@ -194,12 +196,12 @@ public:
 	/**
 		Convert buffer to a string.
 
-		@note The explicit u8string-returning to_string() is more efficient if
-		the buffer is often needed as a string.
+		@note The explicit u8string-returning to_string() is more
+		efficient if the buffer is often needed as a string.
 
 		@returns Buffer converted to @a StringT.
-		@tparam StringT String type to convert to. Encoding is inferred from
-		the type's character size.
+		@tparam StringT String type to convert to. Encoding is
+		inferred from the type's character size.
 	*/
 	template<
 		class StringT
@@ -216,9 +218,9 @@ public:
 	/**
 		Convert buffer to a @c u8string.
 
-		@note This will cache the current buffer as a u8string if needed. It is
-		more efficient to use this than it is to directly convert to other
-		string types.
+		@note This will cache the current buffer as a u8string if
+		needed. It is more efficient to use this than it is to
+		directly convert to other string types.
 
 		@returns Cache string.
 	*/
@@ -230,12 +232,12 @@ public:
 	/**
 		Convert buffer to a string (by-ref).
 
-		@note The explicit u8string-returning to_string() is more efficient if
-		the buffer is often needed as a string.
+		@note The explicit u8string-returning to_string() is more
+		efficient if the buffer is often needed as a string.
 
 		@param[out] str Output string.
-		@param append Whether to append to @a str; defaults to @c false
-		(@a str is cleared on entry).
+		@param append Whether to append to @a str; defaults
+		to @c false (@a str is cleared on entry).
 	*/
 	template<
 		class StringT
@@ -253,10 +255,12 @@ public:
 	/**
 		Convert the buffer to an arithmetic type with error return.
 
-		@note @a value is guaranteed to be equal to @c T() if extraction failed.
+		@note @a value is guaranteed to be equal to @c T() if
+		extraction failed.
 
 		@returns
-		- @c true if the buffer was convertible to @a T (@a value is set); or
+		- @c true if the buffer was convertible to @a T (@a value
+		  is set); or
 		- @c false otherwise (@a value equals @c T()).
 		@tparam T An arithmetic type; inferred from @a value.
 		@param[out] value Output value.
@@ -273,9 +277,9 @@ public:
 			"T must be arithmetic"
 		);
 		cache();
-		// FIXME: Clang 3.2 has a defect (with libstdc++ 4.6.3?) in that it
-		// believes the istringstream copy ctor is being used if aggregate
-		// initialization is used here.
+		// FIXME: Clang 3.2 has a defect (with libstdc++ 4.6.3?) in
+		// that it believes the istringstream copy ctor is being used
+		// if aggregate initialization is used here.
 		//
 		// It oddly only occurs when inside of a function template.
 		// GCC 4.6.3 doesn't even care.
