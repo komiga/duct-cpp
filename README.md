@@ -1,5 +1,5 @@
 
-## duct++ — it's the bees knees
+## duct++ — it's the bee's knees
 
 **duct++** is a general-purpose C++11 header library which supplies:
 
