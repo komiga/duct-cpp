@@ -15,6 +15,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 #include "./config.hpp"
 #include "./debug.hpp"
+#include "./aux.hpp"
 #include "./string.hpp"
 #include "./detail/string_traits.hpp"
 #include "./EndianUtils.hpp"
@@ -23,6 +24,8 @@ see @ref index or the accompanying LICENSE file for full text.
 #include <cstring>
 #include <type_traits>
 #include <limits>
+#include <utility>
+#include <functional>
 #include <iostream>
 
 namespace duct {
@@ -31,37 +34,58 @@ namespace IO {
 // Forward declarations
 template<
 	typename CharT,
-	typename TraitsT = std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
 class basic_memstreambuf;
 template<
 	typename CharT,
-	typename TraitsT = std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
 class basic_imemstream;
 template<
 	typename CharT,
-	typename TraitsT = std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
 class basic_omemstream;
 template<
 	typename CharT,
-	typename TraitsT = std::char_traits<CharT>
+	class TraitsT = std::char_traits<CharT>
 >
 class basic_memstream;
-class StreamContext;
 
+template<
+	typename CharT,
+	class TraitsT = std::char_traits<CharT>
+>
+class basic_multistreambuf;
+template<
+	typename CharT,
+	class TraitsT = std::char_traits<CharT>
+>
+class basic_omultistream;
+
+class StreamContext;
 /**
 	@addtogroup io
 	@{
 */
 
 /**
+	Vector of output streams.
+*/
+using ostream_vector_type
+= aux::vector<
+	std::reference_wrapper<std::ostream>
+>;
+
+/**
 	@name Helper classes
 
 	@warning All memory stream buffer classes are incapable of
 	automatically growing.
-	@sa StreamContext
+
+	@sa
+		StreamContext
 	@{
 */
 
@@ -73,6 +97,11 @@ using imemstream = basic_imemstream<char>;
 using omemstream = basic_omemstream<char>;
 /** Input/output memory stream. */
 using memstream = basic_memstream<char>;
+
+/** Multicast streambuf. */
+using multistreambuf = basic_multistreambuf<char>;
+/** Output multicast stream. */
+using omultistream = basic_omultistream<char>;
 
 /** @} */ // end of name-group Helper classes
 
@@ -1001,9 +1030,9 @@ exit_f:
 */
 template<
 	typename CharT,
-	typename TraitsT
+	class TraitsT
 >
-class basic_memstreambuf final
+class basic_memstreambuf
 	: public std::basic_streambuf<CharT, TraitsT>
 {
 private:
@@ -1012,15 +1041,15 @@ private:
 public:
 /** @name Types */ /// @{
 	/** Character type. */
-	using char_type = CharT;
+	using typename base_type::char_type;
 	/** Traits type. */
-	using traits_type = TraitsT;
+	using typename base_type::traits_type;
 	/** @c traits_type::int_type. */
-	using int_type = typename traits_type::int_type;
+	using typename base_type::int_type;
 	/** @c traits_type::pos_type. */
-	using pos_type = typename traits_type::pos_type;
+	using typename base_type::pos_type;
 	/** @c traits_type::off_type. */
-	using off_type = typename traits_type::off_type;
+	using typename base_type::off_type;
 /// @}
 
 private:
@@ -1071,7 +1100,7 @@ public:
 	/** Move constructor. */
 	basic_memstreambuf(basic_memstreambuf&&) = default;
 	/** Destructor. */
-	~basic_memstreambuf() override = default;
+	virtual ~basic_memstreambuf() override = default;
 /// @}
 
 /** @name Operators */ /// @{
@@ -1098,7 +1127,7 @@ public:
 			this->setg(nullptr, nullptr, nullptr);
 			this->setp(nullptr, nullptr);
 		} else {
-			char_type* const cbuf = reinterpret_cast<char_type*>(buffer);
+			char_type* const cbuf = static_cast<char_type*>(buffer);
 			if (m_mode & std::ios_base::in) {
 				this->setg(cbuf, cbuf, cbuf + size);
 			}
@@ -1109,7 +1138,7 @@ public:
 	}
 
 protected:
-	/** @cond INTERNAL */
+/** @cond INTERNAL */
 	pos_type
 	seekoff(
 		off_type off,
@@ -1136,7 +1165,7 @@ protected:
 			// std::ios_base::beg is just beg+off
 			if 		(std::ios_base::cur == way) { off += cur - beg; }
 			else if (std::ios_base::end == way) { off += end - beg; }
-			if (0<=off && (end-beg)>=off) {
+			if (0 <= off && (end - beg) >= off) {
 				if (do_in) { this->setg(beg, beg + off, end); }
 				if (do_out) { setp_all(beg, beg + off, end); }
 				return pos_type{off};
@@ -1157,9 +1186,7 @@ protected:
 		// Pass to seekoff() instead of duplicating code.
 		return seekoff(static_cast<off_type>(pos), std::ios_base::beg, which);
 	}
-	/** @endcond */ // INTERNAL
 
-private:
 	// The setp that should have been (for some arcane reason, setp
 	// doesn't take a new current pointer like setg does).
 	// Also, the stdlib hates us. pbump just _has to_ take an int
@@ -1183,16 +1210,20 @@ private:
 		}
 		this->pbump(static_cast<signed>(off));
 	}
+/** @endcond */ // INTERNAL
 };
 
 /**
 	Input memory stream.
 
-	@sa basic_omemstream, basic_memstream, basic_memstreambuf
+	@sa
+		basic_omemstream,
+		basic_memstream,
+		basic_memstreambuf
 */
 template<
 	typename CharT,
-	typename TraitsT
+	class TraitsT
 >
 class basic_imemstream final
 	: public std::basic_istream<CharT, TraitsT>
@@ -1203,15 +1234,16 @@ private:
 public:
 /** @name Types */ /// @{
 	/** Character type. */
-	using char_type = CharT;
+	using typename base_type::char_type;
 	/** Traits type. */
-	using traits_type = TraitsT;
+	using typename base_type::traits_type;
 	/** @c traits_type::int_type. */
-	using int_type = typename traits_type::int_type;
+	using typename base_type::int_type;
 	/** @c traits_type::pos_type. */
-	using pos_type = typename traits_type::pos_type;
+	using typename base_type::pos_type;
 	/** @c traits_type::off_type. */
-	using off_type = typename traits_type::off_type;
+	using typename base_type::off_type;
+
 	/** Memory buffer type. */
 	using membuf_type = basic_memstreambuf<char_type, traits_type>;
 /// @}
@@ -1275,11 +1307,14 @@ public:
 /**
 	Output memory stream.
 
-	@sa basic_imemstream, basic_memstream, basic_memstreambuf
+	@sa
+		basic_imemstream,
+		basic_memstream,
+		basic_memstreambuf
 */
 template<
 	typename CharT,
-	typename TraitsT
+	class TraitsT
 >
 class basic_omemstream final
 	: public std::basic_ostream<CharT, TraitsT>
@@ -1290,15 +1325,16 @@ private:
 public:
 /** @name Types */ /// @{
 	/** Character type. */
-	using char_type = CharT;
+	using typename base_type::char_type;
 	/** Traits type. */
-	using traits_type = TraitsT;
+	using typename base_type::traits_type;
 	/** @c traits_type::int_type. */
-	using int_type = typename traits_type::int_type;
+	using typename base_type::int_type;
 	/** @c traits_type::pos_type. */
-	using pos_type = typename traits_type::pos_type;
+	using typename base_type::pos_type;
 	/** @c traits_type::off_type. */
-	using off_type = typename traits_type::off_type;
+	using typename base_type::off_type;
+
 	/** Memory buffer type. */
 	using membuf_type = basic_memstreambuf<char_type, traits_type>;
 /// @}
@@ -1360,11 +1396,14 @@ public:
 
 /**
 	Input/output memory stream.
-	@sa basic_imemstream, basic_omemstream, basic_memstreambuf
+	@sa
+		basic_imemstream,
+		basic_omemstream,
+		basic_memstreambuf
 */
 template<
 	typename CharT,
-	typename TraitsT
+	class TraitsT
 >
 class basic_memstream final
 	: public std::basic_iostream<CharT, TraitsT>
@@ -1375,15 +1414,16 @@ private:
 public:
 /** @name Types */ /// @{
 	/** Character type. */
-	using char_type = CharT;
+	using typename base_type::char_type;
 	/** Traits type. */
-	using traits_type = TraitsT;
+	using typename base_type::traits_type;
 	/** @c traits_type::int_type. */
-	using int_type = typename traits_type::int_type;
+	using typename base_type::int_type;
 	/** @c traits_type::pos_type. */
-	using pos_type = typename traits_type::pos_type;
+	using typename base_type::pos_type;
 	/** @c traits_type::off_type. */
-	using off_type = typename traits_type::off_type;
+	using typename base_type::off_type;
+
 	/** Memory buffer type. */
 	using membuf_type = basic_memstreambuf<char_type, traits_type>;
 /// @}
@@ -1442,6 +1482,229 @@ public:
 	rdbuf() const noexcept {
 		return const_cast<membuf_type*>(&m_membuf);
 	}
+};
+
+/**
+	Multicast output streambuf.
+
+	@remarks The data in this streambuf will be flushed to the
+	multicast streams when @c overflow() or @c pubsync() are called.
+	By extension, flushing a @c basic_omultistream will
+	call @c pubsync().
+
+	@sa
+		basic_omultistream
+*/
+template<
+	typename CharT,
+	class TraitsT
+>
+class basic_multistreambuf
+	: public basic_memstreambuf<CharT, TraitsT>
+{
+private:
+	using base_type = basic_memstreambuf<CharT, TraitsT>;
+
+public:
+/** @name Types */ /// @{
+	/** Character type. */
+	using typename base_type::char_type;
+	/** Traits type. */
+	using typename base_type::traits_type;
+	/** @c traits_type::int_type. */
+	using typename base_type::int_type;
+	/** @c traits_type::pos_type. */
+	using typename base_type::pos_type;
+	/** @c traits_type::off_type. */
+	using typename base_type::off_type;
+/// @}
+
+private:
+	ostream_vector_type& m_streams;
+
+public:
+/** @name Constructors and destructor */ /// @{
+	/** Default constructor (deleted). */
+	basic_multistreambuf() = delete;
+
+	/**
+		Constructor with output buffer.
+
+		@param buffer Data buffer.
+		@param size Size of @a buffer.
+		@param mode @c openmode for the streambuf; defaults to and
+		forces @c std::ios_base::out.
+	*/
+	basic_multistreambuf(
+		ostream_vector_type& streams,
+		void* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode = std::ios_base::out
+	)
+		: base_type(buffer, size, mode)
+		, m_streams(streams)
+	{}
+
+	/** Destructor. */
+	virtual ~basic_multistreambuf() override = default;
+/// @}
+
+/** @name Operations */ /// @{
+	/**
+		Write data in buffer to all streams and reset put area.
+
+		@remarks This does not exlpicitly @c flush() the multicast streams.
+	*/
+	void
+	multicast_flush() {
+		if (this->pbase() != this->pptr()) {
+			for (std::ostream& stream : m_streams) {
+				stream.write(
+					this->pbase(),
+					this->pptr() - this->pbase()
+				);
+			}
+			// Reset put area to beginning of data buffer
+			this->setp_all(this->pbase(), this->pbase(), this->epptr());
+		}
+	}
+/// @}
+
+protected:
+/** @cond INTERNAL */
+	virtual int_type
+	overflow(
+		int_type c = traits_type::eof()
+	) override {
+		multicast_flush();
+		if (traits_type::not_eof(c)) {
+			(*this->pptr()) = traits_type::to_char_type(c);
+			this->pbump(1);
+		}
+		return traits_type::not_eof(c);
+	}
+
+	virtual int_type
+	sync() override {
+		multicast_flush();
+		return 0;
+	}
+/** @endcond */ // INTERNAL
+};
+
+/**
+	Output multicast stream.
+
+	@remarks If the streambuf does not overflow or sync before the
+	stream is destroyed, no data will be multicast. Thus, multicast
+	streams must be flushed manually to ensure data propagates.
+
+	@sa
+		basic_multistreambuf
+*/
+template<
+	typename CharT,
+	class TraitsT
+>
+class basic_omultistream final
+	: public std::basic_ostream<CharT, TraitsT>
+{
+private:
+	using base_type = std::basic_ostream<CharT, TraitsT>;
+
+public:
+/** @name Types */ /// @{
+	/** Character type. */
+	using typename base_type::char_type;
+	/** Traits type. */
+	using typename base_type::traits_type;
+	/** @c traits_type::int_type. */
+	using typename base_type::int_type;
+	/** @c traits_type::pos_type. */
+	using typename base_type::pos_type;
+	/** @c traits_type::off_type. */
+	using typename base_type::off_type;
+
+	/** Multistream buffer type. */
+	using multistreambuf_type = basic_multistreambuf<char_type, traits_type>;
+/// @}
+
+private:
+	ostream_vector_type m_streams;
+	multistreambuf_type m_streambuf;
+
+public:
+/** @name Constructors and destructor */ /// @{
+	/** Default constructor (deleted). */
+	basic_omultistream() = delete;
+	/**
+		Constructor with buffer.
+
+		@param streams Streams to multicast to.
+		@param buffer Data buffer.
+		@param buffer Size of data buffer.
+		@param mode @c openmode for the stream; defaults to and
+		forces @c std::ios_base::out; removes @c std::ios_base::in.
+	*/
+	basic_omultistream(
+		ostream_vector_type&& streams,
+		void* const buffer,
+		std::size_t const size,
+		std::ios_base::openmode const mode = std::ios_base::out
+	)
+		: base_type()
+		, m_streams(std::move(streams))
+		, m_streambuf(
+			m_streams,
+			buffer,
+			size,
+			(mode & ~std::ios_base::in) | std::ios_base::out
+		)
+	{
+		this->init(&m_streambuf);
+	}
+	/** Copy constructor (deleted). */
+	basic_omultistream(basic_omultistream const&) = delete;
+	/** Move constructor. */
+	basic_omultistream(basic_omultistream&&) = default;
+	/** Destructor. */
+	~basic_omultistream() override = default;
+/// @}
+
+/** @name Operators */ /// @{
+	/** Copy assignment operator (deleted). */
+	basic_omultistream& operator=(basic_omultistream const&) = delete;
+	/** Move assignment operator. */
+	basic_omultistream& operator=(basic_omultistream&&) = default;
+/// @}
+
+/** @name Properties */ /// @{
+	/**
+		Get multicast stream vector.
+
+		@returns Multicast stream vector.
+		@{
+	*/
+	ostream_vector_type&
+	get_streams() noexcept {
+		return m_streams;
+	}
+	ostream_vector_type const&
+	get_streams() const noexcept {
+		return m_streams;
+	}
+	/** @} */
+
+	/**
+		Get streambuf.
+
+		@returns Pointer to the stream's streambuf (never @c nullptr).
+	*/
+	multistreambuf_type*
+	rdbuf() const noexcept {
+		return const_cast<multistreambuf_type*>(&m_streambuf);
+	}
+/// @}
 };
 
 /**
