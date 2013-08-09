@@ -1,6 +1,6 @@
 /**
-@file IO/op.hpp
-@brief I/O utilities and iostream extensions.
+@file IO/arithmetic.hpp
+@brief Arithmetic IO operations.
 
 @author Tim Howard
 @copyright 2010-2013 Tim Howard under the MIT license;

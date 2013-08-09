@@ -16,7 +16,6 @@ see @ref index or the accompanying LICENSE file for full text.
 
 #include <type_traits>
 #include <utility>
-#include <functional>
 #include <ostream>
 
 namespace duct {
@@ -42,11 +41,12 @@ class basic_omultistream;
 
 /**
 	Vector of output streams.
+
+	@remarks The element type is a pointer so that stream disabling
+	is more efficient. @c basic_memstreambuf::multicast() will
+	ignore @c nullptr elements.
 */
-using multicast_vector_type
-= aux::vector<
-	std::reference_wrapper<std::ostream>
->;
+using multicast_vector_type = aux::vector<std::ostream*>;
 
 /**
 	@name Multicast stream type aliases
@@ -126,20 +126,53 @@ public:
 	virtual ~basic_multistreambuf() override = default;
 /// @}
 
+/** @name Properties */ /// @{
+	/**
+		Set multicast stream vector.
+
+		@param streams New multicast stream vector (reference).
+	*/
+	void
+	set_streams(
+		multicast_vector_type& streams
+	) noexcept {
+		m_streams = streams;
+	}
+
+	/**
+		Get multicast stream vector.
+
+		@returns The multicast stream vector.
+	*/
+	multicast_vector_type&
+	get_streams() noexcept {
+		return m_streams;
+	}
+
+	/** @copydoc basic_multistreambuf::get_streams() noexcept */
+	multicast_vector_type const&
+	get_streams() const noexcept {
+		return m_streams;
+	}
+/// @}
+
 /** @name Operations */ /// @{
 	/**
 		Write data in put area to all streams and reset put area.
 
-		@remarks This does not explicitly @c flush() the multicast streams.
+		@remarks This does not explicitly @c flush() the multicast
+		streams.
 	*/
 	void
 	multicast() {
 		if (this->pbase() != this->pptr()) {
-			for (std::ostream& stream : m_streams) {
-				stream.write(
-					this->pbase(),
-					this->pptr() - this->pbase()
-				);
+			for (std::ostream* stream : m_streams) {
+				if (nullptr != stream) {
+					stream->write(
+						this->pbase(),
+						this->pptr() - this->pbase()
+					);
+				}
 			}
 			// Reset put area to beginning of data buffer
 			this->setp_all(this->pbase(), this->pbase(), this->epptr());
@@ -257,20 +290,38 @@ public:
 
 /** @name Properties */ /// @{
 	/**
+		Set multicast stream vector.
+
+		@note This does not update the streambuf's multicast stream
+		vector reference. If the streambuf's vector reference was not
+		changed externally, it will still point to the stream's
+		vector. This function moves @a streams into the stream's
+		vector.
+
+		@param streams New multicast stream vector.
+	*/
+	void
+	set_streams(
+		multicast_vector_type streams
+	) noexcept {
+		m_streams.assign(std::move(streams));
+	}
+
+	/**
 		Get multicast stream vector.
 
 		@returns Multicast stream vector.
-		@{
 	*/
 	multicast_vector_type&
 	get_streams() noexcept {
 		return m_streams;
 	}
+
+	/** @copydoc basic_omultistream::get_streams() noexcept */
 	multicast_vector_type const&
 	get_streams() const noexcept {
 		return m_streams;
 	}
-	/** @} */
 
 	/**
 		Get streambuf.

@@ -13,7 +13,7 @@ signed
 main() {
 	std::ostringstream sstream;
 	duct::IO::omultistream multicast{
-		{std::cout, sstream},
+		{&std::cout, &sstream, nullptr},
 		multicast_buffer,
 		sizeof(multicast_buffer)
 	};
