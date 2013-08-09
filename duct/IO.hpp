@@ -1530,6 +1530,7 @@ public:
 	/**
 		Constructor with output buffer.
 
+		@param streams Streams to multicast to.
 		@param buffer Data buffer.
 		@param size Size of @a buffer.
 		@param mode @c openmode for the streambuf; defaults to and
@@ -1551,12 +1552,12 @@ public:
 
 /** @name Operations */ /// @{
 	/**
-		Write data in buffer to all streams and reset put area.
+		Write data in put area to all streams and reset put area.
 
-		@remarks This does not exlpicitly @c flush() the multicast streams.
+		@remarks This does not explicitly @c flush() the multicast streams.
 	*/
 	void
-	multicast_flush() {
+	multicast() {
 		if (this->pbase() != this->pptr()) {
 			for (std::ostream& stream : m_streams) {
 				stream.write(
@@ -1576,8 +1577,8 @@ protected:
 	overflow(
 		int_type c = traits_type::eof()
 	) override {
-		multicast_flush();
-		if (traits_type::not_eof(c)) {
+		multicast();
+		if (traits_type::not_eof(c) == c) {
 			(*this->pptr()) = traits_type::to_char_type(c);
 			this->pbump(1);
 		}
@@ -1586,7 +1587,7 @@ protected:
 
 	virtual int_type
 	sync() override {
-		multicast_flush();
+		multicast();
 		return 0;
 	}
 /** @endcond */ // INTERNAL
@@ -1642,7 +1643,7 @@ public:
 
 		@param streams Streams to multicast to.
 		@param buffer Data buffer.
-		@param buffer Size of data buffer.
+		@param size Size of data buffer.
 		@param mode @c openmode for the stream; defaults to and
 		forces @c std::ios_base::out; removes @c std::ios_base::in.
 	*/
