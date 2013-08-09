@@ -1,5 +1,5 @@
 
-#include <duct/IO.hpp>
+#include <duct/IO/multistream.hpp>
 
 #include <cstdio>
 #include <type_traits>

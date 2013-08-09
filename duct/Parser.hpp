@@ -12,7 +12,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 #include "./config.hpp"
 #include "./char.hpp"
-#include "./IO.hpp"
+#include "./IO/StreamContext.hpp"
 #include "./Token.hpp"
 
 #include <utility>

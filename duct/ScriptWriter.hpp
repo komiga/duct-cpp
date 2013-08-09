@@ -17,7 +17,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./CharacterSet.hpp"
 #include "./EncodingUtils.hpp"
 #include "./StringUtils.hpp"
-#include "./IO.hpp"
+#include "./IO/StreamContext.hpp"
 
 #include <utility>
 #include <ostream>

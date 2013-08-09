@@ -2,7 +2,9 @@
 #include <duct/char.hpp>
 #include <duct/string.hpp>
 #include <duct/detail/string_traits.hpp>
-#include <duct/IO.hpp>
+#include <duct/IO/util.hpp>
+#include <duct/IO/memstream.hpp>
+#include <duct/IO/StreamContext.hpp>
 
 #include <cstdio>
 #include <type_traits>

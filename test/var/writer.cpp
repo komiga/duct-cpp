@@ -5,7 +5,7 @@
 #include <duct/string.hpp>
 #include <duct/detail/vartype.hpp>
 #include <duct/EncodingUtils.hpp>
-#include <duct/IO.hpp>
+#include <duct/IO/memstream.hpp>
 #include <duct/Variable.hpp>
 #include <duct/ScriptWriter.hpp>
 #include <duct/ScriptParser.hpp>
