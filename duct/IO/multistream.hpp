@@ -262,7 +262,7 @@ public:
 		std::size_t const size,
 		std::ios_base::openmode const mode = std::ios_base::out
 	)
-		: base_type()
+		: base_type(&m_streambuf)
 		, m_streams(std::move(streams))
 		, m_streambuf(
 			m_streams,
@@ -270,9 +270,7 @@ public:
 			size,
 			(mode & ~std::ios_base::in) | std::ios_base::out
 		)
-	{
-		this->init(&m_streambuf);
-	}
+	{}
 	/** Copy constructor (deleted). */
 	basic_omultistream(basic_omultistream const&) = delete;
 	/** Move constructor. */

@@ -315,15 +315,13 @@ public:
 		std::size_t const size,
 		std::ios_base::openmode const mode = std::ios_base::in
 	)
-		: base_type()
+		: base_type(&m_membuf)
 		, m_membuf(
 			buffer,
 			size,
 			(mode & ~std::ios_base::out) | std::ios_base::in
 		)
-	{
-		this->init(&m_membuf);
-	}
+	{}
 	/** Copy constructor (deleted). */
 	basic_imemstream(basic_imemstream const&) = delete;
 	/** Move constructor. */
@@ -408,15 +406,13 @@ public:
 		std::size_t const size,
 		std::ios_base::openmode const mode = std::ios_base::out
 	)
-		: base_type()
+		: base_type(&m_membuf)
 		, m_membuf(
 			buffer,
 			size,
 			(mode & ~std::ios_base::in) | std::ios_base::out
 		)
-	{
-		this->init(&m_membuf);
-	}
+	{}
 	/** Copy constructor (deleted). */
 	basic_omemstream(basic_omemstream const&) = delete;
 	/** Move constructor. */
@@ -500,15 +496,13 @@ public:
 		std::ios_base::openmode const
 			mode = std::ios_base::in | std::ios_base::out
 	)
-		: base_type()
+		: base_type(&m_membuf)
 		, m_membuf(
 			buffer,
 			size,
 			mode | std::ios_base::in | std::ios_base::out
 		)
-	{
-		this->init(&m_membuf);
-	}
+	{}
 	/** Copy constructor (deleted). */
 	basic_memstream(basic_memstream const&) = delete;
 	/** Move constructor. */
