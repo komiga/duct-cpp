@@ -4,9 +4,18 @@ newoption {
 	description = "Use Clang in-place of GCC",
 }
 
+newoption {
+	trigger = "stdlib",
+	description = "C++ stdlib to link to for Linux",
+}
+
 if _OPTIONS["clang"] then
 	premake.gcc.cc = "clang"
 	premake.gcc.cxx = "clang++"
+end
+
+if nil == _OPTIONS["stdlib"] then
+	_OPTIONS["stdlib"] = "stdc++"
 end
 
 solution("tests")
@@ -52,6 +61,7 @@ function setup_test(name, src)
 
 			"-Wunused"
 		}
+		links {_OPTIONS["stdlib"]}
 
 	configuration {"linux", "not clang"}
 		-- Avoid annoying error from C-style cast in <byteswap.h>.
@@ -59,8 +69,7 @@ function setup_test(name, src)
 		defines {"DUCT_CONFIG_NO_BYTESWAP_HEADER"}
 
 	configuration {"linux", "clang"}
-		buildoptions {"-stdlib=libstdc++"}
-		links {"stdc++"}
+		buildoptions {"-stdlib=lib" .. _OPTIONS["stdlib"]}
 
 	configuration {}
 		targetdir(".")
