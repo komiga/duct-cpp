@@ -1,3 +1,6 @@
-group="io"
-setup_test("string", "string.cpp")
-setup_test("multicast", "multicast.cpp")
+
+make_tests(
+	"io", {
+	["string"] = {nil, nil},
+	["multicast"] = {nil, nil},
+})

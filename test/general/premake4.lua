@@ -1,2 +1,5 @@
-group="general"
-setup_test("headers", "headers.cpp")
+
+make_tests(
+	"general", {
+	["headers"] = {nil, nil},
+})

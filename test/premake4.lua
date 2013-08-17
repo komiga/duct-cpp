@@ -1,50 +1,18 @@
 
-newoption {
-	trigger = "clang",
-	description = "Use Clang in-place of GCC",
-}
+dofile("precore_import.lua")
 
-newoption {
-	trigger = "stdlib",
-	description = "C++ stdlib to link to for Linux",
-}
-
-if _OPTIONS["clang"] then
-	premake.gcc.cc = "clang"
-	premake.gcc.cxx = "clang++"
-end
-
-if nil == _OPTIONS["stdlib"] then
-	_OPTIONS["stdlib"] = "stdc++"
-end
-
-solution("tests")
-	configurations {"debug", "release"}
-	platforms {"x32", "x64"}
-
-group = ""
-
-function setup_test(name, src)
-	local outpath = "out/"
-	local proj = project(group .. "_" .. name)
-	proj.language = "C++"
-	proj.kind = "ConsoleApp"
-
-	targetname(name)
-
-	configuration {"debug"}
-		defines {"DEBUG", "_DEBUG"}
-		flags {"ExtraWarnings", "Symbols"}
-
-	configuration {"release"}
-		defines {"NDEBUG"}
-		flags {"ExtraWarnings", "Optimize"}
+precore.make_config(
+"test-strict", {{
+project = function()
+	configuration {}
+		flags {
+			"FatalWarnings"
+		}
 
 	configuration {"linux"}
-		buildoptions {"-std=c++11"}
 		buildoptions {
+			"-pedantic",
 			"-pedantic-errors",
-			"-Werror",
 			"-Wextra",
 
 			"-Wuninitialized",
@@ -61,38 +29,80 @@ function setup_test(name, src)
 
 			"-Wunused"
 		}
-		links {_OPTIONS["stdlib"]}
 
-	configuration {"linux", "not clang"}
+	configuration {"linux and not clang"}
 		-- Avoid annoying error from C-style cast in <byteswap.h>.
 		-- Somehow Clang doesn't even check -Wold-style-cast.
 		defines {"DUCT_CONFIG_NO_BYTESWAP_HEADER"}
+end}})
 
-	configuration {"linux", "clang"}
-		buildoptions {"-stdlib=lib" .. _OPTIONS["stdlib"]}
+precore.init(
+	{
+		-- Don't have a top-level premake script, so just forcing
+		-- project root to top-level
+		ROOT = path.getabsolute("..")
+	},
+	{
+		"opt-clang",
+		"c++11-core",
+		"precore-env-root"
+	}
+)
+
+precore.make_solution(
+	"tests",
+	{"debug", "release"},
+	{"x64", "x32"},
+	nil,
+	{
+		"precore-generic"
+	}
+)
+
+function make_test(group, name, srcglob, configs)
+	precore.make_project(
+		group .. "_" .. name,
+		"C++", "ConsoleApp",
+		"./", "out/",
+		nil, configs
+	)
+
+	if nil == configs then
+		precore.apply("test-strict")
+	end
+
+	if nil == srcglob then
+		srcglob = name .. ".cpp"
+	end
 
 	configuration {}
-		targetdir(".")
-		objdir(outpath)
+		targetname(name)
 		includedirs {
-			"../.."
+			precore.subst("${ROOT}")
 		}
 		files {
-			src
+			srcglob
 		}
+end
+
+function make_tests(group, tests)
+	for name, test in pairs(tests) do
+		make_test(group, name, test[0], test[1])
+	end
 end
 
 -- categories
 
-include "general"
-include "io"
-include "text"
-include "utils"
-include "var"
+include("general")
+include("io")
+include("text")
+include("utils")
+include("var")
 
-if _ACTION == "clean" then
-	local prjs = solution().projects
-	for i, prj in ipairs(prjs) do
-		os.rmdir(prj.basedir .. "/out")
+if "clean" == _ACTION then
+	for _, pc_sol in pairs(precore.state.solutions) do
+		for _, pc_proj in pairs(pc_sol.projects) do
+			os.rmdir(path.join(pc_proj.obj.basedir, "out"))
+		end
 	end
 end

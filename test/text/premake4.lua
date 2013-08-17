@@ -1,4 +1,7 @@
-group="text"
-setup_test("charset", "charset.cpp")
-setup_test("charbuf", "charbuf.cpp")
-setup_test("escape", "escape.cpp")
+
+make_tests(
+	"text", {
+	["charset"] = {nil, nil},
+	["charbuf"] = {nil, nil},
+	["escape"] = {nil, nil},
+})

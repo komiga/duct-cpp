@@ -1,5 +1,8 @@
-group="utils"
-setup_test("dynamic", "dynamic.cpp")
-setup_test("strings", "strings.cpp")
-setup_test("endian", "endian.cpp")
-setup_test("statestore", "statestore.cpp")
+
+make_tests(
+	"utils", {
+	["dynamic"] = {nil, nil},
+	["strings"] = {nil, nil},
+	["endian"] = {nil, nil},
+	["statestore"] = {nil, nil},
+})
