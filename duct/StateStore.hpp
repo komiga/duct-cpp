@@ -149,7 +149,7 @@ public:
 		Constructor with states.
 
 		@tparam SFaux Faux template type parameter pack required to
-		enable function parameter pacl parameter in C++11. Don't ask.
+		enable function parameter pack parameter in C++11. Don't ask.
 		Types must be equal to @c state_type; SFINAE will fail
 		otherwise.
 		@param states Parameter pack of states to enable.
@@ -157,7 +157,7 @@ public:
 	template<
 		typename... SFaux
 	>
-	constexpr explicit
+	constexpr
 	StateStore(
 		SFaux const... states
 	) noexcept
