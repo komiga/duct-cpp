@@ -80,7 +80,7 @@ write(
 	@param[out] value Output value; result undefined if: the
 	operation failed (see @c std::basic_istream::read())
 	and @c endian!=Endian::SYSTEM.
-	@param endian Endian to use when writing; defaults
+	@param endian Endian to use when reading; defaults
 	to @c Endian::SYSTEM (no swapping).
 */
 template<
@@ -108,7 +108,7 @@ read_arithmetic(
 	and @c endian!=Endian::SYSTEM.
 	@tparam T Arithmetic value type; inferred from @a value.
 	@param stream Source stream.
-	@param endian Endian to use when writing; defaults
+	@param endian Endian to use when reading; defaults
 	to @c Endian::SYSTEM (no swapping).
 */
 template<
@@ -141,7 +141,7 @@ read_arithmetic(
 	failed (see @c std::basic_istream::read())
 	and @c endian!=Endian::SYSTEM.
 	@param count Number of elements to read.
-	@param endian Endian to use when writing; defaults
+	@param endian Endian to use when reading; defaults
 	to @c Endian::SYSTEM (no swapping).
 */
 template<
