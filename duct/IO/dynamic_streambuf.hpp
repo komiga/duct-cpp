@@ -203,6 +203,14 @@ public:
 	}
 
 	/**
+		Get buffer.
+	*/
+	buffer_type&
+	get_buffer() noexcept {
+		return m_buffer;
+	}
+
+	/**
 		Get maximum buffer size.
 
 		@note If this is equal to @c 0, the amount the buffer can
@@ -239,6 +247,24 @@ public:
 	}
 
 	/**
+		Get the remaining space between the get position and the end
+		of the input sequence.
+
+		@returns The number of chars remaining between the get
+		position and the end of the input sequence, or @c 0 if the
+		current mode is output.
+	*/
+	std::size_t
+	get_remaining() const noexcept {
+		if (Sequence::input == m_seq) {
+			return m_seq_size - (this->gptr() - this->eback());
+		}
+		return 0u;
+	}
+/// @}
+
+/** @name Operations */ /// @{
+	/**
 		Reset to empty output sequence.
 
 		@warning If the buffer is seeked past not-overwritten
@@ -250,7 +276,12 @@ public:
 		than the (nonzero) maximum size, this operation will fail.
 
 		@post @code
-			get_sequence_size() == 0u
+			get_sequence() == Sequence::output &&
+			get_sequence_size() == 0u &&
+			get_buffer().size()
+			== (capacity == 0u)
+				? capacity
+				: get_growth_rate()
 		@endcode
 
 		@returns @c true on success.
@@ -278,7 +309,7 @@ public:
 		input mode.
 
 		@throws std::invalid_argument
-		If @a size > get_sequence_size().
+		If <code>size > get_sequence_size()</code>.
 
 		@param size Size of the input sequence.
 	*/
@@ -292,11 +323,7 @@ public:
 					"commit size is larger than output sequence"
 				);
 			}
-			m_seq_size = size;
-			m_seq = Sequence::input;
-			char_type* const data = m_buffer.data();
-			this->setg(data, data, data + m_seq_size);
-			this->setp(nullptr, nullptr);
+			commit_priv(size);
 		}
 	}
 
@@ -309,6 +336,34 @@ public:
 	commit() {
 		refresh_seq_size();
 		commit(m_seq_size);
+	}
+
+	/**
+		Commit output sequence to input sequence from external
+		modification.
+
+		@note Unlike commit(std::size_t const), this permits @a size
+		up to the size of the underlying buffer. This is handy for
+		operating with interfaces that do not deal with the I/O
+		library directly, but should not otherwise be used.
+
+		@throws std::invalid_argument
+		If <code>size > get_buffer().size()</code>.
+
+		@param size Size of the input sequence.
+	*/
+	void
+	commit_direct(
+		std::size_t const size
+	) {
+		if (Sequence::output == m_seq) {
+			if (m_buffer.size() < size) {
+				throw std::invalid_argument(
+					"commit size is larger than buffer"
+				);
+			}
+			commit_priv(size);
+		}
 	}
 /// @}
 
@@ -357,6 +412,17 @@ private:
 			);
 		}
 		return false;
+	}
+
+	void
+	commit_priv(
+		std::size_t const size
+	) {
+		m_seq_size = size;
+		m_seq = Sequence::input;
+		char_type* const data = m_buffer.data();
+		this->setg(data, data, data + m_seq_size);
+		this->setp(nullptr, nullptr);
 	}
 
 	enum : signed {
