@@ -302,6 +302,7 @@ public:
 	set_streams(
 		multicast_vector_type streams
 	) noexcept {
+		// FIXME: Defect in libstdc++ 4.7.3: missing move variant
 		m_streams.assign(std::move(streams));
 	}
 

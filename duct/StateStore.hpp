@@ -169,6 +169,8 @@ public:
 		)
 	{}
 
+	// FIXME: Defect in GCC 4.7.3: compiler trips itself by
+	// not initializing m_value in its own generated ctor.
 	/** Default constructor. */
 	StateStore() = default;
 	/** Copy constructor. */

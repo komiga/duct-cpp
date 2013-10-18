@@ -635,7 +635,7 @@ write_string_copy(
 			? DefsT::BUFFER_SIZE
 			: size;
 		for (
-			out_iter =out_buffer;
+			out_iter = out_buffer;
 			out_buffer + amt > out_iter;
 			++out_iter, ++str_iter
 		) {
