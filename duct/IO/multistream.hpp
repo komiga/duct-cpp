@@ -85,8 +85,10 @@ public:
 /** @name Types */ /// @{
 	/** Character type. */
 	using typename base_type::char_type;
+
+	// FIXME [TRAITS_TYPE]
 	/** Traits type. */
-	using typename base_type::traits_type;
+	using traits_type = typename base_type::traits_type;
 	/** @c traits_type::int_type. */
 	using typename base_type::int_type;
 	/** @c traits_type::pos_type. */
