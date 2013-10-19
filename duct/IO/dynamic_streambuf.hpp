@@ -308,6 +308,10 @@ public:
 		@note This has no effect if the stream buffer is already in
 		input mode.
 
+		@post @code
+			get_sequence_size() == size
+		@endcode
+
 		@throws std::invalid_argument
 		If <code>size > get_sequence_size()</code>.
 
@@ -346,6 +350,10 @@ public:
 		up to the size of the underlying buffer. This is handy for
 		operating with interfaces that do not deal with the I/O
 		library directly, but should not otherwise be used.
+
+		@post @code
+			get_sequence_size() == size
+		@endcode
 
 		@throws std::invalid_argument
 		If <code>size > get_buffer().size()</code>.
@@ -442,6 +450,12 @@ private:
 		this->pbump(static_cast<signed>(pos));
 	}
 
+	static constexpr std::ios_base::openmode const
+	ios_openmode_io
+		= std::ios_base::in
+		| std::ios_base::out
+	;
+
 	pos_type
 	seek_to(
 		pos_type const pos,
@@ -452,8 +466,11 @@ private:
 
 		if (0u > pos) {
 			goto l_bad_pos_;
+		} else if (ios_openmode_io == (ios_openmode_io & mode)) {
+			// we only provide one sequence at a time
+			goto l_bad_pos_;
 		} else if (Sequence::input == m_seq && (mode & std::ios_base::in)) {
-			if (pos > static_cast<long long signed>(m_buffer.size())) {
+			if (pos > static_cast<off_type>(m_buffer.size())) {
 				goto l_bad_pos_;
 			}
 			char_type* const data = m_buffer.data();
