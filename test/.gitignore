@@ -7,6 +7,7 @@ general/headers
 
 io/multicast
 io/string
+io/dynamic_streambuf
 
 text/charbuf
 text/charset
