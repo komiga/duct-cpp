@@ -483,7 +483,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_ENDIAN_LITTLE	1234
 #define DUCT_ENDIAN_BIG		4321
 
-#if false
+#if false										\
 || defined(_WIN32)								\
 || defined(__i386__)							\
 || defined(__ia64__)							\

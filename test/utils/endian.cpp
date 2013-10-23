@@ -1,4 +1,5 @@
 
+#include <duct/utility.hpp>
 #include <duct/debug.hpp>
 #include <duct/EndianUtils.hpp>
 
@@ -95,8 +96,45 @@ do_test_floating(
 	<< std::endl;
 }
 
+#define DUCT_TEST_COUT_ENDIAN__(__n, __e)					\
+	<< __n " endian: " << enum_cast(duct::Endian:: __e)		\
+	<< ((duct::Endian::SYSTEM == duct::Endian:: __e)		\
+		? " (system)\n"										\
+		: "\n"												\
+	)
+
 signed
 main() {
+	std::cout
+		DUCT_TEST_COUT_ENDIAN__("little", LITTLE)
+		DUCT_TEST_COUT_ENDIAN__("big   ", BIG)
+	;
+
+	auto const ex = INTEGRAL16;
+	uint8_t const* const
+	ex_p = reinterpret_cast<uint8_t const*>(&ex);
+
+	std::cout
+		<< std::hex
+		<< "value: " << ex << " (INTEGRAL16)\n"
+		<< "bytes: "
+		<< static_cast<unsigned>(ex_p[0])
+		<< static_cast<unsigned>(ex_p[1])
+		<< '\n'
+	;
+
+	duct::Endian endian;
+	if (ex_p[0] == (ex & 0xFF)) {
+		endian = duct::Endian::LITTLE;
+	} else {
+		endian = duct::Endian::BIG;
+	}
+
+	DUCT_ASSERT(
+		duct::Endian::SYSTEM == endian,
+		"duct is lying to you"
+	);
+
 	do_test_integral(INTEGRAL16);
 	do_test_integral(INTEGRAL32);
 	do_test_integral(INTEGRAL64);
