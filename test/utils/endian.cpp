@@ -96,9 +96,9 @@ do_test_floating(
 	<< std::endl;
 }
 
-#define DUCT_TEST_COUT_ENDIAN__(__n, __e)					\
-	<< __n " endian: " << enum_cast(duct::Endian:: __e)		\
-	<< ((duct::Endian::SYSTEM == duct::Endian:: __e)		\
+#define DUCT_TEST_COUT_ENDIAN_(n_, e_)						\
+	<< n_ " endian: " << enum_cast(duct::Endian:: e_)		\
+	<< ((duct::Endian::SYSTEM == duct::Endian:: e_)			\
 		? " (system)\n"										\
 		: "\n"												\
 	)
@@ -106,8 +106,8 @@ do_test_floating(
 signed
 main() {
 	std::cout
-		DUCT_TEST_COUT_ENDIAN__("little", LITTLE)
-		DUCT_TEST_COUT_ENDIAN__("big   ", BIG)
+		DUCT_TEST_COUT_ENDIAN_("little", LITTLE)
+		DUCT_TEST_COUT_ENDIAN_("big   ", BIG)
 	;
 
 	auto const ex = INTEGRAL16;

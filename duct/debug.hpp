@@ -254,21 +254,21 @@ namespace duct {
 /// @}
 
 #else
-	#define DUCT_DEBUG_PREFIX__ "debug: "
+	#define DUCT_DEBUG_PREFIX_ "debug: "
 
 	// Debug
 	#define DUCT_DEBUG(mesg) \
-		std::printf(DUCT_DEBUG_PREFIX__ mesg "\n")
+		std::printf(DUCT_DEBUG_PREFIX_ mesg "\n")
 
 	#define DUCT_DEBUGF(format, ...) \
-		std::printf(DUCT_DEBUG_PREFIX__ format "\n", __VA_ARGS__)
+		std::printf(DUCT_DEBUG_PREFIX_ format "\n", __VA_ARGS__)
 
 	// - no newline
 	#define DUCT_DEBUGN(mesg) \
-		std::printf(DUCT_DEBUG_PREFIX__ mesg)
+		std::printf(DUCT_DEBUG_PREFIX_ mesg)
 
 	#define DUCT_DEBUGNF(format, ...) \
-		std::printf(DUCT_DEBUG_PREFIX__ format, __VA_ARGS__)
+		std::printf(DUCT_DEBUG_PREFIX_ format, __VA_ARGS__)
 
 	// - signature
 	#define DUCT_DEBUGC(mesg) \
