@@ -26,22 +26,26 @@ namespace duct {
 	Make string literal UTF-8 encoded.
 
 	For supporting compilers, takes a string literal and makes it UTF-8
-	encoded; otherwise equivalent to @a x.
+	encoded; otherwise equivalent to @a x_.
 
 	@note This is <em>almost</em> - but not entirely - guaranteed to
-	make @a x UTF-8 encoded if #DUCT_USING_CPP11_CHAR_TYPES is defined.
+	make @a x_ UTF-8 encoded if #DUCT_USING_CPP11_CHAR_TYPES is defined.
 
-	@param x String literal.
+	@param x_ String literal.
 */
-#define DUCT_STR_U8(x)
+#define DUCT_STR_U8(x_)
 
 #else
 
-#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) >= DUCT_FLAG_COMPILER_GCC46 || \
-	(DUCT_COMPILER & DUCT_FLAG_COMPILER_CLANG) >= DUCT_FLAG_COMPILER_CLANG31
-	#define DUCT_STR_U8(x) u8 ## x
+#if false													\
+	|| ((DUCT_COMPILER &  DUCT_FLAG_COMPILER_GCC) &&		\
+		 DUCT_COMPILER >= DUCT_FLAG_COMPILER_GCC46)			\
+	|| ((DUCT_COMPILER &  DUCT_FLAG_COMPILER_CLANG) &&		\
+		 DUCT_COMPILER >= DUCT_FLAG_COMPILER_CLANG31)
+//
+	#define DUCT_STR_U8(x_) u8 ## x_
 #else
-	#define DUCT_STR_U8(x) x
+	#define DUCT_STR_U8(x_) x_
 #endif
 
 #endif // DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
