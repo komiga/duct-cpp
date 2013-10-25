@@ -217,6 +217,11 @@ see @ref index or the accompanying LICENSE file for full text.
 */
 #define DUCT_FUNC_NAME __func__
 
+/**
+	Stringify an identifier.
+*/
+#define DUCT_STRINGIFY(x_)
+
 /** @} */ // end of name-group etc
 
 #else // Quick, actually define everything while Doxygen isn't looking!
@@ -528,6 +533,11 @@ see @ref index or the accompanying LICENSE file for full text.
 #endif
 
 #define DUCT_FUNC_NAME __func__
+
+#define DUCT_STRINGIFY_INNER_(x_) #x_
+
+#define DUCT_STRINGIFY(x_) \
+	DUCT_STRINGIFY_INNER_(x_)
 
 #endif // DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
