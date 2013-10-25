@@ -10,6 +10,8 @@
 #include <duct/CharBuf.hpp>
 #include <duct/CharacterRange.hpp>
 #include <duct/CharacterSet.hpp>
+#include <duct/StateStore.hpp>
+#include <duct/cc_unique_ptr.hpp>
 #include <duct/EndianUtils.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/StringUtils.hpp>
@@ -19,6 +21,7 @@
 #include <duct/IO/StreamContext.hpp>
 #include <duct/IO/memstream.hpp>
 #include <duct/IO/multistream.hpp>
+#include <duct/IO/dynamic_streambuf.hpp>
 #include <duct/Variable.hpp>
 #include <duct/VariableUtils.hpp>
 #include <duct/Template.hpp>

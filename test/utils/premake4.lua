@@ -5,4 +5,5 @@ make_tests(
 	["strings"] = {nil, nil},
 	["endian"] = {nil, nil},
 	["statestore"] = {nil, nil},
+	["cc_unique_ptr"] = {nil, nil},
 })
