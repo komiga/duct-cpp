@@ -243,7 +243,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 	#define DUCT_PLATFORM_SYSTEM DUCT_FLAG_PLATFORM_MACOS
 #else
-	#error "Unsupported or unrecognized operating system"
+	#error Unsupported or unrecognized operating system
 #endif
 
 #if (DUCT_PLATFORM_SYSTEM == DUCT_FLAG_PLATFORM_WINDOWS)
@@ -266,7 +266,7 @@ see @ref index or the accompanying LICENSE file for full text.
 	#define DUCT_PLATFORM_MODEL DUCT_FLAG_PLATFORM_MODEL_32
 	#define DUCT_PLATFORM_MODEL_32
 #else
-	#error "Unable to determine platform bitness"
+	#error Unable to determine platform bitness
 #endif
 
 #define DUCT_PLATFORM	DUCT_PLATFORM_SYSTEM | DUCT_PLATFORM_MODEL
@@ -442,7 +442,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #endif // compiler tree
 
 #ifndef DUCT_COMPILER
-	#error "Compiler unrecognized -- it might not be supported by duct++"
+	#error Compiler unrecognized -- it might not be supported by duct++
 #endif
 
 // Endian
