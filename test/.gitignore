@@ -5,6 +5,8 @@ out/
 
 general/headers
 
+gr/throw
+
 io/multicast
 io/string
 io/dynamic_streambuf

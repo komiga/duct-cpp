@@ -1,0 +1,38 @@
+
+/**
+
+@defgroup gnarly_report Gnarly Report
+@details
+
+Gnarly Report is a set of macros for defining scope and throwing
+errors.
+
+<h2>Usage</h2>
+
+Userspace should not expose its GR configuration publicly to ensure
+that other libraries using GR are not trampled. If GR must be used
+publicly, use an unconfigure header including <duct/GR/undefine.hpp>
+to undefine all of the GR macros and perform any other necessary
+unconfiguration.
+
+GR::Error can be specialized directly on an error code enum and the
+userspace string type. Or, if GR::Error is disfavored, userspace may
+define its own error class. For the default GR configuration, this
+class (or class alias) must be named @c %Error and only requires an
+@c Error(ec, msg) constructor, where @c ec is an error code and @c msg
+is a string literal or string object. If the userspace string type
+conforms to the @c std::string construction interface, there need
+only be one constructor:
+@c Error(error_code_type const, message_string_type).
+
+@par
+@note GR::Error does not inherit from @c std::exception to avoid a
+catch-all against @c std::exception. If userspace wishes to compose
+GR::Error and @c std::exception with its own class, GR::Error can be
+inherited without clashing with the @c std::exception interface.
+
+@par
+@note GR::Error is independent from GR configuration. It can be used
+directly for a userspace exception class.
+
+*/

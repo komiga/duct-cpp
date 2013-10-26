@@ -94,6 +94,7 @@ end
 -- categories
 
 include("general")
+include("gr")
 include("io")
 include("text")
 include("utils")
