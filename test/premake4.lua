@@ -27,13 +27,9 @@ project = function()
 			"-Wnon-virtual-dtor",
 			"-Woverloaded-virtual",
 
-			"-Wunused"
+			"-Wunused",
+			"-Wundef",
 		}
-
-	configuration {"linux and not clang"}
-		-- Avoid annoying error from C-style cast in <byteswap.h>.
-		-- Somehow Clang doesn't even check -Wold-style-cast.
-		defines {"DUCT_CONFIG_NO_BYTESWAP_HEADER"}
 end}})
 
 precore.init(
