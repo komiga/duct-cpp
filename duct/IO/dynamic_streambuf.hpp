@@ -14,6 +14,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "../debug.hpp"
 
 #include <cassert>
+#include <cstring>
 #include <utility>
 #include <stdexcept>
 #include <algorithm>
@@ -261,6 +262,27 @@ public:
 		}
 		return 0u;
 	}
+
+	/**
+		Get current position in sequence.
+
+		@note This is more efficient than using @c tellg()
+		and @c tellp() from an stdlib stream.
+
+		@par
+		@note If the stream buffer is in output mode, this will not
+		update the sequence size.
+	*/
+	std::size_t
+	get_position() const noexcept {
+		switch (m_seq) {
+		case Sequence::input:
+			return this->gptr() - this->eback();
+
+		case Sequence::output:
+			return this->pptr() - this->pbase();
+		}
+	}
 /// @}
 
 /** @name Operations */ /// @{
@@ -375,6 +397,68 @@ public:
 			);
 		}
 		commit_priv(size);
+	}
+
+	/**
+		Discard data from front of buffer.
+
+		@note The result sequence size is @code
+			get_sequence_size() - size
+		@endcode
+
+		@par
+		@note If either @a size is @c 0 or the sequence is empty, this
+		has no effect. If @c size==get_sequence_size(), the sequence
+		will be empty.
+
+		@post @c get_position()==0u (subsequently, put/get position
+		according to mode is also @c 0u).
+
+		@throws std::invalid_argument
+		If <code>size > get_sequence_size()</code>.
+
+		@returns The new sequence size.
+		@param size Number of characters to discard.
+	*/
+	std::size_t
+	discard(
+		std::size_t const size
+	) {
+		refresh_seq_size();
+		if (m_seq_size < size) {
+			throw std::invalid_argument(
+				"size is larger than sequence"
+			);
+		} else if (0u == size || 0u == m_seq_size) {
+			return m_seq_size;
+		}
+
+		m_seq_size -= size;
+		if (0u < m_seq_size) {
+			std::memmove(
+				m_buffer.data(),
+				m_buffer.data() + size,
+				m_seq_size
+			);
+		}
+
+		switch (m_seq) {
+		case Sequence::input:
+			this->setg(
+				m_buffer.data(),
+				m_buffer.data(),
+				m_buffer.data() + m_seq_size
+			);
+			break;
+
+		case Sequence::output:
+			this->setp(
+				m_buffer.data(),
+				m_buffer.data() + m_buffer.size()
+			);
+			break;
+		}
+		return m_seq_size;
 	}
 /// @}
 
