@@ -42,7 +42,7 @@ class basic_dynamic_streambuf;
 	@{
 */
 
-/** @c char streambuf. */
+/** Dynamic @c char streambuf. */
 using dynamic_streambuf = basic_dynamic_streambuf<char>;
 
 /** @} */ // end of name-group Dynamic memory stream type aliases
@@ -182,8 +182,8 @@ public:
 	/**
 		Get sequence size.
 
-		@note If the stream buffer is set to Sequence::output, this
-		will return the total number of chars written -- i.e., the
+		@note If the stream buffer is in output mode, this will
+		return the total number of chars written -- i.e., the
 		farthest observed put position.
 	*/
 	std::size_t
@@ -213,7 +213,7 @@ public:
 	/**
 		Get maximum buffer size.
 
-		@note If this is equal to @c 0, the amount the buffer can
+		@note If this is equal to @c 0u, the amount the buffer can
 		grow is only (theoretically) bound by buffer_type::max_size(),
 		which is typically @c std::numeric_limits<std::size_t>::max().
 	*/
@@ -332,7 +332,7 @@ public:
 	}
 
 	/**
-		Commit output sequence to input sequence.
+		Commit entire output sequence to input sequence.
 
 		@see commit(std::size_t const)
 	*/
@@ -343,13 +343,18 @@ public:
 	}
 
 	/**
-		Commit output sequence to input sequence from external
-		modification.
+		Commit input sequence size from external modification.
 
 		@note Unlike commit(std::size_t const), this permits @a size
 		up to the size of the underlying buffer. This is handy for
 		operating with interfaces that do not deal with the I/O
 		library directly, but should not otherwise be used.
+
+		@par
+		@note Also unlike commit(std::size_t const), this has an
+		effect when the stream buffer is already in input mode. If
+		the buffer is already in input mode, the position is
+		retained. Otherwise it is the same.
 
 		@post @code
 			get_sequence_size() == size
@@ -364,14 +369,12 @@ public:
 	commit_direct(
 		std::size_t const size
 	) {
-		if (Sequence::output == m_seq) {
-			if (m_buffer.size() < size) {
-				throw std::invalid_argument(
-					"commit size is larger than buffer"
-				);
-			}
-			commit_priv(size);
+		if (m_buffer.size() < size) {
+			throw std::invalid_argument(
+				"commit size is larger than buffer"
+			);
 		}
+		commit_priv(size);
 	}
 /// @}
 
@@ -427,10 +430,18 @@ private:
 		std::size_t const size
 	) {
 		m_seq_size = size;
-		m_seq = Sequence::input;
-		char_type* const data = m_buffer.data();
-		this->setg(data, data, data + m_seq_size);
+		this->setg(
+			m_buffer.data(),
+			m_buffer.data()
+			+ (Sequence::input == m_seq
+				? (this->gptr() - m_buffer.data())
+				: 0u
+			)
+			,
+			m_buffer.data() + m_seq_size
+		);
 		this->setp(nullptr, nullptr);
+		m_seq = Sequence::input;
 	}
 
 	enum : signed {
@@ -520,8 +531,9 @@ private:
 				pos_type{
 					off
 					+ (Sequence::input == m_seq
-					? (this->gptr() - m_buffer.data())
-					: (this->pptr() - m_buffer.data()))
+						? (this->gptr() - m_buffer.data())
+						: (this->pptr() - m_buffer.data())
+					)
 				},
 				which
 			);
