@@ -565,7 +565,7 @@ private:
 			// we only provide one sequence at a time
 			goto l_bad_pos_;
 		} else if (Sequence::input == m_seq && (mode & std::ios_base::in)) {
-			if (pos > static_cast<off_type>(m_buffer.size())) {
+			if (pos > static_cast<off_type>(m_seq_size)) {
 				goto l_bad_pos_;
 			}
 			char_type* const data = m_buffer.data();
