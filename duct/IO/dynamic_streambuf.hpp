@@ -376,7 +376,7 @@ public:
 		@note Also unlike commit(std::size_t const), this has an
 		effect when the stream buffer is already in input mode. If
 		the buffer is already in input mode, the position is
-		retained. Otherwise it is the same.
+		retained (clamped to the new size). Otherwise it is the same.
 
 		@post @code
 			get_sequence_size() == size
@@ -513,19 +513,21 @@ private:
 	commit_priv(
 		std::size_t const size
 	) {
-		m_seq_size = size;
+		std::size_t pos = 0;
+		if (Sequence::input == m_seq) {
+			pos = get_position();
+			if (size < pos) {
+				pos = size;
+			}
+		}
 		this->setg(
 			m_buffer.data(),
-			m_buffer.data()
-			+ (Sequence::input == m_seq
-				? (this->gptr() - m_buffer.data())
-				: 0u
-			)
-			,
-			m_buffer.data() + m_seq_size
+			m_buffer.data() + pos,
+			m_buffer.data() + size
 		);
 		this->setp(nullptr, nullptr);
 		m_seq = Sequence::input;
+		m_seq_size = size;
 	}
 
 	enum : signed {
