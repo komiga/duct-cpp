@@ -983,12 +983,12 @@ public:
 		Emplace to end of child collection.
 
 		@returns @c *this.
-		@tparam ...ArgP Parameter pack for constructor;
+		@tparam ArgP Parameter pack for constructor;
 		see @c Variable().
 		@param args Parameter pack for constructor.
 	*/
 	template<
-		typename ...ArgP
+		typename... ArgP
 	>
 	Variable&
 	emplace_back(ArgP&&... args) {
