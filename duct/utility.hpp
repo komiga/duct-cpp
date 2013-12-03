@@ -62,6 +62,127 @@ enum_cast(
 	return static_cast<U>(value);
 }
 
+/** @cond INTERNAL */
+
+namespace {
+
+template<
+	typename U,
+	typename E
+>
+inline constexpr U
+pack_bitor(
+	U const value
+) noexcept {
+	return value;
+}
+
+template<
+	typename U,
+	typename E,
+	typename... Rest
+>
+inline constexpr U
+pack_bitor(
+	U const value,
+	E const head,
+	Rest const... rest
+) noexcept {
+	return pack_bitor<U, E>(
+		value | static_cast<U const>(head),
+		rest...
+	);
+}
+
+} // anonymous namespace
+
+/** @endcond */ // INTERNAL
+
+/**
+	Bitwise-OR enum bitflags.
+
+	@returns Value of OR'd flags.
+	@tparam E Enum type; deduced from @a first.
+	@tparam U Type to cast to; defaults to the underlying type.
+	@tparam Rest Rest types. Type deduction will fail if any
+	type in this parameter pack is not @a E.
+	@param first First flag.
+	@param rest Rest of flags.
+*/
+template<
+	typename E,
+	typename U = typename std::underlying_type<E>::type,
+	typename... Rest
+>
+inline constexpr U
+enum_bitor(
+	E const first,
+	Rest const... rest
+) noexcept {
+	static_assert(
+		std::is_enum<E>::value,
+		"E must be an enum"
+	);
+	return pack_bitor<U, E>(static_cast<U const>(first), rest...);
+}
+
+/**
+	Bitwise-AND enum bitflags.
+
+	@returns Value of AND'd flags.
+	@tparam E Enum type; deduced from @a first.
+	@tparam U Type to cast to; defaults to the underlying type.
+	@param x First flag.
+	@param y Second flag.
+*/
+template<
+	typename E,
+	typename U = typename std::underlying_type<E>::type
+>
+inline constexpr U
+enum_bitand(
+	E const x,
+	E const y
+) noexcept {
+	static_assert(
+		std::is_enum<E>::value,
+		"E must be an enum"
+	);
+	return static_cast<U const>(x) & static_cast<U const>(y);
+}
+
+/**
+	Combine enum bitflags.
+
+	Same as enum_bitor(), but casts result to @a E.
+
+	@returns Enum value of OR'd flags.
+	@tparam E Enum type; deduced from @a first.
+	@tparam U Type to cast to; defaults to the underlying type.
+	@tparam Rest Rest types. Type deduction will fail if any
+	type in this parameter pack is not @a E.
+	@param first First flag.
+	@param rest Rest of flags.
+*/
+template<
+	typename E,
+	typename U = typename std::underlying_type<E>::type,
+	typename... Rest
+>
+inline constexpr E
+enum_combine(
+	E const first,
+	Rest const... rest
+) noexcept {
+	static_assert(
+		std::is_enum<E>::value,
+		"E must be an enum"
+	);
+	return static_cast<E const>(
+		pack_bitor<U, E>(static_cast<U const>(first), rest...)
+	);
+}
+
 /** @} */ // end of doc-group utils
 
 } // namespace duct

@@ -6,4 +6,5 @@ make_tests(
 	["endian"] = {nil, nil},
 	["statestore"] = {nil, nil},
 	["cc_unique_ptr"] = {nil, nil},
+	["enum"] = {nil, nil},
 })

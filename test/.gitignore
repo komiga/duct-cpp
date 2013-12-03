@@ -17,6 +17,7 @@ text/escape
 
 utils/dynamic
 utils/endian
+utils/enum
 utils/statestore
 utils/strings
 utils/cc_unique_ptr
