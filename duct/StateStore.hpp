@@ -11,6 +11,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_STATESTORE_HPP_
 
 #include "./config.hpp"
+#include "./utility.hpp"
 
 #include <type_traits>
 
@@ -31,54 +32,6 @@ template<
 	typename V
 >
 class StateStore;
-
-/** @cond INTERNAL */
-
-template<
-	typename V,
-	typename S
->
-constexpr V
-pack_bitor(
-	V const value
-) noexcept {
-	return value;
-}
-
-// FIXME: Oh for the love of Mo'Jaal.. C++11 doesn't allow you to
-// take a function parameter pack with an ordinary type. It _must_
-// be a template type parameter pack. Ergo, this is valid:
-//
-// template<typename... T> void f(T...);
-//
-// But this is not:
-//
-// void f(T...);
-
-template<
-	typename V,
-	typename S,
-	typename Head,
-	// NB: To prevent unwanted types leaking into this util...
-	// Nuke when this parameter pack terror is resolved.
-	class = typename std::enable_if<
-		std::is_same<S, Head>::value
-	>::type,
-	typename... Tail
->
-constexpr V
-pack_bitor(
-	V const value,
-	Head const head,
-	Tail const... tail
-) noexcept {
-	return pack_bitor<V, S>(
-		value | static_cast<V const>(head),
-		tail...
-	);
-}
-
-/** @endcond */ // INTERNAL
 
 /**
 	@addtogroup utils
@@ -148,24 +101,20 @@ public:
 	/**
 		Constructor with states.
 
-		@tparam SFaux Faux template type parameter pack required to
-		enable function parameter pack parameter in C++11. Don't ask.
-		Types must be equal to @c state_type; SFINAE will fail
-		otherwise.
-		@param states Parameter pack of states to enable.
+		@tparam Rest Rest types. See enum_bitor().
+		@param first First state to enable.
+		@param rest Rest of states to enable.
 	*/
 	template<
-		typename... SFaux
+		typename... Rest
 	>
 	constexpr
 	StateStore(
-		SFaux const... states
+		state_type const first,
+		Rest const... rest
 	) noexcept
 		: m_value(
-			pack_bitor<value_type, state_type>(
-				value_type(0),
-				states...
-			)
+			enum_bitor<state_type, value_type>(first, rest...)
 		)
 	{}
 
