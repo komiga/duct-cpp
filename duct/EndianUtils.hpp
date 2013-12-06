@@ -88,6 +88,14 @@ struct bs_impl<double> {
 	}
 };
 
+#if !defined(DUCT_ENDIAN_IGNORE_OLD_CASTS) && (			\
+	 (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) ||		\
+	((DUCT_COMPILER & DUCT_FLAG_COMPILER_CLANG) &&		\
+	  DUCT_COMPILER > DUCT_FLAG_COMPILER_CLANG33))
+//
+	#define DUCT_ENDIAN_IGNORE_OLD_CASTS
+#endif
+
 // NB: These cannot be constexpr; the bswap macros can potentially
 // use asm instructions
 template<
@@ -98,14 +106,14 @@ struct bs_impl<T, 2u> {
 	swap(
 		T value
 	) {
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
 			bswap_16(reinterpret_cast<uint16_t&>(value))
 		);
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop
 	#endif
 	}
@@ -119,14 +127,14 @@ struct bs_impl<T, 4u> {
 	swap(
 		T value
 	) {
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
 			bswap_32(reinterpret_cast<uint32_t&>(value))
 		);
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop
 	#endif
 	}
@@ -140,14 +148,14 @@ struct bs_impl<T, 8u> {
 	swap(
 		T value
 	) {
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
 			bswap_64(reinterpret_cast<uint64_t&>(value))
 		);
-	#if (DUCT_COMPILER & DUCT_FLAG_COMPILER_GCC) != 0
+	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop
 	#endif
 	}
