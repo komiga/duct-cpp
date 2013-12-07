@@ -183,6 +183,56 @@ enum_combine(
 	);
 }
 
+/**
+	Get the minimum of two values (constexpr).
+
+	@note This expects an arithmetic type. It is intended for use in
+	constexpr contexts.
+
+	@tparam T Arithmetic type.
+	@returns @a x if <code>x < y</code>, else @a y.
+	@param x,y Values.
+*/
+template<
+	typename T
+>
+inline constexpr T
+min_ce(
+	T const x,
+	T const y
+) noexcept {
+	return
+		x < y
+		? x
+		: y
+	;
+}
+
+/**
+	Get the minimum of two values (constexpr).
+
+	@note This expects an arithmetic type. It is intended for use in
+	constexpr contexts.
+
+	@tparam T Arithmetic type.
+	@returns @a x if <code>x > y</code>, else @a y.
+	@param x,y Values.
+*/
+template<
+	typename T
+>
+inline constexpr T
+max_ce(
+	T const x,
+	T const y
+) noexcept {
+	return
+		x > y
+		? x
+		: y
+	;
+}
+
 /** @} */ // end of doc-group utils
 
 } // namespace duct
