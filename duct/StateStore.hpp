@@ -121,20 +121,20 @@ public:
 	// FIXME: Defect in GCC 4.7.3: compiler trips itself by
 	// not initializing m_value in its own generated ctor.
 	/** Default constructor. */
-	StateStore() = default;
+	StateStore() noexcept = default;
 	/** Copy constructor. */
-	StateStore(StateStore const&) = default;
+	StateStore(StateStore const&) noexcept = default;
 	/** Move constructor. */
-	StateStore(StateStore&&) = default;
+	StateStore(StateStore&&) noexcept = default;
 	/** Destructor. */
-	~StateStore() = default;
+	~StateStore() noexcept = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy-assignment operator. */
-	StateStore& operator=(StateStore const&) = default;
+	StateStore& operator=(StateStore const&) noexcept = default;
 	/** Move-assignment operator. */
-	StateStore& operator=(StateStore&&) = default;
+	StateStore& operator=(StateStore&&) noexcept = default;
 /// @}
 
 /** @name Properties */ /// @{
