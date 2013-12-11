@@ -149,6 +149,20 @@ public:
 	}
 
 	/**
+		Get states by mask.
+
+		@param mask Mask.
+	*/
+	constexpr state_type
+	get_states(
+		state_type const mask
+	) const noexcept {
+		return static_cast<state_type>(
+			m_value & static_cast<value_type const>(mask)
+		);
+	}
+
+	/**
 		Test value of state.
 
 		@returns
@@ -204,6 +218,37 @@ public:
 			? this->enable(state)
 			: this->disable(state)
 		;
+	}
+
+	/**
+		Remove states by mask and set states.
+
+		@param mask State mask.
+		@param states States to set.
+	*/
+	/*constexpr*/ void
+	set_masked(
+		state_type const mask,
+		state_type const states
+	) noexcept {
+		m_value
+			= (m_value & ~static_cast<value_type const>(mask))
+			| static_cast<value_type const>(states)
+		;
+	}
+
+	/**
+		Remove states by mask.
+
+		Removes states by ANDing @c ~mask.
+
+		@param mask State mask.
+	*/
+	/*constexpr*/ void
+	remove(
+		state_type const mask
+	) noexcept {
+		m_value &= ~static_cast<value_type const>(mask);
 	}
 
 	/**

@@ -10,7 +10,10 @@ enum class CS : uint8_t {
 	b = 1 << 1,
 	c = 1 << 2,
 
-	all = a | b | c
+	ab = a | b,
+	ac = a | c,
+	all = a | b | c,
+	none = 0
 };
 
 using ClassStore = duct::StateStore<CS>;
@@ -51,15 +54,33 @@ main() {
 		};
 		print(ss);
 		assert(
-			static_cast<value_type const>(CS::all) == ss.get_value()
+			static_cast<value_type const>(CS::all) == ss.get_value() &&
+			CS::all == ss.get_states(CS::all)
 		);
 
-		ss.set(CS::b, false);
+		ss.remove(CS::ab);
+		print(ss);
+		assert(
+			static_cast<value_type const>(CS::c) == ss.get_value() &&
+			CS::c == ss.get_states(CS::all) &&
+			CS::none == ss.get_states(CS::ab)
+		);
+
+		ss.enable(CS::all);
+		ss.set_masked(CS::ab, CS::a);
+		print(ss);
+		assert(
+			static_cast<value_type const>(CS::ac) == ss.get_value() &&
+			CS::ac == ss.get_states(CS::ac) &&
+			CS::none == ss.get_states(CS::b)
+		);
+
+		ss.set(CS::c, false);
 		print(ss);
 		assert(
 			ss.test(CS::a) &&
 			!ss.test(CS::b) &&
-			ss.test(CS::c)
+			!ss.test(CS::c)
 		);
 	}
 	{
