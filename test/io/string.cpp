@@ -1,6 +1,7 @@
 
 #include <duct/char.hpp>
 #include <duct/string.hpp>
+#include <duct/debug.hpp>
 #include <duct/detail/string_traits.hpp>
 #include <duct/IO/util.hpp>
 #include <duct/IO/memstream.hpp>
@@ -86,11 +87,11 @@ read_s(
 		"stream size: %lu\n",
 		static_cast<unsigned long>(duct::IO::size(stream))
 	);
-	assert(stream.good());
+	DUCT_ASSERTE(stream.good());
 	ctx.read_string(
 		stream, str, static_cast<std::streamsize>(size), duct::CHAR_NULL
 	);
-	assert(stream.good());
+	DUCT_ASSERTE(stream.good());
 	print_states(stream);
 	std::printf(
 		"String [size: %lu bsize: %lu len: %lu]: |",
@@ -116,15 +117,15 @@ write_s(
 		out_buffer[512u];
 	duct::IO::StreamContext ctx(ToU::id, duct::Endian::SYSTEM);
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
-	assert(stream.good());
+	DUCT_ASSERTE(stream.good());
 	std::size_t written_size = ctx.write_string(stream, str, duct::CHAR_NULL);
 	std::printf(
 		"size: %lu  written_size: %lu\n",
 		static_cast<unsigned long>(size),
 		static_cast<unsigned long>(written_size)
 	);
-	assert(stream.good());
-	assert(written_size == size);
+	DUCT_ASSERTE(stream.good());
+	DUCT_ASSERTE(written_size == size);
 	stream.flush();
 	print_states(stream);
 	bool kosher = true;

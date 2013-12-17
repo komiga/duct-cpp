@@ -2,6 +2,7 @@
 #include <duct/config.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
+#include <duct/debug.hpp>
 #include <duct/detail/vartype.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/IO/memstream.hpp>
@@ -118,7 +119,7 @@ parse_stream(
 	std::istream& stream,
 	bool const valid
 ) {
-	assert(stream.good());
+	DUCT_ASSERTE(stream.good());
 	if (valid) {
 		g_parser.process(root, stream);
 	} else {
@@ -127,7 +128,7 @@ parse_stream(
 			std::cout
 				<< "Received no exception when one was expected\n"
 			<< std::endl;
-			assert(false);
+			DUCT_ASSERTE(false);
 		} catch (duct::ScriptParserException& e) {
 			std::cout
 				<< e.what()
@@ -136,7 +137,7 @@ parse_stream(
 			return;
 		}
 	}
-	assert(stream.good() || stream.eof());
+	DUCT_ASSERTE(stream.good() || stream.eof());
 	print_var(root);
 	std::cout << '\n';
 }

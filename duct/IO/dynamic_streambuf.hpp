@@ -13,7 +13,6 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "../config.hpp"
 #include "../debug.hpp"
 
-#include <cassert>
 #include <cstring>
 #include <utility>
 #include <stdexcept>
@@ -151,7 +150,7 @@ public:
 	{
 		// Permit empty buffer on construction
 		this->setg(nullptr, nullptr, nullptr);
-		assert(resize(capacity));
+		DUCT_ASSERTE(resize(capacity));
 	}
 
 	/** Default constructor (deleted). */
@@ -496,7 +495,7 @@ private:
 		) {
 			append_size += m_growth_rate;
 			// check overflow
-			assert(m_buffer.size() < append_size);
+			DUCT_ASSERTE(m_buffer.size() < append_size);
 			return resize(
 				(0u == m_max_size)
 				? append_size

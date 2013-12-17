@@ -1,7 +1,7 @@
 
+#include <duct/debug.hpp>
 #include <duct/IO/dynamic_streambuf.hpp>
 
-#include <cassert>
 #include <iostream>
 
 using duct::IO::dynamic_streambuf;
@@ -73,47 +73,47 @@ main() {
 	// invariants
 	{
 		dynamic_streambuf buf{0u};
-		assert(Sequence::output == buf.get_sequence());
-		assert(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
+		DUCT_ASSERTE(0u == buf.get_sequence_size());
 
 		inspect(buf, "invariants -> initial");
 
 		buf.commit();
-		assert(Sequence::input == buf.get_sequence());
-		assert(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::input == buf.get_sequence());
+		DUCT_ASSERTE(0u == buf.get_sequence_size());
 
 		buf.reset(10u);
-		assert(Sequence::output == buf.get_sequence());
-		assert(0u == buf.get_sequence_size());
-		assert(10u == buf.get_buffer().size());
+		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
+		DUCT_ASSERTE(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(10u == buf.get_buffer().size());
 
 		{
 			std::ostream os{&buf};
 			os << 'a';
-			assert(os.good());
-			assert(1u == buf.get_sequence_size());
+			DUCT_ASSERTE(os.good());
+			DUCT_ASSERTE(1u == buf.get_sequence_size());
 		}
 
 		buf.commit();
-		assert(Sequence::input == buf.get_sequence());
-		assert(1u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::input == buf.get_sequence());
+		DUCT_ASSERTE(1u == buf.get_sequence_size());
 
 		{
 			std::istream is{&buf};
 			char c = '\0';
 			is >> c;
-			assert('a' == c);
+			DUCT_ASSERTE('a' == c);
 
 			is.read(&c, 1u);
-			assert('a' == c);
-			assert(is.eof());
-			assert(!is.bad());
-			assert(is_fail(is));
+			DUCT_ASSERTE('a' == c);
+			DUCT_ASSERTE(is.eof());
+			DUCT_ASSERTE(!is.bad());
+			DUCT_ASSERTE(is_fail(is));
 		}
 
 		buf.reset(10u);
-		assert(Sequence::output == buf.get_sequence());
-		assert(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
+		DUCT_ASSERTE(0u == buf.get_sequence_size());
 
 		inspect(buf, "invariants -> final");
 	}
@@ -132,29 +132,29 @@ main() {
 		{
 			std::ostream os{&buf};
 			os.write("abcd", 4u);
-			assert(4u == buf.get_sequence_size());
-			assert(4u == buf.get_buffer().size());
+			DUCT_ASSERTE(4u == buf.get_sequence_size());
+			DUCT_ASSERTE(4u == buf.get_buffer().size());
 
 			inspect(buf, "seek & overflow -> after write");
 
 			os.seekp(-1, std::ios_base::end);
-			assert(!os.fail());
-			assert(3 == os.tellp());
+			DUCT_ASSERTE(!os.fail());
+			DUCT_ASSERTE(3 == os.tellp());
 			os << 'D';
 
 			os.seekp(-2, std::ios_base::cur);
-			assert(!os.fail());
-			assert(2 == os.tellp());
+			DUCT_ASSERTE(!os.fail());
+			DUCT_ASSERTE(2 == os.tellp());
 			os << 'C';
 
 			os.seekp(1, std::ios_base::beg);
-			assert(!os.fail());
-			assert(1 == os.tellp());
+			DUCT_ASSERTE(!os.fail());
+			DUCT_ASSERTE(1 == os.tellp());
 			os << 'B';
 
 			os.seekp(0, std::ios_base::beg);
-			assert(!os.fail());
-			assert(0 == os.tellp());
+			DUCT_ASSERTE(!os.fail());
+			DUCT_ASSERTE(0 == os.tellp());
 			os << 'A';
 
 			inspect(buf, "seek & overflow -> after seek-overwrite");
@@ -164,26 +164,26 @@ main() {
 			// *without* setting failbit.
 			os.clear();
 			os.seekp(-1, std::ios_base::beg);
-			assert(is_fail(os));
+			DUCT_ASSERTE(is_fail(os));
 
 			os.clear();
 			os.seekp(1, std::ios_base::end);
-			assert(os.good());
+			DUCT_ASSERTE(os.good());
 
 			// FIXME: ^
 			os.clear();
 			os.seekp(-6, std::ios_base::cur);
-			assert(is_fail(os));
+			DUCT_ASSERTE(is_fail(os));
 
 			inspect(buf, "seek & overflow -> after seeks");
 
 			// overflow from seek
-			assert(5u == buf.get_sequence_size());
+			DUCT_ASSERTE(5u == buf.get_sequence_size());
 
 			//   4 (size after write)
 			// + 1 (overflow from seek)
 			// + 1 (growth rate)
-			assert(6u == buf.get_buffer().size());
+			DUCT_ASSERTE(6u == buf.get_buffer().size());
 		}
 
 		{
@@ -193,13 +193,13 @@ main() {
 			buf.commit(4u);
 			std::istream is{&buf};
 			is.read(read, 4u);
-			assert(0 == match.compare(0u, 4u, read, 4u));
-			assert(is.good());
+			DUCT_ASSERTE(0 == match.compare(0u, 4u, read, 4u));
+			DUCT_ASSERTE(is.good());
 
 			is.read(read, 1u);
-			assert(is.eof());
-			assert(!is.bad());
-			assert(is_fail(is));
+			DUCT_ASSERTE(is.eof());
+			DUCT_ASSERTE(!is.bad());
+			DUCT_ASSERTE(is_fail(is));
 		}
 
 		inspect(buf, "seek & overflow -> after read");

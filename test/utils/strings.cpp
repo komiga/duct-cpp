@@ -4,7 +4,6 @@
 #include <duct/EncodingUtils.hpp>
 
 #include <cstdlib>
-#include <cassert>
 #include <cstdio>
 
 #define init_decode(data_, offset_)	\
@@ -32,9 +31,9 @@
 	)*/
 // -
 
-#define run_decode(enc_, data_, offset_)							\
-	init_decode(data_, offset_);									\
-	next=duct:: enc_ ::decode(begin, end, cp, duct::CHAR_SENTINEL);	\
+#define run_decode(enc_, data_, offset_)								\
+	init_decode(data_, offset_);										\
+	next = duct:: enc_ ::decode(begin, end, cp, duct::CHAR_SENTINEL);	\
 	print_decode(data_, enc_)
 // -
 
@@ -96,7 +95,7 @@ main(
 ) {
 	DUCT_ASSERT(argc > 1, "requires series argument (pass 0 for all)");
 	unsigned
-		series = atoi(argv[1u]),
+		series = std::atoi(argv[1u]),
 		offset = (argc > 2)
 			? static_cast<unsigned>(atoi(argv[2u]))
 			: 4u

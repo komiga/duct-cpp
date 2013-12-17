@@ -11,8 +11,8 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_IO_MEMSTREAM_HPP_
 
 #include "../config.hpp"
+#include "../debug.hpp"
 
-#include <cassert>
 #include <limits>
 #include <iostream>
 
@@ -245,7 +245,7 @@ protected:
 		char_type* const end
 	) {
 		// May the hammermaestro have mercy on your femur(s)
-		assert(beg <= cur && end >= cur);
+		DUCT_ASSERTE(beg <= cur && end >= cur);
 		this->setp(beg, end);
 		std::ptrdiff_t off = cur - beg;
 		// std::ptrdiff_t can be 64 bits of signed goodness

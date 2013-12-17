@@ -3,6 +3,7 @@
 #include <duct/aux.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
+#include <duct/debug.hpp>
 #include <duct/detail/vartype.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/IO/memstream.hpp>
@@ -102,7 +103,7 @@ parse_stream(
 	std::istream& stream,
 	bool const /*valid*/
 ) {
-	assert(stream.good());
+	DUCT_ASSERTE(stream.good());
 	try {
 		g_parser.process(root, stream);
 	} catch (duct::ScriptParserException& e) {
@@ -110,9 +111,9 @@ parse_stream(
 			<< "Unexpected exception when parsing:\n"
 			<< e.what() << '\n'
 		<< std::endl;
-		assert(false);
+		DUCT_ASSERTE(false);
 	}
-	assert(stream.good() || stream.eof());
+	DUCT_ASSERTE(stream.good() || stream.eof());
 	//print_var(root);
 }
 
@@ -125,7 +126,7 @@ write_var(
 		std::cout
 			<< "Failed to write variable"
 		<< std::endl;
-		assert(false);
+		DUCT_ASSERTE(false);
 	}
 }
 

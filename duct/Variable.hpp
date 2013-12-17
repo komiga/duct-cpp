@@ -13,10 +13,10 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 #include "./aux.hpp"
 #include "./string.hpp"
+#include "./debug.hpp"
 #include "./detail/vartype.hpp"
 #include "./StringUtils.hpp"
 
-#include <cassert>
 #include <utility>
 
 namespace duct {
@@ -114,7 +114,7 @@ public:
 		: m_type(type)
 		, m_children(std::move(ilist))
 	{
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 	}
 
 	/**
@@ -137,7 +137,7 @@ public:
 		, m_name(std::move(name))
 		, m_children(std::move(ilist))
 	{
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 	}
 
 	/**
@@ -458,7 +458,7 @@ public:
 		VariableType const type,
 		vector_type children
 	) {
-		assert(VARCLASS_COLLECTION & type);
+		DUCT_ASSERTE(VARCLASS_COLLECTION & type);
 		if (type != m_type) {
 			if (!(VARCLASS_COLLECTION & m_type)) {
 				reset();
@@ -651,11 +651,11 @@ public:
 */
 	/** @cond */
 	#define DUCT_V_set_value_()			\
-		assert(DUCT_V_TYPE_ == m_type);	\
+		DUCT_ASSERTE(DUCT_V_TYPE_ == m_type);	\
 		DUCT_V_FIELD_ = value;			\
 		return *this;
 	#define DUCT_V_get_value_()			\
-		assert(DUCT_V_TYPE_ == m_type);	\
+		DUCT_ASSERTE(DUCT_V_TYPE_ == m_type);	\
 		return DUCT_V_FIELD_
 
 	#define DUCT_V_TYPE_ VARTYPE_STRING
@@ -673,7 +673,7 @@ public:
 	assign(
 		detail::var_config::string_type value
 	) {
-		assert(DUCT_V_TYPE_ == m_type);
+		DUCT_ASSERTE(DUCT_V_TYPE_ == m_type);
 		DUCT_V_FIELD_.assign(std::move(value));
 		return *this;
 	}
@@ -849,7 +849,7 @@ public:
 	get_as_str(
 		StringT& out_str
 	) const {
-		assert(m_type & (VARCLASS_VALUE | VARTYPE_NULL));
+		DUCT_ASSERTE(m_type & (VARCLASS_VALUE | VARTYPE_NULL));
 		switch (m_type) {
 		case VARTYPE_NULL: out_str = "null"; break;
 		case VARTYPE_STRING: StringUtils::convert(out_str, m_strv); break;
@@ -882,14 +882,14 @@ public:
 	*/
 	iterator
 	begin() noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.begin();
 	}
 
 	/** @copydoc begin() */
 	const_iterator
 	cbegin() const noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.cbegin();
 	}
 
@@ -900,14 +900,14 @@ public:
 	*/
 	iterator
 	end() noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.end();
 	}
 
 	/** @copydoc end() */
 	const_iterator
 	cend() const noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.cend();
 	}
 
@@ -918,7 +918,7 @@ public:
 	*/
 	bool
 	empty() const noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.empty();
 	}
 
@@ -929,7 +929,7 @@ public:
 	*/
 	vector_type::size_type
 	size() const noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children.size();
 	}
 
@@ -942,7 +942,7 @@ public:
 	set_children(
 		vector_type new_children
 	) {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		m_children = std::move(new_children);
 	}
 
@@ -953,14 +953,14 @@ public:
 	*/
 	vector_type&
 	get_children() noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children;
 	}
 
 	/** @copydoc get_children() */
 	vector_type const&
 	get_children() const noexcept {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		return m_children;
 	}
 
@@ -974,7 +974,7 @@ public:
 	push_back(
 		Variable var
 	) {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		m_children.push_back(std::move(var));
 		return *this;
 	}
@@ -992,7 +992,7 @@ public:
 	>
 	Variable&
 	emplace_back(ArgP&&... args) {
-		assert(is_class(VARCLASS_COLLECTION));
+		DUCT_ASSERTE(is_class(VARCLASS_COLLECTION));
 		m_children.emplace_back(std::forward<ArgP>(args)...);
 		return *this;
 	}

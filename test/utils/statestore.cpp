@@ -1,7 +1,7 @@
 
+#include <duct/debug.hpp>
 #include <duct/StateStore.hpp>
 
-#include <cassert>
 #include <bitset>
 #include <iostream>
 
@@ -39,28 +39,28 @@ main() {
 		ClassStore ss{};
 		value_type const default_value = ss.get_value();
 		print(ss);
-		assert(default_value == value_type(0));
+		DUCT_ASSERTE(default_value == value_type(0));
 
 		ss.enable(CS::a);
 		print(ss);
-		assert(ss.test(CS::a));
+		DUCT_ASSERTE(ss.test(CS::a));
 
 		ss.clear();
-		assert(ss.get_value() == default_value);
+		DUCT_ASSERTE(ss.get_value() == default_value);
 	}
 	{
 		ClassStore ss{
 			CS::a, CS::b, CS::c
 		};
 		print(ss);
-		assert(
+		DUCT_ASSERTE(
 			static_cast<value_type const>(CS::all) == ss.get_value() &&
 			CS::all == ss.get_states(CS::all)
 		);
 
 		ss.remove(CS::ab);
 		print(ss);
-		assert(
+		DUCT_ASSERTE(
 			static_cast<value_type const>(CS::c) == ss.get_value() &&
 			CS::c == ss.get_states(CS::all) &&
 			CS::none == ss.get_states(CS::ab)
@@ -69,7 +69,7 @@ main() {
 		ss.enable(CS::all);
 		ss.set_masked(CS::ab, CS::a);
 		print(ss);
-		assert(
+		DUCT_ASSERTE(
 			static_cast<value_type const>(CS::ac) == ss.get_value() &&
 			CS::ac == ss.get_states(CS::ac) &&
 			CS::none == ss.get_states(CS::b)
@@ -77,7 +77,7 @@ main() {
 
 		ss.set(CS::c, false);
 		print(ss);
-		assert(
+		DUCT_ASSERTE(
 			ss.test(CS::a) &&
 			!ss.test(CS::b) &&
 			!ss.test(CS::c)

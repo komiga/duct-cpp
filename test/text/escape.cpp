@@ -2,9 +2,9 @@
 #include <duct/config.hpp>
 #include <duct/char.hpp>
 #include <duct/string.hpp>
+#include <duct/debug.hpp>
 #include <duct/StringUtils.hpp>
 
-#include <cassert>
 #include <iostream>
 #include <iomanip>
 
@@ -33,7 +33,7 @@ test_string(
 		std::cout
 			<< "     `" << expected << "`  doesn't match!\n"
 		;
-		assert(false);
+		DUCT_ASSERTE(false);
 	}
 }
 

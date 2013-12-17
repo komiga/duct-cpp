@@ -31,7 +31,7 @@ template<
 >
 using int_fp_type = typename int_fp_type_impl<FP>::type;
 
-auto constexpr
+constexpr auto
 ENSURE_SWAP = (duct::Endian::LITTLE == duct::Endian::SYSTEM)
 	? duct::Endian::BIG
 	: duct::Endian::LITTLE
@@ -72,8 +72,8 @@ do_test_floating(
 	T const value
 ) {
 	using cref_type = int_fp_type<T> const&;
-	auto x = duct::byte_swap   (value);
-	auto y = duct::byte_swap_if(value, ENSURE_SWAP);
+	auto const x = duct::byte_swap   (value);
+	auto const y = duct::byte_swap_if(value, ENSURE_SWAP);
 	auto xr = value; duct::byte_swap_ref   (xr);
 	auto yr = value; duct::byte_swap_ref_if(yr, ENSURE_SWAP);
 	std::cout
@@ -86,11 +86,11 @@ do_test_floating(
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(y)
 		<< '\n'
-		<< "floating-point byte_swap   : "
+		<< "floating-point byte_swap_ref   : "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(xr)
 		<< '\n'
-		<< "floating-point byte_swap_if: "
+		<< "floating-point byte_swap_ref_if: "
 			<< reinterpret_cast<cref_type>(value)
 			<< " -> "<< reinterpret_cast<cref_type>(yr)
 	<< std::endl;
