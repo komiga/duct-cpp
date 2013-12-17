@@ -281,6 +281,9 @@ public:
 		case Sequence::output:
 			return this->pptr() - this->pbase();
 		}
+		// FIXME: Hack to prevent shoddy heuristics in GCC 4.7.3's
+		// -Wreturn-type from triggering
+		DUCT_ASSERTE(false);
 	}
 /// @}
 
