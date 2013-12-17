@@ -21,6 +21,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./VariableUtils.hpp"
 
 #include <cstdio>
+#include <cstdarg>
 #include <utility>
 #include <exception>
 #include <type_traits>

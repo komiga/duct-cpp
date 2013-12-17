@@ -13,8 +13,6 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 
 #include <cstdlib>
-#include <cstdarg>
-#include <cassert>
 #include <cstdio>
 
 namespace duct {
