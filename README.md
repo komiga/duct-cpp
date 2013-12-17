@@ -3,15 +3,34 @@
 
 **duct++** is a general-purpose C++11 header library which supplies:
 
-* Compiler and platform detection macros
-* Debug message and assertion macros
-* Endian byte-swapping
-* Unicode encoding and string conversion helpers
-* `iostream` helpers for binary and textual data (integrates with the C++ Standard Library)
-* Generic token parsing
-* CVar-esque system with validation, and a markup language
+* Compiler and platform detection macros.
+* Debug message and assertion macros.
+* Endian byte-swapping.
+* Unicode encoding and string conversion helpers.
+* `iostream` helpers for binary and textual data (integrates with the C++
+  Standard Library).
+* Generic token parsing.
+* CVar-esque system with validation, and a markup language.
 
-All it needs is a shiny C++11-compliant compiler. That's not too much to ask for, is it? *Is it, Microsoft?* Hell, what do I care? Windows is a terrible platform.
+All it needs is a shiny C++11-compliant compiler and standard library.
+That's not too much to ask for, is it? *Is it, Microsoft?*
+
+## Building
+
+Being a header library, duct++ is not compiled directly. However, all
+classes/headers support Clang 3.3+ and libc++ (SVN head). GCC and libstdc++ are
+only partially supported (as of 4.7.3) due to issues in ISO compliance
+(see *Defects* below).
+
+The tests can be compiled using plash's standard project protocol:
+http://komiga.com/pp-cpp
+
+## Defects
+
+The following headers require corrections in libstdc++ (4.7.3):
+
+1. `<duct/IO/multistream.hpp>`:
+   `std::vector<T>::assign()` is missing the rvalue ref variant.
 
 ## License
 

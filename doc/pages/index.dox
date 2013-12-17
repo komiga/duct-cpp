@@ -4,15 +4,17 @@
 @mainpage
 @section README
 
-<strong>duct++</strong> is a general-purpose C++11 header library which supplies:
+<strong>duct++</strong> is a general-purpose C++11 header library which
+supplies:
 
-- Compiler and platform detection macros
-- Debug message and assertion macros
-- Endian byte-swapping
-- Unicode encoding and string conversion helpers
-- iostream helpers for binary and textual data
-- Generic token parsing
-- CVar-esque system with validation, and a markup language
+- Compiler and platform detection macros.
+- Debug message and assertion macros.
+- Endian byte-swapping.
+- Unicode encoding and string conversion helpers.
+- `iostream` helpers for binary and textual data (integrates with the C++
+  Standard Library).
+- Generic token parsing.
+- CVar-esque system with validation, and a markup language.
 
 @section License
 
