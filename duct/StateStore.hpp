@@ -94,7 +94,7 @@ public:
 	using value_type = V;
 
 private:
-	value_type m_value;
+	value_type m_value{};
 
 public:
 /** @name Constructors and destructor */ /// @{
@@ -118,8 +118,6 @@ public:
 		)
 	{}
 
-	// FIXME: Defect in GCC 4.7.3: compiler trips itself by
-	// not initializing m_value in its own generated ctor.
 	/** Default constructor. */
 	StateStore() noexcept = default;
 	/** Copy constructor. */
