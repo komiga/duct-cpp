@@ -64,11 +64,11 @@ namespace duct {
 	@{
 */
 /** Strictly-sized 8-bit character. */
-using char8_strict = uint8_t;
+using char8_strict = std::uint8_t;
 /** Strictly-sized 16-bit character. */
-using char16_strict = uint16_t;
+using char16_strict = std::uint16_t;
 /** Strictly-sized 32-bit character. */
-using char32_strict = uint32_t;
+using char32_strict = std::uint32_t;
 
 /**
 	(Very likely an) 8-bit character; UTF-8 code unit.
@@ -170,7 +170,7 @@ using char32 = system_dependent;
 	@param c UTF-8 code unit to test.
 */
 #define DUCT_UTF8_IS_LEAD(c) ( \
-	static_cast<uint8_t>((c) - 0xC0) < 0x3E \
+	static_cast<std::uint8_t>((c) - 0xC0) < 0x3E \
 )
 /**
 	Check if a UTF-8 code unit is a trail unit.

@@ -57,7 +57,7 @@ see @ref index or the accompanying LICENSE file for full text.
 */
 
 namespace {
-static uint8_t const s_utf8_trailing[256]{
+static std::uint8_t const s_utf8_trailing[256]{
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -76,25 +76,26 @@ RandomAccessIt UTF8Utils::decode(
 	char32& output,
 	char32 const replacement
 ) {
-	static uint32_t const offsets[6]{
+	static std::uint32_t const offsets[6]{
 		0x00000000, 0x00003080, 0x000E2080,
 		0x03C82080, 0xFA082080, 0x82082080
 	};
-	unsigned const trailing_units
-		=static_cast<uint8_t>(s_utf8_trailing[static_cast<char8_strict>(*pos)]);
-	if (end>pos+trailing_units) {
-		output=0;
+	unsigned const trailing_units = static_cast<std::uint8_t>(
+		s_utf8_trailing[static_cast<char8_strict>(*pos)]
+	);
+	if (end > pos + trailing_units) {
+		output = 0;
 		switch (trailing_units) {
-		case 5: output+=static_cast<char8_strict>(*pos++); output<<=6;
-		case 4: output+=static_cast<char8_strict>(*pos++); output<<=6;
-		case 3: output+=static_cast<char8_strict>(*pos++); output<<=6;
-		case 2: output+=static_cast<char8_strict>(*pos++); output<<=6;
-		case 1: output+=static_cast<char8_strict>(*pos++); output<<=6;
-		case 0: output+=static_cast<char8_strict>(*pos++);
+		case 5: output += static_cast<char8_strict>(*pos++); output <<= 6;
+		case 4: output += static_cast<char8_strict>(*pos++); output <<= 6;
+		case 3: output += static_cast<char8_strict>(*pos++); output <<= 6;
+		case 2: output += static_cast<char8_strict>(*pos++); output <<= 6;
+		case 1: output += static_cast<char8_strict>(*pos++); output <<= 6;
+		case 0: output += static_cast<char8_strict>(*pos++);
 		}
-		output-=offsets[trailing_units];
+		output -= offsets[trailing_units];
 		if (!DUCT_UNI_IS_CP_VALID(output)) {
-			output=replacement;
+			output = replacement;
 		}
 	} // Else sequence is invalid; pos was not modified, so we can just return
 	return pos;
@@ -107,32 +108,33 @@ OutputIt UTF8Utils::encode(
 	char32 const replacement
 ) {
 	// UTF-8 first bytes
-	static char8_strict const utf8_fbs[7]
-		{0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
+	static char8_strict const utf8_fbs[7]{
+		0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+	};
 	if (!DUCT_UNI_IS_CP_VALID(input)) {
-		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) {
-			input=replacement;
+		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL != replacement) {
+			input = replacement;
 		} else { // Invalid or null replacement
 			return output;
 		}
 	}
 	// Valid code point (input or replaced)
-	unsigned to_write=required(input);
+	unsigned to_write = required(input);
 	// Extract bytes
 	char8_strict bytes[4];
 	switch (to_write) {
-	case 4: bytes[3]=static_cast<char8_strict>((input|0x80)&0xBF); input>>=6;
-	case 3: bytes[2]=static_cast<char8_strict>((input|0x80)&0xBF); input>>=6;
-	case 2: bytes[1]=static_cast<char8_strict>((input|0x80)&0xBF); input>>=6;
-	case 1: bytes[0]=static_cast<char8_strict> (input|utf8_fbs[to_write]);
+	case 4: bytes[3] = static_cast<char8_strict>((input | 0x80) & 0xBF); input >>= 6;
+	case 3: bytes[2] = static_cast<char8_strict>((input | 0x80) & 0xBF); input >>= 6;
+	case 2: bytes[1] = static_cast<char8_strict>((input | 0x80) & 0xBF); input >>= 6;
+	case 1: bytes[0] = static_cast<char8_strict> (input | utf8_fbs[to_write]);
 	}
 	// Add them to the output
-	char8_strict const* iter=bytes;
+	char8_strict const* iter = bytes;
 	switch (to_write) {
-	case 4: *output++=*iter++;
-	case 3: *output++=*iter++;
-	case 2: *output++=*iter++;
-	case 1: *output++=*iter++;
+	case 4: *output++ = *iter++;
+	case 3: *output++ = *iter++;
+	case 2: *output++ = *iter++;
+	case 1: *output++ = *iter++;
 	}
 	return output;
 }
@@ -143,11 +145,11 @@ RandomAccessIt UTF8Utils::next(
 	RandomAccessIt const end
 ) {
 	using diff_type
-		=typename std::iterator_traits<RandomAccessIt>::difference_type;
-	diff_type units=static_cast<diff_type>(required_first_whole(*from));
-	return (std::distance(end, from)<units)
+		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type const units = static_cast<diff_type>(required_first_whole(*from));
+	return (std::distance(end, from) < units)
 		? from
-		: from+units;
+		: from + units;
 }
 
 template<typename RandomAccessIt>
@@ -155,20 +157,20 @@ RandomAccessIt UTF8Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
 ) {
-	RandomAccessIt pos=from;
-	if (begin<=from) {
+	RandomAccessIt pos = from;
+	if (begin <= from) {
 		// Quick exit: invalid or unsteppable position
 		return from;
 	} else if (DUCT_UTF8_IS_LEAD(*pos)) {
 		// Already aligned to a sequence; move outside it
 		--pos;
 	}
-	while (begin<pos && DUCT_UTF8_IS_TRAIL(*pos)) {
+	while (begin < pos && DUCT_UTF8_IS_TRAIL(*pos)) {
 		--pos;
 	}
-	if (DUCT_UTF8_IS_TRAIL(*pos)) { // Incomplete sequence; begin==pos
+	if (DUCT_UTF8_IS_TRAIL(*pos)) { // Incomplete sequence; begin == pos
 		return from;
-	} else { // Good; true==DUCT_UTF8_IS_LEAD(*pos)
+	} else { // Good; true == DUCT_UTF8_IS_LEAD(*pos)
 		return pos;
 	}
 }
@@ -182,7 +184,7 @@ inline unsigned UTF8Utils::required_first(
 inline unsigned UTF8Utils::required_first_whole(
 	char_type const first
 ) {
-	return 1u+s_utf8_trailing[static_cast<char8_strict>(first)];
+	return 1u + s_utf8_trailing[static_cast<char8_strict>(first)];
 }
 
 inline unsigned UTF8Utils::required(
@@ -190,10 +192,10 @@ inline unsigned UTF8Utils::required(
 ) {
 	// If greater than 0x10FFFF, the character is invalid and would be
 	// replaced with a single unit or skipped
-	if 		(c< 0x80 || c>0x10FFFF) return 1u;
-	else if (c< 0x800)		return 2u;
-	else if (c< 0x10000)	return 3u;
-	else   /*c<=0x10FFFF*/	return 4u;
+	if 		(c <  0x80 || c > 0x10FFFF) return 1u;
+	else if (c <  0x800)		return 2u;
+	else if (c <  0x10000)		return 3u;
+	else   /*c <= 0x10FFFF*/	return 4u;
 }
 
 template<typename RandomAccessIt>
@@ -202,17 +204,17 @@ std::size_t UTF8Utils::count(
 	RandomAccessIt const end,
 	bool const count_incomplete
 ) {
-	std::size_t length=0;
+	std::size_t length = 0;
 	using diff_type
-		=typename std::iterator_traits<RandomAccessIt>::difference_type;
+		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type units;
-	while (end>begin) {
-		units=static_cast<diff_type>(required_first_whole(*begin));
-		if (std::distance(end, begin)<units) { // Incomplete sequence
-			length+=(count_incomplete ? 1 : 0);
+	while (end > begin) {
+		units = static_cast<diff_type>(required_first_whole(*begin));
+		if (std::distance(end, begin) < units) { // Incomplete sequence
+			length += (count_incomplete ? 1 : 0);
 			break;
 		} else {
-			begin+=units;
+			begin += units;
 			++length;
 		}
 	}
@@ -228,8 +230,8 @@ OutputIt UTF8Utils::from_utf8(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -244,9 +246,9 @@ OutputIt UTF8Utils::from_utf16(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=UTF16Utils::decode(begin, end, codepoint);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		begin = UTF16Utils::decode(begin, end, codepoint);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -260,8 +262,8 @@ OutputIt UTF8Utils::from_utf32(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		output=encode(*begin++, output);
+	while (end > begin) {
+		output = encode(*begin++, output);
 	}
 	return output;
 }
@@ -284,8 +286,8 @@ OutputIt UTF8Utils::to_utf8(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -300,9 +302,9 @@ OutputIt UTF8Utils::to_utf16(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF16Utils::encode(codepoint, output);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF16Utils::encode(codepoint, output);
 	}
 	return output;
 }
@@ -317,9 +319,9 @@ OutputIt UTF8Utils::to_utf32(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		*output++=codepoint;
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		*output++ = codepoint;
 	}
 	return output;
 }
@@ -334,9 +336,9 @@ OutputIt UTF8Utils::from_locale(
 	OutputIt output,
 	std::locale const& locale
 ) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		char32 codepoint = UTF32Utils::decode_locale(*begin++, locale);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -350,9 +352,9 @@ OutputIt UTF8Utils::from_wide(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_wide(*begin++);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		char32 codepoint = UTF32Utils::decode_wide(*begin++);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -366,8 +368,8 @@ OutputIt UTF8Utils::from_latin1(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		output=encode(*begin++, output);
+	while (end > begin) {
+		output = encode(*begin++, output);
 	}
 	return output;
 }
@@ -384,10 +386,11 @@ OutputIt UTF8Utils::to_locale(
 	std::locale const& locale
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_locale(
-			codepoint, output, replacement, locale);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF32Utils::encode_locale(
+			codepoint, output, replacement, locale
+		);
 	}
 	return output;
 }
@@ -403,9 +406,9 @@ OutputIt UTF8Utils::to_wide(
 	char32 const replacement
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_wide(codepoint, output, replacement);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF32Utils::encode_wide(codepoint, output, replacement);
 	}
 	return output;
 }
@@ -421,9 +424,13 @@ OutputIt UTF8Utils::to_latin1(
 	char8 const replacement
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		*output++=codepoint<256 ? static_cast<char>(codepoint) : replacement;
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		*output++
+			= (codepoint < 256)
+			? static_cast<char>(codepoint)
+			: replacement
+		;
 	}
 	return output;
 }
@@ -437,21 +444,21 @@ RandomAccessIt UTF16Utils::decode(
 	char32& output,
 	char32 const replacement
 ) {
-	if (end<=pos) {
+	if (end <= pos) {
 		// Don't try to do anything if we're given an overrun
 		return pos;
 	}
-	RandomAccessIt orig_pos=pos;
-	char16 first=*pos++;
+	RandomAccessIt orig_pos = pos;
+	char16 first = *pos++;
 	if (DUCT_UTF16_IS_LEAD_SURROGATE(first)) {
-		if (end>pos) {
-			char16 second=*pos++;
+		if (end > pos) {
+			char16 second = *pos++;
 			if (DUCT_UTF16_IS_TRAIL_SURROGATE(second)) {
 				// Trail surrogate; we have a pair! Decode that sasquatch
-				output=static_cast<char32>(
-					((first-0xD800)<<10)+(second-0xDC00)+0x10000);
+				output = static_cast<char32>(
+					((first - 0xD800) << 10) + (second - 0xDC00) + 0x10000);
 			} else { // Invalid character
-				output=replacement;
+				output = replacement;
 				return pos;
 			}
 		} else { // Incomplete sequence
@@ -461,10 +468,10 @@ RandomAccessIt UTF16Utils::decode(
 	} else {
 		// Not a surrogate; directly copy (trail surrogate is captured as
 		// invalid below)
-		output=first;
+		output = first;
 	}
 	if (!DUCT_UNI_IS_CP_VALID(output)) {
-		output=replacement;
+		output = replacement;
 	}
 	return pos;
 }
@@ -476,20 +483,20 @@ OutputIt UTF16Utils::encode(
 	char32 const replacement
 ) {
 	if (!DUCT_UNI_IS_CP_VALID(input)) {
-		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL!=replacement) {
-			input=replacement;
+		if (DUCT_UNI_IS_CP_VALID(replacement) && CHAR_NULL != replacement) {
+			input = replacement;
 		} else { // Invalid or null replacement
 			return output;
 		}
 	}
-	if (input<0xFFFE) {
+	if (input < 0xFFFE) {
 		// Directly convertible to a single unit
-		*output++=static_cast<char16>(input);
+		*output++ = static_cast<char16>(input);
 	} else {
 		// Must be converted to two units
-		input-=0x10000;
-		*output++=static_cast<char16>((input>>10)+0xD800);
-		*output++=static_cast<char16>((input&0x3FFUL)+0xDC00);
+		input -= 0x10000;
+		*output++ = static_cast<char16>((input >> 10) + 0xD800);
+		*output++ = static_cast<char16>((input & 0x3FFUL) + 0xDC00);
 	}
 	return output;
 }
@@ -500,11 +507,11 @@ RandomAccessIt UTF16Utils::next(
 	RandomAccessIt const end
 ) {
 	using diff_type
-		=typename std::iterator_traits<RandomAccessIt>::difference_type;
-	diff_type units=DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
-	return (std::distance(end, from)<units)
+		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	diff_type const units = DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
+	return (std::distance(end, from) < units)
 		? from
-		: from+units;
+		: from + units;
 }
 
 template<typename RandomAccessIt>
@@ -512,8 +519,8 @@ RandomAccessIt UTF16Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
 ) {
-	RandomAccessIt pos=from;
-	if (begin>=from) {
+	RandomAccessIt pos = from;
+	if (begin >= from) {
 		// Quick exit: invalid or unsteppable position
 		return from;
 	}
@@ -522,8 +529,8 @@ RandomAccessIt UTF16Utils::prev(
 	if (DUCT_UTF16_IS_LEAD(*pos)) {
 		// Already at the preceeding sequence
 		return pos;
-	} else if (begin<pos) {
-		// Step back once more; true==DUCT_UTF16_IS_TRAIL_SURROGATE(*pos)
+	} else if (begin < pos) {
+		// Step back once more; true == DUCT_UTF16_IS_TRAIL_SURROGATE(*pos)
 		return --pos;
 	} else {
 		// Incomplete sequence
@@ -546,7 +553,7 @@ inline unsigned UTF16Utils::required_first_whole(
 inline unsigned UTF16Utils::required(
 	char32 const c
 ) {
-	return (0xFFFF>=c) ? 1 : 2;
+	return (0xFFFF >= c) ? 1 : 2;
 }
 
 template<typename RandomAccessIt>
@@ -555,18 +562,18 @@ std::size_t UTF16Utils::count(
 	RandomAccessIt const end,
 	bool const count_incomplete
 ) {
-	std::size_t length=0;
+	std::size_t length = 0;
 	using diff_type
-		=typename std::iterator_traits<RandomAccessIt>::difference_type;
+		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type units;
-	while (end>begin) {
-		units=DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
-		if (std::distance(end, begin)<units) {
+	while (end > begin) {
+		units = DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
+		if (std::distance(end, begin) < units) {
 			// Incomplete sequence
-			length+=(count_incomplete ? 1 : 0);
+			length += (count_incomplete ? 1 : 0);
 			break;
 		} else {
-			begin+=units;
+			begin += units;
 			++length;
 		}
 	}
@@ -583,9 +590,9 @@ OutputIt UTF16Utils::from_utf8(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=UTF8Utils::decode(begin, end, codepoint);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		begin = UTF8Utils::decode(begin, end, codepoint);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -599,8 +606,8 @@ OutputIt UTF16Utils::from_utf16(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -614,8 +621,8 @@ OutputIt UTF16Utils::from_utf32(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		output=encode(*begin++, output);
+	while (end > begin) {
+		output = encode(*begin++, output);
 	}
 	return output;
 }
@@ -639,9 +646,9 @@ OutputIt UTF16Utils::to_utf8(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF8Utils::encode(codepoint, output);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF8Utils::encode(codepoint, output);
 	}
 	return output;
 }
@@ -655,8 +662,8 @@ OutputIt UTF16Utils::to_utf16(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -671,9 +678,9 @@ OutputIt UTF16Utils::to_utf32(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		*output++=codepoint;
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		*output++ = codepoint;
 	}
 	return output;
 }
@@ -688,9 +695,9 @@ OutputIt UTF16Utils::from_locale(
 	OutputIt output,
 	std::locale const& locale
 ) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_locale(*begin++, locale);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		char32 codepoint = UTF32Utils::decode_locale(*begin++, locale);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -704,9 +711,9 @@ OutputIt UTF16Utils::from_wide(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		char32 codepoint=UTF32Utils::decode_wide(*begin++);
-		output=encode(codepoint, output);
+	while (end > begin) {
+		char32 codepoint = UTF32Utils::decode_wide(*begin++);
+		output = encode(codepoint, output);
 	}
 	return output;
 }
@@ -720,8 +727,8 @@ OutputIt UTF16Utils::from_latin1(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -738,10 +745,11 @@ OutputIt UTF16Utils::to_locale(
 	std::locale const& locale
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_locale(
-			codepoint, output, replacement, locale);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF32Utils::encode_locale(
+			codepoint, output, replacement, locale
+		);
 	}
 	return output;
 }
@@ -757,9 +765,9 @@ OutputIt UTF16Utils::to_wide(
 	char32 const replacement
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=decode(begin, end, codepoint);
-		output=UTF32Utils::encode_wide(codepoint, output, replacement);
+	while (end > begin) {
+		begin = decode(begin, end, codepoint);
+		output = UTF32Utils::encode_wide(codepoint, output, replacement);
 	}
 	return output;
 }
@@ -774,8 +782,12 @@ OutputIt UTF16Utils::to_latin1(
 	OutputIt output,
 	char8 const replacement
 ) {
-	while (end>begin) {
-		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
+	while (end > begin) {
+		*output++
+			= (*begin < 256)
+			? static_cast<char>(*begin)
+			: replacement
+		;
 		++begin;
 	}
 	return output;
@@ -790,10 +802,10 @@ inline RandomAccessIt UTF32Utils::decode(
 	char32& output,
 	char32 const replacement
 ) {
-	if (end>pos) { // Don't try to do anything if we're given an overrun
-		output=*pos++;
+	if (end > pos) { // Don't try to do anything if we're given an overrun
+		output = *pos++;
 		if (!DUCT_UNI_IS_CP_VALID(output)) {
-			output=replacement;
+			output = replacement;
 		}
 	}
 	return pos;
@@ -806,9 +818,9 @@ inline OutputIt UTF32Utils::encode(
 	char32 const replacement
 ) {
 	if (DUCT_UNI_IS_CP_VALID(input)) {
-		*output++=input;
-	} else if (CHAR_NULL!=replacement && DUCT_UNI_IS_CP_VALID(replacement)) {
-		*output++=replacement;
+		*output++ = input;
+	} else if (CHAR_NULL != replacement && DUCT_UNI_IS_CP_VALID(replacement)) {
+		*output++ = replacement;
 	}
 	return output;
 }
@@ -818,8 +830,8 @@ inline RandomAccessIt UTF32Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
 ) {
-	return (end>from)
-		? from+1
+	return (end > from)
+		? from + 1
 		: from;
 }
 
@@ -828,7 +840,7 @@ inline RandomAccessIt UTF32Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
 ) {
-	return (begin<from)
+	return (begin < from)
 		? --from
 		: from;
 }
@@ -871,13 +883,13 @@ char32 UTF32Utils::decode_locale(
 	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&			\
 		 (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&	\
 		!(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
-		wchar_t character=0;
+		wchar_t character = 0;
 		mbtowc(&character, &input, 1);
 		return static_cast<char32>(character);
 	#else
 		// Get the facet of the locale which deals with character conversion
 		std::ctype<wchar_t> const& facet
-			=std::use_facet<std::ctype<wchar_t> >(locale);
+			= std::use_facet<std::ctype<wchar_t> >(locale);
 		// Use the facet to convert each character of the input string
 		return static_cast<char32>(facet.widen(input));
 	#endif
@@ -896,19 +908,19 @@ OutputIt UTF32Utils::encode_locale(
 	#if defined(DUCT_PLATFORM_SYSTEM_WINDOWS) &&			\
 		 (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&	\
 		!(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
-		char8 character=0;
-		if (wctomb(&character, static_cast<wchar_t>(input))>=0) {
-			*output++=character;
+		char8 character = 0;
+		if (wctomb(&character, static_cast<wchar_t>(input)) >= 0) {
+			*output++ = character;
 		} else if (replacement) {
-			*output++=replacement;
+			*output++ = replacement;
 		}
 		return output;
 	#else
 		// Get the facet of the locale which deals with character conversion
 		std::ctype<wchar_t> const& facet
-			=std::use_facet<std::ctype<wchar_t> >(locale);
+			= std::use_facet<std::ctype<wchar_t> >(locale);
 		// Use the facet to convert each character of the input string
-		*output++=facet.narrow(static_cast<wchar_t>(input), replacement);
+		*output++ = facet.narrow(static_cast<wchar_t>(input), replacement);
 		return output;
 	#endif
 }
@@ -931,20 +943,20 @@ OutputIt UTF32Utils::encode_wide(
 	switch (sizeof(wchar_t)) {
 		// UCS-4 == UTF-32
 		case 4: {
-			*output++=static_cast<wchar_t>(input);
+			*output++ = static_cast<wchar_t>(input);
 			break;
 		}
 		// UCS-2: Need to check if the source code point fits
 		default: {
 			// TODO: encode the code point to two code units?
-			if ((input<=0xFFFF) && ((input<0xD800) || (input>0xDFFF))) {
-				*output++=static_cast<wchar_t>(input);
+			if ((input <= 0xFFFF) && ((input < 0xD800) || (input > 0xDFFF))) {
+				*output++ = static_cast<wchar_t>(input);
 			} else if (
-				replacement
-				&& ((replacement<=0xFFFF)
-					&& ((replacement<0xD800) || (replacement>0xDFFF)))
+				replacement &&
+				 (replacement <= 0xFFFF) &&
+				((replacement <  0xD800) || (replacement > 0xDFFF))
 			) {
-				*output++=replacement;
+				*output++ = replacement;
 			}
 			break;
 		}
@@ -962,8 +974,8 @@ OutputIt UTF32Utils::from_locale(
 	OutputIt output,
 	std::locale const& locale
 ) {
-	while (end>begin) {
-		*output++=decode_locale(*begin++, locale);
+	while (end > begin) {
+		*output++ = decode_locale(*begin++, locale);
 	}
 	return output;
 }
@@ -977,8 +989,8 @@ OutputIt UTF32Utils::from_wide(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=decode_wide(*begin++);
+	while (end > begin) {
+		*output++ = decode_wide(*begin++);
 	}
 	return output;
 }
@@ -992,8 +1004,8 @@ OutputIt UTF32Utils::from_latin1(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -1009,8 +1021,8 @@ OutputIt UTF32Utils::to_locale(
 	char8 const replacement,
 	std::locale const& locale
 ) {
-	while (end>begin) {
-		output=encode_locale(*begin++, output, replacement, locale);
+	while (end > begin) {
+		output = encode_locale(*begin++, output, replacement, locale);
 	}
 	return output;
 }
@@ -1025,8 +1037,8 @@ OutputIt UTF32Utils::to_wide(
 	OutputIt output,
 	char32 const replacement
 ) {
-	while (end>begin) {
-		output=encode_wide(*begin++, output, replacement);
+	while (end > begin) {
+		output = encode_wide(*begin++, output, replacement);
 	}
 	return output;
 }
@@ -1041,8 +1053,12 @@ OutputIt UTF32Utils::to_latin1(
 	OutputIt output,
 	char8 const replacement
 ) {
-	while (end>begin) {
-		*output++=(*begin<256) ? static_cast<char>(*begin) : replacement;
+	while (end > begin) {
+		*output++
+			= (*begin < 256)
+			? static_cast<char>(*begin)
+			: replacement
+		;
 		++begin;
 	}
 	return output;
@@ -1058,9 +1074,9 @@ OutputIt UTF32Utils::from_utf8(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=UTF8Utils::decode(begin, end, codepoint);
-		*output++=codepoint;
+	while (end > begin) {
+		begin = UTF8Utils::decode(begin, end, codepoint);
+		*output++ = codepoint;
 	}
 	return output;
 }
@@ -1075,9 +1091,9 @@ OutputIt UTF32Utils::from_utf16(
 	OutputIt output
 ) {
 	char32 codepoint;
-	while (end>begin) {
-		begin=UTF16Utils::decode(begin, end, codepoint);
-		*output++=codepoint;
+	while (end > begin) {
+		begin = UTF16Utils::decode(begin, end, codepoint);
+		*output++ = codepoint;
 	}
 	return output;
 }
@@ -1091,8 +1107,8 @@ OutputIt UTF32Utils::from_utf32(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }
@@ -1115,8 +1131,8 @@ OutputIt UTF32Utils::to_utf8(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		output=UTF8Utils::encode(*begin++, output);
+	while (end > begin) {
+		output = UTF8Utils::encode(*begin++, output);
 	}
 	return output;
 }
@@ -1130,8 +1146,8 @@ OutputIt UTF32Utils::to_utf16(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		output=UTF16Utils::encode(*begin++, output);
+	while (end > begin) {
+		output = UTF16Utils::encode(*begin++, output);
 	}
 	return output;
 }
@@ -1145,8 +1161,8 @@ OutputIt UTF32Utils::to_utf32(
 	RandomAccessIt const end,
 	OutputIt output
 ) {
-	while (end>begin) {
-		*output++=*begin++;
+	while (end > begin) {
+		*output++ = *begin++;
 	}
 	return output;
 }

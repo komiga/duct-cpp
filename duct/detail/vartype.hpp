@@ -162,7 +162,7 @@ public:
 		@c int32_t by default; @c int64_t
 		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
-	using int_type = int32_t;
+	using int_type = std::int32_t;
 	/**
 		typename for @c VARTYPE_FLOAT.
 		@c float by default; @c double
@@ -170,7 +170,7 @@ public:
 	*/
 	using float_type = float;
 #else
-	using int_type = int64_t;
+	using int_type = std::int64_t;
 	using float_type = double;
 #endif
 
@@ -274,7 +274,7 @@ DUCT_DETAIL_TRAITS_(VARTYPE_BOOL, var_config::bool_type);
 
 #if (0 != DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES)
 	// Define smaller variants, for convenience
-	DUCT_DETAIL_TRAITS_(VARTYPE_INTEGER, int32_t);
+	DUCT_DETAIL_TRAITS_(VARTYPE_INTEGER, std::int32_t);
 	DUCT_DETAIL_TRAITS_(VARTYPE_FLOAT, float);
 #endif
 

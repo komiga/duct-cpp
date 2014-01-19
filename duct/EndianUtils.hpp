@@ -111,7 +111,7 @@ struct bs_impl<T, 2u> {
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
-			bswap_16(reinterpret_cast<uint16_t&>(value))
+			bswap_16(reinterpret_cast<std::uint16_t&>(value))
 		);
 	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop
@@ -132,7 +132,7 @@ struct bs_impl<T, 4u> {
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
-			bswap_32(reinterpret_cast<uint32_t&>(value))
+			bswap_32(reinterpret_cast<std::uint32_t&>(value))
 		);
 	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop
@@ -153,7 +153,7 @@ struct bs_impl<T, 8u> {
 		#pragma GCC diagnostic ignored "-Wold-style-cast"
 	#endif
 		return static_cast<T>(
-			bswap_64(reinterpret_cast<uint64_t&>(value))
+			bswap_64(reinterpret_cast<std::uint64_t&>(value))
 		);
 	#ifdef DUCT_ENDIAN_IGNORE_OLD_CASTS
 		#pragma GCC diagnostic pop

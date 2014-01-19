@@ -5,7 +5,7 @@
 #include <bitset>
 #include <iostream>
 
-enum class CS : uint8_t {
+enum class CS : std::uint8_t {
 	a = 1 << 0,
 	b = 1 << 1,
 	c = 1 << 2,

@@ -16,14 +16,14 @@ template<
 	typename FP
 >
 struct int_fp_type_impl<FP, 4u> {
-	using type = uint32_t;
+	using type = std::uint32_t;
 };
 
 template<
 	typename FP
 >
 struct int_fp_type_impl<FP, 8u> {
-	using type = uint64_t;
+	using type = std::uint64_t;
 };
 
 template<
@@ -37,9 +37,9 @@ ENSURE_SWAP = (duct::Endian::LITTLE == duct::Endian::SYSTEM)
 	: duct::Endian::LITTLE
 ;
 
-constexpr uint16_t INTEGRAL16 = 0x1122;
-constexpr uint32_t INTEGRAL32 = 0x11223344;
-constexpr uint64_t INTEGRAL64 = 0x1122334455667788;
+constexpr std::uint16_t INTEGRAL16 = 0x1122;
+constexpr std::uint32_t INTEGRAL32 = 0x11223344;
+constexpr std::uint64_t INTEGRAL64 = 0x1122334455667788;
 constexpr float FLOAT32 = 1.0f;
 constexpr double FLOAT64 = 1.0f;
 
@@ -111,8 +111,8 @@ main() {
 	;
 
 	auto const ex = INTEGRAL16;
-	uint8_t const* const
-	ex_p = reinterpret_cast<uint8_t const*>(&ex);
+	std::uint8_t const* const
+	ex_p = reinterpret_cast<std::uint8_t const*>(&ex);
 
 	std::cout
 		<< std::hex
