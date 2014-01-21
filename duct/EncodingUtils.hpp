@@ -865,7 +865,7 @@ public:
 		@warning The input range is not checked for invalid code points; it
 		will provide exactly the required number of code points to store the
 		input range if it were entirely valid.
-		@returns <strong>Always</strong> @c std::distance(end, begin).
+		@returns <strong>Always</strong> @c std::distance(begin, end).
 		@param begin Beginning iterator.
 		@param end Ending iterator.
 		@param count_incomplete Unused.
