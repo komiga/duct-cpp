@@ -24,10 +24,10 @@
 	) \
 	/*std::printf( \
 		" non-surr: %d  non-max: %d ; 3.2-nc: %d  FFFE: %d\n", \
-		cp<0xD800 || cp>0xDFFF, \
-		cp<=0x10FFFF, \
-		cp>=0xFDD0 && cp<=0xFDEF, \
-		(cp&0xFFFE)==0xFFFE && cp<=0x10FFFF \
+		cp < 0xD800 || cp > 0xDFFF, \
+		cp <= 0x10FFFF, \
+		cp >= 0xFDD0 && cp <= 0xFDEF, \
+		(cp & 0xFFFE) == 0xFFFE && cp <= 0x10FFFF \
 	)*/
 // -
 
@@ -58,7 +58,7 @@
 
 #define run_encode(enc_, cp_)					\
 	init_encode(cp_);							\
-	next=duct:: enc_ ::encode(cp, output, 0);	\
+	next = duct:: enc_ ::encode(cp, output, 0);	\
 	print_encode(enc_)
 // -
 
