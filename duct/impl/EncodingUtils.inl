@@ -162,19 +162,20 @@ RandomAccessIt UTF8Utils::prev(
 	RandomAccessIt const begin
 ) {
 	RandomAccessIt pos = from;
-	if (begin <= from) {
+	if (begin >= from) {
 		// Quick exit: invalid or unsteppable position
 		return from;
-	} else if (DUCT_UTF8_IS_LEAD(*pos)) {
-		// Already aligned to a sequence; move outside it
-		--pos;
 	}
+	// Move out of head unit or trail sequence
+	--pos;
 	while (begin < pos && DUCT_UTF8_IS_TRAIL(*pos)) {
 		--pos;
 	}
-	if (DUCT_UTF8_IS_TRAIL(*pos)) { // Incomplete sequence; begin == pos
+	if (DUCT_UTF8_IS_TRAIL(*pos)) {
+		// Incomplete sequence; begin == pos
 		return from;
-	} else { // Good; true == DUCT_UTF8_IS_LEAD(*pos)
+	} else {
+		// Good; true == DUCT_UTF8_IS_HEAD(*pos)
 		return pos;
 	}
 }
