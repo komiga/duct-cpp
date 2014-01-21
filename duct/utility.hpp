@@ -41,6 +41,36 @@ make_const(
 }
 
 /**
+	Cast unsigned integral to signed integral.
+
+	@param value Value.
+*/
+template<
+	typename T
+>
+inline constexpr typename std::make_signed<T>::type
+signed_cast(
+	T const value
+) noexcept {
+	return static_cast<typename std::make_signed<T>::type>(value);
+}
+
+/**
+	Cast signed integral to unsigned integral.
+
+	@param value Value.
+*/
+template<
+	typename T
+>
+inline constexpr typename std::make_unsigned<T>::type
+unsigned_cast(
+	T const value
+) noexcept {
+	return static_cast<typename std::make_unsigned<T>::type>(value);
+}
+
+/**
 	Cast enum to underlying or integral type.
 
 	@tparam E Enum type; deduced from @a value.
