@@ -144,6 +144,10 @@ RandomAccessIt UTF8Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
 ) {
+	if (end <= from) {
+		// Quick exit: invalid or unsteppable position
+		return from;
+	}
 	using diff_type
 		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = static_cast<diff_type>(required_first_whole(*from));
@@ -506,6 +510,10 @@ RandomAccessIt UTF16Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
 ) {
+	if (end <= from) {
+		// Quick exit: invalid or unsteppable position
+		return from;
+	}
 	using diff_type
 		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
@@ -841,7 +849,7 @@ inline RandomAccessIt UTF32Utils::prev(
 	RandomAccessIt const begin
 ) {
 	return (begin < from)
-		? --from
+		? from - 1
 		: from;
 }
 
