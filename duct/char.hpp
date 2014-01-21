@@ -162,6 +162,18 @@ using char32 = system_dependent;
 )
 
 /**
+	Check if a UTF-8 code unit is a single encoding unit.
+
+	@returns
+	- @c true if @a c is a single encoding unit;
+	- @c false otherwise.
+	@param c UTF-8 code unit to test.
+*/
+#define DUCT_UTF8_IS_SINGLE(c) ( \
+	((c) & 0x80) == 0 \
+)
+
+/**
 	Check if a UTF-8 code unit is a lead unit.
 
 	@returns
@@ -172,6 +184,7 @@ using char32 = system_dependent;
 #define DUCT_UTF8_IS_LEAD(c) ( \
 	static_cast<std::uint8_t>((c) - 0xC0) < 0x3E \
 )
+
 /**
 	Check if a UTF-8 code unit is a trail unit.
 
@@ -182,6 +195,18 @@ using char32 = system_dependent;
 */
 #define DUCT_UTF8_IS_TRAIL(c) ( \
 	((c) & 0xC0) == 0x80 \
+)
+
+/**
+	Check if a UTF-8 code unit is a single or lead unit.
+
+	@returns
+	- @c true if @a c is a single or lead unit;
+	- @c false otherwise.
+	@param c UTF-8 code unit to test.
+*/
+#define DUCT_UTF8_IS_HEAD(c) ( \
+	DUCT_UTF8_IS_SINGLE(c) || DUCT_UTF8_IS_LEAD(c) \
 )
 
 /**
