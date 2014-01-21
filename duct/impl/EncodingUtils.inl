@@ -147,7 +147,7 @@ RandomAccessIt UTF8Utils::next(
 	using diff_type
 		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = static_cast<diff_type>(required_first_whole(*from));
-	return (std::distance(end, from) < units)
+	return (std::distance(from, end) < units)
 		? from
 		: from + units;
 }
@@ -210,7 +210,7 @@ std::size_t UTF8Utils::count(
 	diff_type units;
 	while (end > begin) {
 		units = static_cast<diff_type>(required_first_whole(*begin));
-		if (std::distance(end, begin) < units) { // Incomplete sequence
+		if (std::distance(begin, end) < units) { // Incomplete sequence
 			length += (count_incomplete ? 1 : 0);
 			break;
 		} else {
@@ -509,7 +509,7 @@ RandomAccessIt UTF16Utils::next(
 	using diff_type
 		= typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
-	return (std::distance(end, from) < units)
+	return (std::distance(from, end) < units)
 		? from
 		: from + units;
 }
@@ -568,7 +568,7 @@ std::size_t UTF16Utils::count(
 	diff_type units;
 	while (end > begin) {
 		units = DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
-		if (std::distance(end, begin) < units) {
+		if (std::distance(begin, end) < units) {
 			// Incomplete sequence
 			length += (count_incomplete ? 1 : 0);
 			break;
@@ -869,7 +869,7 @@ inline std::size_t UTF32Utils::count(
 	RandomAccessIt const end,
 	bool const
 ) {
-	return std::distance(end, begin);
+	return std::distance(begin, end);
 }
 
 template<typename RandomAccessIt>
