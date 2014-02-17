@@ -161,18 +161,39 @@ public:
 	}
 
 	/**
-		Test value of state.
+		Test value of states (all-of).
+
+		@note If @a states is equal to @c 0, this will return @c true
+		regardless of the state store value.
 
 		@returns
-		- @c true if the state is enabled;
-		- @c false if the state is disabled.
-		@param state State to test.
+		- @c true if all of the states are enabled;
+		- @c false if at least one of the states are disabled.
+		@param states States to test.
 	*/
 	constexpr bool
 	test(
-		state_type const state
+		state_type const states
 	) const noexcept {
-		return m_value & static_cast<value_type const>(state);
+		return
+			static_cast<value_type const>(states)
+			== (m_value & static_cast<value_type const>(states))
+		;
+	}
+
+	/**
+		Test value of states (any-of).
+
+		@returns
+		- @c true if any of the states are enabled;
+		- @c false if all of the states are disabled.
+		@param states States to test.
+	*/
+	constexpr bool
+	test_any(
+		state_type const states
+	) const noexcept {
+		return m_value & static_cast<value_type const>(states);
 	}
 /// @}
 
