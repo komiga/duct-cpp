@@ -140,14 +140,20 @@ protected:
 	enum class Flags {
 		/**
 			Whether to permit empty collections in layout validation.
+
+			@note This is enabled by default.
 		*/
 		permit_empty = 1 << 0
 	};
 
+	/** %Flags. */
 	StateStore<Flags> m_flags{Flags::permit_empty};
-	VarMask m_type_mask{VarMask::none}; /**< Type mask. */
-	identity_vector_type m_identity{}; /**< Identity. */
-	layout_vector_type m_layout{}; /**< Layout. */
+	/** Type mask. */
+	VarMask m_type_mask{VarMask::none};
+	/** Identity. */
+	identity_vector_type m_identity{};
+	/** Layout. */
+	layout_vector_type m_layout{};
 
 public:
 /** @name Constructors and destructor */ /// @{
