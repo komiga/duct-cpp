@@ -18,6 +18,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "../string.hpp"
 #include "../detail/string_traits.hpp"
 #include "../EndianUtils.hpp"
+#include "./arithmetic.hpp"
 
 #include <cstring>
 #include <limits>
