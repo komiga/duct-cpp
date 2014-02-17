@@ -178,8 +178,8 @@ ScriptParser::finish() {
 	} else if (m_token.is_type(TOK_EOF) && has_states(STATE_COMMA)) {
 		DUCT_SP_THROW_("Expected value, got EOF");
 	} else if (!m_varname.empty()) { // No-child identifier
-		make_collection(VARTYPE_IDENTIFIER, false);
-	} else if (in_scope(VARTYPE_IDENTIFIER)) { // Terminates identifier
+		make_collection(VarType::identifier, false);
+	} else if (in_scope(VarType::identifier)) { // Terminates identifier
 		pop();
 	}
 }
@@ -197,7 +197,7 @@ ScriptParser::process(
 	std::istream& stream
 ) {
 	if (initialize(stream)) {
-		node.morph(VARTYPE_NODE, false); // Make sure variable is a node
+		node.morph(VarType::node, false); // Make sure variable is a node
 		push(node);
 		while (parse())
 		{}
@@ -392,7 +392,7 @@ ScriptParser::handle_token() {
 	case TOK_LITERAL_TRUE:
 	case TOK_LITERAL_FALSE:
 	case TOK_LITERAL_NULL:
-		if (in_scope(VARTYPE_ARRAY) &&
+		if (in_scope(VarType::array) &&
 			!has_states_any(STATE_COMMA | STATE_OPEN_ARRAY)
 		) {
 			DUCT_SP_THROW_(
@@ -402,13 +402,13 @@ ScriptParser::handle_token() {
 		} else if (has_states(STATE_EQUALS)) {
 			// Make named value in node scope
 			make_value();
-		} else if (in_scope(VARTYPE_IDENTIFIER | VARTYPE_ARRAY)) {
+		} else if (in_scope(var_mask(VarType::identifier, VarType::array))) {
 			// Already in a non-node scope: make nameless value
 			make_nameless_value();
 		} else if (!m_varname.empty()) {
 			// Have name and last functor was whitespace: make
 			// identifier with nameless child
-			make_collection(VARTYPE_IDENTIFIER);
+			make_collection(VarType::identifier);
 			make_nameless_value();
 		} else {
 			// First token before functor: make name
@@ -418,7 +418,7 @@ ScriptParser::handle_token() {
 
 	// Scope/functors
 	case TOK_EQUALS:
-		if (!in_scope(VARTYPE_NODE)) {
+		if (!in_scope(VarType::node)) {
 			DUCT_SP_THROW_("Unexpected equality sign within non-node scope");
 		} else if (m_varname.empty()) {
 			DUCT_SP_THROW_("Expected name, got equality sign");
@@ -432,7 +432,7 @@ ScriptParser::handle_token() {
 		}
 		break;
 	case TOK_COMMA:
-		if (!in_scope(VARTYPE_ARRAY)) {
+		if (!in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected comma in non-array scope");
 		} else if (has_states(STATE_EQUALS)) {
 			DUCT_SP_THROW_("Expected value after equality sign, got comma");
@@ -445,9 +445,9 @@ ScriptParser::handle_token() {
 		}
 		break;
 	case TOK_OPEN_BRACE:
-		if (in_scope(VARTYPE_ARRAY)) {
+		if (in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected open-brace in array scope");
-		} else if (in_scope(VARTYPE_IDENTIFIER)) {
+		} else if (in_scope(VarType::identifier)) {
 			DUCT_SP_THROW_(
 				"Cannot make node on same line as identifier with children");
 		} else if (!m_varname.empty() && !has_states(STATE_EQUALS)) {
@@ -456,13 +456,13 @@ ScriptParser::handle_token() {
 				" sign or attempting to (illegally) add node to identifier"
 			);
 		} else {
-			make_collection(VARTYPE_NODE);
+			make_collection(VarType::node);
 		}
 		break;
 	case TOK_CLOSE_BRACE:
 		if (at_root()) {
 			DUCT_SP_THROW_("Mismatched node brace");
-		} else if (in_scope(VARTYPE_ARRAY)) {
+		} else if (in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected close-brace in array scope");
 		} else if (has_states(STATE_EQUALS)) {
 			DUCT_SP_THROW_(
@@ -472,8 +472,8 @@ ScriptParser::handle_token() {
 		} else {
 			if (!m_varname.empty()) {
 				// Terminative on a yet-realized (empty) identifier
-				make_collection(VARTYPE_IDENTIFIER, false);
-			} else if (in_scope(VARTYPE_IDENTIFIER)) {
+				make_collection(VarType::identifier, false);
+			} else if (in_scope(VarType::identifier)) {
 				// Pop from identifier to parent (node) scope
 				pop();
 			}
@@ -482,7 +482,7 @@ ScriptParser::handle_token() {
 		}
 		break;
 	case TOK_OPEN_BRACKET:
-		if (in_scope(VARTYPE_ARRAY) &&
+		if (in_scope(VarType::array) &&
 			!has_states_any(STATE_COMMA | STATE_OPEN_ARRAY)
 		) {
 			DUCT_SP_THROW_(
@@ -492,16 +492,16 @@ ScriptParser::handle_token() {
 		} else {
 			if (!m_varname.empty() && !has_states(STATE_EQUALS)) {
 				// Terminative on a yet-realized (empty) identifier
-				make_collection(VARTYPE_IDENTIFIER);
+				make_collection(VarType::identifier);
 			}
-			make_collection(VARTYPE_ARRAY);
+			make_collection(VarType::array);
 			assign_states(STATE_OPEN_ARRAY);
 		}
 		break;
 	case TOK_CLOSE_BRACKET:
 		if (at_root()) {
 			DUCT_SP_THROW_("Mismatched array bracket");
-		} else if (!in_scope(VARTYPE_ARRAY)) {
+		} else if (!in_scope(VarType::array)) {
 			DUCT_SP_THROWF_("Unexpected close-bracket in %s scope",
 				detail::get_vartype_name(get_current_collection().get_type()));
 		} else if (has_states(STATE_EQUALS)) {
@@ -719,13 +719,6 @@ ScriptParser::at_root() const noexcept {
 	return 1 >= m_stack.size();
 }
 
-bool
-ScriptParser::in_scope(
-	unsigned const types
-) noexcept {
-	return (get_current_collection().get_type()&types);
-}
-
 Variable&
 ScriptParser::get_current_collection() noexcept {
 	DUCT_DEBUG_ASSERT(
@@ -744,13 +737,13 @@ ScriptParser::push(
 	Variable& collection
 ) {
 	DUCT_DEBUG_ASSERT(
-		collection.is_class(VARCLASS_COLLECTION),
+		collection.is_type_of(VarMask::collection),
 		"Something has gone horribly wrong: cannot push a non-collection"
 	);
 	DUCT_DEBUG_ASSERT(
 		0 == m_stack.size() ||
-		!collection.is_type(VARTYPE_NODE) ||
-		!in_scope(VARTYPE_IDENTIFIER),
+		!collection.is_type(VarType::node) ||
+		!in_scope(VarType::identifier),
 		"Something has gone horribly wrong: cannot push a node whilst"
 		" in identifier scope"
 	);
@@ -802,19 +795,19 @@ ScriptParser::make_name() {
 
 void
 ScriptParser::make_collection(
-	VariableType const type,
+	VarType const type,
 	bool push_collection
 ) {
 	DUCT_DEBUG_ASSERT(
-		in_scope(VARTYPE_NODE) ||
-		VARTYPE_ARRAY == type,
+		in_scope(VarType::node) ||
+		VarType::array == type,
 		"Something has gone horribly wrong:"
 		" cannot make a node or an identifier whilst"
 		" in an identifier or array scope"
 	);
 	if (m_varname.empty()) {
 		// Unnamed collection; must not be an identifier
-		DUCT_DEBUG_ASSERT(VARTYPE_IDENTIFIER != type,
+		DUCT_DEBUG_ASSERT(VarType::identifier != type,
 			"Something has gone horribly wrong:"
 			" cannot make a nameless identifier"
 		);
@@ -822,7 +815,7 @@ ScriptParser::make_collection(
 		remove_states(STATE_COMMA | STATE_OPEN_ARRAY);
 	} else { // Named collection
 		DUCT_DEBUG_ASSERT(
-			VARTYPE_IDENTIFIER != type ||
+			VarType::identifier != type ||
 			!has_states(STATE_EQUALS),
 			"Something has gone horribly wrong:"
 			" cannot have equality sign when making an identifier"
@@ -838,7 +831,7 @@ ScriptParser::make_collection(
 
 void
 ScriptParser::make_value() {
-	DUCT_DEBUG_ASSERT(in_scope(VARTYPE_NODE),
+	DUCT_DEBUG_ASSERT(in_scope(VarType::node),
 		"Something has gone horribly wrong:"
 		" attempted to make a named value whilst in a non-node scope"
 	);
@@ -885,7 +878,7 @@ ScriptParser::make_value() {
 	case TOK_LITERAL_NULL:
 		get_current_collection().emplace_back(
 			m_varname,
-			VARTYPE_NULL
+			VarType::null
 		);
 		break;
 	}
@@ -905,7 +898,7 @@ ScriptParser::make_nameless_value(
 		"Something has gone horribly wrong:"
 		" should not have STATE_EQUALS here"
 	);
-	DUCT_DEBUG_ASSERT(!in_scope(VARTYPE_NODE),
+	DUCT_DEBUG_ASSERT(!in_scope(VarType::node),
 		"Something has gone horribly wrong:"
 		" can only make a nameless value when in non-node scope"
 	);
@@ -939,7 +932,7 @@ ScriptParser::make_nameless_value(
 		); break;
 	case TOK_LITERAL_NULL:
 		get_current_collection().emplace_back(
-			VARTYPE_NULL
+			VarType::null
 		); break;
 	}
 	remove_states(STATE_COMMA | STATE_OPEN_ARRAY);

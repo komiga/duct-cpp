@@ -28,21 +28,21 @@ ScriptWriter::write(
 	unsigned const tab_level
 ) const {
 	if (dest.good()) {
-		if (VARTYPE_NODE != source.get_type() || !treat_as_root) {
+		if (VarType::node != source.get_type() || !treat_as_root) {
 			m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
 		}
 		switch (source.get_type()) {
-		case VARTYPE_NULL:
-		case VARTYPE_STRING:
-		case VARTYPE_INTEGER:
-		case VARTYPE_FLOAT:
-		case VARTYPE_BOOL:
+		case VarType::null:
+		case VarType::string:
+		case VarType::integer:
+		case VarType::floatp:
+		case VarType::boolean:
 			return write_value(dest, source, true);
-		case VARTYPE_ARRAY:
+		case VarType::array:
 			return write_array(dest, source, true);
-		case VARTYPE_NODE:
+		case VarType::node:
 			return write_node(dest, source, treat_as_root, tab_level);
-		case VARTYPE_IDENTIFIER:
+		case VarType::identifier:
 			return write_identifier(dest, source);
 		}
 	}
@@ -121,14 +121,14 @@ ScriptWriter::write_value(
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
 	}
 	switch (var.get_type()) {
-	case VARTYPE_STRING:
+	case VarType::string:
 		write_string(dest, var.get_string_ref(), false);
 		break;
-	case VARTYPE_NULL:
-	case VARTYPE_INTEGER:
-	case VARTYPE_FLOAT:
-	case VARTYPE_BOOL: {
-		// All non-VARTYPE_STRING values are representable in single
+	case VarType::null:
+	case VarType::integer:
+	case VarType::floatp:
+	case VarType::boolean: {
+		// All non-VarType::string values are representable in single
 		// UTF-8 code units. Also, the target encoding is most likely
 		// going to be UTF-8, so this is optimal.
 		auto const vstr = var.get_as_str<u8string>();
@@ -153,11 +153,11 @@ ScriptWriter::write_array(
 	m_stream_ctx.write_char(dest, CHAR_OPENBRACKET);
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
 		switch ((*it).get_type()) {
-		case VARTYPE_IDENTIFIER:
-		case VARTYPE_NODE:
+		case VarType::identifier:
+		case VarType::node:
 			// TODO: Throw exception
 			return false;
-		case VARTYPE_ARRAY:
+		case VarType::array:
 			if (!write_array(dest, *it, false)) {
 				return false;
 			}
@@ -225,11 +225,11 @@ ScriptWriter::write_identifier(
 	}
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
 		switch ((*it).get_type()) {
-		case VARTYPE_IDENTIFIER:
-		case VARTYPE_NODE:
+		case VarType::identifier:
+		case VarType::node:
 			// TODO: Throw exception
 			return false;
-		case VARTYPE_ARRAY:
+		case VarType::array:
 			if (!write_array(dest, *it, false)) {
 				return false;
 			}

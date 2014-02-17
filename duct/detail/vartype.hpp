@@ -13,18 +13,15 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./../config.hpp"
 #include "./../traits.hpp"
 #include "./../string.hpp"
+#include "./../utility.hpp"
 
-#include <strings.h>
 #include <type_traits>
-
-// TODO: documentation on struct members
 
 namespace duct {
 
 // Forward declarations
-enum VariableType : unsigned;
-enum VariableClass : unsigned;
-enum VariableMasks : unsigned;
+enum class VarType : unsigned;
+enum class VarMask : unsigned;
 
 /**
 	@addtogroup variable
@@ -34,98 +31,175 @@ enum VariableMasks : unsigned;
 /**
 	Variable types.
 
-	@note @c VARTYPE_NULL is a special type to indicate nullness;
-	it has no associated data field.
-
-	@sa VariableClass, VariableMasks
+	@sa VarMask
 */
-enum VariableType : unsigned {
+enum class VarType : unsigned {
 	/** Null; value-less. */
-	VARTYPE_NULL		= 1 << 0,
+	null		= 1 << 0,
 	/** Value type: String. */
-	VARTYPE_STRING		= 1 << 1,
+	string		= 1 << 1,
 	/** Value type: Integer. */
-	VARTYPE_INTEGER		= 1 << 2,
+	integer		= 1 << 2,
 	/** Value type: Float. */
-	VARTYPE_FLOAT		= 1 << 3,
+	floatp		= 1 << 3,
 	/** Value type: Boolean. */
-	VARTYPE_BOOL		= 1 << 4,
+	boolean		= 1 << 4,
 	/** Collection type: Array. */
-	VARTYPE_ARRAY		= 1 << 5,
+	array		= 1 << 5,
 	/** Collection type: Node. */
-	VARTYPE_NODE		= 1 << 6,
+	node		= 1 << 6,
 	/** Collection type: Identifier. */
-	VARTYPE_IDENTIFIER	= 1 << 7
+	identifier	= 1 << 7
 };
 
 /**
-	Variable classes.
+	Variable type classes and masks.
 
-	@note @c VARTYPE_NULL is essentially its own class and is
-	thus not included in any defined classes.
+	@note An arbitrary mask can be constructed with var_mask().
 
-	@sa VariableType, VariableMasks
+	@sa VarType
 */
-enum VariableClass : unsigned {
+enum class VarMask : unsigned {
 	/**
-		Numerical variable types.
-		Equal to:
-		@code
-			VARTYPE_INTEGER | VARTYPE_FLOAT
-		@endcode
+		No type.
 	*/
-	VARCLASS_NUMERICAL
-		= VARTYPE_INTEGER
-		| VARTYPE_FLOAT
-	,
-	/**
-		Value variable types.
-		Equal to:
-		@code
-			VARTYPE_STRING | VARTYPE_INTEGER |
-			VARTYPE_FLOAT | VARTYPE_BOOL
-		@endcode
-	*/
-	VARCLASS_VALUE
-		= VARTYPE_STRING
-		| VARTYPE_INTEGER
-		| VARTYPE_FLOAT
-		| VARTYPE_BOOL
-	,
-	/**
-		Collection variable types.
-		Equal to:
-		@code
-			VARTYPE_ARRAY | VARTYPE_NODE | VARTYPE_IDENTIFIER
-		@endcode
-	*/
-	VARCLASS_COLLECTION
-		= VARTYPE_ARRAY
-		| VARTYPE_NODE
-		| VARTYPE_IDENTIFIER
-};
-
-/**
-	Various VariableType masks.
-
-	@sa VariableType, VariableClass
-*/
-enum VariableMasks : unsigned {
-	/** Matches no types. */
-	VARMASK_NONE
+	none
 		= 0x00
 	,
-	/** Matches all types. */
-	VARMASK_ALL
-		= VARCLASS_VALUE
-		| VARCLASS_COLLECTION
-		| VARTYPE_NULL
+
+	/**
+		Null class.
+	*/
+	null
+		= enum_cast(VarType::null)
 	,
-	/** Matches VARCLASS_VALUE or VARTYPE_NULL. */
-	VARMASK_VALUE_OR_NULL
-		= VARCLASS_VALUE
-		| VARTYPE_NULL
+
+	/**
+		Numeric class.
+	*/
+	numeric
+		= enum_cast(VarType::integer)
+		| enum_cast(VarType::floatp)
+	,
+
+	/**
+		Value class (excluding null).
+	*/
+	value
+		= enum_cast(VarType::string)
+		| enum_cast(VarType::integer)
+		| enum_cast(VarType::floatp)
+		| enum_cast(VarType::boolean)
+	,
+
+	/**
+		Value class (including null).
+	*/
+	value_nullable
+		= value
+		| null
+	,
+
+	/**
+		Collection class.
+	*/
+	collection
+		= enum_cast(VarType::array)
+		| enum_cast(VarType::node)
+		| enum_cast(VarType::identifier)
+	,
+
+	/**
+		Any type.
+	*/
+	any
+		= value_nullable
+		| collection
+	,
 };
+
+/** @cond INTERNAL */
+
+namespace {
+
+template<
+	typename U,
+	typename E
+>
+inline constexpr U
+pack_var_mask(
+	U const value
+) noexcept {
+	return value;
+}
+
+template<
+	typename U,
+	typename E,
+	typename... Rest
+>
+inline constexpr U
+pack_var_mask(
+	U const value,
+	E const head,
+	Rest const... rest
+) noexcept {
+	using bare_type =
+		typename std::remove_cv<
+			typename std::remove_reference<E>::type
+		>::type;
+	;
+	static_assert(
+		std::is_same<bare_type, VarType>::value ||
+		std::is_same<bare_type, VarMask>::value,
+		"arguments must be of type VarType or VarMask"
+	);
+	return pack_var_mask<U, E>(
+		value | static_cast<U const>(head),
+		rest...
+	);
+}
+
+} // anonymous namespace
+
+/** @endcond */ // INTERNAL
+
+/**
+	Construct an arbitrary variable type mask from types and masks.
+
+	@returns The constructed mask.
+	@tparam ArgP Argument types. Type deduction will fail if any
+	type in this parameter pack is not VarType or VarMask.
+	@param args Arguments.
+*/
+template<
+	typename... ArgP
+>
+inline constexpr VarMask
+var_mask(
+	ArgP const... args
+) noexcept {
+	using U = std::underlying_type<VarMask>::type;
+	return static_cast<VarMask>(pack_var_mask<U>(
+		enum_cast<VarMask, U>(VarMask::none),
+		args...
+	));
+}
+
+/**
+	Test type against a mask.
+
+	@returns @c true if @a type is of @a mask.
+	@param type Type to test.
+	@param mask Type mask to test against.
+*/
+inline constexpr bool
+var_type_is_of(
+	VarType const type,
+	VarMask const mask
+) noexcept {
+	return enum_cast(type) & enum_cast(mask);
+}
 
 namespace detail {
 
@@ -134,7 +208,7 @@ namespace detail {
 		@ingroup config
 
 		Whether to use 64-bit and double-precision for
-		VARTYPE_INTEGER and VARTYPE_FLOAT, respectively.
+		VarType::integer and VarType::floatp, respectively.
 
 		@note Defaults to 0.
 
@@ -152,19 +226,19 @@ struct var_config final
 public:
 	/** typename for Variable names */
 	using name_type = u8string;
-	/** typename for @c VARTYPE_STRING */
+	/** typename for @c VarType::string */
 	using string_type = u8string;
 
 #if (0 == DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES) \
 	|| defined(DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI)
 	/**
-		typename for @c VARTYPE_INTEGER.
+		typename for @c VarType::integer.
 		@c int32_t by default; @c int64_t
 		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
 	using int_type = std::int32_t;
 	/**
-		typename for @c VARTYPE_FLOAT.
+		typename for @c VarType::floatp.
 		@c float by default; @c double
 		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
@@ -174,35 +248,36 @@ public:
 	using float_type = double;
 #endif
 
-	/** typename for @c VARTYPE_BOOL. */
+	/** typename for @c VarType::boolean. */
 	using bool_type = bool;
 };
 
 /**
-	Get the name of a @c VariableType.
+	Get the name of a variable type.
+
 	@returns The name of the variable type.
 	@param type Variable type.
 */
 char const*
 get_vartype_name(
-	VariableType const type
+	VarType const type
 ) noexcept {
-	static char const* const
-	names[]{
-		"NULL",
-		"STRING",
-		"INTEGER",
-		"FLOAT",
-		"BOOL",
-		"ARRAY",
-		"NODE",
-		"IDENTIFIER"
+	switch (type) {
+	case VarType::null		: return "null";
+	case VarType::string	: return "string";
+	case VarType::integer	: return "integer";
+	case VarType::floatp	: return "floatp";
+	case VarType::boolean	: return "boolean";
+	case VarType::array		: return "array";
+	case VarType::node		: return "node";
+	case VarType::identifier: return "identifier";
+	default:
+		return "invalid";
 	};
-	return names[ffs(static_cast<signed>(type)) - 1];
 }
 
 /**
-	Check if a typename has an associated @c VARCLASS_VALUE type.
+	Check if a typename has an associated value-class type.
 */
 template<
 	typename T
@@ -213,15 +288,15 @@ struct is_valtype final
 {};
 
 /**
-	Translate a @c VARCLASS_VALUE type to a typename.
+	Translate a value-class type to a typename.
 */
 template<
-	VariableType const VType
+	VarType const V
 >
 struct valtype_to_type;
 
 /**
-	Translate a typename to @c VARCLASS_VALUE types.
+	Translate a typename to value-class types.
 */
 template<
 	typename T
@@ -229,23 +304,23 @@ template<
 struct type_to_valtype;
 
 /**
-	VariableType traits for @c VARCLASS_VALUE.
+	VarType traits for value-class variable types.
 */
-template<VariableType const VType>
+template<VarType const V>
 struct valtype_traits final
 	: public traits::restrict_all
 {
 public:
 	/** Whether the typename is POD. */
 	static constexpr bool
-		is_pod = std::is_pod<typename valtype_to_type<VType>::type>::value;
-	/** The value typename for the VariableType. */
-	using value_type = typename valtype_to_type<VType>::type;
+	is_pod = std::is_pod<typename valtype_to_type<V>::type>::value;
+	/** The value typename for the VarType. */
+	using value_type = typename valtype_to_type<V>::type;
 };
 
 /** @cond INTERNAL */
-#define DUCT_DETAIL_TRAITS_(VT, T)	\
-	template<> struct valtype_to_type<VT> final \
+#define DUCT_DETAIL_TRAITS_(V, T)	\
+	template<> struct valtype_to_type<V> final \
 	: public traits::restrict_all \
 	{ using type = T; }; \
 	template<> struct is_valtype<T> final \
@@ -254,28 +329,28 @@ public:
 	{}; \
 	template<> struct type_to_valtype<T> final \
 	: public traits::restrict_all \
-	{ static constexpr VariableType value = VT; } /**/
+	{ static constexpr VarType value = V; } /**/
 
-DUCT_DETAIL_TRAITS_(VARTYPE_STRING, var_config::string_type);
-DUCT_DETAIL_TRAITS_(VARTYPE_INTEGER, var_config::int_type);
-DUCT_DETAIL_TRAITS_(VARTYPE_FLOAT, var_config::float_type);
-DUCT_DETAIL_TRAITS_(VARTYPE_BOOL, var_config::bool_type);
+DUCT_DETAIL_TRAITS_(VarType::string, var_config::string_type);
+DUCT_DETAIL_TRAITS_(VarType::integer, var_config::int_type);
+DUCT_DETAIL_TRAITS_(VarType::floatp, var_config::float_type);
+DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
 
 #undef DUCT_DETAIL_TRAITS_
 
-#define DUCT_DETAIL_TRAITS_(VT, T)	\
+#define DUCT_DETAIL_TRAITS_(V, T)	\
 	template<> struct is_valtype<T> final \
 	: public traits::restrict_all \
 	, public std::true_type \
 	{}; \
 	template<> struct type_to_valtype<T> final \
 	: public traits::restrict_all \
-	{ static constexpr VariableType value = VT; } /**/
+	{ static constexpr VarType value = V; } /**/
 
 #if (0 != DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES)
 	// Define smaller variants, for convenience
-	DUCT_DETAIL_TRAITS_(VARTYPE_INTEGER, std::int32_t);
-	DUCT_DETAIL_TRAITS_(VARTYPE_FLOAT, float);
+	DUCT_DETAIL_TRAITS_(VarType::integer, std::int32_t);
+	DUCT_DETAIL_TRAITS_(VarType::floatp, float);
 #endif
 
 #undef DUCT_DETAIL_TRAITS_

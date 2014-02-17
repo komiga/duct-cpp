@@ -36,10 +36,11 @@ static detail::string_traits<detail::var_config::string_type>::char_type const
 	Convert string to appropriate type and set Variable value.
 
 	@note Conversion is (case sensitive):
-	- @c "false" morphs to a @c VARTYPE_BOOL with @c false
-	- @c "true" morphs to a @c VARTYPE_BOOL with @c true
-	- @c "null" morphs to a @c VARTYPE_NULL
-	- else morphs to a @c VARTYPE_STRING with @c value
+	- @c "false" morphs to a @c VarType::boolean with @c false
+	- @c "true" morphs to a @c VarType::boolean with @c true
+	- @c "null" morphs to a @c VarType::null
+	- else morphs to a @c VarType::string with @c value
+
 	@param var Variable to modify.
 	@param value String value to convert.
 */
@@ -63,12 +64,13 @@ convert_typed(
 	Convert string to appropriate Variable.
 
 	@note Conversion is (case sensitive):
-	- @c "false" returns a @c VARTYPE_BOOL with @c false
-	- @c "true" returns a @c VARTYPE_BOOL with @c true
-	- @c "null" returns a @c VARTYPE_NULL
-	- else returns a @c VARTYPE_STRING with @c value
-	@returns String converted to either
-	a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
+	- @c "false" returns a @c VarType::boolean with @c false
+	- @c "true" returns a @c VarType::boolean with @c true
+	- @c "null" returns a @c VarType::null
+	- else returns a @c VarType::string with @c value
+
+	@returns String converted to either a @c VarType::boolean,
+	@c VarType::null or @c VarType::string Variable.
 	@param value String value to convert.
 */
 Variable
@@ -80,7 +82,7 @@ convert_typed(
 	} else if (0 == value.compare(s_sv_true)) {
 		return Variable(true);
 	} else if (0 == value.compare(s_sv_null)) {
-		return Variable(VARTYPE_NULL);
+		return Variable(VarType::null);
 	} else {
 		return Variable(std::move(value));
 	}
@@ -90,12 +92,13 @@ convert_typed(
 	Convert string to appropriate Variable with name.
 
 	@note Conversion is (case sensitive):
-	- @c "false" returns a @c VARTYPE_BOOL with @c false
-	- @c "true" returns a @c VARTYPE_BOOL with @c true
-	- @c "null" returns a @c VARTYPE_NULL
-	- else returns a @c VARTYPE_STRING with @c value
-	@returns String converted to either
-	a @c VARTYPE_BOOL, @c VARTYPE_NULL or @c VARTYPE_STRING Variable.
+	- @c "false" returns a @c VarType::boolean with @c false
+	- @c "true" returns a @c VarType::boolean with @c true
+	- @c "null" returns a @c VarType::null
+	- else returns a @c VarType::string with @c value
+
+	@returns String converted to either a @c VarType::boolean,
+	@c VarType::null or @c VarType::string Variable.
 	@param name Name of constructed variable.
 	@param value String value to convert.
 */
@@ -109,7 +112,7 @@ convert_typed(
 	} else if (0 == value.compare(s_sv_true)) {
 		return Variable(std::move(name), true);
 	} else if (0 == value.compare(s_sv_null)) {
-		return Variable(std::move(name), VARTYPE_NULL);
+		return Variable(std::move(name), VarType::null);
 	} else {
 		return Variable(std::move(name), std::move(value));
 	}

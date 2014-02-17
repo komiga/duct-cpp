@@ -161,7 +161,7 @@ main(
 	signed argc,
 	char* argv[]
 ) {
-	duct::Variable root{duct::VARTYPE_NODE};
+	duct::Variable root{duct::VarType::node};
 	if (1 < argc) {
 		TestData td{nullptr, 0u, true};
 		std::ifstream fs{};

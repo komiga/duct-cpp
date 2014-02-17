@@ -15,7 +15,7 @@ main() {
 		int_var{duct::u8string("int_var"), 12341234},
 		float_var{duct::u8string("float_var"), 3.14159f},
 		bool_var{duct::u8string("bool_var"), true},
-		null_var{duct::u8string("null_var"), duct::VARTYPE_NULL}
+		null_var{duct::u8string("null_var"), duct::VarType::null}
 	;
 
 	print_var(string_var);

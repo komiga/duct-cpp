@@ -11,13 +11,14 @@
 
 using duct::u8string;
 using duct::Variable;
-using duct::VariableType;
+using duct::VarType;
+using duct::VarMask;
 using duct::Template;
 
 void
 signature(
 	Template& tpl,
-	unsigned const type_mask,
+	VarMask const type_mask,
 	Template::identity_vector_type&& identity,
 	Template::layout_vector_type&& layout
 ) {
@@ -29,7 +30,7 @@ signature(
 void
 morph(
 	Variable& var,
-	VariableType const type
+	VarType const type
 ) {
 	var.morph(type);
 }
@@ -38,7 +39,7 @@ void
 morph(
 	Variable& var,
 	u8string&& name,
-	VariableType const type
+	VarType const type
 ) {
 	var.set_name(std::move(name));
 	var.morph(type);
@@ -47,7 +48,7 @@ morph(
 void
 morph(
 	Variable& var,
-	VariableType const type,
+	VarType const type,
 	Variable::vector_type&& children
 ) {
 	var.morph(type, std::move(children));
@@ -57,7 +58,7 @@ void
 morph(
 	Variable& var,
 	u8string&& name,
-	VariableType const type,
+	VarType const type,
 	Variable::vector_type&& children
 ) {
 	var.set_name(std::move(name));
@@ -151,7 +152,7 @@ main() {
 	Variable match, not_match;
 
 	// String value
-	signature(tpl, duct::VARTYPE_STRING, {}, {});
+	signature(tpl, duct::var_mask(VarType::string), {}, {});
 	morph(match, u8string("match"), u8string("rampant penguin"));
 	morph(not_match, u8string("not_match"), 1234);
 	do_validation("Value - string",
@@ -160,30 +161,32 @@ main() {
 	);
 
 	// Identity
-	signature(tpl, duct::VARMASK_ALL, {u8string("match")}, {});
+	signature(tpl, VarMask::any, {u8string("match")}, {});
 	do_validation("Identity",
 		true, true, false,
 		true, false, false
 	);
 
 	// Layout - normal
-	signature(tpl, duct::VARCLASS_COLLECTION, {}, {
-		duct::VARCLASS_VALUE,
-		duct::VARCLASS_VALUE,
-		duct::VARCLASS_VALUE|duct::LAYOUT_FIELD_OPTIONAL
+	signature(tpl, VarMask::collection, {}, {
+		VarMask::value,
+		VarMask::value,
+		{VarMask::value, Template::Field::Flags::optional}
 	});
-	morph(match, duct::VARTYPE_ARRAY, {Variable(1), Variable(2), Variable(3)});
-	morph(not_match, duct::VARTYPE_NODE, {Variable(1)});
+	morph(match, VarType::array, {Variable(1), Variable(2), Variable(3)});
+	morph(not_match, VarType::node, {Variable(1)});
 	do_validation("Layout - normal",
 		true, true, true,
 		true, true, false
 	);
-	morph(match, duct::VARTYPE_ARRAY, {Variable(1), Variable(2)});
+	morph(match, VarType::array, {Variable(1), Variable(2)});
 	do_validation_single(tpl, match, true, true, true, true);
 
 	// Layout - empty field
-	signature(tpl, duct::VARCLASS_COLLECTION, {}, {duct::LAYOUT_FIELD_EMPTY});
-	morph(match, duct::VARTYPE_ARRAY, {});
+	signature(tpl, VarMask::collection, {}, {
+		{Template::Field::Flags::optional}
+	});
+	morph(match, VarType::array, {});
 	do_validation("Layout - empty field",
 		true, true, true,
 		true, true, false

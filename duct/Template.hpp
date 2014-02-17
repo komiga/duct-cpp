@@ -15,6 +15,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 #include "./aux.hpp"
 #include "./string.hpp"
+#include "./StateStore.hpp"
 #include "./Variable.hpp"
 
 #include <utility>
@@ -27,41 +28,131 @@ namespace duct {
 */
 
 /**
-	Layout field flags.
-
-	@note See Template::validate_layout() for usage notes.
-*/
-enum LayoutFieldFlag : unsigned {
-	/** Optional field. */
-	LAYOUT_FIELD_OPTIONAL = 1 << 20,
-	/** Empty field signifier. */
-	LAYOUT_FIELD_EMPTY = 1 << 21
-};
-
-/**
 	Variable validator.
-
-	@warning Every layout field after an optional field
-	(@c LAYOUT_FIELD_OPTIONAL) is considered optional.
 */
 class Template {
 public:
 /** @name Types */ /// @{
+	/**
+		Layout field.
+	*/
+	struct Field {
+	/** @name Types */ /// @{
+		/**
+			Field flags.
+
+			@note See Template::validate_layout() for usage notes.
+		*/
+		enum class Flags : unsigned {
+			/** No flags. */
+			none = 0,
+
+			/** Optional field. */
+			optional = 1 << 0,
+		};
+	/// @}
+
+	/** @name Properties */ /// @{
+		/** Type mask. */
+		VarMask mask;
+
+		/** Flags. */
+		StateStore<Flags> flags;
+
+		/**
+			Check if Flags::optional is enabled.
+		*/
+		bool
+		optional() const noexcept {
+			return flags.test(Flags::optional);
+		}
+	/// @}
+
+	/** @name Constructors and destructor */ /// @{
+		/** Destructor. */
+		~Field() = default;
+		/** Copy constructor. */
+		Field(Field const&) = default;
+		/** Move constructor. */
+		Field(Field&&) = default;
+
+		/**
+			Construct with flags.
+
+			@note Mask is VarMask::none.
+
+			@param flags %Flags.
+		*/
+		Field(
+			Flags const flags = Flags::none
+		) noexcept
+			: mask(VarMask::none)
+			, flags(flags)
+		{}
+
+		/**
+			Construct with type and flags.
+
+			@param type Single-type mask.
+			@param flags %Flags.
+		*/
+		Field(
+			VarType const type,
+			Flags const flags = Flags::none
+		) noexcept
+			: mask(var_mask(type))
+			, flags(flags)
+		{}
+
+		/**
+			Construct with mask and flags.
+
+			@param mask Mask.
+			@param flags %Flags.
+		*/
+		Field(
+			VarMask const mask,
+			Flags const flags = Flags::none
+		) noexcept
+			: mask(mask)
+			, flags(flags)
+		{}
+	/// @}
+
+	/** @name Operators */ /// @{
+		/** Copy assignment operator. */
+		Field& operator=(Field const&) = default;
+		/** Move assignment operator. */
+		Field& operator=(Field&&) = default;
+	/// @}
+	};
+
 	/** Identity vector type. */
 	using identity_vector_type = duct::aux::vector<u8string>;
 	/** Layout vector type. */
-	using layout_vector_type = duct::aux::vector<unsigned>;
+	using layout_vector_type = duct::aux::vector<Field>;
 /// @}
 
 protected:
-	unsigned m_type_mask{VARMASK_NONE}; /**< Type mask. */
+	/**
+		%Flags.
+	*/
+	enum class Flags {
+		/**
+			Whether to permit empty collections in layout validation.
+		*/
+		permit_empty = 1 << 0
+	};
+
+	StateStore<Flags> m_flags{Flags::permit_empty};
+	VarMask m_type_mask{VarMask::none}; /**< Type mask. */
 	identity_vector_type m_identity{}; /**< Identity. */
 	layout_vector_type m_layout{}; /**< Layout. */
 
 public:
 /** @name Constructors and destructor */ /// @{
 	/**
-		Construct with @c VARMASK_NONE type mask, empty identity,
+		Construct with @c VarMask::none type mask, empty identity,
 		and empty layout.
 	*/
 	Template() = default;
@@ -73,7 +164,7 @@ public:
 	*/
 	explicit
 	Template(
-		unsigned const type_mask
+		VarMask const type_mask
 	)
 		: m_type_mask(type_mask)
 	{}
@@ -85,7 +176,7 @@ public:
 		@param identity Identity.
 	*/
 	Template(
-		unsigned const type_mask,
+		VarMask const type_mask,
 		identity_vector_type identity
 	)
 		: m_type_mask(type_mask)
@@ -99,7 +190,7 @@ public:
 		@param layout Layout.
 	*/
 	Template(
-		unsigned const type_mask,
+		VarMask const type_mask,
 		layout_vector_type layout
 	)
 		: m_type_mask(type_mask)
@@ -114,7 +205,7 @@ public:
 		@param layout Layout.
 	*/
 	Template(
-		unsigned const type_mask,
+		VarMask const type_mask,
 		identity_vector_type identity,
 		layout_vector_type layout
 	)
@@ -140,6 +231,28 @@ public:
 
 /** @name Properties */ /// @{
 	/**
+		Enable or disable flags.
+
+		@param flags %Flags.
+		@param enable Whether to enable or disable the flags.
+	*/
+	void
+	set_flags(
+		Flags const flags,
+		bool const enable
+	) noexcept {
+		m_flags.set(flags, enable);
+	}
+
+	/**
+		Check if Flags::permit_empty is enabled.
+	*/
+	bool
+	permit_empty() const noexcept {
+		return m_flags.test(Flags::permit_empty);
+	}
+
+	/**
 		Set type mask.
 
 		@param type_mask New type mask.
@@ -147,9 +260,22 @@ public:
 	*/
 	void
 	set_type_mask(
-		unsigned const type_mask
+		VarMask const type_mask
 	) noexcept {
 		m_type_mask = type_mask;
+	}
+
+	/**
+		Set type mask (single type).
+
+		@param type New type mask.
+		@sa validate_type(Variable const&) const
+	*/
+	void
+	set_type_mask(
+		VarType const type
+	) noexcept {
+		m_type_mask = var_mask(type);
 	}
 
 	/**
@@ -158,7 +284,7 @@ public:
 		@returns The current type mask.
 		@sa validate_type(Variable const&) const
 	*/
-	unsigned
+	VarMask
 	get_type_mask() const noexcept {
 		return m_type_mask;
 	}
@@ -208,6 +334,7 @@ public:
 
 	/**
 		Get layout.
+
 		@returns The current layout.
 		@sa validate_layout(Variable const&) const
 	*/
@@ -245,7 +372,7 @@ public:
 		return
 			validate_type(var) &&
 			validate_identity(var) &&
-			(!var.is_class(VARCLASS_COLLECTION) || validate_layout(var))
+			(!var.is_type_of(VarMask::collection) || validate_layout(var))
 		;
 	}
 
@@ -260,7 +387,7 @@ public:
 	validate_type(
 		Variable const& var
 	) const noexcept {
-		return m_type_mask & var.get_type();
+		return var_type_is_of(var.get_type(), m_type_mask);
 	}
 
 	/**
@@ -294,19 +421,19 @@ public:
 	/**
 		Validate a variable by layout.
 
-		@note The @c LAYOUT_FIELD_OPTIONAL flag will cause all succeeding
+		@note The @c Field::Flags::optional flag will cause all succeeding
 		fields to be considered optional.
-		@note The @c LAYOUT_FIELD_EMPTY flag is only considered when layout
+		@note The @c Field::Flags::empty flag is only considered when layout
 		contains a single field.
 
 		@returns
 		- @c false iff:
-			-# variable is not a @c VARCLASS_COLLECTION,
+			-# variable is not a @c VarMask::collection,
 			-# variable has more children than layout;
 		- @c true iff:
 			-# layout is empty (permits any collection),
 			-# layout contains a single field with flag
-			   @c LAYOUT_FIELD_EMPTY and variable has no children,
+			   @c Field::Flags::empty and variable has no children,
 			-# children sequentially match layout fields exactly,
 			-# children sequentially match [0..var.size()] layout fields
 			   if a field from [0..var.size()+1] is optional
@@ -317,28 +444,23 @@ public:
 	validate_layout(
 		Variable const& var
 	) const noexcept {
-		if (var.is_class(VARCLASS_COLLECTION)) {
+		if (var.is_type_of(VarMask::collection)) {
 			if (m_layout.empty()) {
 				// Any collection is permitted with empty layout
-				return true;
+				return permit_empty();
 			} else if (var.size() > get_layout().size()) {
 				// Collection cannot be larger than layout
 				return false;
-			} else if (
-				1 == m_layout.size() &&
-				(LAYOUT_FIELD_EMPTY & m_layout[0])
-			) {
-				return var.empty();
 			} else {
 				auto vc_iter = var.cbegin();
 				auto lo_iter = get_layout().cbegin();
 				bool optional_met = false;
 				for (; var.cend() != vc_iter; ++vc_iter, ++lo_iter) {
-					if (0 == ((*lo_iter) & (*vc_iter).get_type())) {
+					if (!vc_iter->is_type_of(lo_iter->mask)) {
 						// Child type does not match field
 						return false;
 					} else if (!optional_met) {
-						optional_met = (LAYOUT_FIELD_OPTIONAL & (*lo_iter));
+						optional_met = lo_iter->optional();
 					}
 				}
 				if (optional_met || get_layout().cend() == lo_iter) {
@@ -348,7 +470,7 @@ public:
 				} else {
 					// No optional field has been met, and there are
 					// unchecked trailing field(s)
-					if (LAYOUT_FIELD_OPTIONAL & (*lo_iter)) {
+					if (lo_iter->optional()) {
 						// First trailing field is optional (therefore
 						// all following fields are optional)
 						return true;

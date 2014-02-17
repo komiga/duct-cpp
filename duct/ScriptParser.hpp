@@ -168,7 +168,7 @@ public:
 
 		@returns @c true on success.
 		@param[out] node Output node; will be morphed
-		to @c VARTYPE_NODE and existing children will not be removed.
+		to @c VarType::node and existing children will not be removed.
 		@param stream Stream to process.
 	*/
 	bool
@@ -250,8 +250,17 @@ private:
 
 	bool
 	in_scope(
-		unsigned const type
-	) noexcept;
+		VarMask const mask
+	) noexcept {
+		return get_current_collection().is_type_of(mask);
+	}
+
+	bool
+	in_scope(
+		VarType const type
+	) noexcept {
+		return in_scope(static_cast<VarMask>(type));
+	}
 
 	Variable&
 	get_current_collection() noexcept;
@@ -274,7 +283,7 @@ private:
 
 	void
 	make_collection(
-		VariableType const type,
+		VarType const type,
 		bool push_collection = true
 	);
 

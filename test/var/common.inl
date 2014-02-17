@@ -23,9 +23,9 @@ print_var(
 		<< "' = "
 	;
 	switch (var.get_type()) {
-	case duct::VARTYPE_ARRAY:
-	case duct::VARTYPE_NODE:
-	case duct::VARTYPE_IDENTIFIER: {
+	case duct::VarType::array:
+	case duct::VarType::node:
+	case duct::VarType::identifier: {
 		std::cout << '(' << var.size() << ") [";
 		if (0u != var.size()) {
 			++tab_count;
@@ -48,7 +48,7 @@ print_var(
 		std::cout << ']';
 		break;
 	}
-	case duct::VARTYPE_STRING:
+	case duct::VarType::string:
 		std::cout << '"' << var.get_string_ref() << '"'; break;
 	default:
 		std::cout << var.get_as_str(); break;
