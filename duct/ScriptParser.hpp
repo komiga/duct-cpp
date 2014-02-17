@@ -14,6 +14,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./debug.hpp"
 #include "./aux.hpp"
 #include "./char.hpp"
+#include "./StateStore.hpp"
 #include "./CharacterSet.hpp"
 #include "./StringUtils.hpp"
 #include "./Parser.hpp"
@@ -106,9 +107,15 @@ class ScriptParser final
 	: public Parser
 {
 private:
+	enum class State : unsigned {
+		equals = 1 << 0,
+		comma = 1 << 1,
+		open_array = 1 << 2
+	};
+
 	duct::aux::deque<Variable*> m_stack{32};
 	u8string m_varname{};
-	unsigned m_states{0};
+	StateStore<State> m_states{};
 
 public:
 /** @name Constructors and destructor */ /// @{
@@ -211,39 +218,6 @@ private:
 
 	void
 	read_tok_comment_block();
-
-	void
-	assign_states(
-		unsigned const states
-	) noexcept {
-		m_states |= states;
-	}
-
-	void
-	remove_states(
-		unsigned const states
-	) noexcept {
-		m_states &= ~states;
-	}
-
-	void
-	clear_all_states() noexcept {
-		m_states = 0u;
-	}
-
-	bool
-	has_states(
-		unsigned const states
-	) const noexcept {
-		return states == (m_states & states);
-	}
-
-	bool
-	has_states_any(
-		unsigned const states
-	) const noexcept {
-		return 0u != (m_states & states);
-	}
 
 	bool
 	at_root() const noexcept;

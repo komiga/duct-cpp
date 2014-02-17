@@ -30,12 +30,6 @@ enum {
 	TOK_EOF
 };
 
-enum {
-	STATE_EQUALS = 1 << 0,
-	STATE_COMMA = 1 << 1,
-	STATE_OPEN_ARRAY = 1 << 2
-};
-
 char const*
 get_token_name(
 	Token const& token
@@ -63,6 +57,7 @@ get_token_name(
 		"TOK_EOL",
 		"TOK_EOF"
 	};
+
 	if (token.is_type(NULL_TOKEN)) {
 		return "NULL_TOKEN";
 	} else if (
@@ -168,14 +163,14 @@ ScriptParser::reset() noexcept {
 	Parser::reset();
 	m_stack.clear();
 	m_varname.clear();
-	clear_all_states();
+	m_states.clear();
 }
 
 void
 ScriptParser::finish() {
-	if (has_states(STATE_EQUALS)) {
+	if (m_states.test(State::equals)) {
 		DUCT_SP_THROW_("Expected value, got EOL/EOF");
-	} else if (m_token.is_type(TOK_EOF) && has_states(STATE_COMMA)) {
+	} else if (m_token.is_type(TOK_EOF) && m_states.test(State::comma)) {
 		DUCT_SP_THROW_("Expected value, got EOF");
 	} else if (!m_varname.empty()) { // No-child identifier
 		make_collection(VarType::identifier, false);
@@ -392,14 +387,15 @@ ScriptParser::handle_token() {
 	case TOK_LITERAL_TRUE:
 	case TOK_LITERAL_FALSE:
 	case TOK_LITERAL_NULL:
-		if (in_scope(VarType::array) &&
-			!has_states_any(STATE_COMMA | STATE_OPEN_ARRAY)
+		if (
+			in_scope(VarType::array) &&
+			!m_states.test_any(enum_combine(State::comma, State::open_array))
 		) {
 			DUCT_SP_THROW_(
 				"Unexpected token after non-open-bracket and"
 				" non-comma in array scope"
 			);
-		} else if (has_states(STATE_EQUALS)) {
+		} else if (m_states.test(State::equals)) {
 			// Make named value in node scope
 			make_value();
 		} else if (in_scope(var_mask(VarType::identifier, VarType::array))) {
@@ -422,26 +418,26 @@ ScriptParser::handle_token() {
 			DUCT_SP_THROW_("Unexpected equality sign within non-node scope");
 		} else if (m_varname.empty()) {
 			DUCT_SP_THROW_("Expected name, got equality sign");
-		} else if (has_states(STATE_EQUALS)) {
+		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Expected value after equality sign, got equality sign");
-		} else if (has_states(STATE_COMMA)) {
+		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got comma");
 		} else {
-			assign_states(STATE_EQUALS);
+			m_states.enable(State::equals);
 		}
 		break;
 	case TOK_COMMA:
 		if (!in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected comma in non-array scope");
-		} else if (has_states(STATE_EQUALS)) {
+		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_("Expected value after equality sign, got comma");
-		} else if (has_states(STATE_OPEN_ARRAY)) {
+		} else if (m_states.test(State::open_array)) {
 			DUCT_SP_THROW_("Expected value before comma");
-		} else if (has_states(STATE_COMMA)) {
+		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got comma");
 		} else {
-			assign_states(STATE_COMMA);
+			m_states.enable(State::comma);
 		}
 		break;
 	case TOK_OPEN_BRACE:
@@ -450,7 +446,7 @@ ScriptParser::handle_token() {
 		} else if (in_scope(VarType::identifier)) {
 			DUCT_SP_THROW_(
 				"Cannot make node on same line as identifier with children");
-		} else if (!m_varname.empty() && !has_states(STATE_EQUALS)) {
+		} else if (!m_varname.empty() && !m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Unexpected open-brace after name; possibly missing equality"
 				" sign or attempting to (illegally) add node to identifier"
@@ -464,10 +460,10 @@ ScriptParser::handle_token() {
 			DUCT_SP_THROW_("Mismatched node brace");
 		} else if (in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected close-brace in array scope");
-		} else if (has_states(STATE_EQUALS)) {
+		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Expected value after equality sign, got close-brace");
-		} else if (has_states(STATE_COMMA)) {
+		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got close-brace");
 		} else {
 			if (!m_varname.empty()) {
@@ -483,19 +479,19 @@ ScriptParser::handle_token() {
 		break;
 	case TOK_OPEN_BRACKET:
 		if (in_scope(VarType::array) &&
-			!has_states_any(STATE_COMMA | STATE_OPEN_ARRAY)
+			!m_states.test_any(enum_combine(State::comma, State::open_array))
 		) {
 			DUCT_SP_THROW_(
 				"Unexpected token after non-open-bracket and"
 				" non-comma in array scope"
 			);
 		} else {
-			if (!m_varname.empty() && !has_states(STATE_EQUALS)) {
+			if (!m_varname.empty() && !m_states.test(State::equals)) {
 				// Terminative on a yet-realized (empty) identifier
 				make_collection(VarType::identifier);
 			}
 			make_collection(VarType::array);
-			assign_states(STATE_OPEN_ARRAY);
+			m_states.enable(State::open_array);
 		}
 		break;
 	case TOK_CLOSE_BRACKET:
@@ -504,10 +500,10 @@ ScriptParser::handle_token() {
 		} else if (!in_scope(VarType::array)) {
 			DUCT_SP_THROWF_("Unexpected close-bracket in %s scope",
 				detail::get_vartype_name(get_current_collection().get_type()));
-		} else if (has_states(STATE_EQUALS)) {
+		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Expected value after equality sign, got close-bracket");
-		} else if (has_states(STATE_COMMA)) {
+		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got close-bracket");
 		} else {
 			// Pop from array to parent scope
@@ -785,12 +781,12 @@ ScriptParser::make_name() {
 		" already have name"
 	);
 	DUCT_DEBUG_ASSERT(
-		!has_states(STATE_EQUALS),
+		!m_states.test(State::equals),
 		"Something has gone horribly wrong:"
-		" should not have STATE_EQUALS here"
+		" should not have State::equals here"
 	);
 	m_varname.assign(m_token.get_buffer().cache());
-	remove_states(STATE_COMMA);
+	m_states.remove(State::comma);
 }
 
 void
@@ -812,16 +808,18 @@ ScriptParser::make_collection(
 			" cannot make a nameless identifier"
 		);
 		get_current_collection().emplace_back(type);
-		remove_states(STATE_COMMA | STATE_OPEN_ARRAY);
+		m_states.remove(enum_combine(State::comma, State::open_array));
 	} else { // Named collection
 		DUCT_DEBUG_ASSERT(
 			VarType::identifier != type ||
-			!has_states(STATE_EQUALS),
+			!m_states.test(State::equals),
 			"Something has gone horribly wrong:"
 			" cannot have equality sign when making an identifier"
 		);
 		get_current_collection().emplace_back(m_varname, type);
-		remove_states(STATE_EQUALS | STATE_COMMA | STATE_OPEN_ARRAY);
+		m_states.remove(enum_combine(
+			State::equals, State::comma, State::open_array
+		));
 		m_varname.clear();
 	}
 	if (push_collection) {
@@ -835,13 +833,13 @@ ScriptParser::make_value() {
 		"Something has gone horribly wrong:"
 		" attempted to make a named value whilst in a non-node scope"
 	);
-	DUCT_DEBUG_ASSERT(has_states(STATE_EQUALS),
+	DUCT_DEBUG_ASSERT(m_states.test(State::equals),
 		"Something has gone horribly wrong:"
-		" must have STATE_EQUALS to make a node value"
+		" must have State::equals to make a node value"
 	);
-	DUCT_DEBUG_ASSERT(!has_states(STATE_COMMA),
+	DUCT_DEBUG_ASSERT(!m_states.test(State::comma),
 		"Something has gone horribly wrong:"
-		" should not have STATE_COMMA here"
+		" should not have State::comma here"
 	);
 	switch (m_token.get_type()) {
 	case TOK_STRING:
@@ -882,7 +880,7 @@ ScriptParser::make_value() {
 		);
 		break;
 	}
-	remove_states(STATE_EQUALS);
+	m_states.remove(State::equals);
 	m_varname.clear();
 }
 
@@ -894,9 +892,9 @@ ScriptParser::make_nameless_value(
 		"Something has gone horribly wrong:"
 		" name should be empty here"
 	);
-	DUCT_DEBUG_ASSERT(!has_states(STATE_EQUALS),
+	DUCT_DEBUG_ASSERT(!m_states.test(State::equals),
 		"Something has gone horribly wrong:"
-		" should not have STATE_EQUALS here"
+		" should not have State::equals here"
 	);
 	DUCT_DEBUG_ASSERT(!in_scope(VarType::node),
 		"Something has gone horribly wrong:"
@@ -935,7 +933,7 @@ ScriptParser::make_nameless_value(
 			VarType::null
 		); break;
 	}
-	remove_states(STATE_COMMA | STATE_OPEN_ARRAY);
+	m_states.remove(enum_combine(State::comma, State::open_array));
 }
 
 #undef DUCT_SP_THROWF_NO_INFO_
