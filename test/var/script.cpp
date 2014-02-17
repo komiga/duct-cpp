@@ -28,7 +28,7 @@ struct TestData {
 
 static duct::ScriptParser
 g_parser{
-	{duct::Encoding::UTF8, duct::Endian::SYSTEM}
+	{duct::Encoding::UTF8, duct::Endian::system}
 };
 
 static TestData const

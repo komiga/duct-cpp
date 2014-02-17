@@ -30,12 +30,12 @@ enum class Endian : unsigned;
 	Endian types.
 */
 enum class Endian : unsigned {
-	/** System's endian. */
-	SYSTEM = DUCT_BYTEORDER,
+	/** System endian. */
+	system = DUCT_BYTEORDER,
 	/** Little endian. */
-	LITTLE = DUCT_ENDIAN_LITTLE,
+	little = DUCT_ENDIAN_LITTLE,
 	/** Big endian. */
-	BIG = DUCT_ENDIAN_BIG
+	big = DUCT_ENDIAN_BIG
 };
 
 /** @cond INTERNAL */
@@ -218,7 +218,7 @@ byte_swap_if(
 	T value,
 	duct::Endian const endian
 ) {
-	return (Endian::SYSTEM != endian)
+	return (Endian::system != endian)
 		? byte_swap<T>(value)
 		: value;
 }
@@ -239,7 +239,7 @@ byte_swap_ref_if(
 	T& value,
 	duct::Endian const endian
 ) {
-	if (Endian::SYSTEM != endian) {
+	if (Endian::system != endian) {
 		byte_swap_ref<T>(value);
 	}
 }

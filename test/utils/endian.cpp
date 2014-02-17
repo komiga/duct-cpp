@@ -32,9 +32,9 @@ template<
 using int_fp_type = typename int_fp_type_impl<FP>::type;
 
 constexpr auto
-ENSURE_SWAP = (duct::Endian::LITTLE == duct::Endian::SYSTEM)
-	? duct::Endian::BIG
-	: duct::Endian::LITTLE
+ENSURE_SWAP = (duct::Endian::little == duct::Endian::system)
+	? duct::Endian::big
+	: duct::Endian::little
 ;
 
 constexpr std::uint16_t INTEGRAL16 = 0x1122;
@@ -98,7 +98,7 @@ do_test_floating(
 
 #define DUCT_TEST_COUT_ENDIAN_(n_, e_)						\
 	<< n_ " endian: " << enum_cast(duct::Endian:: e_)		\
-	<< ((duct::Endian::SYSTEM == duct::Endian:: e_)			\
+	<< ((duct::Endian::system == duct::Endian:: e_)			\
 		? " (system)\n"										\
 		: "\n"												\
 	)
@@ -106,8 +106,8 @@ do_test_floating(
 signed
 main() {
 	std::cout
-		DUCT_TEST_COUT_ENDIAN_("little", LITTLE)
-		DUCT_TEST_COUT_ENDIAN_("big   ", BIG)
+		DUCT_TEST_COUT_ENDIAN_("little", little)
+		DUCT_TEST_COUT_ENDIAN_("big   ", big)
 	;
 
 	auto const ex = INTEGRAL16;
@@ -125,13 +125,13 @@ main() {
 
 	duct::Endian endian;
 	if (ex_p[0] == (ex & 0xFF)) {
-		endian = duct::Endian::LITTLE;
+		endian = duct::Endian::little;
 	} else {
-		endian = duct::Endian::BIG;
+		endian = duct::Endian::big;
 	}
 
 	DUCT_ASSERT(
-		duct::Endian::SYSTEM == endian,
+		duct::Endian::system == endian,
 		"duct is lying to you"
 	);
 

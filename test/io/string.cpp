@@ -81,7 +81,7 @@ read_s(
 	void const* data,
 	std::size_t const size
 ) {
-	duct::IO::StreamContext ctx(FromU::id, duct::Endian::SYSTEM);
+	duct::IO::StreamContext ctx(FromU::id, duct::Endian::system);
 	duct::IO::imemstream stream(data, size * FromU::char_size);
 	std::printf(
 		"stream size: %lu\n",
@@ -115,7 +115,7 @@ write_s(
 ) {
 	typename ToU::strict_char_type
 		out_buffer[512u];
-	duct::IO::StreamContext ctx(ToU::id, duct::Endian::SYSTEM);
+	duct::IO::StreamContext ctx(ToU::id, duct::Endian::system);
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
 	DUCT_ASSERTE(stream.good());
 	std::size_t written_size = ctx.write_string(stream, str, duct::CHAR_NULL);

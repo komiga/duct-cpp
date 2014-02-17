@@ -79,9 +79,9 @@ write(
 	@param stream Source stream.
 	@param[out] value Output value; result undefined if: the
 	operation failed (see @c std::basic_istream::read())
-	and @c endian!=Endian::SYSTEM.
+	and @c endian!=Endian::system.
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	typename T
@@ -90,7 +90,7 @@ inline void
 read_arithmetic(
 	std::istream& stream,
 	T& value,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	static_assert(
 		std::is_arithmetic<T>::value,
@@ -105,11 +105,11 @@ read_arithmetic(
 
 	@returns Output value; undefined if: the operation failed
 	(see @c std::basic_istream::read())
-	and @c endian!=Endian::SYSTEM.
+	and @c endian!=Endian::system.
 	@tparam T Arithmetic value type; inferred from @a value.
 	@param stream Source stream.
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	typename T
@@ -117,7 +117,7 @@ template<
 inline T
 read_arithmetic(
 	std::istream& stream,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	static_assert(
 		std::is_arithmetic<T>::value,
@@ -139,10 +139,10 @@ read_arithmetic(
 	@param stream Source stream.
 	@param[out] dest Output array; result undefined if: the operation
 	failed (see @c std::basic_istream::read())
-	and @c endian!=Endian::SYSTEM.
+	and @c endian!=Endian::system.
 	@param count Number of elements to read.
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	typename T
@@ -152,7 +152,7 @@ read_arithmetic_array(
 	std::istream& stream,
 	T* const dest,
 	std::size_t const count,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	static_assert(
 		std::is_arithmetic<T>::value,
@@ -160,7 +160,7 @@ read_arithmetic_array(
 	);
 	if (0u < count) {
 		stream.read(reinterpret_cast<char*>(dest), sizeof(T) * count);
-		if (Endian::SYSTEM != endian && 1u != sizeof(T)) {
+		if (Endian::system != endian && 1u != sizeof(T)) {
 			for (std::size_t idx = 0u; count > idx; ++idx) {
 				byte_swap_ref(dest[idx]);
 			}
@@ -175,7 +175,7 @@ read_arithmetic_array(
 	@param stream Destination stream.
 	@param value Value to write.
 	@param endian Endian to use when writing; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	typename T
@@ -184,7 +184,7 @@ inline void
 write_arithmetic(
 	std::ostream& stream,
 	T value,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	static_assert(
 		std::is_arithmetic<T>::value,
@@ -205,7 +205,7 @@ write_arithmetic(
 	@param src Array to write.
 	@param count Number of elements to write.
 	@param endian Endian to use when writing; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	typename T
@@ -215,7 +215,7 @@ write_arithmetic_array(
 	std::ostream& stream,
 	T const* const src,
 	std::size_t const count,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	static_assert(
 		std::is_arithmetic<T>::value,
@@ -226,7 +226,7 @@ write_arithmetic_array(
 
 	T flipbuf[BUFFER_SIZE];
 	if (0u < count) {
-		if (Endian::SYSTEM != endian && 1u < sizeof(T)) {
+		if (Endian::system != endian && 1u < sizeof(T)) {
 			unsigned chunk;
 			unsigned idx;
 			for (chunk = 0u; count > chunk; chunk += idx) {

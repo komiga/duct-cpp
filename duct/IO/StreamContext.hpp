@@ -38,7 +38,7 @@ class StreamContext;
 class StreamContext final {
 private:
 	Encoding m_encoding{Encoding::UTF8};
-	Endian m_endian{Endian::SYSTEM};
+	Endian m_endian{Endian::system};
 
 public:
 /** @name Constructors and destructor */ /// @{

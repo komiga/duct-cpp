@@ -137,7 +137,7 @@ struct rchar_impl<DefsT, 4u> {
 	@param replacement Replacement code point; defaults
 	to @c CHAR_SENTINEL.
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class FromU,
@@ -147,7 +147,7 @@ inline char32
 read_char(
 	std::istream& stream,
 	char32 const replacement = CHAR_SENTINEL,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	return rchar_impl<DefsT>::read_char(stream, replacement, endian);
 }
@@ -203,7 +203,7 @@ struct wchar_impl {
 			return 0u;
 		} else {
 			unsigned amt = (out_iter - out_buffer);
-			if (Endian::SYSTEM != endian && 1u != DefsT::char_size) {
+			if (Endian::system != endian && 1u != DefsT::char_size) {
 				for (unsigned idx = 0u; amt > idx; ++idx) {
 					byte_swap_ref(out_buffer[idx]);
 				}
@@ -266,7 +266,7 @@ struct wchar_impl<DefsT, 4u> {
 	to @c CHAR_NULL (default) when @a cp is invalid, <strong>nothing
 	will be written</strong> (returns @c 0).
 	@param endian Endian to use when writing; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class ToU,
@@ -278,7 +278,7 @@ write_char(
 	char32 const cp,
 	unsigned const num = 1u,
 	char32 const replacement = CHAR_NULL,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	if (0u < num) {
 		return wchar_impl<DefsT>
@@ -330,7 +330,7 @@ struct rstr_defs {
 	to @c CHAR_NULL (default), invalid code points will be skipped
 	rather than replaced.
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class FromU,
@@ -343,7 +343,7 @@ read_string(
 	StringT& value,
 	std::size_t size,
 	char32 const replacement = CHAR_NULL,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	typename DefsT::from_utils::char_type
 		// Extra space to easily deal with incomplete sequences
@@ -366,7 +366,7 @@ read_string(
 			break;
 		}
 		end=buffer + offset + amt;
-		if (Endian::SYSTEM != endian && 1u != DefsT::from_utils::char_size) {
+		if (Endian::system != endian && 1u != DefsT::from_utils::char_size) {
 			for (iter=buffer + offset; end>iter; ++iter) {
 				byte_swap_ref(*iter);
 			}
@@ -437,7 +437,7 @@ read_string(
 	@param[out] value Output value; result undefined if at some point
 	a read operation failed (see std::basic_istream::read()).
 	@param endian Endian to use when reading; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class StringT,
@@ -451,7 +451,7 @@ read_string_copy(
 	std::istream& stream,
 	StringT& value,
 	std::size_t size,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	typename DefsT::from_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
@@ -467,7 +467,7 @@ read_string_copy(
 			DUCT_DEBUG("read_string_copy: !stream.good()");
 			return;
 		}
-		if (Endian::SYSTEM != endian && 1u != DefsT::from_utils::char_size) {
+		if (Endian::system != endian && 1u != DefsT::from_utils::char_size) {
 			for (
 				out_iter = out_buffer;
 				out_buffer + amt > out_iter;
@@ -516,7 +516,7 @@ struct wstr_defs {
 	to @c CHAR_NULL (default), invalid code points will be skipped
 	rather than replaced.
 	@param endian Endian to use when writing; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class ToU,
@@ -528,7 +528,7 @@ write_string(
 	std::ostream& stream,
 	StringT const& value,
 	char32 const replacement = CHAR_NULL,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	typename DefsT::to_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
@@ -560,7 +560,7 @@ write_string(
 		out_iter = DefsT::to_utils::encode(cp, out_iter, replacement);
 		// Prevent output overrun
 		if (DefsT::BUFFER_SIZE_S <= 6u + (out_iter - out_buffer)) {
-			if (Endian::SYSTEM != endian && 1u != DefsT::to_utils::char_size) {
+			if (Endian::system != endian && 1u != DefsT::to_utils::char_size) {
 				for (auto iter = out_buffer; out_iter > iter; ++iter) {
 					byte_swap_ref(*iter);
 				}
@@ -579,7 +579,7 @@ write_string(
 	}
 	// Flush if there's any data left in the buffer
 	if (out_buffer != out_iter) {
-		if (Endian::SYSTEM != endian && 1u != DefsT::to_utils::char_size) {
+		if (Endian::system != endian && 1u != DefsT::to_utils::char_size) {
 			for (auto iter = out_buffer; out_iter > iter; ++iter) {
 				byte_swap_ref(*iter);
 			}
@@ -610,7 +610,7 @@ exit_f:
 	@param stream Destination stream.
 	@param value String to write.
 	@param endian Endian to use when writing; defaults
-	to @c Endian::SYSTEM (no swapping).
+	to @c Endian::system (no swapping).
 */
 template<
 	class StringT,
@@ -623,7 +623,7 @@ std::size_t
 write_string_copy(
 	std::ostream& stream,
 	StringT const& value,
-	Endian const endian = Endian::SYSTEM
+	Endian const endian = Endian::system
 ) {
 	typename DefsT::from_utils::char_type
 		out_buffer[DefsT::BUFFER_SIZE],
@@ -641,7 +641,7 @@ write_string_copy(
 			++out_iter, ++str_iter
 		) {
 			if (
-				Endian::SYSTEM != endian &&
+				Endian::system != endian &&
 				1u != DefsT::from_utils::char_size
 			) {
 				*out_iter = byte_swap(*str_iter);
