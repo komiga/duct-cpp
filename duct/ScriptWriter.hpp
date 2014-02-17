@@ -14,6 +14,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./debug.hpp"
 #include "./char.hpp"
 #include "./detail/string_traits.hpp"
+#include "./StateStore.hpp"
 #include "./CharacterSet.hpp"
 #include "./EncodingUtils.hpp"
 #include "./StringUtils.hpp"
@@ -30,36 +31,41 @@ namespace duct {
 */
 
 // Forward declarations
-enum ScriptWriterFlags : unsigned;
 class ScriptWriter;
-
-/**
-	ScriptWriter flags.
-*/
-enum ScriptWriterFlags : unsigned {
-	/** Always surround names in quotation marks. */
-	DSWF_NAME_QUOTE = 1 << 0,
-	/** Always surround string values in quotation marks. */
-	DSWF_VALUE_STRING_QUOTE = 1 << 2,
-	/** Escape linefeeds and tabulations (regardless of quotation). */
-	DSWF_ESCAPE_WHITESPACE = 1 << 3,
-	/** Always surround names and string values in quotation marks. */
-	DSWF_QUOTE = 0
-		| DSWF_NAME_QUOTE
-		| DSWF_VALUE_STRING_QUOTE
-	,
-	/** Default flags. */
-	DSWF_DEFAULT = 0
-		| DSWF_VALUE_STRING_QUOTE
-		| DSWF_ESCAPE_WHITESPACE
-};
 
 /**
 	ductScript writer.
 */
 class ScriptWriter final {
+public:
+/** @name Types */ /// @{
+	/**
+		%Flags.
+	*/
+	enum class Flags : unsigned {
+		/** Always surround names in quotation marks. */
+		name_quote = 1 << 0,
+		/** Always surround string values in quotation marks. */
+		value_string_quote = 1 << 2,
+		/** Escape linefeeds and tabulations (regardless of quotation). */
+		escape_whitespace = 1 << 3,
+
+		/** Always surround names and string values in quotation marks. */
+		quote
+			= name_quote
+			| value_string_quote
+		,
+
+		/** Default flags. */
+		defaults
+			= value_string_quote
+			| escape_whitespace
+		,
+	};
+/// @}
+
 private:
-	ScriptWriterFlags m_flags{DSWF_DEFAULT};
+	StateStore<Flags> m_flags{Flags::defaults};
 	IO::StreamContext m_stream_ctx{};
 
 public:
@@ -74,7 +80,7 @@ public:
 		@param context StreamContext to copy.
 	*/
 	ScriptWriter(
-		ScriptWriterFlags const flags,
+		Flags const flags,
 		IO::StreamContext context
 	) noexcept
 		: m_flags(flags)
@@ -98,25 +104,30 @@ public:
 
 /** @name Properties */ /// @{
 	/**
-		Set formatting flags.
+		Set flags.
 
-		@param flags New formatting flags.
+		@param flags %Flags.
+		@param enable Whether to enable or disable the flags.
 	*/
 	void
 	set_flags(
-		ScriptWriterFlags const flags
+		Flags const flags,
+		bool const enable = true
 	) noexcept {
-		m_flags = flags;
+		m_flags.set(flags, enable);
 	}
 
 	/**
-		Get formatting flags.
+		Check if a set of flags are enabled.
 
-		@returns The current formatting flags.
+		@returns @c true if all @a flags are enabled.
+		@param flags %Flags to test.
 	*/
-	ScriptWriterFlags
-	get_flags() const noexcept {
-		return m_flags;
+	bool
+	has_flags(
+		Flags const flags
+	) const noexcept {
+		return m_flags.test(flags);
 	}
 
 	/**

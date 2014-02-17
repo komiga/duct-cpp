@@ -64,9 +64,9 @@ ScriptWriter::write_string(
 	if (!str.empty()) {
 		dec_iter = StringU::decode(dec_iter, str.cend(), first_cp, CHAR_NULL);
 	}
-	bool const add_quotation=
+	bool const add_quotation =
 		// Whether to always quote based on token type
-		0 != (m_flags & (is_name ? DSWF_NAME_QUOTE : DSWF_VALUE_STRING_QUOTE))
+		0 != (has_flags(is_name ? Flags::name_quote : Flags::value_string_quote))
 		// Empty string must be quoted
 		|| str.empty()
 		// Whitespace and control characters require quotation
@@ -85,7 +85,7 @@ ScriptWriter::write_string(
 	auto const&
 	str_esc_pair =
 		(add_quotation
-			? (m_flags & DSWF_ESCAPE_WHITESPACE
+			? (m_flags.test(Flags::escape_whitespace)
 				// Whitespace is always escaped
 				? s_esc_whitespace
 				// Don't have to escape control characters when quoted

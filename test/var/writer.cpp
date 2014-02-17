@@ -34,7 +34,7 @@ g_parser{
 
 static duct::ScriptWriter
 g_writer{
-	duct::DSWF_ESCAPE_WHITESPACE,
+	duct::ScriptWriter::Flags::escape_whitespace,
 	{duct::Encoding::UTF8, duct::Endian::system}
 };
 
