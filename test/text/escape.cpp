@@ -27,7 +27,7 @@ test_string(
 	);
 	std::cout
 		<< std::setw(3) << std::left << escaped_count
-		<< std::right << ": `" << result << "`'\n"
+		<< std::right << ": `" << result << "`\n"
 	;
 	if (!expected.empty() && 0 != expected.compare(result)) {
 		std::cout
