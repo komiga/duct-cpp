@@ -12,8 +12,8 @@ main() {
 	duct::CharBuf buf;
 	buf.push_back(0x3042);
 	std::cout
-		<< "size: " << buf.get_size() << '\n'
-		<< "capacity: " << buf.get_capacity() << '\n'
+		<< "size: " << buf.size() << '\n'
+		<< "capacity: " << buf.capacity() << '\n'
 		<< "cache: \"" << buf.to_string() << "\"\n"
 		<< "str: \"" << buf.to_string<duct::u8string>() << "\"\n"
 	; std::cout.flush();

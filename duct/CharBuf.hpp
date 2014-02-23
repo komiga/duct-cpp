@@ -61,8 +61,8 @@ public:
 		m_buffer.reserve(capacity);
 	}
 
-	/** Copy constructor (deleted). */
-	CharBuf(CharBuf const&) = delete;
+	/** Copy constructor. */
+	CharBuf(CharBuf const&) = default;
 	/** Move constructor. */
 	CharBuf(CharBuf&&) = default;
 	/** Destructor. */
@@ -70,8 +70,8 @@ public:
 /// @}
 
 /** @name Operators */ /// @{
-	/** Copy assignment operator (deleted). */
-	CharBuf& operator=(CharBuf const&) = delete;
+	/** Copy assignment operator. */
+	CharBuf& operator=(CharBuf const&) = default;
 	/** Move assignment operator. */
 	CharBuf& operator=(CharBuf&&) = default;
 /// @}
@@ -81,21 +81,30 @@ public:
 		Get size.
 
 		@returns The number of characters in the buffer.
-		@sa get_capacity()
+		@sa capacity()
 	*/
 	std::size_t
-	get_size() const noexcept {
+	size() const noexcept {
 		return m_buffer.size();
 	}
+
 	/**
 		Get capacity.
 
 		@returns The reserved size of the buffer.
-		@sa get_size()
+		@sa size()
 	*/
 	std::size_t
-	get_capacity() const noexcept {
+	capacity() const noexcept {
 		return m_buffer.capacity();
+	}
+
+	/**
+		Check if the buffer is empty.
+	*/
+	bool
+	empty() const noexcept {
+		return m_buffer.empty();
 	}
 /// @}
 
@@ -317,11 +326,11 @@ public:
 
 private:
 	void grow() {
-		if (0 == get_capacity()) {
+		if (0 == capacity()) {
 			m_buffer.reserve(64u);
-		} else if (get_size() + 1 >= get_capacity()) {
+		} else if (size() + 1 >= capacity()) {
 			m_buffer.reserve(
-				(16 >= get_capacity()) ? 64u : 2u * get_capacity()
+				(16 >= capacity()) ? 64u : 2u * capacity()
 			);
 		}
 	}
