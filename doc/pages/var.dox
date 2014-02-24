@@ -1,7 +1,7 @@
 
 /**
 
-@defgroup variable Variable class and utilities
+@defgroup var Var class and utilities
 @details
 
 @note The @c valtype constructs here are only defined for

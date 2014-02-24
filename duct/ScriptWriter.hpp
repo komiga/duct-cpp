@@ -174,7 +174,7 @@ public:
 	bool
 	write(
 		std::ostream& dest,
-		Variable const& source,
+		Var const& source,
 		bool const treat_as_root,
 		unsigned const tab_level = 0
 	) const;
@@ -195,28 +195,28 @@ private:
 	bool
 	write_value(
 		std::ostream& dest,
-		Variable const& var,
+		Var const& var,
 		bool const with_name
 	) const;
 
 	bool
 	write_array(
 		std::ostream& dest,
-		Variable const& var,
+		Var const& var,
 		bool const with_name
 	) const;
 
 	bool
 	write_node(
 		std::ostream& dest,
-		Variable const& var,
+		Var const& var,
 		bool const treat_as_root, unsigned tab_level
 	) const;
 
 	bool
 	write_identifier(
 		std::ostream& dest,
-		Variable const& var
+		Var const& var
 	) const;
 };
 

@@ -1,6 +1,6 @@
 /**
 @file Template.hpp
-@brief Variable validation.
+@brief Var validation.
 
 @author Tim Howard
 @copyright 2010-2013 Tim Howard under the MIT license;
@@ -16,19 +16,19 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./aux.hpp"
 #include "./string.hpp"
 #include "./StateStore.hpp"
-#include "./Variable.hpp"
+#include "./Var.hpp"
 
 #include <utility>
 
 namespace duct {
 
 /**
-	@addtogroup variable
+	@addtogroup var
 	@{
 */
 
 /**
-	Variable validator.
+	Var validator.
 */
 class Template {
 public:
@@ -262,7 +262,7 @@ public:
 		Set type mask.
 
 		@param type_mask New type mask.
-		@sa validate_type(Variable const&) const
+		@sa validate_type(Var const&) const
 	*/
 	void
 	set_type_mask(
@@ -275,7 +275,7 @@ public:
 		Set type mask (single type).
 
 		@param type New type mask.
-		@sa validate_type(Variable const&) const
+		@sa validate_type(Var const&) const
 	*/
 	void
 	set_type_mask(
@@ -288,7 +288,7 @@ public:
 		Get type mask.
 
 		@returns The current type mask.
-		@sa validate_type(Variable const&) const
+		@sa validate_type(Var const&) const
 	*/
 	VarMask
 	get_type_mask() const noexcept {
@@ -299,7 +299,7 @@ public:
 		Set identity.
 
 		@param identity New identity.
-		@sa validate_identity(Variable const&) const
+		@sa validate_identity(Var const&) const
 	*/
 	void
 	set_identity(
@@ -312,7 +312,7 @@ public:
 		Get identity.
 
 		@returns The current identity.
-		@sa validate_identity(Variable const&) const
+		@sa validate_identity(Var const&) const
 	*/
 	identity_vector_type&
 	get_identity() noexcept {
@@ -329,7 +329,7 @@ public:
 		Set layout.
 
 		@param layout New layout.
-		@sa validate_layout(Variable const&) const
+		@sa validate_layout(Var const&) const
 	*/
 	void
 	set_layout(
@@ -342,7 +342,7 @@ public:
 		Get layout.
 
 		@returns The current layout.
-		@sa validate_layout(Variable const&) const
+		@sa validate_layout(Var const&) const
 	*/
 	layout_vector_type&
 	get_layout() noexcept {
@@ -367,13 +367,13 @@ public:
 		@returns @c true iff @a var matches template in type, identity,
 		and layout.
 		@param var Variable to validate.
-		@sa validate_type(Variable const&) const,
-			validate_identity(Variable const&) const,
-			validate_layout(Variable const&) const
+		@sa validate_type(Var const&) const,
+			validate_identity(Var const&) const,
+			validate_layout(Var const&) const
 	*/
 	bool
 	validate(
-		Variable const& var
+		Var const& var
 	) const noexcept {
 		return
 			validate_type(var) &&
@@ -391,7 +391,7 @@ public:
 	*/
 	virtual bool
 	validate_type(
-		Variable const& var
+		Var const& var
 	) const noexcept {
 		return var_type_is_of(var.get_type(), m_type_mask);
 	}
@@ -407,7 +407,7 @@ public:
 	*/
 	virtual bool
 	validate_identity(
-		Variable const& var
+		Var const& var
 	) const noexcept {
 		if (m_identity.empty()) {
 			// Any name is permitted with empty identity
@@ -448,7 +448,7 @@ public:
 	*/
 	virtual bool
 	validate_layout(
-		Variable const& var
+		Var const& var
 	) const noexcept {
 		if (var.is_type_of(VarMask::collection)) {
 			if (m_layout.empty()) {
@@ -494,7 +494,7 @@ public:
 /// @}
 };
 
-/** @} */ // end of doc-group variable
+/** @} */ // end of doc-group var
 
 } // namespace duct
 

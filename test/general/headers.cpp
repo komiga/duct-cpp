@@ -22,8 +22,8 @@
 #include <duct/IO/memstream.hpp>
 #include <duct/IO/multistream.hpp>
 #include <duct/IO/dynamic_streambuf.hpp>
-#include <duct/Variable.hpp>
-#include <duct/VariableUtils.hpp>
+#include <duct/Var.hpp>
+#include <duct/VarUtils.hpp>
 #include <duct/Template.hpp>
 #include <duct/ScriptWriter.hpp>
 #include <duct/Parser.hpp>

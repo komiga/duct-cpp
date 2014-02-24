@@ -19,8 +19,8 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./CharacterSet.hpp"
 #include "./StringUtils.hpp"
 #include "./Parser.hpp"
-#include "./Variable.hpp"
-#include "./VariableUtils.hpp"
+#include "./Var.hpp"
+#include "./VarUtils.hpp"
 
 #include <cstdio>
 #include <cstdarg>
@@ -114,7 +114,7 @@ private:
 		open_array = 1 << 2
 	};
 
-	duct::aux::deque<Variable*> m_stack{32u};
+	duct::aux::deque<Var*> m_stack{32u};
 	StateStore<State> m_states{};
 	Token m_token_ident{NULL_TOKEN, 128u};
 
@@ -181,7 +181,7 @@ public:
 	*/
 	bool
 	process(
-		Variable& node,
+		Var& node,
 		std::istream& stream
 	);
 
@@ -237,12 +237,12 @@ private:
 		return in_scope(static_cast<VarMask>(type));
 	}
 
-	Variable&
+	Var&
 	get_current_collection() noexcept;
 
 	void
 	push(
-		Variable& collection
+		Var& collection
 	);
 
 	void

@@ -1,14 +1,14 @@
 /**
-@file Variable.hpp
-@brief Variable class.
+@file Var.hpp
+@brief Var class.
 
 @author Tim Howard
 @copyright 2010-2013 Tim Howard under the MIT license;
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_VARIABLE_HPP_
-#define DUCT_VARIABLE_HPP_
+#ifndef DUCT_VAR_HPP_
+#define DUCT_VAR_HPP_
 
 #include "./config.hpp"
 #include "./aux.hpp"
@@ -23,10 +23,10 @@ see @ref index or the accompanying LICENSE file for full text.
 namespace duct {
 
 // Forward declarations
-class Variable;
+class Var;
 
 /**
-	@addtogroup variable
+	@addtogroup var
 	@{
 */
 
@@ -36,17 +36,17 @@ class Variable;
 	@warning This class is relatively heavy since it serves the
 	purposes of every variable type — use it wisely.
 */
-class Variable final {
+class Var final {
 public:
 /** @name Types */ /// @{
 	/** Children vector. */
-	using vector_type = aux::vector<Variable>;
+	using vector_type = aux::vector<Var>;
 	/** Children iterator.  */
 	using iterator = vector_type::iterator;
 	/** @copydoc iterator  */
 	using const_iterator = vector_type::const_iterator;
 	/** Initializer list. */
-	using initializer_list_type = std::initializer_list<Variable>;
+	using initializer_list_type = std::initializer_list<Var>;
 /// @}
 
 private:
@@ -70,7 +70,7 @@ public:
 	/**
 		Construct nameless @c VarType::null.
 	*/
-	Variable() = default;
+	Var() = default;
 
 	/**
 		Construct named with type (default value).
@@ -78,7 +78,7 @@ public:
 		@param name Name.
 		@param type Type.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		VarType const type
 	)
@@ -92,7 +92,7 @@ public:
 		@param type Type.
 	*/
 	explicit
-	Variable(
+	Var(
 		VarType const type
 	)
 		: m_type(type)
@@ -108,7 +108,7 @@ public:
 		@param type Type.
 		@param ilist Initializer list.
 	*/
-	Variable(
+	Var(
 		VarType const type,
 		initializer_list_type ilist
 	)
@@ -129,7 +129,7 @@ public:
 		@param type Type.
 		@param ilist Initializer list.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		VarType const type,
 		initializer_list_type ilist
@@ -147,7 +147,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		detail::var_config::string_type value
 	)
@@ -162,7 +162,7 @@ public:
 		@param value Value.
 	*/
 	explicit
-	Variable(
+	Var(
 		detail::var_config::string_type value
 	)
 		: m_type(VarType::string)
@@ -175,7 +175,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		detail::var_config::int_type const value
 	)
@@ -190,7 +190,7 @@ public:
 		@param value Value.
 	*/
 	explicit
-	Variable(
+	Var(
 		detail::var_config::int_type const value
 	)
 		: m_type(VarType::integer)
@@ -203,7 +203,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		detail::var_config::float_type const value
 	)
@@ -217,7 +217,7 @@ public:
 		@param value Value.
 	*/
 	explicit
-	Variable(
+	Var(
 		detail::var_config::float_type const value
 	)
 		: m_type(VarType::floatp)
@@ -230,7 +230,7 @@ public:
 		@param name Name.
 		@param value Value.
 	*/
-	Variable(
+	Var(
 		detail::var_config::name_type name,
 		detail::var_config::bool_type const value
 	)
@@ -245,7 +245,7 @@ public:
 		@param value Value.
 	*/
 	explicit
-	Variable(
+	Var(
 		detail::var_config::bool_type const value
 	)
 		: m_type(VarType::boolean)
@@ -253,11 +253,11 @@ public:
 	{}
 
 	/** Copy constructor. */
-	Variable(Variable const&) = default;
+	Var(Var const&) = default;
 	/** Move constructor. */
-	Variable(Variable&&) = default;
+	Var(Var&&) = default;
 	/** Destructor. */
-	~Variable() = default;
+	~Var() = default;
 /// @}
 
 /** @name Operators */ /// @{
@@ -268,11 +268,11 @@ public:
 		type are both unequal and not collections.
 
 		@returns @c *this.
-		@param other Variable to copy.
+		@param other Var to copy.
 	*/
-	Variable&
+	Var&
 	operator=(
-		Variable const& other
+		Var const& other
 	) {
 		if (other.m_type != m_type
 		&& !( var_type_is_of(m_type, VarMask::collection)
@@ -303,7 +303,7 @@ public:
 		return *this;
 	}
 	/** Move assignment operator. */
-	Variable& operator=(Variable&&) = default;
+	Var& operator=(Var&&) = default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -324,7 +324,7 @@ public:
 		@returns @c *this.
 		@param name New name.
 	*/
-	Variable&
+	Var&
 	set_name(
 		detail::var_config::name_type name
 	) {
@@ -387,7 +387,7 @@ public:
 
 		@returns @c *this.
 	*/
-	Variable&
+	Var&
 	nullify() noexcept {
 		return morph(VarType::null);
 	}
@@ -400,7 +400,7 @@ public:
 
 		@returns @c *this.
 	*/
-	Variable&
+	Var&
 	reset() noexcept {
 		switch (m_type) {
 		case VarType::string: m_strv.clear(); break;
@@ -428,13 +428,14 @@ public:
 		when changing between @c VarMask::collection types; @c false
 		by default.
 	*/
-	Variable&
+	Var&
 	morph(
 		VarType const type,
 		bool const discard_children = false
 	) noexcept {
 		if (type != m_type) {
-			if (discard_children
+			if (
+				discard_children
 			|| !( var_type_is_of(m_type, VarMask::collection)
 			   && var_type_is_of(type, VarMask::collection))
 			) {
@@ -458,7 +459,7 @@ public:
 		@param type New collection type.
 		@param children New child collection.
 	*/
-	Variable&
+	Var&
 	morph(
 		VarType const type,
 		vector_type children
@@ -486,7 +487,7 @@ public:
 	template<
 		typename T
 	>
-	Variable&
+	Var&
 	morph(
 		T const value
 	) {
@@ -512,7 +513,7 @@ public:
 		@returns @c *this.
 		@param value New string value.
 	*/
-	Variable&
+	Var&
 	morph(
 		detail::var_config::string_type value
 	) {
@@ -531,11 +532,11 @@ public:
 
 		@returns @c true if name and value
 		of @c this and name and value of @a other are equivalent.
-		@param other Variable to compare against.
+		@param other Var to compare against.
 	*/
 	bool
 	equals(
-		Variable const& other
+		Var const& other
 	) const {
 		return 0 == compare(other);
 	}
@@ -545,11 +546,11 @@ public:
 
 		@returns @c true if value of @c this and value
 		of @a other are equivalent.
-		@param other Variable to compare against.
+		@param other Var to compare against.
 	*/
 	bool
 	equals_value(
-		Variable const& other
+		Var const& other
 	) const {
 		return 0 == compare_value(other);
 	}
@@ -563,11 +564,11 @@ public:
 		  or
 		- the result of @c this->compare_value(other) if their names
 		  are equal.
-		@param other Variable to compare against.
+		@param other Var to compare against.
 	*/
 	signed
 	compare(
-		Variable const& other
+		Var const& other
 	) const {
 		signed const diff = m_name.compare(other.m_name);
 		return (0 != diff)
@@ -597,11 +598,11 @@ public:
 
 		For unequal types, the difference between the type
 		of @c this and the type of @a other.
-		@param other Variable to compare against.
+		@param other Var to compare against.
 	*/
 	signed
 	compare_value(
-		Variable const& other
+		Var const& other
 	) const {
 		switch (enum_combine(m_type, other.m_type)) {
 		case VarType::null: return 0;
@@ -677,7 +678,7 @@ public:
 		@param value New value.
 		@sa morph(T const)
 	*/
-	Variable&
+	Var&
 	assign(
 		detail::var_config::string_type value
 	) {
@@ -714,8 +715,8 @@ public:
 	#define DUCT_V_FIELD_ m_intv
 	/** @endcond */
 
-	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable&
+	/** @copydoc Var::assign(detail::var_config::string_type) */
+	Var&
 	assign(
 		detail::var_config::int_type const value
 	) noexcept {
@@ -745,8 +746,8 @@ public:
 	#define DUCT_V_FIELD_ m_floatv
 	/** @endcond */
 
-	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable&
+	/** @copydoc Var::assign(detail::var_config::string_type) */
+	Var&
 	assign(
 		detail::var_config::float_type const value
 	) noexcept {
@@ -776,8 +777,8 @@ public:
 	#define DUCT_V_FIELD_ m_boolv
 	/** @endcond */
 
-	/** @copydoc Variable::assign(detail::var_config::string_type) */
-	Variable&
+	/** @copydoc Var::assign(detail::var_config::string_type) */
+	Var&
 	assign(
 		detail::var_config::bool_type const value
 	) noexcept {
@@ -975,7 +976,7 @@ public:
 	/**
 		Get first child.
 	*/
-	Variable&
+	Var&
 	front() {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.front();
@@ -984,7 +985,7 @@ public:
 	/**
 		Get first child.
 	*/
-	Variable const&
+	Var const&
 	front() const {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.front();
@@ -993,7 +994,7 @@ public:
 	/**
 		Get last child.
 	*/
-	Variable&
+	Var&
 	back() {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.back();
@@ -1002,7 +1003,7 @@ public:
 	/**
 		Get last child.
 	*/
-	Variable const&
+	Var const&
 	back() const {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.back();
@@ -1013,7 +1014,7 @@ public:
 
 		@param index Child index.
 	*/
-	Variable&
+	Var&
 	at(
 		std::size_t const index
 	) {
@@ -1026,7 +1027,7 @@ public:
 
 		@param index Child index.
 	*/
-	Variable const&
+	Var const&
 	at(
 		std::size_t const index
 	) const {
@@ -1064,11 +1065,11 @@ public:
 		Append to end of child collection.
 
 		@returns @c *this.
-		@param var Variable to append.
+		@param var Var to append.
 	*/
-	Variable&
+	Var&
 	push_back(
-		Variable var
+		Var var
 	) {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		m_children.push_back(std::move(var));
@@ -1080,13 +1081,13 @@ public:
 
 		@returns @c *this.
 		@tparam ArgP Parameter pack for constructor;
-		see @c Variable().
+		see @c Var().
 		@param args Parameter pack for constructor.
 	*/
 	template<
 		typename... ArgP
 	>
-	Variable&
+	Var&
 	emplace_back(ArgP&&... args) {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		m_children.emplace_back(std::forward<ArgP>(args)...);
@@ -1095,8 +1096,8 @@ public:
 /** @} */
 };
 
-/** @} */ // end doc-group variable
+/** @} */ // end doc-group var
 
 } // namespace duct
 
-#endif // DUCT_VARIABLE_HPP_
+#endif // DUCT_VAR_HPP_

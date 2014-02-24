@@ -1,7 +1,7 @@
 
 #include <duct/string.hpp>
 #include <duct/detail/vartype.hpp>
-#include <duct/Variable.hpp>
+#include <duct/Var.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -10,7 +10,7 @@
 
 signed
 main() {
-	duct::Variable
+	duct::Var
 		string_var{duct::u8string("string_var"), duct::u8string("bar")},
 		int_var{duct::u8string("int_var"), 12341234},
 		float_var{duct::u8string("float_var"), 3.14159f},
@@ -24,7 +24,7 @@ main() {
 	print_var(bool_var);
 	print_var(null_var);
 
-	duct::Variable
+	duct::Var
 		morph_var{duct::u8string("morph_var"), duct::u8string("qwerty")}
 	;
 

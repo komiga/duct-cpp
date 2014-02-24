@@ -13,8 +13,8 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 #include "./utility.hpp"
 #include "./detail/vartype.hpp"
-#include "./Variable.hpp"
-#include "./VariableUtils.hpp"
+#include "./Var.hpp"
+#include "./VarUtils.hpp"
 
 #include <utility>
 
@@ -36,7 +36,7 @@ std::size_t
 parse_raw(
 	signed const argc,
 	char* argv[],
-	Variable& root
+	Var& root
 ) {
 	root.morph(VarType::identifier, false);
 	root.reset();
@@ -79,7 +79,7 @@ parse_raw(
 			);
 			++pos_eq;
 			if (pos_eq < pos) {
-				VariableUtils::convert_typed(
+				VarUtils::convert_typed(
 					root.back(),
 					detail::var_config::string_type{
 						str + pos_eq,
@@ -116,8 +116,8 @@ bool
 parse_cmd(
 	signed const argc,
 	char* argv[],
-	Variable& opt,
-	Variable& cmd
+	Var& opt,
+	Var& cmd
 ) {
 	std::size_t const cmd_pos = parse_raw(argc, argv, opt);
 	bool const has_cmd = opt.size() != cmd_pos;

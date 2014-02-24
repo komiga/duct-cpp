@@ -1,6 +1,6 @@
 
 #include <duct/string.hpp>
-#include <duct/Variable.hpp>
+#include <duct/Var.hpp>
 #include <duct/Template.hpp>
 
 #include <array>
@@ -10,7 +10,7 @@
 #include "common.inl"
 
 using duct::u8string;
-using duct::Variable;
+using duct::Var;
 using duct::VarType;
 using duct::VarMask;
 using duct::Template;
@@ -29,7 +29,7 @@ signature(
 
 void
 morph(
-	Variable& var,
+	Var& var,
 	VarType const type
 ) {
 	var.morph(type);
@@ -37,7 +37,7 @@ morph(
 
 void
 morph(
-	Variable& var,
+	Var& var,
 	u8string&& name,
 	VarType const type
 ) {
@@ -47,19 +47,19 @@ morph(
 
 void
 morph(
-	Variable& var,
+	Var& var,
 	VarType const type,
-	Variable::vector_type&& children
+	Var::vector_type&& children
 ) {
 	var.morph(type, std::move(children));
 }
 
 void
 morph(
-	Variable& var,
+	Var& var,
 	u8string&& name,
 	VarType const type,
-	Variable::vector_type&& children
+	Var::vector_type&& children
 ) {
 	var.set_name(std::move(name));
 	var.morph(type, std::move(children));
@@ -70,7 +70,7 @@ template<
 >
 void
 morph(
-	Variable& var,
+	Var& var,
 	T value
 ) {
 	var.morph(value);
@@ -81,7 +81,7 @@ template<
 >
 void
 morph(
-	Variable& var,
+	Var& var,
 	u8string&& name,
 	T value
 ) {
@@ -92,7 +92,7 @@ morph(
 void
 validate(
 	Template const& tpl,
-	Variable const& var,
+	Var const& var,
 	bool expected[4u]
 ) {
 	static char const* const
@@ -149,7 +149,7 @@ main() {
 
 	bool expected[4u];
 	Template tpl;
-	Variable match, not_match;
+	Var match, not_match;
 
 	// String value
 	signature(tpl, duct::var_mask(VarType::string), {}, {});
@@ -173,13 +173,13 @@ main() {
 		VarMask::value,
 		{VarMask::value, Template::Field::Flags::optional}
 	});
-	morph(match, VarType::array, {Variable(1), Variable(2), Variable(3)});
-	morph(not_match, VarType::node, {Variable(1)});
+	morph(match, VarType::array, {Var(1), Var(2), Var(3)});
+	morph(not_match, VarType::node, {Var(1)});
 	do_validation("Layout - normal",
 		true, true, true,
 		true, true, false
 	);
-	morph(match, VarType::array, {Variable(1), Variable(2)});
+	morph(match, VarType::array, {Var(1), Var(2)});
 	do_validation_single(tpl, match, true, true, true, true);
 
 	// Layout - empty field

@@ -1,7 +1,7 @@
 
 #include <duct/aux.hpp>
 #include <duct/utility.hpp>
-#include <duct/Variable.hpp>
+#include <duct/Var.hpp>
 #include <duct/ScriptWriter.hpp>
 #include <duct/Args.hpp>
 
@@ -13,7 +13,7 @@ main(
 	signed argc,
 	char* argv[]
 ) {
-	duct::Variable root;
+	duct::Var root;
 	std::size_t const non_opt_pos = duct::Args::parse_raw(argc, argv, root);
 
 	duct::ScriptWriter writer{
@@ -32,7 +32,7 @@ main(
 		<< "`\n"
 	;
 
-	duct::Variable cmd;
+	duct::Var cmd;
 	bool const has_cmd = duct::Args::parse_cmd(argc, argv, root, cmd);
 	out_stream.str({});
 	writer.write(out_stream, root, true);

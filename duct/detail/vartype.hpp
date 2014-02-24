@@ -1,6 +1,6 @@
 /**
 @file detail/vartype.hpp
-@brief Variable type traits.
+@brief Var type traits.
 
 @author Tim Howard
 @copyright 2010-2013 Tim Howard under the MIT license;
@@ -24,12 +24,12 @@ enum class VarType : unsigned;
 enum class VarMask : unsigned;
 
 /**
-	@addtogroup variable
+	@addtogroup var
 	@{
 */
 
 /**
-	Variable types.
+	Var types.
 
 	@sa VarMask
 */
@@ -53,7 +53,7 @@ enum class VarType : unsigned {
 };
 
 /**
-	Variable type classes and masks.
+	Var type classes and masks.
 
 	@note An arbitrary mask can be constructed with var_mask().
 
@@ -218,13 +218,13 @@ namespace detail {
 #endif
 
 /**
-	Variable configuration.
+	Var configuration.
 */
 struct var_config final
 	: public traits::restrict_all
 {
 public:
-	/** typename for Variable names */
+	/** typename for Var names */
 	using name_type = u8string;
 	/** typename for @c VarType::string */
 	using string_type = u8string;
@@ -256,7 +256,7 @@ public:
 	Get the name of a variable type.
 
 	@returns The name of the variable type.
-	@param type Variable type.
+	@param type Var type.
 */
 char const*
 get_vartype_name(
@@ -358,7 +358,7 @@ DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
 
 } // namespace detail
 
-/** @} */ // end of doc-group variable
+/** @} */ // end of doc-group var
 
 } // namespace duct
 

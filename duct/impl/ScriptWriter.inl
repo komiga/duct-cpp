@@ -23,7 +23,7 @@ static char const
 bool
 ScriptWriter::write(
 	std::ostream& dest,
-	Variable const& source,
+	Var const& source,
 	bool const treat_as_root,
 	unsigned const tab_level
 ) const {
@@ -113,7 +113,7 @@ ScriptWriter::write_string(
 bool
 ScriptWriter::write_value(
 	std::ostream& dest,
-	Variable const& var,
+	Var const& var,
 	bool const with_name
 ) const {
 	if (with_name) {
@@ -144,7 +144,7 @@ ScriptWriter::write_value(
 bool
 ScriptWriter::write_array(
 	std::ostream& dest,
-	Variable const& var,
+	Var const& var,
 	bool const with_name
 ) const {
 	if (with_name && !var.get_name().empty()) {
@@ -183,7 +183,7 @@ ScriptWriter::write_array(
 bool
 ScriptWriter::write_node(
 	std::ostream& dest,
-	Variable const& var,
+	Var const& var,
 	bool const treat_as_root,
 	unsigned tab_level
 ) const {
@@ -220,7 +220,7 @@ ScriptWriter::write_node(
 bool
 ScriptWriter::write_identifier(
 	std::ostream& dest,
-	Variable const& var
+	Var const& var
 ) const {
 	write_string(dest, var.get_name(), true);
 	if (0u < var.size()) {

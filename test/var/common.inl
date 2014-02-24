@@ -10,7 +10,7 @@ tabulate(
 
 void
 print_var(
-	duct::Variable const& var,
+	duct::Var const& var,
 	signed tab_count = 0,
 	bool const newline = true
 ) {

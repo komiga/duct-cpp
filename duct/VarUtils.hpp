@@ -1,14 +1,14 @@
 /**
-@file VariableUtils.hpp
-@brief Variable utilities.
+@file VarUtils.hpp
+@brief Var utilities.
 
 @author Tim Howard
 @copyright 2010-2013 Tim Howard under the MIT license;
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_VARIABLEUTILS_HPP_
-#define DUCT_VARIABLEUTILS_HPP_
+#ifndef DUCT_VARUTILS_HPP_
+#define DUCT_VARUTILS_HPP_
 
 #include "./config.hpp"
 #include "./string.hpp"
@@ -16,13 +16,13 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./detail/vartype.hpp"
 #include "./StateStore.hpp"
 #include "./CharacterRange.hpp"
-#include "./Variable.hpp"
+#include "./Var.hpp"
 
 namespace duct {
-namespace VariableUtils {
+namespace VarUtils {
 
 /**
-	@addtogroup variable
+	@addtogroup var
 	@{
 */
 
@@ -77,12 +77,12 @@ parse_lit(
 	  or @c VarType::floatp.
 	- Else morphs to a @c VarType::string with @c value.
 
-	@param var Variable to modify.
+	@param var Var to modify.
 	@param value String to convert.
 */
 void
 convert_typed(
-	Variable& var,
+	Var& var,
 	detail::var_config::string_type const& value
 ) {
 	bool has_sign = false;
@@ -175,16 +175,16 @@ l_string:
 /**
 	Convert string to value-class variable.
 
-	@returns Variable containing converted value.
+	@returns Var containing converted value.
 	@param value String to convert.
 
-	@sa void convert_typed(Variable&, detail::var_config::string_type const&)
+	@sa void convert_typed(Var&, detail::var_config::string_type const&)
 */
-Variable
+Var
 convert_typed(
 	detail::var_config::string_type const& value
 ) {
-	Variable var;
+	Var var;
 	convert_typed(var, value);
 	return var;
 }
@@ -192,25 +192,25 @@ convert_typed(
 /**
 	Convert string to value-class variable with name.
 
-	@returns Variable containing converted value.
+	@returns Var containing converted value.
 	@param name Name of result variable.
 	@param value String to convert.
 
-	@sa void convert_typed(Variable&, detail::var_config::string_type const&)
+	@sa void convert_typed(Var&, detail::var_config::string_type const&)
 */
-Variable
+Var
 convert_typed(
 	detail::var_config::name_type name,
 	detail::var_config::string_type const& value
 ) {
-	Variable var{std::move(name), VarType::null};
+	Var var{std::move(name), VarType::null};
 	convert_typed(var, value);
 	return var;
 }
 
-/** @} */ // end of doc-group variable
+/** @} */ // end of doc-group var
 
-} // namespace VariableUtils
+} // namespace VarUtils
 } // namespace duct
 
-#endif // DUCT_VARIABLEUTILS_HPP_
+#endif // DUCT_VARUTILS_HPP_

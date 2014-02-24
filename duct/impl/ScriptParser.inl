@@ -192,7 +192,7 @@ ScriptParser::skip_whitespace() {
 
 bool
 ScriptParser::process(
-	Variable& node,
+	Var& node,
 	std::istream& stream
 ) {
 	if (initialize(stream)) {
@@ -762,7 +762,7 @@ ScriptParser::at_root() const noexcept {
 	return 1 >= m_stack.size();
 }
 
-Variable&
+Var&
 ScriptParser::get_current_collection() noexcept {
 	DUCT_DEBUG_ASSERT(
 		0 < m_stack.size(),
@@ -777,7 +777,7 @@ ScriptParser::get_current_collection() noexcept {
 
 void
 ScriptParser::push(
-	Variable& collection
+	Var& collection
 ) {
 	DUCT_DEBUG_ASSERT(
 		collection.is_type_of(VarMask::collection),

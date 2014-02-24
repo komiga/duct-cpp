@@ -6,7 +6,7 @@
 #include <duct/detail/vartype.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/IO/memstream.hpp>
-#include <duct/Variable.hpp>
+#include <duct/Var.hpp>
 #include <duct/ScriptParser.hpp>
 
 #include <cstring>
@@ -121,7 +121,7 @@ g_test_data[]{
 
 void
 parse_stream(
-	duct::Variable& root,
+	duct::Var& root,
 	std::istream& stream,
 	bool const valid
 ) {
@@ -150,7 +150,7 @@ parse_stream(
 
 void
 do_test(
-	duct::Variable& root,
+	duct::Var& root,
 	TestData const& td
 ) {
 	duct::IO::imemstream stream{td.data, td.size};
@@ -167,7 +167,7 @@ main(
 	signed argc,
 	char* argv[]
 ) {
-	duct::Variable root{duct::VarType::node};
+	duct::Var root{duct::VarType::node};
 	if (1 < argc) {
 		TestData td{nullptr, 0u, true};
 		std::ifstream fs{};

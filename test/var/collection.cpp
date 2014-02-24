@@ -2,7 +2,7 @@
 #include <duct/config.hpp>
 #include <duct/string.hpp>
 #include <duct/detail/vartype.hpp>
-#include <duct/Variable.hpp>
+#include <duct/Var.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -11,7 +11,7 @@
 
 signed
 main() {
-	duct::Variable top{
+	duct::Var top{
 	{"top"}, duct::VarType::array, {
 		{{"string_var"}, {"bar"}},
 		{{"int_var"}, 12341234},
@@ -19,11 +19,11 @@ main() {
 		{{"bool_var"}, true},
 		{{"null_var"}, duct::VarType::null},
 		{{"coll_l1"}, duct::VarType::identifier, {
-			duct::Variable{81354},
-			duct::Variable{42.0f},
-			duct::Variable{true},
-			duct::Variable{duct::VarType::null},
-			duct::Variable{duct::VarType::node}
+			duct::Var{81354},
+			duct::Var{42.0f},
+			duct::Var{true},
+			duct::Var{duct::VarType::null},
+			duct::Var{duct::VarType::node}
 		}}
 	}};
 	print_var(top);
