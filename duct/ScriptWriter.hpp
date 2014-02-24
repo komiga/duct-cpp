@@ -74,6 +74,17 @@ public:
 	ScriptWriter() = default;
 
 	/**
+		Constructor with StreamContext.
+
+		@param context StreamContext to copy.
+	*/
+	ScriptWriter(
+		IO::StreamContext context
+	) noexcept
+		: m_stream_ctx(std::move(context))
+	{}
+
+	/**
 		Constructor with flags and StreamContext.
 
 		@param flags Writer flags.
