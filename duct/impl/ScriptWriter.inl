@@ -124,6 +124,7 @@ ScriptWriter::write_value(
 	case VarType::string:
 		write_string(dest, var.get_string_ref(), false);
 		break;
+
 	case VarType::null:
 	case VarType::integer:
 	case VarType::floatp:
@@ -152,16 +153,18 @@ ScriptWriter::write_array(
 	}
 	m_stream_ctx.write_char(dest, CHAR_OPENBRACKET);
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
-		switch ((*it).get_type()) {
+		switch (it->get_type()) {
 		case VarType::identifier:
 		case VarType::node:
 			// TODO: Throw exception
 			return false;
+
 		case VarType::array:
 			if (!write_array(dest, *it, false)) {
 				return false;
 			}
 			break;
+
 		default:
 			if (!write_value(dest, *it, false)) {
 				return false;
@@ -224,18 +227,20 @@ ScriptWriter::write_identifier(
 		m_stream_ctx.write_char(dest, ' ');
 	}
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
-		switch ((*it).get_type()) {
+		switch (it->get_type()) {
 		case VarType::identifier:
 		case VarType::node:
 			// TODO: Throw exception
 			return false;
+
 		case VarType::array:
-			if (!write_array(dest, *it, false)) {
+			if (!write_array(dest, *it, !it->get_name().empty())) {
 				return false;
 			}
 			break;
+
 		default:
-			if (!write_value(dest, *it, false)) {
+			if (!write_value(dest, *it, !it->get_name().empty())) {
 				return false;
 			}
 			break;
