@@ -973,6 +973,42 @@ public:
 	}
 
 	/**
+		Get first child.
+	*/
+	Variable&
+	front() {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.front();
+	}
+
+	/**
+		Get first child.
+	*/
+	Variable const&
+	front() const {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.front();
+	}
+
+	/**
+		Get last child.
+	*/
+	Variable&
+	back() {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.back();
+	}
+
+	/**
+		Get last child.
+	*/
+	Variable const&
+	back() const {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.back();
+	}
+
+	/**
 		Append to end of child collection.
 
 		@returns @c *this.
