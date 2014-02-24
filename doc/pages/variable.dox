@@ -4,12 +4,13 @@
 @defgroup variable Variable class and utilities
 @details
 
-@note The @c valtype constructs here are only defined for VARCLASS_VALUE types:
+@note The @c valtype constructs here are only defined for
+VarMask::value types:
 
-- @c VARTYPE_STRING
-- @c VARTYPE_INTEGER
-- @c VARTYPE_FLOAT
-- @c VARTYPE_BOOL
+- @c VarType::string
+- @c VarType::integer
+- @c VarType::floatp
+- @c VarType::boolean
 
 Configuration defines:
 
