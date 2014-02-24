@@ -33,10 +33,10 @@ struct restrict_copy;
 */
 struct restrict_all {
 /** @name Constructors and destructor */ /// @{
+	~restrict_all() = delete;
 	restrict_all() = delete;
 	restrict_all(restrict_all const&) = delete;
 	restrict_all(restrict_all&&) = delete;
-	~restrict_all() = delete;
 /// @}
 
 /** @name Operators */ /// @{
@@ -50,10 +50,10 @@ struct restrict_all {
 */
 struct restrict_copy {
 /** @name Constructors and destructor */ /// @{
+	~restrict_copy() = default;
 	restrict_copy() = default;
 	restrict_copy(restrict_copy const&) = delete;
 	restrict_copy(restrict_copy&&) = default;
-	~restrict_copy() = default;
 /// @}
 
 /** @name Operators */ /// @{

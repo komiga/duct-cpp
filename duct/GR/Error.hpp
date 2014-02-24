@@ -1,5 +1,5 @@
 /**
-@file Error.hpp
+@file GR/Error.hpp
 @brief GR exception classes.
 
 @author Tim Howard

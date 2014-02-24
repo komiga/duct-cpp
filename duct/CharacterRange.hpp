@@ -80,7 +80,7 @@ public:
 		unsigned const length
 	) noexcept
 		: m_first{first}
-		, m_last{first+length}
+		, m_last{first + length}
 	{}
 
 	/** Copy constructor. */

@@ -880,7 +880,7 @@ public:
 	@name Child properties and insertion
 
 	@warning An assertion will fail for all functions defined in this
-	group if <code>is_type_of(VarMask::collection) == false</code>.
+	group if <code>!is_type_of(VarMask::collection)</code>.
 	@{
 */
 	/**
