@@ -46,10 +46,13 @@ g_test_data[]{
 	TDV("name=0.42")
 	TDV("name=true")
 	TDV("name=null")
+	TDV("x=null y=+10")
 
 	// Identifiers
 	TDV("name")
-	TDV("name 42 89.0001 true false null [1,2] last")
+	TDV("name nv=true")
+	TDV("name nv=[0, 42] --blah=null")
+	TDV("name -42 f=89.0001 b=true false n=null a=[1, 2] last")
 
 	// Nodes
 	TDV("name={}")
@@ -59,6 +62,7 @@ g_test_data[]{
 	TDV("name=[]")
 	TDV("[]")
 	TDV("[1, 2.4]")
+	TDV("[42]")
 	TDV("[\"aba\", caba]")
 
 	// Non-string names
