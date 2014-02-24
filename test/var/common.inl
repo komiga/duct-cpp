@@ -17,7 +17,7 @@ print_var(
 	tabulate(tab_count);
 	std::cout
 		<< '(' << std::left << std::setw(10)
-		<< duct::detail::get_vartype_name(var.get_type())
+		<< duct::var_type_name(var.get_type())
 		<< ") '"
 		<< var.get_name()
 		<< "' = "

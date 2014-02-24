@@ -204,7 +204,7 @@ ScriptParser::process(
 			DUCT_SP_THROWF_NO_INFO_(
 				"Unclosed collection at EOF: %lu deep in %s scope",
 				static_cast<unsigned long>(m_stack.size()),
-				detail::get_vartype_name(m_stack.back()->get_type())
+				var_type_name(m_stack.back()->get_type())
 			);
 		}
 		reset();
@@ -539,7 +539,7 @@ ScriptParser::handle_token() {
 		} else if (!in_scope(VarType::array)) {
 			DUCT_SP_THROWF_(
 				"Unexpected close-bracket in %s scope",
-				detail::get_vartype_name(get_current_collection().get_type())
+				var_type_name(get_current_collection().get_type())
 			);
 		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
@@ -793,7 +793,7 @@ ScriptParser::push(
 	);
 	//DUCT_DEBUGF("at %lu, pushing %s",
 	//	static_cast<unsigned long>(m_stack.size()),
-	//	detail::get_vartype_name(collection.get_type())
+	//	var_type_name(collection.get_type())
 	//);
 	if (0 < m_stack.size()) {
 		DUCT_DEBUG_ASSERT(

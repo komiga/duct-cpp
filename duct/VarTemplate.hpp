@@ -16,6 +16,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./aux.hpp"
 #include "./string.hpp"
 #include "./StateStore.hpp"
+#include "./VarType.hpp"
 #include "./Var.hpp"
 
 #include <utility>

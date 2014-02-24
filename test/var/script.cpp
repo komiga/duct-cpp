@@ -3,7 +3,7 @@
 #include <duct/char.hpp>
 #include <duct/string.hpp>
 #include <duct/debug.hpp>
-#include <duct/detail/vartype.hpp>
+#include <duct/detail/var.hpp>
 #include <duct/EncodingUtils.hpp>
 #include <duct/IO/memstream.hpp>
 #include <duct/Var.hpp>

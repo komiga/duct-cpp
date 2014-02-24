@@ -6,7 +6,7 @@
 #include <duct/string.hpp>
 #include <duct/aux.hpp>
 #include <duct/detail/string_traits.hpp>
-#include <duct/detail/vartype.hpp>
+#include <duct/detail/var.hpp>
 #include <duct/CharBuf.hpp>
 #include <duct/CharacterRange.hpp>
 #include <duct/CharacterSet.hpp>
@@ -22,11 +22,13 @@
 #include <duct/IO/memstream.hpp>
 #include <duct/IO/multistream.hpp>
 #include <duct/IO/dynamic_streambuf.hpp>
+#include <duct/VarType.hpp>
 #include <duct/Var.hpp>
 #include <duct/VarUtils.hpp>
 #include <duct/VarTemplate.hpp>
-#include <duct/ScriptWriter.hpp>
+#include <duct/Args.hpp>
 #include <duct/Parser.hpp>
+#include <duct/ScriptWriter.hpp>
 #include <duct/ScriptParser.hpp>
 
 signed

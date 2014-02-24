@@ -15,7 +15,8 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./string.hpp"
 #include "./debug.hpp"
 #include "./utility.hpp"
-#include "./detail/vartype.hpp"
+#include "./VarType.hpp"
+#include "./detail/var.hpp"
 #include "./StringUtils.hpp"
 
 #include <utility>

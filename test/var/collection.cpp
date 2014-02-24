@@ -1,7 +1,7 @@
 
 #include <duct/config.hpp>
 #include <duct/string.hpp>
-#include <duct/detail/vartype.hpp>
+#include <duct/detail/var.hpp>
 #include <duct/Var.hpp>
 
 #include <iomanip>

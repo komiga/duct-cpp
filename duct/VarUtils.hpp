@@ -13,7 +13,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 #include "./string.hpp"
 #include "./detail/string_traits.hpp"
-#include "./detail/vartype.hpp"
+#include "./detail/var.hpp"
 #include "./StateStore.hpp"
 #include "./CharacterRange.hpp"
 #include "./Var.hpp"
