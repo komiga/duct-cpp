@@ -1009,6 +1009,58 @@ public:
 	}
 
 	/**
+		Get child at index.
+
+		@param index Child index.
+	*/
+	Variable&
+	at(
+		std::size_t const index
+	) {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.at(index);
+	}
+
+	/**
+		Get child at index.
+
+		@param index Child index.
+	*/
+	Variable const&
+	at(
+		std::size_t const index
+	) const {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.at(index);
+	}
+
+	/**
+		Erase child.
+
+		@param pos Iterator to child.
+	*/
+	void
+	erase(
+		iterator const pos
+	) {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		m_children.erase(pos);
+	}
+
+	/**
+		Erase child.
+
+		@param pos Iterator to child.
+	*/
+	void
+	erase(
+		const_iterator const pos
+	) {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		m_children.erase(pos);
+	}
+
+	/**
 		Append to end of child collection.
 
 		@returns @c *this.
