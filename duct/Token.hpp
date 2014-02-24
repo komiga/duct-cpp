@@ -52,11 +52,25 @@ public:
 	Token(
 		signed const type
 	) noexcept
-		: m_type{type}
+		: m_type(type)
+	{}
+
+	/**
+		Construct with type and buffer capacity.
+
+		@param type Token type.
+		@param capacity Capacity of buffer.
+	*/
+	Token(
+		signed const type,
+		std::size_t const capacity
+	) noexcept
+		: m_type(type)
+		, m_buffer(capacity)
 	{}
 
 	/** Copy constructor. */
-	Token(Token const&) = delete;
+	Token(Token const&) = default;
 	/** Move constructor. */
 	Token(Token&&) = default;
 	/** Destructor. */
@@ -64,8 +78,8 @@ public:
 /// @}
 
 /** @name Operators */ /// @{
-	/** Copy assignment operator (deleted). */
-	Token& operator=(Token const&) = delete;
+	/** Copy assignment operator. */
+	Token& operator=(Token const&) = default;
 	/** Move assignment operator. */
 	Token& operator=(Token&&) = default;
 /// @}
@@ -179,6 +193,30 @@ public:
 		signed const type
 	) const noexcept {
 		return type == m_type;
+	}
+
+	/**
+		Check if the token is @c NULL_TOKEN.
+	*/
+	bool
+	is_null() const noexcept {
+		return is_type(NULL_TOKEN);
+	}
+
+	/**
+		Check if the buffer is empty.
+	*/
+	bool
+	empty() const noexcept {
+		return m_buffer.empty();
+	}
+
+	/**
+		Get the buffer size.
+	*/
+	std::size_t
+	size() const noexcept {
+		return m_buffer.size();
 	}
 /// @}
 
