@@ -14,6 +14,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./debug.hpp"
 #include "./aux.hpp"
 #include "./char.hpp"
+#include "./utility.hpp"
 #include "./StateStore.hpp"
 #include "./CharacterSet.hpp"
 #include "./StringUtils.hpp"
@@ -113,9 +114,9 @@ private:
 		open_array = 1 << 2
 	};
 
-	duct::aux::deque<Variable*> m_stack{32};
-	u8string m_varname{};
+	duct::aux::deque<Variable*> m_stack{32u};
 	StateStore<State> m_states{};
+	Token m_token_ident{NULL_TOKEN, 128u};
 
 public:
 /** @name Constructors and destructor */ /// @{
@@ -253,7 +254,10 @@ private:
 	);
 
 	void
-	make_name();
+	make_ident();
+
+	void
+	make_value_from_name();
 
 	void
 	make_collection(

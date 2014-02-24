@@ -58,12 +58,12 @@ get_token_name(
 		"TOK_EOF"
 	};
 
-	if (token.is_type(NULL_TOKEN)) {
+	if (token.is_null()) {
 		return "NULL_TOKEN";
 	} else if (
-		std::extent<decltype(s_names)>::value
-		>= static_cast<unsigned>(token.get_type())
-		&& 1 <= token.get_type()
+		1 <= token.get_type() &&
+		signed_cast(std::extent<decltype(s_names)>::value)
+		>= token.get_type()
 	) {
 		return s_names[token.get_type() - 1];
 	} else {
@@ -110,9 +110,9 @@ ScriptParserException::ScriptParserException(
 	...
 )
 	: std::exception()
-	, m_scope{scope}
-	, m_token{token}
-	, m_parser{parser}
+	, m_scope(scope)
+	, m_token(token)
+	, m_parser(parser)
 {
 	char formatted_message[256];
 	signed start_line = -1, start_column = -1;
@@ -162,8 +162,8 @@ void
 ScriptParser::reset() noexcept {
 	Parser::reset();
 	m_stack.clear();
-	m_varname.clear();
 	m_states.clear();
+	m_token_ident.reset(NULL_TOKEN, true);
 }
 
 void
@@ -172,8 +172,12 @@ ScriptParser::finish() {
 		DUCT_SP_THROW_("Expected value, got EOL/EOF");
 	} else if (m_token.is_type(TOK_EOF) && m_states.test(State::comma)) {
 		DUCT_SP_THROW_("Expected value, got EOF");
-	} else if (!m_varname.empty()) { // No-child identifier
-		make_collection(VarType::identifier, false);
+	} else if (!m_token_ident.is_null()) { // No-child identifier
+		if (in_scope(VarType::identifier)) {
+			make_nameless_value();
+		} else {
+			make_collection(VarType::identifier, false);
+		}
 	} else if (in_scope(VarType::identifier)) { // Terminates identifier
 		pop();
 	}
@@ -194,8 +198,7 @@ ScriptParser::process(
 	if (initialize(stream)) {
 		node.morph(VarType::node, false); // Make sure variable is a node
 		push(node);
-		while (parse())
-		{}
+		do {} while (parse());
 		finish();
 		if (!at_root()) {
 			DUCT_SP_THROWF_NO_INFO_(
@@ -229,12 +232,16 @@ ScriptParser::discern_token() {
 	m_token.reset(NULL_TOKEN, false);
 	m_token.set_position(m_line, m_column);
 	switch (m_curchar) {
-	case CHAR_QUOTE: m_token.set_type(TOK_STRING_QUOTED); break;
+	case CHAR_QUOTE:
+		m_token.set_type(TOK_STRING_QUOTED);
+		break;
+
 	case CHAR_DECIMALPOINT:
 		m_token.set_type(TOK_FLOATING);
 		// Add the decimal
 		m_token.get_buffer().push_back(m_curchar);
 		break;
+
 	case CHAR_PLUS:
 	case CHAR_DASH:
 		m_token.set_type(TOK_INTEGER);
@@ -262,6 +269,7 @@ ScriptParser::discern_token() {
 		}
 		m_token.set_type(TOK_STRING);
 		break;
+
 	case CHAR_SLASH:
 		if (CHAR_SLASH == peek_char()) {
 			m_token.set_type(TOK_COMMENT);
@@ -271,6 +279,7 @@ ScriptParser::discern_token() {
 			m_token.set_type(TOK_STRING);
 		}
 		break;
+
 	case CHAR_NEWLINE: m_token.set_type(TOK_EOL); break;
 	case CHAR_EOF: m_token.set_type(TOK_EOF); break;
 
@@ -295,9 +304,11 @@ ScriptParser::read_token() {
 		read_tok_string_quoted();
 		next_char();
 		break;
+
 	case TOK_STRING:
 		read_tok_string();
 		break;
+
 	case TOK_INTEGER:
 		if (CHAR_PLUS == m_curchar || CHAR_DASH == m_curchar) {
 			// Move out of sign
@@ -305,17 +316,22 @@ ScriptParser::read_token() {
 		}
 		read_tok_integer();
 		break;
+
 	case TOK_FLOATING:
 		// Move out of decimal
 		next_char();
 		read_tok_floating();
 		break;
+
+	// Literals
 	case TOK_LITERAL_TRUE:
 		read_tok_literal(s_lit_true, 4u);
 		break;
+
 	case TOK_LITERAL_FALSE:
 		read_tok_literal(s_lit_false, 5u);
 		break;
+
 	case TOK_LITERAL_NULL:
 		read_tok_literal(s_lit_null, 4u);
 		break;
@@ -334,12 +350,16 @@ ScriptParser::read_token() {
 	case TOK_COMMENT:
 		skip_to_eol();
 		break;
+
 	case TOK_COMMENT_BLOCK:
 		read_tok_comment_block();
 		break;
+
 	case TOK_EOL:
+		// TODO: handle m_token_ident?
 		next_char();
 		break;
+
 	case TOK_EOF:
 		// Nothing to do
 		break;
@@ -347,7 +367,8 @@ ScriptParser::read_token() {
 	default:
 		DUCT_DEBUG_ASSERT(
 			false,
-			"Something has gone horribly wrong: unhandled token type!"
+			"Something has gone horribly wrong:"
+			" unhandled token type!"
 		);
 		DUCT_SP_THROWF_(
 			"Unhandled token type: '%s'",
@@ -392,46 +413,54 @@ ScriptParser::handle_token() {
 			!m_states.test_any(enum_combine(State::comma, State::open_array))
 		) {
 			DUCT_SP_THROW_(
-				"Unexpected token after non-open-bracket and"
-				" non-comma in array scope"
+				"Expected comma separator before value token in array scope"
 			);
 		} else if (m_states.test(State::equals)) {
-			// Make named value in node scope
+			// Make named value
 			make_value();
-		} else if (in_scope(var_mask(VarType::identifier, VarType::array))) {
-			// Already in a non-node scope: make nameless value
-			make_nameless_value();
-		} else if (!m_varname.empty()) {
-			// Have name and last functor was whitespace: make
-			// identifier with nameless child
-			make_collection(VarType::identifier);
-			make_nameless_value();
+		} else if (in_scope(VarType::array)) {
+			make_ident();
+		} else if (in_scope(VarType::identifier)) {
+			if (!m_token_ident.is_null()) {
+				// Make nameless value with ident
+				make_nameless_value();
+			}
+			make_ident();
 		} else {
-			// First token before functor: make name
-			make_name();
+			if (!m_token_ident.is_null()) {
+				// Have ident and last functor was whitespace: make
+				// identifier with current ident
+				make_collection(VarType::identifier);
+			}
+			make_ident();
 		}
 		break;
 
 	// Scope/functors
 	case TOK_EQUALS:
-		if (!in_scope(VarType::node)) {
-			DUCT_SP_THROW_("Unexpected equality sign within non-node scope");
-		} else if (m_varname.empty()) {
+		if (in_scope(VarType::array)) {
+			DUCT_SP_THROW_("Unexpected equality sign within array scope");
+		} else if (m_token_ident.is_null()) {
 			DUCT_SP_THROW_("Expected name, got equality sign");
 		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Expected value after equality sign, got equality sign");
 		} else if (m_states.test(State::comma)) {
-			DUCT_SP_THROW_("Expected value after comma, got comma");
+			DUCT_SP_THROW_("Expected value after comma, got equality sign");
 		} else {
 			m_states.enable(State::equals);
 		}
 		break;
+
 	case TOK_COMMA:
 		if (!in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected comma in non-array scope");
 		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_("Expected value after equality sign, got comma");
+		} else if (!m_token_ident.is_null()) {
+			// Terminate ident into value
+			make_nameless_value();
+			m_states.enable(State::comma);
 		} else if (m_states.test(State::open_array)) {
 			DUCT_SP_THROW_("Expected value before comma");
 		} else if (m_states.test(State::comma)) {
@@ -440,13 +469,14 @@ ScriptParser::handle_token() {
 			m_states.enable(State::comma);
 		}
 		break;
+
 	case TOK_OPEN_BRACE:
 		if (in_scope(VarType::array)) {
 			DUCT_SP_THROW_("Unexpected open-brace in array scope");
 		} else if (in_scope(VarType::identifier)) {
 			DUCT_SP_THROW_(
 				"Cannot make node on same line as identifier with children");
-		} else if (!m_varname.empty() && !m_states.test(State::equals)) {
+		} else if (!m_token_ident.is_null() && !m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Unexpected open-brace after name; possibly missing equality"
 				" sign or attempting to (illegally) add node to identifier"
@@ -455,6 +485,7 @@ ScriptParser::handle_token() {
 			make_collection(VarType::node);
 		}
 		break;
+
 	case TOK_CLOSE_BRACE:
 		if (at_root()) {
 			DUCT_SP_THROW_("Mismatched node brace");
@@ -466,7 +497,7 @@ ScriptParser::handle_token() {
 		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got close-brace");
 		} else {
-			if (!m_varname.empty()) {
+			if (!m_token_ident.is_null()) {
 				// Terminative on a yet-realized (empty) identifier
 				make_collection(VarType::identifier, false);
 			} else if (in_scope(VarType::identifier)) {
@@ -477,8 +508,10 @@ ScriptParser::handle_token() {
 			pop();
 		}
 		break;
+
 	case TOK_OPEN_BRACKET:
-		if (in_scope(VarType::array) &&
+		if (
+			in_scope(VarType::array) &&
 			!m_states.test_any(enum_combine(State::comma, State::open_array))
 		) {
 			DUCT_SP_THROW_(
@@ -486,26 +519,38 @@ ScriptParser::handle_token() {
 				" non-comma in array scope"
 			);
 		} else {
-			if (!m_varname.empty() && !m_states.test(State::equals)) {
-				// Terminative on a yet-realized (empty) identifier
-				make_collection(VarType::identifier);
+			if (!m_token_ident.is_null() && !m_states.test(State::equals)) {
+				if (in_scope(VarType::identifier)) {
+					// Terminative on nameless value in identifier
+					make_nameless_value();
+				} else {
+					// Terminative on a yet-realized (empty) identifier
+					make_collection(VarType::identifier);
+				}
 			}
 			make_collection(VarType::array);
 			m_states.enable(State::open_array);
 		}
 		break;
+
 	case TOK_CLOSE_BRACKET:
 		if (at_root()) {
 			DUCT_SP_THROW_("Mismatched array bracket");
 		} else if (!in_scope(VarType::array)) {
-			DUCT_SP_THROWF_("Unexpected close-bracket in %s scope",
-				detail::get_vartype_name(get_current_collection().get_type()));
+			DUCT_SP_THROWF_(
+				"Unexpected close-bracket in %s scope",
+				detail::get_vartype_name(get_current_collection().get_type())
+			);
 		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
 				"Expected value after equality sign, got close-bracket");
 		} else if (m_states.test(State::comma)) {
 			DUCT_SP_THROW_("Expected value after comma, got close-bracket");
 		} else {
+			if (!m_token_ident.is_null()) {
+				// Terminate ident into value
+				make_nameless_value();
+			}
 			// Pop from array to parent scope
 			pop();
 		}
@@ -516,10 +561,12 @@ ScriptParser::handle_token() {
 	case TOK_COMMENT_BLOCK:
 		// Do nothing
 		break;
+
 	case TOK_EOL:
 	case TOK_EOF:
 		finish();
 		break;
+
 	default:
 		DUCT_DEBUG_ASSERTF(
 			false, "Unhandled token of type \'%s\'",
@@ -607,7 +654,7 @@ ScriptParser::read_tok_literal(
 			(CHAR_SLASH == m_curchar
 			&& (CHAR_SLASH == peek_char() || CHAR_ASTERISK == m_peekchar))
 		) {
-			if (length>index) {
+			if (length > index) {
 				// Haven't yet checked all characters in match string;
 				// must be a normal string
 				m_token.set_type(TOK_STRING);
@@ -734,14 +781,15 @@ ScriptParser::push(
 ) {
 	DUCT_DEBUG_ASSERT(
 		collection.is_type_of(VarMask::collection),
-		"Something has gone horribly wrong: cannot push a non-collection"
+		"Something has gone horribly wrong:"
+		" cannot push a non-collection"
 	);
 	DUCT_DEBUG_ASSERT(
 		0 == m_stack.size() ||
 		!collection.is_type(VarType::node) ||
 		!in_scope(VarType::identifier),
-		"Something has gone horribly wrong: cannot push a node whilst"
-		" in identifier scope"
+		"Something has gone horribly wrong:"
+		" cannot push a node whilst in identifier scope"
 	);
 	//DUCT_DEBUGF("at %lu, pushing %s",
 	//	static_cast<unsigned long>(m_stack.size()),
@@ -750,7 +798,8 @@ ScriptParser::push(
 	if (0 < m_stack.size()) {
 		DUCT_DEBUG_ASSERT(
 			(&collection) != m_stack.back(),
-			"Something has gone horribly wrong: pushing same collection"
+			"Something has gone horribly wrong:"
+			" pushing same collection"
 		);
 	}
 	m_stack.push_back(&collection);
@@ -760,7 +809,8 @@ void
 ScriptParser::pop() {
 	DUCT_DEBUG_ASSERT(
 		1 < m_stack.size(),
-		"Something has gone horribly wrong: the root node cannot be popped"
+		"Something has gone horribly wrong:"
+		" the root node cannot be popped"
 	);
 	m_stack.pop_back();
 }
@@ -774,9 +824,9 @@ ScriptParser::throwex(
 }
 
 void
-ScriptParser::make_name() {
+ScriptParser::make_ident() {
 	DUCT_DEBUG_ASSERT(
-		m_varname.empty(),
+		m_token_ident.is_null(),
 		"Something has gone horribly wrong:"
 		" already have name"
 	);
@@ -785,8 +835,8 @@ ScriptParser::make_name() {
 		"Something has gone horribly wrong:"
 		" should not have State::equals here"
 	);
-	m_varname.assign(m_token.get_buffer().cache());
-	m_states.remove(State::comma);
+	m_token_ident = m_token;
+	m_states.remove(enum_combine(State::comma, State::open_array));
 }
 
 void
@@ -801,7 +851,7 @@ ScriptParser::make_collection(
 		" cannot make a node or an identifier whilst"
 		" in an identifier or array scope"
 	);
-	if (m_varname.empty()) {
+	if (m_token_ident.is_null()) {
 		// Unnamed collection; must not be an identifier
 		DUCT_DEBUG_ASSERT(VarType::identifier != type,
 			"Something has gone horribly wrong:"
@@ -816,82 +866,85 @@ ScriptParser::make_collection(
 			"Something has gone horribly wrong:"
 			" cannot have equality sign when making an identifier"
 		);
-		get_current_collection().emplace_back(m_varname, type);
+		get_current_collection().emplace_back(
+			m_token_ident.get_buffer()
+				.to_string<detail::var_config::name_type>(),
+			type
+		);
 		m_states.remove(enum_combine(
 			State::equals, State::comma, State::open_array
 		));
-		m_varname.clear();
+		m_token_ident.reset(NULL_TOKEN, true);
 	}
 	if (push_collection) {
-		push(get_current_collection().get_children().back());
+		push(get_current_collection().back());
 	}
 }
 
 void
 ScriptParser::make_value() {
-	DUCT_DEBUG_ASSERT(in_scope(VarType::node),
+	/*DUCT_DEBUG_ASSERT(in_scope(VarMask::collection),
 		"Something has gone horribly wrong:"
 		" attempted to make a named value whilst in a non-node scope"
+	);*/
+	DUCT_DEBUG_ASSERT(!m_token_ident.is_null(),
+		"Something has gone horribly wrong:"
+		" must have name to make named value"
 	);
 	DUCT_DEBUG_ASSERT(m_states.test(State::equals),
 		"Something has gone horribly wrong:"
-		" must have State::equals to make a node value"
+		" must have State::equals to make a value"
 	);
 	DUCT_DEBUG_ASSERT(!m_states.test(State::comma),
 		"Something has gone horribly wrong:"
 		" should not have State::comma here"
 	);
+
+	auto& coll = get_current_collection();
 	switch (m_token.get_type()) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
-		get_current_collection().emplace_back(
-			m_varname,
-			m_token.get_buffer()
-				.to_string<detail::var_config::string_type>()
+		coll.emplace_back(
+			m_token.get_buffer().to_string<detail::var_config::string_type>()
 		); break;
+
 	case TOK_INTEGER:
-		get_current_collection().emplace_back(
-			m_varname,
-			m_token.get_buffer()
-				.to_arithmetic<detail::var_config::int_type>()
+		coll.emplace_back(
+			m_token.get_buffer().to_arithmetic<detail::var_config::int_type>()
 		); break;
+
 	case TOK_FLOATING:
-		get_current_collection().emplace_back(
-			m_varname,
-			m_token.get_buffer()
-				.to_arithmetic<detail::var_config::float_type>()
+		coll.emplace_back(
+			m_token.get_buffer().to_arithmetic<detail::var_config::float_type>()
 		); break;
+
 	case TOK_LITERAL_TRUE:
-		get_current_collection().emplace_back(
-			m_varname,
-			true
-		);
+		coll.emplace_back(true);
 		break;
+
 	case TOK_LITERAL_FALSE:
-		get_current_collection().emplace_back(
-			m_varname,
-			false
-		);
+		coll.emplace_back(false);
 		break;
+
 	case TOK_LITERAL_NULL:
-		get_current_collection().emplace_back(
-			m_varname,
-			VarType::null
-		);
+		coll.emplace_back(VarType::null);
 		break;
 	}
+	coll.back().set_name(
+		m_token_ident.get_buffer().to_string<detail::var_config::name_type>()
+	);
 	m_states.remove(State::equals);
-	m_varname.clear();
+	m_token_ident.reset(NULL_TOKEN, true);
 }
 
 void
 ScriptParser::make_nameless_value(
 	signed override_type
 ) {
-	DUCT_DEBUG_ASSERT(m_varname.empty(),
+	/*DUCT_DEBUG_ASSERT(m_token_ident.is_null(),
 		"Something has gone horribly wrong:"
 		" name should be empty here"
-	);
+	);*/
 	DUCT_DEBUG_ASSERT(!m_states.test(State::equals),
 		"Something has gone horribly wrong:"
 		" should not have State::equals here"
@@ -900,38 +953,46 @@ ScriptParser::make_nameless_value(
 		"Something has gone horribly wrong:"
 		" can only make a nameless value when in non-node scope"
 	);
+	Token& token
+		= m_token_ident.is_null()
+		? m_token
+		: m_token_ident
+	;
 	if (NULL_TOKEN == override_type) {
-		override_type = m_token.get_type();
+		override_type = token.get_type();
 	}
+	auto& coll = get_current_collection();
 	switch (override_type) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
-		get_current_collection().emplace_back(
-			m_token.get_buffer()
-				.to_string<detail::var_config::string_type>()
+		coll.emplace_back(
+			token.get_buffer().to_string<detail::var_config::string_type>()
 		); break;
+
 	case TOK_INTEGER:
-		get_current_collection().emplace_back(
-			m_token.get_buffer()
-				.to_arithmetic<detail::var_config::int_type>()
+		coll.emplace_back(
+			token.get_buffer().to_arithmetic<detail::var_config::int_type>()
 		); break;
+
 	case TOK_FLOATING:
-		get_current_collection().emplace_back(
-			m_token.get_buffer()
-				.to_arithmetic<detail::var_config::float_type>()
+		coll.emplace_back(
+			token.get_buffer().to_arithmetic<detail::var_config::float_type>()
 		); break;
+
 	case TOK_LITERAL_TRUE:
-		get_current_collection().emplace_back(
-			true
-		); break;
+		coll.emplace_back(true);
+		break;
+
 	case TOK_LITERAL_FALSE:
-		get_current_collection().emplace_back(
-			false
-		); break;
+		coll.emplace_back(false);
+		break;
+
 	case TOK_LITERAL_NULL:
-		get_current_collection().emplace_back(
-			VarType::null
-		); break;
+		coll.emplace_back(VarType::null);
+		break;
+	}
+	if (!m_token_ident.is_null()) {
+		m_token_ident.reset(NULL_TOKEN, true);
 	}
 	m_states.remove(enum_combine(State::comma, State::open_array));
 }
