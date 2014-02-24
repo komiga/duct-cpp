@@ -221,8 +221,8 @@ public:
 		, m_layout(std::move(layout))
 	{}
 
-	/** Copy constructor (deleted). */
-	VarTemplate(VarTemplate const&) = delete;
+	/** Copy constructor. */
+	VarTemplate(VarTemplate const&) = default;
 	/** Move constructor. */
 	VarTemplate(VarTemplate&&) = default;
 	/** Destructor. */
@@ -230,8 +230,8 @@ public:
 /// @}
 
 /** @name Operators */ /// @{
-	/** Copy assignment operator (deleted). */
-	VarTemplate& operator=(VarTemplate const&) = delete;
+	/** Copy assignment operator. */
+	VarTemplate& operator=(VarTemplate const&) = default;
 	/** Move assignment operator. */
 	VarTemplate& operator=(VarTemplate&&) = default;
 /// @}
