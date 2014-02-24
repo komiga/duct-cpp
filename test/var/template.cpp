@@ -1,7 +1,7 @@
 
 #include <duct/string.hpp>
 #include <duct/Var.hpp>
-#include <duct/Template.hpp>
+#include <duct/VarTemplate.hpp>
 
 #include <array>
 #include <iomanip>
@@ -13,14 +13,14 @@ using duct::u8string;
 using duct::Var;
 using duct::VarType;
 using duct::VarMask;
-using duct::Template;
+using duct::VarTemplate;
 
 void
 signature(
-	Template& tpl,
+	VarTemplate& tpl,
 	VarMask const type_mask,
-	Template::identity_vector_type&& identity,
-	Template::layout_vector_type&& layout
+	VarTemplate::identity_vector_type&& identity,
+	VarTemplate::layout_vector_type&& layout
 ) {
 	tpl.set_type_mask(type_mask);
 	tpl.set_identity(std::move(identity));
@@ -91,7 +91,7 @@ morph(
 
 void
 validate(
-	Template const& tpl,
+	VarTemplate const& tpl,
 	Var const& var,
 	bool expected[4u]
 ) {
@@ -148,7 +148,7 @@ main() {
 	std::cout << std::boolalpha;
 
 	bool expected[4u];
-	Template tpl;
+	VarTemplate tpl;
 	Var match, not_match;
 
 	// String value
@@ -171,7 +171,7 @@ main() {
 	signature(tpl, VarMask::collection, {}, {
 		VarMask::value,
 		VarMask::value,
-		{VarMask::value, Template::Field::Flags::optional}
+		{VarMask::value, VarTemplate::Field::Flags::optional}
 	});
 	morph(match, VarType::array, {Var(1), Var(2), Var(3)});
 	morph(not_match, VarType::node, {Var(1)});
@@ -184,7 +184,7 @@ main() {
 
 	// Layout - empty field
 	signature(tpl, VarMask::collection, {}, {
-		{Template::Field::Flags::optional}
+		{VarTemplate::Field::Flags::optional}
 	});
 	morph(match, VarType::array, {});
 	do_validation("Layout - empty field",

@@ -1,5 +1,5 @@
 /**
-@file Template.hpp
+@file VarTemplate.hpp
 @brief Var validation.
 
 @author Tim Howard
@@ -9,8 +9,8 @@ see @ref index or the accompanying LICENSE file for full text.
 
 // TODO: infinitism
 
-#ifndef DUCT_TEMPLATE_HPP_
-#define DUCT_TEMPLATE_HPP_
+#ifndef DUCT_VARTEMPLATE_HPP_
+#define DUCT_VARTEMPLATE_HPP_
 
 #include "./config.hpp"
 #include "./aux.hpp"
@@ -30,7 +30,7 @@ namespace duct {
 /**
 	Var validator.
 */
-class Template {
+class VarTemplate {
 public:
 /** @name Types */ /// @{
 	/**
@@ -41,7 +41,7 @@ public:
 		/**
 			Field flags.
 
-			@note See Template::validate_layout() for usage notes.
+			@note See VarTemplate::validate_layout() for usage notes.
 		*/
 		enum class Flags : unsigned {
 			/** No flags. */
@@ -161,7 +161,7 @@ public:
 		Construct with @c VarMask::none type mask, empty identity,
 		and empty layout.
 	*/
-	Template() = default;
+	VarTemplate() = default;
 
 	/**
 		Construct with type mask, empty identity, and empty layout.
@@ -169,7 +169,7 @@ public:
 		@param type_mask Type mask.
 	*/
 	explicit
-	Template(
+	VarTemplate(
 		VarMask const type_mask
 	)
 		: m_type_mask(type_mask)
@@ -181,7 +181,7 @@ public:
 		@param type_mask Type mask.
 		@param identity Identity.
 	*/
-	Template(
+	VarTemplate(
 		VarMask const type_mask,
 		identity_vector_type identity
 	)
@@ -195,7 +195,7 @@ public:
 		@param type_mask Type mask.
 		@param layout Layout.
 	*/
-	Template(
+	VarTemplate(
 		VarMask const type_mask,
 		layout_vector_type layout
 	)
@@ -210,7 +210,7 @@ public:
 		@param identity Identity.
 		@param layout Layout.
 	*/
-	Template(
+	VarTemplate(
 		VarMask const type_mask,
 		identity_vector_type identity,
 		layout_vector_type layout
@@ -221,18 +221,18 @@ public:
 	{}
 
 	/** Copy constructor (deleted). */
-	Template(Template const&) = delete;
+	VarTemplate(VarTemplate const&) = delete;
 	/** Move constructor. */
-	Template(Template&&) = default;
+	VarTemplate(VarTemplate&&) = default;
 	/** Destructor. */
-	virtual ~Template() = default;
+	virtual ~VarTemplate() = default;
 /// @}
 
 /** @name Operators */ /// @{
 	/** Copy assignment operator (deleted). */
-	Template& operator=(Template const&) = delete;
+	VarTemplate& operator=(VarTemplate const&) = delete;
 	/** Move assignment operator. */
-	Template& operator=(Template&&) = default;
+	VarTemplate& operator=(VarTemplate&&) = default;
 /// @}
 
 /** @name Properties */ /// @{
@@ -498,4 +498,4 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_TEMPLATE_HPP_
+#endif // DUCT_VARTEMPLATE_HPP_

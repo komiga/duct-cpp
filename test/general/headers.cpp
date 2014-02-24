@@ -24,7 +24,7 @@
 #include <duct/IO/dynamic_streambuf.hpp>
 #include <duct/Var.hpp>
 #include <duct/VarUtils.hpp>
-#include <duct/Template.hpp>
+#include <duct/VarTemplate.hpp>
 #include <duct/ScriptWriter.hpp>
 #include <duct/Parser.hpp>
 #include <duct/ScriptParser.hpp>
