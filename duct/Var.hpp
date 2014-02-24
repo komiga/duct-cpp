@@ -887,13 +887,20 @@ public:
 */
 	/**
 		Get beginning child iterator.
-
-		@returns The beginning child iterator.
 	*/
 	iterator
 	begin() noexcept {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.begin();
+	}
+
+	/**
+		Get beginning child iterator.
+	*/
+	const_iterator
+	begin() const noexcept {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.cbegin();
 	}
 
 	/** @copydoc begin() */
@@ -905,13 +912,20 @@ public:
 
 	/**
 		Get ending child iterator.
-
-		@returns The ending child iterator.
 	*/
 	iterator
 	end() noexcept {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children.end();
+	}
+
+	/**
+		Get ending child iterator.
+	*/
+	const_iterator
+	end() const noexcept {
+		DUCT_ASSERTE(is_type_of(VarMask::collection));
+		return m_children.cend();
 	}
 
 	/** @copydoc end() */
