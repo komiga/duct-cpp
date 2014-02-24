@@ -3,6 +3,8 @@ Makefile
 *.make
 out/
 
+args/parse
+
 general/headers
 
 gr/throw

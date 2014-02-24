@@ -89,6 +89,7 @@ end
 
 -- categories
 
+include("args")
 include("general")
 include("gr")
 include("io")
