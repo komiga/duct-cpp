@@ -169,7 +169,6 @@ public:
 
 		@param type_mask Type mask.
 	*/
-	explicit
 	VarTemplate(
 		VarMask const type_mask
 	)
