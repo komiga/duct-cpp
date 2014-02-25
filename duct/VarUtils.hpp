@@ -87,6 +87,7 @@ convert_typed(
 ) {
 	bool has_sign = false;
 	bool has_decimal = false;
+	bool has_numeral = false;
 	var_char_type const* literal = nullptr;
 
 	if (value.empty()) {
@@ -143,12 +144,17 @@ convert_typed(
 		default:
 			if (!s_range_numeral.contains(*it)) {
 				goto l_string;
+			} else {
+				has_numeral = true;
 			}
 			break;
 		}
 	}
 
-	{
+	if (!has_numeral) {
+		// Consists of only signs or only a decimal
+		goto l_string;
+	} else {
 		aux::istringstream stream(value);
 		if (has_decimal) {
 			var.morph(0.0f);
