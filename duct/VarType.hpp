@@ -204,7 +204,7 @@ var_type_is_of(
 	is invalid.
 	@param type Var type.
 */
-char const*
+inline char const*
 var_type_name(
 	VarType const type
 ) noexcept {
