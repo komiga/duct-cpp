@@ -36,7 +36,7 @@ The following headers require corrections in libstdc++ (4.7.3):
 duct++ carries the MIT license, meaning you can do whatever you want to with it.
 
 ```
-Copyright (c) 2010-2014 Tim Howard
+Copyright (c) 2010-2014 Timothy Howard
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
