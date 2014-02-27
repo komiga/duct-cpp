@@ -8,7 +8,7 @@ This will also undefine the header guards for <duct/GR/common.hpp>,
 <duct/GR/Error.hpp>) so that they can be reused within the same TU.
 
 @author Tim Howard
-@copyright 2013 Tim Howard under the MIT license;
+@copyright 2010-2014 Tim Howard under the MIT license;
 see @ref index or the accompanying LICENSE file for full text.
 */
 
