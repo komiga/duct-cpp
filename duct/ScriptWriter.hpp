@@ -85,6 +85,17 @@ public:
 	{}
 
 	/**
+		Constructor with flags and default context.
+
+		@param flags Writer flags.
+	*/
+	ScriptWriter(
+		Flags const flags
+	) noexcept
+		: m_flags(flags)
+	{}
+
+	/**
 		Constructor with flags and StreamContext.
 
 		@param flags Writer flags.
