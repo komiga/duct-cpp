@@ -176,6 +176,18 @@ public:
 	{}
 
 	/**
+		Construct with single-type mask, empty identity, and empty
+		layout.
+
+		@param type_mask Type mask.
+	*/
+	VarTemplate(
+		VarType const type_mask
+	)
+		: m_type_mask(duct::var_mask(type_mask))
+	{}
+
+	/**
 		Construct with type mask, identity, and empty layout.
 
 		@param type_mask Type mask.
@@ -186,6 +198,20 @@ public:
 		identity_vector_type identity
 	)
 		: m_type_mask(type_mask)
+		, m_identity(std::move(identity))
+	{}
+
+	/**
+		Construct with single-type mask, identity, and empty layout.
+
+		@param type_mask Type mask.
+		@param identity Identity.
+	*/
+	VarTemplate(
+		VarType const type_mask,
+		identity_vector_type identity
+	)
+		: m_type_mask(duct::var_mask(type_mask))
 		, m_identity(std::move(identity))
 	{}
 
@@ -204,6 +230,20 @@ public:
 	{}
 
 	/**
+		Construct with single-type mask, layout, and empty identity.
+
+		@param type_mask Type mask.
+		@param layout Layout.
+	*/
+	VarTemplate(
+		VarType const type_mask,
+		layout_vector_type layout
+	)
+		: m_type_mask(duct::var_mask(type_mask))
+		, m_layout(std::move(layout))
+	{}
+
+	/**
 		Construct with type mask, identity, and layout.
 
 		@param type_mask Type mask.
@@ -216,6 +256,23 @@ public:
 		layout_vector_type layout
 	)
 		: m_type_mask(type_mask)
+		, m_identity(std::move(identity))
+		, m_layout(std::move(layout))
+	{}
+
+	/**
+		Construct with single-type mask, identity, and layout.
+
+		@param type_mask Type mask.
+		@param identity Identity.
+		@param layout Layout.
+	*/
+	VarTemplate(
+		VarType const type_mask,
+		identity_vector_type identity,
+		layout_vector_type layout
+	)
+		: m_type_mask(duct::var_mask(type_mask))
 		, m_identity(std::move(identity))
 		, m_layout(std::move(layout))
 	{}
