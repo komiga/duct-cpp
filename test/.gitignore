@@ -24,6 +24,7 @@ utils/statestore
 utils/strings
 utils/cc_unique_ptr
 utils/bit
+utils/encoding
 
 var/collection
 var/script
