@@ -13,6 +13,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_VARTEMPLATE_HPP_
 
 #include "./config.hpp"
+#include "./utility.hpp"
 #include "./aux.hpp"
 #include "./string.hpp"
 #include "./StateStore.hpp"
@@ -49,7 +50,7 @@ public:
 			none = 0,
 
 			/** Optional field. */
-			optional = 1 << 0,
+			optional = bit(0),
 		};
 	/// @}
 
@@ -144,7 +145,7 @@ protected:
 
 			@note This is enabled by default.
 		*/
-		permit_empty = 1 << 0
+		permit_empty = bit(0)
 	};
 
 	/** %Flags. */

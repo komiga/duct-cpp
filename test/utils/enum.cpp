@@ -3,15 +3,16 @@
 
 #include <iostream>
 
+using duct::bit;
 using duct::enum_cast;
 using duct::enum_bitand;
 using duct::enum_combine;
 
 enum class E : unsigned {
 	none = 0u,
-	A = 1u << 0,
-	B = 1u << 1,
-	C = 1u << 2,
+	A = bit(0),
+	B = bit(1),
+	C = bit(2),
 };
 
 static char const* const

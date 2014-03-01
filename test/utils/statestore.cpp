@@ -1,14 +1,15 @@
 
 #include <duct/debug.hpp>
+#include <duct/utility.hpp>
 #include <duct/StateStore.hpp>
 
 #include <bitset>
 #include <iostream>
 
 enum class CS : std::uint8_t {
-	a = 1 << 0,
-	b = 1 << 1,
-	c = 1 << 2,
+	a = duct::bit(0),
+	b = duct::bit(1),
+	c = duct::bit(2),
 
 	ab = a | b,
 	ac = a | c,

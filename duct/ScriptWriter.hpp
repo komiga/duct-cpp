@@ -13,6 +13,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #include "./config.hpp"
 #include "./debug.hpp"
 #include "./char.hpp"
+#include "./utility.hpp"
 #include "./detail/string_traits.hpp"
 #include "./StateStore.hpp"
 #include "./CharacterSet.hpp"
@@ -44,11 +45,11 @@ public:
 	*/
 	enum class Flags : unsigned {
 		/** Always surround names in quotation marks. */
-		name_quote = 1 << 0,
+		name_quote = bit(0),
 		/** Always surround string values in quotation marks. */
-		value_string_quote = 1 << 2,
+		value_string_quote = bit(1),
 		/** Escape linefeeds and tabulations (regardless of quotation). */
-		escape_whitespace = 1 << 3,
+		escape_whitespace = bit(2),
 
 		/** Always surround names and string values in quotation marks. */
 		quote

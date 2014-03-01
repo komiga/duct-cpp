@@ -109,9 +109,9 @@ class ScriptParser final
 {
 private:
 	enum class State : unsigned {
-		equals = 1 << 0,
-		comma = 1 << 1,
-		open_array = 1 << 2
+		equals = bit(0),
+		comma = bit(1),
+		open_array = bit(2)
 	};
 
 	duct::aux::deque<Var*> m_stack{32u};

@@ -31,21 +31,21 @@ enum class VarMask : unsigned;
 */
 enum class VarType : unsigned {
 	/** Null; value-less. */
-	null		= 1 << 0,
+	null		= bit(0),
 	/** Value type: String. */
-	string		= 1 << 1,
+	string		= bit(1),
 	/** Value type: Integer. */
-	integer		= 1 << 2,
+	integer		= bit(2),
 	/** Value type: Float. */
-	floatp		= 1 << 3,
+	floatp		= bit(3),
 	/** Value type: Boolean. */
-	boolean		= 1 << 4,
+	boolean		= bit(4),
 	/** Collection type: Array. */
-	array		= 1 << 5,
+	array		= bit(5),
 	/** Collection type: Node. */
-	node		= 1 << 6,
+	node		= bit(6),
 	/** Collection type: Identifier. */
-	identifier	= 1 << 7
+	identifier	= bit(7)
 };
 
 /**
