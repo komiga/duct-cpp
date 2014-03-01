@@ -23,6 +23,7 @@ utils/enum
 utils/statestore
 utils/strings
 utils/cc_unique_ptr
+utils/bit
 
 var/collection
 var/script

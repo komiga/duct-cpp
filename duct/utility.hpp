@@ -24,6 +24,24 @@ namespace duct {
 */
 
 /**
+	Get an integer value with a single bit enabled.
+
+	@warning Some compilers may not warn for a bit shift >= the width
+	of @a T (in a constexpr context).
+
+	@param index Bit index.
+*/
+template<
+	typename T = unsigned
+>
+inline constexpr T
+bit(
+	unsigned const index
+) noexcept {
+	return T{1} << index;
+}
+
+/**
 	Make a reference to value a reference to const value.
 
 	@tparam T Value type; deduced from @a value.

@@ -7,4 +7,5 @@ make_tests(
 	["statestore"] = {nil, nil},
 	["cc_unique_ptr"] = {nil, nil},
 	["enum"] = {nil, nil},
+	["bit"] = {nil, nil},
 })
