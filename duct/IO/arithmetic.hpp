@@ -51,7 +51,7 @@ read(
 	void* dest,
 	std::size_t const size
 ) {
-	stream.read(reinterpret_cast<char*>(dest), size);
+	stream.read(static_cast<char*>(dest), size);
 }
 
 /**
@@ -69,7 +69,7 @@ write(
 	void const* const src,
 	std::size_t const size
 ) {
-	stream.write(reinterpret_cast<char const*>(src), size);
+	stream.write(static_cast<char const*>(src), size);
 }
 
 /**
