@@ -281,6 +281,36 @@ max_ce(
 	;
 }
 
+/**
+	Check if a type is the same as any type in a pack.
+
+	@tparam T Type to find.
+	@tparam ...M Types to match.
+*/
+template<
+	class T,
+	class... M
+>
+struct is_same_any
+	: public std::false_type
+{};
+
+/** @cond INTERNAL */
+template<
+	class T,
+	class H,
+	class... R
+>
+struct is_same_any<T, H, R...>
+	: public std::integral_constant<
+		bool,
+		std::is_same<T, H>::value
+		? true
+		: is_same_any<T, R...>::value
+	>
+{};
+/** @endcond */ // INTERNAL
+
 /** @} */ // end of doc-group utils
 
 } // namespace duct
