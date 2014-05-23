@@ -94,7 +94,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_GR_THROW_CLASS(ec_, m_)	\
 	DUCT_GR_THROW_IMPL_(				\
 		ec_,							\
-		DUCT_GR_MSG_CLASS(m_)	\
+		DUCT_GR_MSG_CLASS(m_)			\
 	)
 
 /**
@@ -109,7 +109,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_GR_THROW_FUNC(ec_, m_)		\
 	DUCT_GR_THROW_IMPL_(				\
 		ec_,							\
-		DUCT_GR_MSG_FUNC(m_)		\
+		DUCT_GR_MSG_FUNC(m_)			\
 	)
 
 /**
@@ -124,7 +124,7 @@ see @ref index or the accompanying LICENSE file for full text.
 #define DUCT_GR_THROW_FQN(ec_, m_)		\
 	DUCT_GR_THROW_IMPL_(				\
 		ec_,							\
-		DUCT_GR_MSG_FQN(m_)		\
+		DUCT_GR_MSG_FQN(m_)				\
 	)
 
 /** @} */ // end of name-group Throwing
