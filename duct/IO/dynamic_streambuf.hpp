@@ -351,7 +351,7 @@ public:
 					"commit size is larger than output sequence"
 				);
 			}
-			commit_priv(size);
+			commit_priv(size, false);
 		}
 	}
 
@@ -374,12 +374,6 @@ public:
 		operating with interfaces that do not deal with the I/O
 		library directly, but should not otherwise be used.
 
-		@par
-		@note Also unlike commit(std::size_t const), this has an
-		effect when the stream buffer is already in input mode. If
-		the buffer is already in input mode, the position is
-		retained (clamped to the new size). Otherwise it is the same.
-
 		@post @code
 			get_sequence_size() == size
 		@endcode
@@ -388,17 +382,20 @@ public:
 		If <code>size > get_buffer().size()</code>.
 
 		@param size Size of the input sequence.
+		@param retain_input_position Whether to retain the current
+		input position if the buffer is already in input mode.
 	*/
 	void
 	commit_direct(
-		std::size_t const size
+		std::size_t const size,
+		bool const retain_input_position
 	) {
 		if (m_buffer.size() < size) {
 			throw std::invalid_argument(
 				"commit size is larger than buffer"
 			);
 		}
-		commit_priv(size);
+		commit_priv(size, retain_input_position);
 	}
 
 	/**
@@ -493,8 +490,9 @@ private:
 		std::size_t append_size = 0u
 	) {
 		append_size += m_buffer.size();
-		if (0u < m_growth_rate
-		&&	(0u == m_max_size || append_size <= m_max_size)
+		if (
+			0u < m_growth_rate &&
+			(0u == m_max_size || append_size <= m_max_size)
 		) {
 			append_size += m_growth_rate;
 			// check overflow
@@ -513,10 +511,11 @@ private:
 
 	void
 	commit_priv(
-		std::size_t const size
+		std::size_t const size,
+		bool const retain_input_position
 	) {
 		std::size_t pos = 0;
-		if (Sequence::input == m_seq) {
+		if (Sequence::input == m_seq && retain_input_position) {
 			pos = get_position();
 			if (size < pos) {
 				pos = size;
