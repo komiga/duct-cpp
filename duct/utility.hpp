@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_UTILITY_HPP_
-#define DUCT_UTILITY_HPP_
+#pragma once
 
 #include "./config.hpp"
 
@@ -315,4 +314,3 @@ struct is_same_any<T, H, R...>
 
 } // namespace duct
 
-#endif // DUCT_UTILITY_HPP_

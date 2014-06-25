@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_TRAITS_HPP_
-#define DUCT_TRAITS_HPP_
+#pragma once
 
 #include "./config.hpp"
 
@@ -68,4 +67,3 @@ struct restrict_copy {
 } // namespace traits
 } // namespace duct
 
-#endif // DUCT_TRAITS_HPP_

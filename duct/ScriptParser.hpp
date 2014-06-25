@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_SCRIPTPARSER_HPP_
-#define DUCT_SCRIPTPARSER_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./debug.hpp"
@@ -280,4 +279,3 @@ private:
 
 } // namespace duct
 
-#endif // DUCT_SCRIPTPARSER_HPP_

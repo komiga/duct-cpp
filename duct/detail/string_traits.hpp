@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_DETAIL_STRING_TRAITS_HPP_
-#define DUCT_DETAIL_STRING_TRAITS_HPP_
+#pragma once
 
 #include "./../config.hpp"
 #include "./../traits.hpp"
@@ -62,4 +61,3 @@ struct string_traits final
 } // namespace detail
 } // namespace duct
 
-#endif // DUCT_DETAIL_STRING_TRAITS_HPP_

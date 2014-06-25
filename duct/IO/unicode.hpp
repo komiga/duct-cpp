@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_IO_UNICODE_HPP_
-#define DUCT_IO_UNICODE_HPP_
+#pragma once
 
 // TODO: Unicode read/write variants for generic iterators
 // (to supply support for narrow and wide string literals)
@@ -667,4 +666,3 @@ exit_f:
 } // namespace IO
 } // namespace duct
 
-#endif // DUCT_IO_UNICODE_HPP_

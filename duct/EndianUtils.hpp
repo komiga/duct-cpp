@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_ENDIANUTILS_HPP_
-#define DUCT_ENDIANUTILS_HPP_
+#pragma once
 
 #include "./config.hpp"
 
@@ -248,4 +247,3 @@ byte_swap_ref_if(
 
 } // namespace duct
 
-#endif // DUCT_ENDIANUTILS_HPP_

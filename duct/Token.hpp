@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_TOKEN_HPP_
-#define DUCT_TOKEN_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./CharBuf.hpp"
@@ -250,4 +249,3 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_TOKEN_HPP_

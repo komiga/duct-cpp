@@ -9,8 +9,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 // TODO: Update naïve fromX() and toX() to consider incomplete sequences
 
-#ifndef DUCT_ENCODINGUTILS_HPP_
-#define DUCT_ENCODINGUTILS_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./char.hpp"
@@ -1087,4 +1086,3 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_ENCODINGUTILS_HPP_

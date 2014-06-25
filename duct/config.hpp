@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_CONFIG_HPP_
-#define DUCT_CONFIG_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -543,4 +542,3 @@ see @ref index or the accompanying LICENSE file for full text.
 
 /** @} */ // end of doc-group config
 
-#endif // DUCT_CONFIG_HPP_

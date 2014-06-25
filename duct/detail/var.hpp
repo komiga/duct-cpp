@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_DETAIL_VARTYPE_HPP_
-#define DUCT_DETAIL_VARTYPE_HPP_
+#pragma once
 
 #include "./../config.hpp"
 #include "./../traits.hpp"
@@ -161,4 +160,3 @@ DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
 
 } // namespace duct
 
-#endif // DUCT_DETAIL_VARTYPE_HPP_

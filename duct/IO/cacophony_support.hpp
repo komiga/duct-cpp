@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_IO_CACOPHONY_SUPPORT_HPP_
-#define DUCT_IO_CACOPHONY_SUPPORT_HPP_
+#pragma once
 
 #include "../config.hpp"
 #include "./dynamic_streambuf.hpp"
@@ -32,7 +31,6 @@ namespace duct {
 */
 
 namespace IO {
-
 
 /**
 	Read dynamic stream buffer.
@@ -90,4 +88,3 @@ write(
 
 } // namespace duct
 
-#endif // DUCT_IO_CACOPHONY_SUPPORT_HPP_

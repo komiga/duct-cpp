@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_VARTYPE_HPP_
-#define DUCT_VARTYPE_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./utility.hpp"
@@ -226,4 +225,3 @@ var_type_name(
 
 } // namespace duct
 
-#endif // DUCT_VARTYPE_HPP_

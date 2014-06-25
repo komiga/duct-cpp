@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_IO_MEMSTREAM_HPP_
-#define DUCT_IO_MEMSTREAM_HPP_
+#pragma once
 
 #include "../config.hpp"
 #include "../debug.hpp"
@@ -536,4 +535,3 @@ public:
 } // namespace IO
 } // namespace duct
 
-#endif // DUCT_IO_MEMSTREAM_HPP_

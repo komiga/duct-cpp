@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_SCRIPTWRITER_HPP_
-#define DUCT_SCRIPTWRITER_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./debug.hpp"
@@ -238,4 +237,3 @@ private:
 
 } // namespace duct
 
-#endif // DUCT_SCRIPTWRITER_HPP_

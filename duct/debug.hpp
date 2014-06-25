@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_DEBUG_HPP_
-#define DUCT_DEBUG_HPP_
+#pragma once
 
 #include "./config.hpp"
 
@@ -350,4 +349,3 @@ namespace duct {
 
 } // namespace duct
 
-#endif // DUCT_DEBUG_HPP_

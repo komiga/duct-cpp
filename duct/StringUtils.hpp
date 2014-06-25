@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_STRINGUTILS_HPP_
-#define DUCT_STRINGUTILS_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./char.hpp"
@@ -460,4 +459,3 @@ escape_string(
 } // namespace StringUtils
 } // namespace duct
 
-#endif // DUCT_STRINGUTILS_HPP_

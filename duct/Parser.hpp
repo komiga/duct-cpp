@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_PARSER_HPP_
-#define DUCT_PARSER_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./char.hpp"
@@ -322,4 +321,3 @@ inline Parser::~Parser() = default;
 
 } // namespace duct
 
-#endif // DUCT_PARSER_HPP_

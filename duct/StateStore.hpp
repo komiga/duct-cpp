@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_STATESTORE_HPP_
-#define DUCT_STATESTORE_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./utility.hpp"
@@ -284,4 +283,3 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_STATESTORE_HPP_

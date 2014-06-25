@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_IO_DYNAMIC_STREAMBUF_HPP_
-#define DUCT_IO_DYNAMIC_STREAMBUF_HPP_
+#pragma once
 
 #include "../config.hpp"
 #include "../debug.hpp"
@@ -680,4 +679,3 @@ private:
 } // namespace IO
 } // namespace duct
 
-#endif // DUCT_IO_DYNAMIC_STREAMBUF_HPP_

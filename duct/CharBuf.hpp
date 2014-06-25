@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_CHARBUF_HPP_
-#define DUCT_CHARBUF_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./aux.hpp"
@@ -340,4 +339,3 @@ private:
 
 } // namespace duct
 
-#endif // DUCT_CHARBUF_HPP_

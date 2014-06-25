@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_VARUTILS_HPP_
-#define DUCT_VARUTILS_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./string.hpp"
@@ -219,4 +218,3 @@ convert_typed(
 } // namespace VarUtils
 } // namespace duct
 
-#endif // DUCT_VARUTILS_HPP_

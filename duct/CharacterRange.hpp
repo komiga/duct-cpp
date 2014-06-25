@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_CHARACTERRANGE_HPP_
-#define DUCT_CHARACTERRANGE_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./char.hpp"
@@ -332,4 +331,3 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_CHARACTERRANGE_HPP_

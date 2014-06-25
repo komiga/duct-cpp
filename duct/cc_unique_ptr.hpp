@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_CC_UNIQUE_PTR_HPP_
-#define DUCT_CC_UNIQUE_PTR_HPP_
+#pragma once
 
 #include <duct/config.hpp>
 
@@ -470,4 +469,3 @@ operator>=(
 
 } // namespace duct
 
-#endif // DUCT_CC_UNIQUE_PTR_HPP_

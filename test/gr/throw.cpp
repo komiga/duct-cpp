@@ -129,10 +129,6 @@ do_tests() {
 
 #include <duct/GR/undefine.hpp>
 
-#ifndef DUCT_GR_ERROR_HPP_
-	#error "<duct/GR/undefine.hpp> is borked"
-#endif
-
 #if false										\
 	|| defined(DUCT_GR_COMMON_HPP_)				\
 	|| defined(DUCT_GR_STR_LIT)					\

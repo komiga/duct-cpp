@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_CHAR_HPP_
-#define DUCT_CHAR_HPP_
+#pragma once
 
 #include "./config.hpp"
 
@@ -339,4 +338,3 @@ enum Chars {
 
 } // namespace duct
 
-#endif // DUCT_CHAR_HPP_

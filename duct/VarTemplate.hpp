@@ -9,8 +9,7 @@ see @ref index or the accompanying LICENSE file for full text.
 
 // TODO: infinitism
 
-#ifndef DUCT_VARTEMPLATE_HPP_
-#define DUCT_VARTEMPLATE_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./utility.hpp"
@@ -556,4 +555,3 @@ public:
 
 } // namespace duct
 
-#endif // DUCT_VARTEMPLATE_HPP_

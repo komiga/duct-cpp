@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_GR_ERROR_HPP_
-#define DUCT_GR_ERROR_HPP_
+#pragma once
 
 #include "../config.hpp"
 
@@ -136,5 +135,3 @@ public:
 
 } // namespace GR
 } // namespace duct
-
-#endif // DUCT_GR_ERROR_HPP_

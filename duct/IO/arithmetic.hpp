@@ -10,8 +10,7 @@ see @ref index or the accompanying LICENSE file for full text.
 // TODO: Unicode read/write variants for generic iterators
 // (to supply support for narrow and wide string literals)
 
-#ifndef DUCT_IO_OP_HPP_
-#define DUCT_IO_OP_HPP_
+#pragma once
 
 #include "../config.hpp"
 #include "../debug.hpp"
@@ -261,4 +260,3 @@ write_arithmetic_array(
 } // namespace IO
 } // namespace duct
 
-#endif // DUCT_IO_OP_HPP_

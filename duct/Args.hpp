@@ -7,8 +7,7 @@
 see @ref index or the accompanying LICENSE file for full text.
 */
 
-#ifndef DUCT_ARGS_HPP_
-#define DUCT_ARGS_HPP_
+#pragma once
 
 #include "./config.hpp"
 #include "./utility.hpp"
@@ -146,4 +145,3 @@ parse_cmd(
 } // namespace Args
 } // namespace duct
 
-#endif // DUCT_ARGS_HPP_
