@@ -554,4 +554,3 @@ public:
 /** @} */ // end of doc-group var
 
 } // namespace duct
-

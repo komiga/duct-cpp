@@ -458,4 +458,3 @@ escape_string(
 
 } // namespace StringUtils
 } // namespace duct
-

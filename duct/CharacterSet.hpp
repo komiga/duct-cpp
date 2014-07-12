@@ -478,4 +478,3 @@ public:
 /** @} */ // end of doc-group text
 
 } // namespace duct
-

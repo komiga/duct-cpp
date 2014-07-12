@@ -66,4 +66,3 @@ struct restrict_copy {
 
 } // namespace traits
 } // namespace duct
-

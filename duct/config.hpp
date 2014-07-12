@@ -541,4 +541,3 @@ see @ref index or the accompanying LICENSE file for full text.
 #endif // DOXYGEN_CONSISTS_SOLELY_OF_UNICORNS_AND_CONFETTI
 
 /** @} */ // end of doc-group config
-

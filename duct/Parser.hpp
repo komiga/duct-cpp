@@ -320,4 +320,3 @@ inline Parser::~Parser() = default;
 /** @} */ // end of doc-group parser
 
 } // namespace duct
-

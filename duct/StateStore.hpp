@@ -282,4 +282,3 @@ public:
 /** @} */ // end of doc-group utils
 
 } // namespace duct
-

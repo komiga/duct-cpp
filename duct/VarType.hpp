@@ -224,4 +224,3 @@ var_type_name(
 /** @} */ // end of doc-group var
 
 } // namespace duct
-

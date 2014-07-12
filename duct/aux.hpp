@@ -113,4 +113,3 @@ using stringstream  = basic_stringstream<char>;
 
 } // namespace aux
 } // namespace duct
-

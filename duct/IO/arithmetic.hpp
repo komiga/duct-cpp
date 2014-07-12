@@ -259,4 +259,3 @@ write_arithmetic_array(
 
 } // namespace IO
 } // namespace duct
-

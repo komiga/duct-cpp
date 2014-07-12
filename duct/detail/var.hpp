@@ -159,4 +159,3 @@ DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
 /** @} */ // end of doc-group var
 
 } // namespace duct
-

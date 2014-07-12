@@ -236,4 +236,3 @@ private:
 /** @} */ // end of doc-group ductScript
 
 } // namespace duct
-

@@ -468,4 +468,3 @@ operator>=(
 /** @} */ // end of doc-group utils
 
 } // namespace duct
-

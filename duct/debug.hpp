@@ -348,4 +348,3 @@ namespace duct {
 /** @} */ // end doc-group debug
 
 } // namespace duct
-

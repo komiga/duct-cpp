@@ -60,4 +60,3 @@ struct string_traits final
 
 } // namespace detail
 } // namespace duct
-

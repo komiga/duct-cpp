@@ -313,4 +313,3 @@ struct is_same_any<T, H, R...>
 /** @} */ // end of doc-group utils
 
 } // namespace duct
-

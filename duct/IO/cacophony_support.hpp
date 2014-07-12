@@ -87,4 +87,3 @@ write(
 /** @} */ // end of doc-group io
 
 } // namespace duct
-

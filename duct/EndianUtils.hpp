@@ -246,4 +246,3 @@ byte_swap_ref_if(
 /** @} */ // end of doc-group endian_utils
 
 } // namespace duct
-

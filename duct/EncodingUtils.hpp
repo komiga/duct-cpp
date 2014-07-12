@@ -1085,4 +1085,3 @@ public:
 // End of SFML-sourced code
 
 } // namespace duct
-

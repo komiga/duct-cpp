@@ -337,4 +337,3 @@ enum Chars {
 /** @} */ // end of doc-group text
 
 } // namespace duct
-

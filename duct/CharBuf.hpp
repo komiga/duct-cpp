@@ -338,4 +338,3 @@ private:
 /** @} */ // end of doc-group text
 
 } // namespace duct
-

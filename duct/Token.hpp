@@ -248,4 +248,3 @@ public:
 /** @} */ // end of doc-group parser
 
 } // namespace duct
-

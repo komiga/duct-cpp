@@ -678,4 +678,3 @@ private:
 
 } // namespace IO
 } // namespace duct
-

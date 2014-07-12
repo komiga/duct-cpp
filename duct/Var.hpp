@@ -1113,4 +1113,3 @@ public:
 /** @} */ // end doc-group var
 
 } // namespace duct
-

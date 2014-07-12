@@ -217,4 +217,3 @@ convert_typed(
 
 } // namespace VarUtils
 } // namespace duct
-

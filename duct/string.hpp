@@ -62,4 +62,3 @@ using u8string = duct::aux::basic_string<char>;
 /** @} */ // end of doc-group text
 
 } // namespace duct
-
