@@ -4,12 +4,18 @@
 		{
 			"name": "Root",
 			"path": "./",
-			"folder_exclude_patterns": ["doc", "duct", "test"]
+			"folder_exclude_patterns": [
+				"doc",
+				"duct",
+				"test"
+			]
 		},
 		{
 			"name": "- Doc",
 			"path": "./doc/",
-			"folder_exclude_patterns": ["html"]
+			"folder_exclude_patterns": [
+				"html"
+			]
 		},
 		{
 			"name": "- Source",
@@ -18,8 +24,15 @@
 		{
 			"name": "- Test",
 			"path": "./test/",
-			"folder_exclude_patterns": ["out"],
-			"file_exclude_patterns": ["Makefile", "*.make"]
+			"folder_exclude_patterns": [
+				"out"
+			],
+			"file_exclude_patterns": [
+				"Makefile",
+				"*.make",
+				"*.exe",
+				"*.elf"
+			]
 		}
 	],
 	"settings":
