@@ -179,7 +179,7 @@ main(
 		) {
 			fs.open(argv[index]);
 			if (fs.is_open()) {
-				parse_stream(root, fs, false);
+				parse_stream(root, fs, true);
 				fs.close();
 			} else {
 				td.data = argv[index];
