@@ -553,6 +553,7 @@ ScriptParser::handle_token() {
 			}
 			// Pop from array to parent scope
 			pop();
+			m_states.disable(State::open_array);
 		}
 		break;
 
