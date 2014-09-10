@@ -73,6 +73,7 @@ g_test_data[]{
 	TDV("{{}}")
 	TDV("{name={}}")
 	TDV("[value, value, [value]]")
+	TDV("[[], [value]]")
 
 	// Multi-line
 	TDV("\"na\nme\"")
