@@ -310,6 +310,33 @@ struct is_same_any<T, H, R...>
 {};
 /** @endcond */ // INTERNAL
 
+/**
+	Get number of elements in bounded array.
+*/
+template<class T, unsigned N>
+inline constexpr unsigned
+array_extent(T const (&)[N]) noexcept {
+    return N;
+}
+
+/**
+	Get number of elements in bounded array.
+*/
+template<class T, class U, unsigned N>
+inline constexpr unsigned
+array_extent(T const (U::* const)[N]) noexcept {
+    return N;
+}
+
+/**
+	Get sizeof type or 0 if the type is empty.
+*/
+template<class T>
+inline constexpr unsigned
+sizeof_empty() noexcept {
+    return std::is_empty<T>::value ? 0 : sizeof(T);
+}
+
 /** @} */ // end of doc-group utils
 
 } // namespace duct
