@@ -72,7 +72,7 @@ parse_lit(
 	- @c "false" morphs to a @c VarType::boolean with @c false.
 	- @c "true" morphs to a @c VarType::boolean with @c true.
 	- @c "null" morphs to a @c VarType::null.
-	- @c [+\-]?[0-9.]* morphs to a @c VarType::integer.
+	- @c [+\-]?[0-9.]* morphs to a @c VarType::integer
 	  or @c VarType::floatp.
 	- Else morphs to a @c VarType::string with @c value.
 
