@@ -1,5 +1,5 @@
 /**
-@file IO/memstream.hpp
+@file
 @brief Memory stream.
 
 @author Timothy Howard

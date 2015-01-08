@@ -1,5 +1,5 @@
 /**
-@file debug.hpp
+@file
 @brief Debug utilities.
 
 @author Timothy Howard

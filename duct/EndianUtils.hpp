@@ -1,5 +1,5 @@
 /**
-@file EndianUtils.hpp
+@file
 @brief Endian utilities.
 
 @author Timothy Howard

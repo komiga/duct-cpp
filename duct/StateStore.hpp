@@ -1,5 +1,5 @@
 /**
-@file StateStore.hpp
+@file
 @brief StateStore class.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file traits.hpp
+@file
 @brief Type traits and helpers.
 
 @author Timothy Howard

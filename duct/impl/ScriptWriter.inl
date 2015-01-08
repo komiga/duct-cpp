@@ -1,5 +1,5 @@
 /**
-@file impl/ScriptWriter.inl
+@file
 
 @author Timothy Howard
 @copyright 2010-2014 Timothy Howard under the MIT license;

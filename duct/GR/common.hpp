@@ -1,5 +1,5 @@
 /**
-@file GR/common.hpp
+@file
 @brief GR commons.
 
 @author Timothy Howard

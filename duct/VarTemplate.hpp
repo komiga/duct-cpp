@@ -1,5 +1,5 @@
 /**
-@file VarTemplate.hpp
+@file
 @brief Var validation.
 
 @author Timothy Howard

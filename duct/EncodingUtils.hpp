@@ -1,5 +1,5 @@
 /**
-@file EncodingUtils.hpp
+@file
 @brief Text encoding utilities.
 
 @author Timothy Howard

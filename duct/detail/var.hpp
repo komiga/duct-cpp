@@ -1,5 +1,5 @@
 /**
-@file detail/var.hpp
+@file
 @brief Var internals.
 
 @author Timothy Howard

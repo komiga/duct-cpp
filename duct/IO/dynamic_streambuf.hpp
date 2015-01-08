@@ -1,5 +1,5 @@
 /**
-@file IO/dynamic_streambuf.hpp
+@file
 @brief Automatically-growing streambuf.
 
 @author Timothy Howard

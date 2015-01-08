@@ -1,5 +1,5 @@
 /**
-@file IO/cacophony_support.hpp
+@file
 @brief Cacophony support.
 
 @author Timothy Howard

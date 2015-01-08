@@ -1,5 +1,5 @@
 /**
-@file VarUtils.hpp
+@file
 @brief Var utilities.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file IO/multistream.hpp
+@file
 @brief Multicast stream.
 
 @author Timothy Howard

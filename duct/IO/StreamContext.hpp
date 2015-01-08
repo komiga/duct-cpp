@@ -1,5 +1,5 @@
 /**
-@file IO/StreamContext.hpp
+@file
 @brief StreamContext class.
 
 @author Timothy Howard

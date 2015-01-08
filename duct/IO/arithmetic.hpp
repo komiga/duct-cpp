@@ -1,5 +1,5 @@
 /**
-@file IO/arithmetic.hpp
+@file
 @brief Arithmetic IO operations.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file cc_unique_ptr.hpp
+@file
 @brief const-correct unique_ptr.
 
 @author Timothy Howard

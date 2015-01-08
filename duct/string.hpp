@@ -1,5 +1,5 @@
 /**
-@file string.hpp
+@file
 @brief String types and utilities.
 
 @author Timothy Howard

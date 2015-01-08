@@ -1,5 +1,5 @@
 /**
-@file Var.hpp
+@file
 @brief Var class.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file detail/string_traits.hpp
+@file
 @brief String type traits.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file ScriptParser.hpp
+@file
 @brief ductScript parser.
 
 @author Timothy Howard

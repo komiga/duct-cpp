@@ -1,5 +1,5 @@
 /**
-@file StringUtils.hpp
+@file
 @brief String utilities.
 
 @author Timothy Howard

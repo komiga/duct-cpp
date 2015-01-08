@@ -1,5 +1,5 @@
 /**
-@file CharacterSet.hpp
+@file
 @brief CharacterSet.
 
 @author Timothy Howard

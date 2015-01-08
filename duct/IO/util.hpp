@@ -1,5 +1,5 @@
 /**
-@file IO/util.hpp
+@file
 @brief IO utilities.
 
 @author Timothy Howard

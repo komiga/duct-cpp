@@ -1,5 +1,5 @@
 /**
-@file Parser.hpp
+@file
 @brief Parser class.
 
 @author Timothy Howard

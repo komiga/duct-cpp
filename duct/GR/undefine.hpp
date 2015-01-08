@@ -1,5 +1,5 @@
 /**
-@file GR/undefine.hpp
+@file
 @brief Undefine all GR macros.
 @details
 

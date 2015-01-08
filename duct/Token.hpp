@@ -1,5 +1,5 @@
 /**
-@file Token.hpp
+@file
 @brief Token class.
 
 @author Timothy Howard

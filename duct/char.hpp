@@ -1,5 +1,5 @@
 /**
-@file char.hpp
+@file
 @brief Character types and constants.
 
 @author Timothy Howard

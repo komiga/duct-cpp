@@ -1,5 +1,5 @@
 /**
-@file VarType.hpp
+@file
 @brief VarType and type utilities.
 
 @author Timothy Howard

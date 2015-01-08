@@ -1,5 +1,5 @@
 /**
-@file ScriptWriter.hpp
+@file
 @brief ductScript writer.
 
 @author Timothy Howard

@@ -1,5 +1,5 @@
 /**
-@file GR/throw.hpp
+@file
 @brief GR throwing.
 
 @author Timothy Howard

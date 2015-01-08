@@ -1,5 +1,5 @@
 /**
-@file CharBuf.hpp
+@file
 @brief Character buffer.
 
 @author Timothy Howard
