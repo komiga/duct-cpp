@@ -1,10 +1,8 @@
 /**
+@copyright MIT license; see @ref index or the accompanying LICENSE file.
+
 @file
 @brief GR commons.
-
-@author Timothy Howard
-@copyright 2010-2014 Timothy Howard under the MIT license;
-see @ref index or the accompanying LICENSE file for full text.
 */
 
 #ifndef DUCT_GR_COMMON_HPP_

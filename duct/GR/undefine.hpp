@@ -1,4 +1,6 @@
 /**
+@copyright MIT license; see @ref index or the accompanying LICENSE file.
+
 @file
 @brief Undefine all GR macros.
 @details
@@ -6,10 +8,6 @@
 This will also undefine the header guards for <duct/GR/common.hpp>,
 <duct/GR/throw.hpp>, and <duct/GR/ceformat.hpp> (but not
 <duct/GR/Error.hpp>) so that they can be reused within the same TU.
-
-@author Timothy Howard
-@copyright 2010-2014 Timothy Howard under the MIT license;
-see @ref index or the accompanying LICENSE file for full text.
 */
 
 /** @cond INTERNAL */
