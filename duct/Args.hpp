@@ -2,7 +2,7 @@
 @copyright MIT license; see @ref index or the accompanying LICENSE file.
 
 @file
-@brief GR exception classes.
+@brief Argument parsing.
 */
 
 #pragma once
