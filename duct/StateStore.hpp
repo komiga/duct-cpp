@@ -24,10 +24,7 @@ parameter pack variants.
 namespace duct {
 
 // Forward declarations
-template<
-	typename S,
-	typename V
->
+template<class S, class V>
 class StateStore;
 
 /**
@@ -49,8 +46,8 @@ class StateStore;
 	boolean integral type to which @a S is @c static_cast-able.
 */
 template<
-	typename S,
-	typename V
+	class S,
+	class V
 	= typename std::conditional<
 		std::is_enum<S>::value,
 		typename std::underlying_type<S>::type,

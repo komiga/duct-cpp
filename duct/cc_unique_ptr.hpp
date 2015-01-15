@@ -16,10 +16,7 @@
 namespace duct {
 
 // Forward declarations
-template<
-	typename T_,
-	typename D_ = std::default_delete<T_>
->
+template<class T_, class D_ = std::default_delete<T_>>
 class cc_unique_ptr;
 
 /**
@@ -47,10 +44,7 @@ class cc_unique_ptr;
 	for @c std::unique_ptr are defined for @c cc_unique_ptr, but
 	hidden from Doxygen to avoid clutter.
 */
-template<
-	typename T_,
-	typename D_
->
+template<class T_, class D_>
 class cc_unique_ptr final {
 private:
 	using base = std::unique_ptr<T_, D_>;
@@ -129,10 +123,7 @@ public:
 		: m_base(std::move(upc.m_base))
 	{}
 
-	template<
-		typename U_,
-		typename E_
-	>
+	template<class U_, class E_>
 	cc_unique_ptr(
 		cc_unique_ptr<U_, E_>&& up
 	) noexcept
@@ -143,10 +134,7 @@ public:
 	cc_unique_ptr& operator=(cc_unique_ptr const&) = delete;
 	cc_unique_ptr& operator=(cc_unique_ptr&&) noexcept = default;
 
-	template<
-		typename U_,
-		typename E_
-	>
+	template<class U_, class E_>
 	cc_unique_ptr&
 	operator=(
 		cc_unique_ptr<U_, E_>&& up
@@ -240,10 +228,7 @@ public:
 /** @cond INTERNAL */
 // operator==
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator==(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -252,9 +237,7 @@ operator==(
 	return x_.get() == y_.get();
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator==(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -263,9 +246,7 @@ operator==(
 	return !x_;
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator==(
 	std::nullptr_t,
@@ -276,10 +257,7 @@ operator==(
 
 // operator!=
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator!=(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -288,9 +266,7 @@ operator!=(
 	return x_.get() != y_.get();
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator!=(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -299,9 +275,7 @@ operator!=(
 	return static_cast<bool>(x_);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator!=(
 	std::nullptr_t,
@@ -312,10 +286,7 @@ operator!=(
 
 // operator<
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator<(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -328,9 +299,7 @@ operator<(
 	return std::less<_CT>(x_.get(), y_.get());
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator<(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -341,9 +310,7 @@ operator<(
 	);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator<(
 	std::nullptr_t,
@@ -356,10 +323,7 @@ operator<(
 
 // operator<=
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator<=(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -368,9 +332,7 @@ operator<=(
 	return !(y_ < x_);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator<=(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -379,9 +341,7 @@ operator<=(
 	return !(nullptr < x_);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator<=(
 	std::nullptr_t,
@@ -392,10 +352,7 @@ operator<=(
 
 // operator>
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator>(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -404,9 +361,7 @@ operator>(
 	return y_ < x_;
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator>(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -415,9 +370,7 @@ operator>(
 	return nullptr < x_;
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator>(
 	std::nullptr_t,
@@ -428,10 +381,7 @@ operator>(
 
 // operator>=
 
-template<
-	typename T1_, typename D1_,
-	typename T2_, typename D2_
->
+template<class T1_, class D1_, class T2_, class D2_>
 inline bool
 operator>=(
 	cc_unique_ptr<T1_, D1_> const& x_,
@@ -440,9 +390,7 @@ operator>=(
 	return !(x_ < y_);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator>=(
 	cc_unique_ptr<T_, D_> const& x_,
@@ -451,9 +399,7 @@ operator>=(
 	return !(x_ < nullptr);
 }
 
-template<
-	typename T_, typename D_
->
+template<class T_, class D_>
 inline bool
 operator>=(
 	std::nullptr_t,

@@ -171,9 +171,7 @@ public:
 
 /** @name Raw data */ /// @{
 	/** See @c duct::IO::read_arithmetic(). */
-	template<
-		typename T
-	>
+	template<class T>
 	void
 	read_arithmetic(
 		std::istream& stream,
@@ -185,9 +183,7 @@ public:
 	}
 
 	/** See @c duct::IO::read_arithmetic(). */
-	template<
-		typename T
-	>
+	template<class T>
 	T
 	read_arithmetic(
 		std::istream& stream
@@ -198,9 +194,7 @@ public:
 	}
 
 	/** See @c duct::IO::read_arithmetic_array(). */
-	template<
-		typename T
-	>
+	template<class T>
 	void
 	read_arithmetic_array(
 		std::istream& stream,
@@ -213,9 +207,7 @@ public:
 	}
 
 	/** See @c duct::IO::write_arithmetic(). */
-	template<
-		typename T
-	>
+	template<class T>
 	void
 	write_arithmetic(
 		std::ostream& stream,
@@ -227,9 +219,7 @@ public:
 	}
 
 	/** See @c duct::IO::write_arithmetic_array(). */
-	template<
-		typename T
-	>
+	template<class T>
 	void
 	write_arithmetic_array(
 		std::ostream& stream,

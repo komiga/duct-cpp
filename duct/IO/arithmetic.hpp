@@ -80,9 +80,7 @@ write(
 	@param endian Endian to use when reading; defaults
 	to @c Endian::system (no swapping).
 */
-template<
-	typename T
->
+template<class T>
 inline void
 read_arithmetic(
 	std::istream& stream,
@@ -108,9 +106,7 @@ read_arithmetic(
 	@param endian Endian to use when reading; defaults
 	to @c Endian::system (no swapping).
 */
-template<
-	typename T
->
+template<class T>
 inline T
 read_arithmetic(
 	std::istream& stream,
@@ -141,9 +137,7 @@ read_arithmetic(
 	@param endian Endian to use when reading; defaults
 	to @c Endian::system (no swapping).
 */
-template<
-	typename T
->
+template<class T>
 void
 read_arithmetic_array(
 	std::istream& stream,
@@ -174,9 +168,7 @@ read_arithmetic_array(
 	@param endian Endian to use when writing; defaults
 	to @c Endian::system (no swapping).
 */
-template<
-	typename T
->
+template<class T>
 inline void
 write_arithmetic(
 	std::ostream& stream,
@@ -204,9 +196,7 @@ write_arithmetic(
 	@param endian Endian to use when writing; defaults
 	to @c Endian::system (no swapping).
 */
-template<
-	typename T
->
+template<class T>
 void
 write_arithmetic_array(
 	std::ostream& stream,

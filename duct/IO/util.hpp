@@ -16,9 +16,6 @@
 namespace duct {
 namespace IO {
 
-// Forward declarations
-class StreamContext;
-
 /**
 	@addtogroup io
 	@{
@@ -42,10 +39,7 @@ class StreamContext;
 	@returns The size of the stream (0 may mean failure).
 	@param stream Stream to measure.
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 std::size_t
 size(
 	std::basic_istream<CharT, TraitsT>& stream

@@ -34,9 +34,7 @@ public:
 		return m_encoding;
 	}
 
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	RandomAccessIt
 	decode(
 		RandomAccessIt pos, RandomAccessIt const end,
@@ -53,9 +51,7 @@ public:
 		}
 	}
 
-	template<
-		typename OutputIterator
-	>
+	template<class OutputIterator>
 	OutputIterator
 	encode(
 		char32 input,
@@ -72,9 +68,7 @@ public:
 		}
 	}
 
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	RandomAccessIt
 	next(
 		RandomAccessIt const from,
@@ -90,9 +84,7 @@ public:
 		}
 	}
 
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	RandomAccessIt
 	prev(
 		RandomAccessIt from,
@@ -158,9 +150,7 @@ public:
 		}
 	}
 
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	std::size_t
 	count(
 		RandomAccessIt begin,

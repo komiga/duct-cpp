@@ -24,10 +24,7 @@ enum class CS : std::uint8_t {
 using ClassStore = duct::StateStore<CS>;
 using value_type = ClassStore::value_type;
 
-template<
-	typename S,
-	typename V
->
+template<class S, class V>
 void
 print(
 	duct::StateStore<S, V> const& state_store

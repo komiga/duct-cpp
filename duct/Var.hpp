@@ -487,9 +487,7 @@ public:
 		@tparam T Value type; inferred from @a value.
 		@param value New value; the new variable type is inferred.
 	*/
-	template<
-		typename T
-	>
+	template<class T>
 	Var&
 	morph(
 		T const value
@@ -829,9 +827,7 @@ public:
 		@tparam StringT String type to convert to.
 		@sa get_as_str(StringT&) const
 	*/
-	template<
-		class StringT
-	>
+	template<class StringT>
 	StringT
 	get_as_str() const {
 		StringT str;
@@ -854,9 +850,7 @@ public:
 		from @a out_str.
 		@param[out] out_str Output value.
 	*/
-	template<
-		class StringT
-	>
+	template<class StringT>
 	void
 	get_as_str(
 		StringT& out_str
@@ -1101,9 +1095,7 @@ public:
 		see @c Var().
 		@param args Parameter pack for constructor.
 	*/
-	template<
-		typename... ArgP
-	>
+	template<class... ArgP>
 	Var&
 	emplace_back(ArgP&&... args) {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));

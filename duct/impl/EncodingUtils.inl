@@ -67,7 +67,7 @@ static std::uint8_t const s_utf8_trailing[256]{
 };
 } // anonymous namespace
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF8Utils::decode(
 	RandomAccessIt pos,
 	RandomAccessIt const end,
@@ -99,7 +99,7 @@ RandomAccessIt UTF8Utils::decode(
 	return pos;
 }
 
-template<typename OutputIt>
+template<class OutputIt>
 OutputIt UTF8Utils::encode(
 	char32 input,
 	OutputIt output,
@@ -137,7 +137,7 @@ OutputIt UTF8Utils::encode(
 	return output;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF8Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
@@ -146,15 +146,14 @@ RandomAccessIt UTF8Utils::next(
 		// Quick exit: invalid or unsteppable position
 		return from;
 	}
-	using diff_type
-		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	using diff_type = typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = static_cast<diff_type>(required_first_whole(*from));
 	return (std::distance(from, end) < units)
 		? from
 		: from + units;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF8Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
@@ -201,15 +200,14 @@ inline unsigned UTF8Utils::required(
 	else   /*c <= 0x10FFFF*/	return 4u;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 std::size_t UTF8Utils::count(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
 	bool const count_incomplete
 ) {
 	std::size_t length = 0;
-	using diff_type
-		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	using diff_type = typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type units;
 	while (end > begin) {
 		units = static_cast<diff_type>(required_first_whole(*begin));
@@ -225,8 +223,8 @@ std::size_t UTF8Utils::count(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::from_utf8(
 	RandomAccessIt begin,
@@ -240,8 +238,8 @@ OutputIt UTF8Utils::from_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::from_utf16(
 	RandomAccessIt begin,
@@ -257,8 +255,8 @@ OutputIt UTF8Utils::from_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::from_utf32(
 	RandomAccessIt begin,
@@ -271,7 +269,7 @@ OutputIt UTF8Utils::from_utf32(
 	return output;
 }
 
-template<class OutU, typename RandomAccessIt, typename OutputIt>
+template<class OutU, class RandomAccessIt, class OutputIt>
 inline OutputIt UTF8Utils::to_other(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
@@ -281,8 +279,8 @@ inline OutputIt UTF8Utils::to_other(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::to_utf8(
 	RandomAccessIt begin,
@@ -296,8 +294,8 @@ OutputIt UTF8Utils::to_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::to_utf16(
 	RandomAccessIt begin,
@@ -313,8 +311,8 @@ OutputIt UTF8Utils::to_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF8Utils::to_utf32(
 	RandomAccessIt begin,
@@ -331,7 +329,7 @@ OutputIt UTF8Utils::to_utf32(
 
 // specialization UTF16Utils implementation
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF16Utils::decode(
 	RandomAccessIt pos,
 	RandomAccessIt const end,
@@ -370,7 +368,7 @@ RandomAccessIt UTF16Utils::decode(
 	return pos;
 }
 
-template<typename OutputIt>
+template<class OutputIt>
 OutputIt UTF16Utils::encode(
 	char32 input,
 	OutputIt output,
@@ -395,7 +393,7 @@ OutputIt UTF16Utils::encode(
 	return output;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF16Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
@@ -404,15 +402,14 @@ RandomAccessIt UTF16Utils::next(
 		// Quick exit: invalid or unsteppable position
 		return from;
 	}
-	using diff_type
-		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	using diff_type = typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type const units = DUCT_UTF16_IS_LEAD_SURROGATE(*from) ? 2 : 1;
 	return (std::distance(from, end) < units)
 		? from
 		: from + units;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 RandomAccessIt UTF16Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
@@ -454,15 +451,14 @@ inline unsigned UTF16Utils::required(
 	return (0xFFFF >= c) ? 1 : 2;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 std::size_t UTF16Utils::count(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
 	bool const count_incomplete
 ) {
 	std::size_t length = 0;
-	using diff_type
-		= typename std::iterator_traits<RandomAccessIt>::difference_type;
+	using diff_type = typename std::iterator_traits<RandomAccessIt>::difference_type;
 	diff_type units;
 	while (end > begin) {
 		units = DUCT_UTF16_IS_LEAD_SURROGATE(*begin) ? 2 : 1;
@@ -479,8 +475,8 @@ std::size_t UTF16Utils::count(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::from_utf8(
 	RandomAccessIt begin,
@@ -496,8 +492,8 @@ OutputIt UTF16Utils::from_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::from_utf16(
 	RandomAccessIt begin,
@@ -511,8 +507,8 @@ OutputIt UTF16Utils::from_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::from_utf32(
 	RandomAccessIt begin,
@@ -525,7 +521,7 @@ OutputIt UTF16Utils::from_utf32(
 	return output;
 }
 
-template<class OutU, typename RandomAccessIt, typename OutputIt>
+template<class OutU, class RandomAccessIt, class OutputIt>
 inline OutputIt UTF16Utils::to_other(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
@@ -535,8 +531,8 @@ inline OutputIt UTF16Utils::to_other(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::to_utf8(
 	RandomAccessIt begin,
@@ -552,8 +548,8 @@ OutputIt UTF16Utils::to_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::to_utf16(
 	RandomAccessIt begin,
@@ -567,8 +563,8 @@ OutputIt UTF16Utils::to_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF16Utils::to_utf32(
 	RandomAccessIt begin,
@@ -585,7 +581,7 @@ OutputIt UTF16Utils::to_utf32(
 
 // specialization UTF32Utils implementation
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 inline RandomAccessIt UTF32Utils::decode(
 	RandomAccessIt pos,
 	RandomAccessIt const end,
@@ -601,7 +597,7 @@ inline RandomAccessIt UTF32Utils::decode(
 	return pos;
 }
 
-template<typename OutputIt>
+template<class OutputIt>
 inline OutputIt UTF32Utils::encode(
 	char32 input,
 	OutputIt output,
@@ -615,7 +611,7 @@ inline OutputIt UTF32Utils::encode(
 	return output;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 inline RandomAccessIt UTF32Utils::next(
 	RandomAccessIt const from,
 	RandomAccessIt const end
@@ -625,7 +621,7 @@ inline RandomAccessIt UTF32Utils::next(
 		: from;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 inline RandomAccessIt UTF32Utils::prev(
 	RandomAccessIt from,
 	RandomAccessIt const begin
@@ -653,7 +649,7 @@ inline unsigned UTF32Utils::required(
 	return 1;
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 inline std::size_t UTF32Utils::count(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
@@ -662,7 +658,7 @@ inline std::size_t UTF32Utils::count(
 	return std::distance(begin, end);
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 char32 UTF32Utils::decode_locale(
 	RandomAccessIt input,
 	std::locale const& locale
@@ -685,7 +681,7 @@ char32 UTF32Utils::decode_locale(
 	#endif
 }
 
-template<typename OutputIt>
+template<class OutputIt>
 OutputIt UTF32Utils::encode_locale(
 	char32 input,
 	OutputIt output,
@@ -715,7 +711,7 @@ OutputIt UTF32Utils::encode_locale(
 	#endif
 }
 
-template<typename RandomAccessIt>
+template<class RandomAccessIt>
 inline char32 UTF32Utils::decode_wide(
 	RandomAccessIt input
 ) {
@@ -724,7 +720,7 @@ inline char32 UTF32Utils::decode_wide(
 	return input;
 }
 
-template<typename OutputIt>
+template<class OutputIt>
 OutputIt UTF32Utils::encode_wide(
 	char32 input,
 	OutputIt output,
@@ -755,8 +751,8 @@ OutputIt UTF32Utils::encode_wide(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::from_utf8(
 	RandomAccessIt begin,
@@ -772,8 +768,8 @@ OutputIt UTF32Utils::from_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::from_utf16(
 	RandomAccessIt begin,
@@ -789,8 +785,8 @@ OutputIt UTF32Utils::from_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::from_utf32(
 	RandomAccessIt begin,
@@ -803,7 +799,7 @@ OutputIt UTF32Utils::from_utf32(
 	return output;
 }
 
-template<class OutU, typename RandomAccessIt, typename OutputIt>
+template<class OutU, class RandomAccessIt, class OutputIt>
 inline OutputIt UTF32Utils::to_other(
 	RandomAccessIt begin,
 	RandomAccessIt const end,
@@ -813,8 +809,8 @@ inline OutputIt UTF32Utils::to_other(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::to_utf8(
 	RandomAccessIt begin,
@@ -828,8 +824,8 @@ OutputIt UTF32Utils::to_utf8(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::to_utf16(
 	RandomAccessIt begin,
@@ -843,8 +839,8 @@ OutputIt UTF32Utils::to_utf16(
 }
 
 template<
-	typename RandomAccessIt,
-	typename OutputIt
+	class RandomAccessIt,
+	class OutputIt
 >
 OutputIt UTF32Utils::to_utf32(
 	RandomAccessIt begin,

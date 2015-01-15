@@ -221,10 +221,7 @@ public:
 		does not point to the lead unit for a code unit sequence.
 		@param end End of sequence.
 	*/
-	template<
-		class StringU,
-		typename InputIt
-	>
+	template<class StringU, class InputIt>
 	InputIt
 	sequence_find(
 		InputIt pos,
@@ -278,10 +275,7 @@ public:
 		does not point to the lead unit for a code unit sequence.
 		@param end End of sequence.
 	*/
-	template<
-		class StringU,
-		typename InputIt
-	>
+	template<class StringU, class InputIt>
 	bool
 	sequence_matches(
 		InputIt pos,

@@ -18,25 +18,25 @@ namespace IO {
 
 // Forward declarations
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_memstreambuf;
 
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_imemstream;
 
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_omemstream;
 
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_memstream;
@@ -70,10 +70,7 @@ using memstream = basic_memstream<char>;
 
 	@warning Reassigning the buffer will not clear stream state.
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_memstreambuf
 	: public std::basic_streambuf<CharT, TraitsT>
 {
@@ -265,10 +262,7 @@ protected:
 		basic_memstream,
 		basic_memstreambuf
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_imemstream final
 	: public std::basic_istream<CharT, TraitsT>
 {
@@ -356,10 +350,7 @@ public:
 		basic_memstream,
 		basic_memstreambuf
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_omemstream final
 	: public std::basic_ostream<CharT, TraitsT>
 {
@@ -445,10 +436,7 @@ public:
 		basic_omemstream,
 		basic_memstreambuf
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_memstream final
 	: public std::basic_iostream<CharT, TraitsT>
 {

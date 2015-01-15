@@ -83,9 +83,7 @@ enum Encoding : unsigned {
 	@note BOMs are not handled by these utilities.
 	@tparam Spec_ Byte size of the encoding's code unit.
 */
-template<
-	unsigned Spec_
->
+template<unsigned Spec_>
 class EncodingUtils;
 
 /** UTF-8 encoding utilities; convenience alias. */
@@ -134,9 +132,7 @@ public:
 		@param replacement Replacement code point. @a output will be set to
 		this if the decoded code point is invalid.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	decode(
 		RandomAccessIt pos,
@@ -154,9 +150,7 @@ public:
 		to @c CHAR_NULL (default) when @a input is invalid, nothing will
 		be outputted (returns @a output).
 	*/
-	template<
-		typename OutputIt
-	>
+	template<class OutputIt>
 	static OutputIt
 	encode(
 		char32 input,
@@ -171,9 +165,7 @@ public:
 		@param from Position to advance from.
 		@param end End of boundary.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	next(
 		RandomAccessIt const from,
@@ -193,9 +185,7 @@ public:
 		@param from Position to step from.
 		@param begin Front of boundary.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	prev(
 		RandomAccessIt from,
@@ -249,9 +239,7 @@ public:
 		sequence; @c false by default. Set to @c true to be safe when encoding
 		with a non-null replacement character; keep @c false for accuracy.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static std::size_t
 	count(
 		RandomAccessIt begin,
@@ -268,10 +256,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf8(
 		RandomAccessIt begin,
@@ -285,10 +270,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf16(
 		RandomAccessIt begin,
@@ -302,10 +284,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf32(
 		RandomAccessIt begin,
@@ -320,7 +299,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<class OutU, typename RandomAccessIt, typename OutputIt>
+	template<class OutU, class RandomAccessIt, class OutputIt>
 	inline static OutputIt
 	to_other(
 		RandomAccessIt begin,
@@ -334,10 +313,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf8(
 		RandomAccessIt begin,
@@ -351,10 +327,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf16(
 		RandomAccessIt begin,
@@ -368,10 +341,7 @@ public:
 		@param end Ending input iterator.
 		@param output Output iterator.
 	*/
-	template<
-		typename RandomAccessIt,
-		typename OutputIt
-	>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf32(
 		RandomAccessIt begin,
@@ -408,9 +378,7 @@ public:
 /** @name Base operations */ /// @{
 	/** @copydoc UTF8Utils::decode(RandomAccessIt,RandomAccessIt const,
 		char32&,char32) */
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	decode(
 		RandomAccessIt pos,
@@ -419,9 +387,7 @@ public:
 		char32 const replacement = CHAR_NULL
 	);
 	/** @copydoc UTF8Utils::encode(char32,OutputIt,char32 const) */
-	template<
-		typename OutputIt
-	>
+	template<class OutputIt>
 	static OutputIt
 	encode(
 		char32 input,
@@ -430,18 +396,14 @@ public:
 	);
 
 	/** @copydoc UTF8Utils::next(RandomAccessIt const,RandomAccessIt const) */
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	next(
 		RandomAccessIt const from,
 		RandomAccessIt const end
 	);
 	/** @copydoc UTF8Utils::prev(RandomAccessIt,RandomAccessIt const) */
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static RandomAccessIt
 	prev(
 		RandomAccessIt from,
@@ -466,9 +428,7 @@ public:
 
 	/** @copydoc UTF8Utils::count(RandomAccessIt,RandomAccessIt const,
 		bool const) */
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static std::size_t
 	count(
 		RandomAccessIt begin,
@@ -480,7 +440,7 @@ public:
 /** @name Conversion between Unicode encodings */ /// @{
 	/** @copydoc UTF8Utils::from_utf8(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf8(
 		RandomAccessIt begin,
@@ -489,7 +449,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::from_utf16(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf16(
 		RandomAccessIt begin,
@@ -498,7 +458,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::from_utf32(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf32(
 		RandomAccessIt begin,
@@ -508,7 +468,7 @@ public:
 	
 	/** @copydoc UTF8Utils::to_other(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<class OutU, typename RandomAccessIt, typename OutputIt>
+	template<class OutU, class RandomAccessIt, class OutputIt>
 	inline static OutputIt
 	to_other(
 		RandomAccessIt begin,
@@ -517,7 +477,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf8(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf8(
 		RandomAccessIt begin,
@@ -526,7 +486,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf16(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf16(
 		RandomAccessIt begin,
@@ -535,7 +495,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf32(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf32(
 		RandomAccessIt begin,
@@ -582,9 +542,7 @@ public:
 		@param replacement Replacement code point. @a output will be set to
 		this if the decoded code point is invalid.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	inline static RandomAccessIt
 	decode(
 		RandomAccessIt begin,
@@ -605,9 +563,7 @@ public:
 		to @c CHAR_NULL (default) when @a input is invalid, nothing will be
 		outputted (returns @a output).
 	*/
-	template<
-		typename OutputIt
-	>
+	template<class OutputIt>
 	inline static OutputIt
 	encode(
 		char32 input,
@@ -620,9 +576,7 @@ public:
 		@param from Position to advance from.
 		@param end End of boundary.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	inline static RandomAccessIt
 	next(
 		RandomAccessIt const from,
@@ -634,9 +588,7 @@ public:
 		@param from Position to step from.
 		@param begin Front of boundary.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	inline static RandomAccessIt
 	prev(
 		RandomAccessIt from,
@@ -686,9 +638,7 @@ public:
 		@param end Ending iterator.
 		@param count_incomplete Unused.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	inline static std::size_t
 	count(
 		RandomAccessIt begin,
@@ -702,9 +652,7 @@ public:
 		@param input Beginning input iterator.
 		@param locale Locale to use for decoding; global locale by default.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	static char_type
 	decode_locale(
 		RandomAccessIt input,
@@ -719,9 +667,7 @@ public:
 		(default), the non-convertable code point is skipped.
 		@param locale Locale to use for encoding; global locale by default.
 	*/
-	template<
-		typename OutputIt
-	>
+	template<class OutputIt>
 	static OutputIt
 	encode_locale(
 		char32 input,
@@ -736,9 +682,7 @@ public:
 		@returns The converted code point.
 		@param input Input iterator.
 	*/
-	template<
-		typename RandomAccessIt
-	>
+	template<class RandomAccessIt>
 	inline static char_type
 	decode_wide(
 		RandomAccessIt input
@@ -752,9 +696,7 @@ public:
 		@param replacement Replacement wide-char. If this is @c CHAR_NULL
 		(default), the non-convertable code point is skipped.
 	*/
-	template<
-		typename OutputIt
-	>
+	template<class OutputIt>
 	static OutputIt
 	encode_wide(
 		char32 input,
@@ -766,7 +708,7 @@ public:
 /** @name Conversion between Unicode encodings */ /// @{
 	/** @copydoc UTF8Utils::from_utf8(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf8(
 		RandomAccessIt begin,
@@ -775,7 +717,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::from_utf16(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf16(
 		RandomAccessIt begin,
@@ -784,7 +726,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::from_utf32(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	from_utf32(
 		RandomAccessIt begin,
@@ -794,7 +736,7 @@ public:
 	
 	/** @copydoc UTF8Utils::to_other(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<class OutU, typename RandomAccessIt, typename OutputIt>
+	template<class OutU, class RandomAccessIt, class OutputIt>
 	inline static OutputIt
 	to_other(
 		RandomAccessIt begin,
@@ -803,7 +745,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf8(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf8(
 		RandomAccessIt begin,
@@ -812,7 +754,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf16(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf16(
 		RandomAccessIt begin,
@@ -821,7 +763,7 @@ public:
 	);
 	/** @copydoc UTF8Utils::to_utf32(RandomAccessIt,RandomAccessIt const,
 		OutputIt) */
-	template<typename RandomAccessIt, typename OutputIt>
+	template<class RandomAccessIt, class OutputIt>
 	static OutputIt
 	to_utf32(
 		RandomAccessIt begin,

@@ -200,10 +200,7 @@ public:
 	}
 
 	/** @copydoc CharacterRange::sequence_find(InputIt,InputIt const) const */
-	template<
-		class StringU,
-		typename InputIt
-	>
+	template<class StringU, class InputIt>
 	InputIt
 	sequence_find(
 		InputIt pos,
@@ -233,10 +230,7 @@ public:
 	}
 
 	/** @copydoc CharacterRange::sequence_matches(InputIt,InputIt const) const */
-	template<
-		class StringU,
-		typename InputIt
-	>
+	template<class StringU, class InputIt>
 	bool
 	sequence_matches(
 		InputIt pos,

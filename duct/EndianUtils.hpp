@@ -41,15 +41,13 @@ namespace {
 // Can't do partial template function specialization
 // (grumble grumble)
 template<
-	typename T,
+	class T,
 	std::size_t = sizeof(T)
 >
 struct bs_impl;
 
 // Convenience
-template<
-	typename T
->
+template<class T>
 struct bs_impl<T, 1u> {
 	static constexpr T
 	swap(
@@ -95,9 +93,7 @@ struct bs_impl<double> {
 
 // NB: These cannot be constexpr; the bswap macros can potentially
 // use asm instructions
-template<
-	typename T
->
+template<class T>
 struct bs_impl<T, 2u> {
 	static T
 	swap(
@@ -116,9 +112,7 @@ struct bs_impl<T, 2u> {
 	}
 };
 
-template<
-	typename T
->
+template<class T>
 struct bs_impl<T, 4u> {
 	static T
 	swap(
@@ -137,9 +131,7 @@ struct bs_impl<T, 4u> {
 	}
 };
 
-template<
-	typename T
->
+template<class T>
 struct bs_impl<T, 8u> {
 	static T
 	swap(
@@ -168,9 +160,7 @@ struct bs_impl<T, 8u> {
 	@tparam T Arithmetic value type; inferred from @a value.
 	@param value Value to swap.
 */
-template<
-	typename T
->
+template<class T>
 inline T
 byte_swap(
 	T value
@@ -188,9 +178,7 @@ byte_swap(
 	@tparam T Arithmetic value type; inferred from @a value.
 	@param[in,out] value Value to swap; output value.
 */
-template<
-	typename T
->
+template<class T>
 inline void
 byte_swap_ref(
 	T& value
@@ -207,9 +195,7 @@ byte_swap_ref(
 	@param value Value to swap.
 	@param endian Desired endian.
 */
-template<
-	typename T
->
+template<class T>
 inline T
 byte_swap_if(
 	T value,
@@ -228,9 +214,7 @@ byte_swap_if(
 	@param[in,out] value Value to swap; output value.
 	@param endian Desired endian.
 */
-template<
-	typename T
->
+template<class T>
 inline void
 byte_swap_ref_if(
 	T& value,

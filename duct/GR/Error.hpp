@@ -15,10 +15,7 @@ namespace duct {
 namespace GR {
 
 // Forward declarations
-template<
-	typename ErrorCodeT,
-	typename MsgStringT
->
+template<class ErrorCodeT, class MsgStringT>
 class Error;
 
 /**
@@ -38,10 +35,7 @@ class Error;
 	@tparam ErrorCodeT %Error code type.
 	@tparam MsgStringT Message string type.
 */
-template<
-	typename ErrorCodeT,
-	typename MsgStringT
->
+template<class ErrorCodeT, class MsgStringT>
 class Error {
 public:
 	/**
@@ -90,9 +84,7 @@ public:
 		@param code %Error code.
 		@param message %Error message.
 	*/
-	template<
-		std::size_t N
-	>
+	template<std::size_t N>
 	Error(
 		error_code_type const code,
 		typename message_string_type::value_type const message[N]

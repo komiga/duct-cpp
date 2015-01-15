@@ -31,10 +31,7 @@ namespace StringUtils {
 
 /** @cond INTERNAL */
 namespace {
-template<
-	class StringD,
-	class FromU
->
+template<class StringD, class FromU>
 struct cvt_defs {
 	using string_type = StringD;
 	using
@@ -51,10 +48,7 @@ struct cvt_defs {
 	enum {BUFFER_SIZE = 256u};
 };
 
-template<
-	class DefsT,
-	typename RandomAccessIt
->
+template<class DefsT, class RandomAccessIt>
 bool
 do_cvt(
 	typename DefsT::string_type& dest,
@@ -97,14 +91,9 @@ template<
 >
 struct cvt_impl;
 
-template<
-	class DefsT
->
+template<class DefsT>
 struct cvt_impl<DefsT, false> {
-	template<
-		typename RandomAccessIt
-	>
-
+	template<class RandomAccessIt>
 	static bool
 	do_sequence(
 		typename DefsT::string_type& dest,
@@ -114,9 +103,7 @@ struct cvt_impl<DefsT, false> {
 		return do_cvt<DefsT>(dest, pos, end);
 	}
 
-	template<
-		class StringS
-	>
+	template<class StringS>
 	static bool
 	do_string(
 		typename DefsT::string_type& dest,
@@ -126,13 +113,9 @@ struct cvt_impl<DefsT, false> {
 	}
 };
 
-template<
-	class DefsT
->
+template<class DefsT>
 struct cvt_impl<DefsT, true> {
-	template<
-		typename InputIt
-	>
+	template<class InputIt>
 	static bool
 	do_sequence(
 		typename DefsT::string_type& dest,
@@ -142,9 +125,7 @@ struct cvt_impl<DefsT, true> {
 		dest.append(pos, end);
 		return true;
 	}
-	template<
-		class StringS
-	>
+	template<class StringS>
 	static bool
 	do_string(
 		typename DefsT::string_type& dest,
@@ -178,10 +159,7 @@ struct cvt_impl<DefsT, true> {
 	@param append Whether to append to @a dest; defaults to @c false
 	(@a dest is cleared on entry).
 */
-template<
-	class StringD,
-	class StringS
->
+template<class StringD, class StringS>
 inline bool
 convert(
 	StringD& dest,
@@ -220,11 +198,7 @@ convert(
 	@param append Whether to append to @a dest; defaults to @c false
 	(@a dest is cleared on entry).
 */
-template<
-	class FromU,
-	class StringD,
-	typename InputIt
->
+template<class FromU, class StringD, class InputIt>
 inline bool
 convert(
 	StringD& dest,
@@ -251,10 +225,7 @@ convert(
 	@param pos Start of sequence.
 	@param end End of sequence.
 */
-template<
-	typename CharT,
-	typename InputIt
->
+template<class CharT, class InputIt>
 inline unsigned
 unit_occurrences(
 	CharT const cu,
@@ -281,9 +252,7 @@ unit_occurrences(
 	@param cu Code unit to count.
 	@param str String to test.
 */
-template<
-	class StringT
->
+template<class StringT>
 inline unsigned
 unit_occurrences(
 	typename StringT::value_type const cu,
@@ -322,9 +291,7 @@ using EscapeablePair = std::pair<char const*, char const*>;
 	@param cu Code unit to test.
 	@param esc_pair Escapeables and replacements.
 */
-template<
-	typename CharT
->
+template<class CharT>
 inline CharT
 get_escape_char(
 	CharT const cu,
@@ -356,7 +323,7 @@ get_escape_char(
 template<
 	class StringT,
 	class StringU = typename detail::string_traits<StringT>::encoding_utils,
-	typename CharT = typename detail::string_traits<StringT>::char_type
+	class CharT = typename detail::string_traits<StringT>::char_type
 >
 unsigned
 escape_string(
@@ -442,9 +409,7 @@ escape_string(
 	escape sequences. If @c false, will escape the backslash for
 	non-matching sequences.
 */
-template<
-	class StringT
->
+template<class StringT>
 inline StringT
 escape_string(
 	StringT const& str,

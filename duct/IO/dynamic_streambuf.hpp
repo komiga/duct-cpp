@@ -22,7 +22,7 @@ namespace IO {
 
 // Forward declarations
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>,
 	class AllocT = DUCT_CONFIG_ALLOCATOR<CharT>
 >
@@ -56,7 +56,7 @@ using dynamic_streambuf = basic_dynamic_streambuf<char>;
 	@tparam AllocT Allocator type.
 */
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT,
 	class AllocT
 >

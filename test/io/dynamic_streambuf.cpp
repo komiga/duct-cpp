@@ -24,10 +24,7 @@ operator<<(
 	return stream;
 }
 
-template<
-	typename CharT,
-	typename TraitsT
->
+template<class CharT, class TraitsT>
 bool
 test_stream_states(
 	std::basic_ios<CharT, TraitsT> const& ios,
@@ -36,10 +33,7 @@ test_stream_states(
 	return states == (states & ios.rdstate());
 }
 
-template<
-	typename CharT,
-	typename TraitsT
->
+template<class CharT, class TraitsT>
 bool
 is_fail(
 	std::basic_ios<CharT, TraitsT> const& ios

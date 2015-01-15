@@ -161,9 +161,7 @@ public:
 		@tparam CharT Character type; inferred from @a c.
 		@param c Character to compare against.
 	*/
-	template<
-		typename CharT
-	>
+	template<class CharT>
 	bool
 	compare(
 		CharT const c
@@ -271,9 +269,7 @@ public:
 		@tparam T An arithmetic type; inferred from @a value.
 		@param[out] value Output value.
 	*/
-	template<
-		typename T
-	>
+	template<class T>
 	bool
 	to_arithmetic(
 		T& value
@@ -306,9 +302,7 @@ public:
 		@tparam T An arithmetic type.
 		@sa to_arithmetic(T&)
 	*/
-	template<
-		typename T
-	>
+	template<class T>
 	T
 	to_arithmetic() {
 		static_assert(

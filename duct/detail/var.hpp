@@ -75,9 +75,7 @@ public:
 /**
 	Check if a typename has an associated value-class type.
 */
-template<
-	typename T
->
+template<class T>
 struct is_valtype final
 	: public traits::restrict_all
 	, public std::false_type
@@ -86,17 +84,13 @@ struct is_valtype final
 /**
 	Translate a value-class type to a typename.
 */
-template<
-	VarType const V
->
+template<VarType const V>
 struct valtype_to_type;
 
 /**
 	Translate a typename to value-class types.
 */
-template<
-	typename T
->
+template<class T>
 struct type_to_valtype;
 
 /**

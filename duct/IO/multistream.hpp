@@ -20,13 +20,13 @@ namespace IO {
 
 // Forward declarations
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_multistreambuf;
 
 template<
-	typename CharT,
+	class CharT,
 	class TraitsT = std::char_traits<CharT>
 >
 class basic_omultistream;
@@ -68,10 +68,7 @@ using omultistream = basic_omultistream<char>;
 	@sa
 		basic_omultistream
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_multistreambuf
 	: public basic_memstreambuf<CharT, TraitsT>
 {
@@ -211,10 +208,7 @@ protected:
 	@sa
 		basic_multistreambuf
 */
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 class basic_omultistream final
 	: public std::basic_ostream<CharT, TraitsT>
 {

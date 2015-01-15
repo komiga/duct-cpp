@@ -28,9 +28,7 @@ namespace duct {
 
 	@param index Bit index.
 */
-template<
-	typename T = unsigned
->
+template<class T = unsigned>
 inline constexpr T
 bit(
 	unsigned const index
@@ -45,9 +43,7 @@ bit(
 
 	@param value Value.
 */
-template<
-	typename T
->
+template<class T>
 inline typename std::add_const<T>::type const&
 make_const(
 	T& value
@@ -60,9 +56,7 @@ make_const(
 
 	@param value Value.
 */
-template<
-	typename T
->
+template<class T>
 inline constexpr typename std::make_signed<T>::type
 signed_cast(
 	T const value
@@ -75,9 +69,7 @@ signed_cast(
 
 	@param value Value.
 */
-template<
-	typename T
->
+template<class T>
 inline constexpr typename std::make_unsigned<T>::type
 unsigned_cast(
 	T const value
@@ -93,8 +85,8 @@ unsigned_cast(
 	@param value Enum value.
 */
 template<
-	typename E,
-	typename U = typename std::underlying_type<E>::type
+	class E,
+	class U = typename std::underlying_type<E>::type
 >
 inline constexpr U
 enum_cast(
@@ -181,9 +173,7 @@ using namespace duct::enum_ops;
 	@returns @a x if <code>x < y</code>, else @a y.
 	@param x,y Values.
 */
-template<
-	typename T
->
+template<class T>
 inline constexpr T
 min_ce(
 	T const x,
@@ -206,9 +196,7 @@ min_ce(
 	@returns @a x if <code>x > y</code>, else @a y.
 	@param x,y Values.
 */
-template<
-	typename T
->
+template<class T>
 inline constexpr T
 max_ce(
 	T const x,

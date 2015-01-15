@@ -6,29 +6,20 @@
 #include <iomanip>
 #include <iostream>
 
-template<
-	typename FP,
-	std::size_t const = sizeof(FP)
->
+template<class FP, std::size_t const = sizeof(FP)>
 struct int_fp_type_impl;
 
-template<
-	typename FP
->
+template<class FP>
 struct int_fp_type_impl<FP, 4u> {
 	using type = std::uint32_t;
 };
 
-template<
-	typename FP
->
+template<class FP>
 struct int_fp_type_impl<FP, 8u> {
 	using type = std::uint64_t;
 };
 
-template<
-	typename FP
->
+template<class FP>
 using int_fp_type = typename int_fp_type_impl<FP>::type;
 
 constexpr auto
@@ -43,9 +34,7 @@ constexpr std::uint64_t INTEGRAL64 = 0x1122334455667788;
 constexpr float FLOAT32 = 1.0f;
 constexpr double FLOAT64 = 1.0f;
 
-template<
-	typename T
->
+template<class T>
 void
 do_test_integral(
 	T const value
@@ -64,9 +53,7 @@ do_test_integral(
 	DUCT_ASSERT(x == y && xr == yr, "something has gone deliciously wrong");
 }
 
-template<
-	typename T
->
+template<class T>
 void
 do_test_floating(
 	T const value

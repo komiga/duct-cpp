@@ -11,10 +11,7 @@
 #include <type_traits>
 #include <iostream>
 
-template<
-	typename CharT,
-	class TraitsT
->
+template<class CharT, class TraitsT>
 void
 print_states(
 	std::basic_ios<CharT, TraitsT>& stream
@@ -103,18 +100,14 @@ read_s(
 	str.clear();
 }
 
-template<
-	class ToU,
-	class StringT
->
+template<class ToU, class StringT>
 void
 write_s(
 	StringT& str,
 	typename ToU::strict_char_type const* data,
 	std::size_t const size
 ) {
-	typename ToU::strict_char_type
-		out_buffer[512u];
+	typename ToU::strict_char_type out_buffer[512u];
 	duct::IO::StreamContext ctx(ToU::id, duct::Endian::system);
 	duct::IO::omemstream stream(out_buffer, sizeof(out_buffer));
 	DUCT_ASSERTE(stream.good());

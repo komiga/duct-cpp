@@ -65,9 +65,7 @@ morph(
 	var.morph(type, std::move(children));
 }
 
-template<
-	typename T
->
+template<class T>
 void
 morph(
 	Var& var,
@@ -76,9 +74,7 @@ morph(
 	var.morph(value);
 }
 
-template<
-	typename T
->
+template<class T>
 void
 morph(
 	Var& var,

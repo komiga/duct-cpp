@@ -35,9 +35,7 @@ namespace IO {
 
 /** @cond INTERNAL */
 namespace {
-template<
-	class FromU
->
+template<class FromU>
 struct rchar_defs {
 	using from_utils = FromU;
 	using char_type = typename from_utils::char_type;
@@ -95,9 +93,7 @@ struct rchar_impl {
 };
 
 // Specialize for UTF-32
-template<
-	class DefsT
->
+template<class DefsT>
 struct rchar_impl<DefsT, 4u> {
 	static char32
 	read_char(
@@ -151,9 +147,7 @@ read_char(
 
 /** @cond INTERNAL */
 namespace {
-template<
-	class ToU
->
+template<class ToU>
 struct wchar_defs {
 	using to_utils = ToU;
 	using char_type = typename to_utils::char_type;
@@ -218,9 +212,7 @@ struct wchar_impl {
 };
 
 // Specialize for UTF-32
-template<
-	class DefsT
->
+template<class DefsT>
 struct wchar_impl<DefsT, 4u> {
 	static std::size_t
 	write_char(
@@ -289,10 +281,7 @@ write_char(
 
 /** @cond INTERNAL */
 namespace {
-template<
-	class FromU,
-	class StringT
->
+template<class FromU, class StringT>
 struct rstr_defs {
 	using string_type = StringT;
 	using string_traits = detail::string_traits<string_type>;
@@ -480,10 +469,7 @@ read_string_copy(
 
 /** @cond INTERNAL */
 namespace {
-template<
-	class ToU,
-	class StringT
->
+template<class ToU, class StringT>
 struct wstr_defs {
 	using string_type = StringT;
 	using string_traits = detail::string_traits<string_type>;
