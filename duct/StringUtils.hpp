@@ -269,10 +269,13 @@ unit_occurrences(
 	}
 	return count;
 }
+
 /**
 	Count the number of times a code unit occurs in a string.
+
 	@note This function does not decode the string into code points;
 	it operates with <strong>code units</strong>.
+
 	@returns The number of times @a cu occurs in @a str.
 	@tparam StringT String type; inferred from @a str.
 	@param cu Code unit to count.
@@ -426,8 +429,10 @@ escape_string(
 	result.append(last, str.cend());
 	return escaped_count;
 }
+
 /**
 	Escape code units in a string.
+
 	@returns The escaped string.
 	@tparam StringT Input and result string type; inferred
 	from @a str.
