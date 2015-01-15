@@ -3,10 +3,10 @@
 
 #include <iostream>
 
+using namespace duct::enum_ops;
+
 using duct::bit;
 using duct::enum_cast;
-using duct::enum_bitand;
-using duct::enum_combine;
 
 enum class E : unsigned {
 	none = 0u,
@@ -45,20 +45,17 @@ print_e(
 
 signed
 main() {
-	constexpr E c = enum_combine(E::A, E::B, E::C);
-	static_assert(enum_bitand(c, E::A), "");
-	static_assert(!enum_bitand(c, E::none), "");
+	constexpr E c = E::A | E::B | E::C;
+	static_assert(enum_cast(c & E::A), "");
+	static_assert(!enum_cast(c & E::none), "");
 
-	E e = E::none; print_e(e);
-	e = enum_combine(E::A); print_e(e);
-	e = enum_combine(E::B); print_e(e);
-	e = enum_combine(E::A, E::B); print_e(e);
-	e = enum_combine(E::C); print_e(e);
-	e = enum_combine(E::A, E::C); print_e(e);
-	e = enum_combine(E::B, E::C); print_e(e);
-	e = enum_combine(E::A, E::B, E::C); print_e(e);
-
-	// Will fail to compile:
-	//enum_combine(E::A, int());
+	print_e(E::none);
+	print_e(E::A);
+	print_e(E::B);
+	print_e(E::A | E::B);
+	print_e(E::C);
+	print_e(E::A | E::C);
+	print_e(E::B | E::C);
+	print_e(E::A | E::B | E::C);
 	return 0;
 }

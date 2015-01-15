@@ -272,9 +272,12 @@ public:
 	operator=(
 		Var const& other
 	) {
-		if (other.m_type != m_type
-		&& !( var_type_is_of(m_type, VarMask::collection)
-		   && var_type_is_of(other.m_type, VarMask::collection))
+		if (
+			other.m_type != m_type &&
+			!(
+				var_type_is_of(m_type, VarMask::collection) &&
+				var_type_is_of(other.m_type, VarMask::collection)
+			)
 		) {
 			reset();
 		}
@@ -433,9 +436,11 @@ public:
 	) noexcept {
 		if (type != m_type) {
 			if (
-				discard_children
-			|| !( var_type_is_of(m_type, VarMask::collection)
-			   && var_type_is_of(type, VarMask::collection))
+				discard_children ||
+				!(
+					var_type_is_of(m_type, VarMask::collection) &&
+					var_type_is_of(type, VarMask::collection)
+				)
 			) {
 				reset();
 			}
@@ -602,7 +607,7 @@ public:
 	compare_value(
 		Var const& other
 	) const {
-		switch (enum_combine(m_type, other.m_type)) {
+		switch (m_type | other.m_type) {
 		case VarType::null: return 0;
 		case VarType::string: return m_strv.compare(other.m_strv);
 		case VarType::integer: return m_intv - other.m_intv;
@@ -638,8 +643,8 @@ public:
 		// therefore: types are unequal
 		default:
 			return
-				signed_cast(enum_cast(m_type)) -
-				signed_cast(enum_cast(other.m_type))
+				signed_cast(m_type) -
+				signed_cast(other.m_type)
 			;
 		}
 	}

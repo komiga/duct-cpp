@@ -152,7 +152,7 @@ main() {
 	Var match, not_match;
 
 	// String value
-	signature(tpl, duct::var_mask(VarType::string), {}, {});
+	signature(tpl, static_cast<VarMask>(VarType::string), {}, {});
 	morph(match, u8string("match"), u8string("rampant penguin"));
 	morph(not_match, u8string("not_match"), 1234);
 	do_validation("Value - string",

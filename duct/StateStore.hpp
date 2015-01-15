@@ -98,21 +98,13 @@ public:
 	/**
 		Constructor with states.
 
-		@tparam Rest Rest types. See enum_bitor().
-		@param first First state to enable.
-		@param rest Rest of states to enable.
+		@param states States to enable.
 	*/
-	template<
-		typename... Rest
-	>
 	constexpr
 	StateStore(
-		state_type const first,
-		Rest const... rest
+		state_type const states
 	) noexcept
-		: m_value(
-			enum_bitor<state_type, value_type>(first, rest...)
-		)
+		: m_value(static_cast<value_type>(states))
 	{}
 
 	/** Default constructor. */

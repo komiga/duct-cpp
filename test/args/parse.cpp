@@ -8,6 +8,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace duct::enum_ops;
+
 signed
 main(
 	signed argc,
@@ -17,10 +19,8 @@ main(
 	std::size_t const non_opt_pos = duct::Args::parse_raw(argc, argv, root);
 
 	duct::ScriptWriter writer{
-		enum_combine(
-			duct::ScriptWriter::Flags::defaults,
-			duct::ScriptWriter::Flags::quote
-		),
+		duct::ScriptWriter::Flags::defaults |
+		duct::ScriptWriter::Flags::quote,
 		{duct::Encoding::UTF8, duct::Endian::system}
 	};
 	duct::aux::stringstream out_stream;

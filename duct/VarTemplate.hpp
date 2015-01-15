@@ -99,7 +99,7 @@ public:
 			VarType const type,
 			Flags const flags = Flags::none
 		) noexcept
-			: mask(var_mask(type))
+			: mask(static_cast<VarMask>(type))
 			, flags(flags)
 		{}
 
@@ -182,7 +182,7 @@ public:
 	VarTemplate(
 		VarType const type_mask
 	)
-		: m_type_mask(duct::var_mask(type_mask))
+		: m_type_mask(static_cast<VarMask>(type_mask))
 	{}
 
 	/**
@@ -209,7 +209,7 @@ public:
 		VarType const type_mask,
 		identity_vector_type identity
 	)
-		: m_type_mask(duct::var_mask(type_mask))
+		: m_type_mask(static_cast<VarMask>(type_mask))
 		, m_identity(std::move(identity))
 	{}
 
@@ -237,7 +237,7 @@ public:
 		VarType const type_mask,
 		layout_vector_type layout
 	)
-		: m_type_mask(duct::var_mask(type_mask))
+		: m_type_mask(static_cast<VarMask>(type_mask))
 		, m_layout(std::move(layout))
 	{}
 
@@ -270,7 +270,7 @@ public:
 		identity_vector_type identity,
 		layout_vector_type layout
 	)
-		: m_type_mask(duct::var_mask(type_mask))
+		: m_type_mask(static_cast<VarMask>(type_mask))
 		, m_identity(std::move(identity))
 		, m_layout(std::move(layout))
 	{}
@@ -336,7 +336,7 @@ public:
 	set_type_mask(
 		VarType const type
 	) noexcept {
-		m_type_mask = var_mask(type);
+		m_type_mask = static_cast<VarMask>(type);
 	}
 
 	/**

@@ -408,7 +408,7 @@ ScriptParser::handle_token() {
 	case TOK_LITERAL_NULL:
 		if (
 			in_scope(VarType::array) &&
-			!m_states.test_any(enum_combine(State::comma, State::open_array))
+			!m_states.test_any(State::comma | State::open_array)
 		) {
 			DUCT_SP_THROW_(
 				"Expected comma separator before value token in array scope"
@@ -510,7 +510,7 @@ ScriptParser::handle_token() {
 	case TOK_OPEN_BRACKET:
 		if (
 			in_scope(VarType::array) &&
-			!m_states.test_any(enum_combine(State::comma, State::open_array))
+			!m_states.test_any(State::comma | State::open_array)
 		) {
 			DUCT_SP_THROW_(
 				"Unexpected token after non-open-bracket and"
@@ -835,7 +835,7 @@ ScriptParser::make_ident() {
 		" should not have State::equals here"
 	);
 	m_token_ident = m_token;
-	m_states.remove(enum_combine(State::comma, State::open_array));
+	m_states.remove(State::comma | State::open_array);
 }
 
 void
@@ -857,7 +857,7 @@ ScriptParser::make_collection(
 			" cannot make a nameless identifier"
 		);
 		get_current_collection().emplace_back(type);
-		m_states.remove(enum_combine(State::comma, State::open_array));
+		m_states.remove(State::comma | State::open_array);
 	} else { // Named collection
 		DUCT_DEBUG_ASSERT(
 			VarType::identifier != type ||
@@ -870,9 +870,7 @@ ScriptParser::make_collection(
 				.to_string<detail::var_config::name_type>(),
 			type
 		);
-		m_states.remove(enum_combine(
-			State::equals, State::comma, State::open_array
-		));
+		m_states.remove(State::equals | State::comma | State::open_array);
 		m_token_ident.reset(NULL_TOKEN, true);
 	}
 	if (push_collection) {
@@ -993,7 +991,7 @@ ScriptParser::make_nameless_value(
 	if (!m_token_ident.is_null()) {
 		m_token_ident.reset(NULL_TOKEN, true);
 	}
-	m_states.remove(enum_combine(State::comma, State::open_array));
+	m_states.remove(State::comma | State::open_array);
 }
 
 #undef DUCT_SP_THROWF_NO_INFO_

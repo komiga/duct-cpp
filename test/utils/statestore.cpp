@@ -6,6 +6,10 @@
 #include <bitset>
 #include <iostream>
 
+using namespace duct::enum_ops;
+
+enum X {a, b};
+
 enum class CS : std::uint8_t {
 	a = duct::bit(0),
 	b = duct::bit(1),
@@ -52,9 +56,7 @@ main() {
 		DUCT_ASSERTE(ss.get_value() == default_value);
 	}
 	{
-		ClassStore ss{
-			CS::a, CS::b, CS::c
-		};
+		ClassStore ss{CS::a | CS::b | CS::c};
 		print(ss);
 		DUCT_ASSERTE(
 			static_cast<value_type const>(CS::all) == ss.get_value() &&
@@ -103,7 +105,7 @@ main() {
 	}
 	{
 		constexpr ClassStore /*const*/ ss_d{};
-		constexpr ClassStore /*const*/ ss_v{CS::a, CS::b};
+		constexpr ClassStore /*const*/ ss_v{CS::a | CS::b};
 		constexpr value_type /*const*/ v = ss_d.get_value();
 		constexpr bool /*const*/ h = ss_v.test(CS::a);
 		(void)(v && h);
