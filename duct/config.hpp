@@ -168,27 +168,6 @@
 /** @} */ // end of name-group Endian
 
 /**
-	@name Class utilities
-
-	@deprecated These are deprecated. They have been replaced by
-	explicit in-class exposition and base-class @ref restrictors
-	"restrictors". Both macros currently use the @c =delete; notation
-	instead of relying on private protection.
-	@{
-*/
-
-/**
-	Disallow copy and copy assignment for the given typename.
-*/
-#define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)
-/**
-	Disallow all construction for the given typename.
-*/
-#define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)
-
-/** @} */ // end of name-group Class utilities
-
-/**
 	@name etc
 	@{
 */
@@ -502,21 +481,6 @@
 	#define DUCT_BYTEORDER	DUCT_ENDIAN_BIG
 	#define DUCT_BYTEORDER_BE
 #endif
-
-// Class utilities
-#define DUCT_DISALLOW_COPY_AND_ASSIGN(TypeName)		\
-	TypeName(TypeName const&) = delete;				\
-	TypeName& operator=(TypeName const&) = delete
-// -
-
-#define DUCT_DISALLOW_ALL_CONSTRUCTION(TypeName)	\
-	TypeName() = delete;							\
-	TypeName(TypeName const&) = delete;				\
-	TypeName(TypeName&&) = delete;					\
-	~TypeName() = delete;							\
-	TypeName& operator=(TypeName const&) = delete;	\
-	TypeName& operator=(TypeName&&) = delete
-// -
 
 #ifndef DUCT_CONFIG_ALLOCATOR
 	#define DUCT_CONFIG_ALLOCATOR std::allocator
