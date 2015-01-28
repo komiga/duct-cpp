@@ -346,7 +346,7 @@ public:
 		@sa validate_type(Var const&) const
 	*/
 	VarMask
-	get_type_mask() const noexcept {
+	type_mask() const noexcept {
 		return m_type_mask;
 	}
 
@@ -370,13 +370,13 @@ public:
 		@sa validate_identity(Var const&) const
 	*/
 	identity_vector_type&
-	get_identity() noexcept {
+	identity() noexcept {
 		return m_identity;
 	}
 
-	/** @copydoc get_identity() */
+	/** @copydoc identity() */
 	identity_vector_type const&
-	get_identity() const noexcept {
+	identity() const noexcept {
 		return m_identity;
 	}
 
@@ -400,13 +400,13 @@ public:
 		@sa validate_layout(Var const&) const
 	*/
 	layout_vector_type&
-	get_layout() noexcept {
+	layout() noexcept {
 		return m_layout;
 	}
 
-	/** @copydoc get_layout() */
+	/** @copydoc layout() */
 	layout_vector_type const&
-	get_layout() const noexcept {
+	layout() const noexcept {
 		return m_layout;
 	}
 
@@ -448,7 +448,7 @@ public:
 	validate_type(
 		Var const& var
 	) const noexcept {
-		return var_type_is_of(var.get_type(), m_type_mask);
+		return var_type_is_of(var.type(), m_type_mask);
 	}
 
 	/**
@@ -468,8 +468,8 @@ public:
 			// Any name is permitted with empty identity
 			return true;
 		} else {
-			for (auto const& iname : get_identity()) {
-				if (var.get_name() == iname) {
+			for (auto const& iname : identity()) {
+				if (var.name() == iname) {
 					// Variable name matches a name from identity
 					return true;
 				}
@@ -509,12 +509,12 @@ public:
 			if (m_layout.empty()) {
 				// Any collection is permitted with empty layout
 				return permit_empty();
-			} else if (var.size() > get_layout().size()) {
+			} else if (var.size() > layout().size()) {
 				// Collection cannot be larger than layout
 				return false;
 			} else {
 				auto vc_iter = var.cbegin();
-				auto lo_iter = get_layout().cbegin();
+				auto lo_iter = layout().cbegin();
 				bool optional_met = false;
 				for (; var.cend() != vc_iter; ++vc_iter, ++lo_iter) {
 					if (!vc_iter->is_type_of(lo_iter->mask)) {
@@ -524,7 +524,7 @@ public:
 						optional_met = lo_iter->optional();
 					}
 				}
-				if (optional_met || get_layout().cend() == lo_iter) {
+				if (optional_met || layout().cend() == lo_iter) {
 					// Collection sequentially matches layout fields
 					// exactly or any trailing fields are optional
 					return true;

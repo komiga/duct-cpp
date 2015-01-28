@@ -71,7 +71,7 @@ parse_lit(
 	- @c "true" morphs to a @c VarType::boolean with @c true.
 	- @c "null" morphs to a @c VarType::null.
 	- @c [+\-]?[0-9.]* morphs to a @c VarType::integer
-	  or @c VarType::floatp.
+	  or @c VarType::decimal.
 	- Else morphs to a @c VarType::string with @c value.
 
 	@param var Var to modify.
@@ -155,13 +155,13 @@ convert_typed(
 		aux::istringstream stream(value);
 		if (has_decimal) {
 			var.morph(0.0f);
-			stream >> var.get_float_ref();
+			stream >> var.decimal_ref();
 			if (stream.fail()) {
 				var.assign(0.0f);
 			}
 		} else {
 			var.morph(0);
-			stream >> var.get_int_ref();
+			stream >> var.integer_ref();
 			if (stream.fail()) {
 				var.assign(0);
 			}

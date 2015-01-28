@@ -156,12 +156,12 @@ public:
 		@returns The current stream context.
 	*/
 	IO::StreamContext&
-	get_stream_context() noexcept {
+	stream_context() noexcept {
 		return m_stream_ctx;
 	}
-	/** @copydoc get_stream_context() */
+	/** @copydoc stream_context() */
 	IO::StreamContext const&
-	get_stream_context() const noexcept {
+	stream_context() const noexcept {
 		return m_stream_ctx;
 	}
 /// @}

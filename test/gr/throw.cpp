@@ -36,8 +36,8 @@ print_error(
 	Error const& error
 ) {
 	std::cout
-		<< '[' << get_error_name(error.get_code()) << ']'
-		<< ' ' << error.get_message()
+		<< '[' << get_error_name(error.code()) << ']'
+		<< ' ' << error.message()
 		<< '\n'
 	;
 }

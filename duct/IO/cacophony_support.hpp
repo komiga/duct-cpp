@@ -49,7 +49,7 @@ read(
 	// NB: duct::dynamic_streambuf buffer grows beyond the actual
 	// stream data, so we have to handle serialization on *that* size
 	// not the buffer's size
-	auto& data = value.get_buffer();
+	auto& data = value.buffer();
 	std::uint32_t size = 0u;
 	ser(size);
 	data.resize(size);
@@ -73,7 +73,7 @@ write(
 	Ser& ser,
 	duct::IO::basic_dynamic_streambuf<char, TraitsT, AllocT> const& value
 ) {
-	auto const& data = value.get_buffer();
+	auto const& data = value.buffer();
 	ser(static_cast<std::uint32_t>(data.size()));
 	ser(Cacophony::make_binary_blob(data.data(), data.size()));
 }

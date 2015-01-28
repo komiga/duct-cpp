@@ -114,7 +114,7 @@ public:
 
 		Stream buffer will be initialized in output mode.
 
-		@note See set_growth_rate() and get_max_size() for notes
+		@note See set_growth_rate() and max_size() for notes
 		on the @a growth_rate and @a max_size parameters.
 
 		@note Unlike reset(), a @a capacity of @c 0u does not cause
@@ -122,9 +122,9 @@ public:
 		buffer can be constructed.
 
 		@post @code
-			get_sequence() == Sequence::output &&
-			get_sequence_size() == 0u &&
-			get_buffer().get_size() == capacity
+			sequence() == Sequence::output &&
+			sequence_size() == 0u &&
+			buffer().size() == capacity
 		@endcode
 
 		@param capacity Initial capacity.
@@ -172,7 +172,7 @@ public:
 		Get sequence.
 	*/
 	Sequence
-	get_sequence() const noexcept {
+	sequence() const noexcept {
 		return m_seq;
 	}
 
@@ -184,7 +184,7 @@ public:
 		farthest observed put position.
 	*/
 	std::size_t
-	get_sequence_size() const noexcept {
+	sequence_size() const noexcept {
 		const_cast<basic_dynamic_streambuf*>(
 			this
 		)->refresh_seq_size();
@@ -195,7 +195,7 @@ public:
 		Get buffer.
 	*/
 	buffer_type const&
-	get_buffer() const noexcept {
+	buffer() const noexcept {
 		return m_buffer;
 	}
 
@@ -203,7 +203,7 @@ public:
 		Get buffer.
 	*/
 	buffer_type&
-	get_buffer() noexcept {
+	buffer() noexcept {
 		return m_buffer;
 	}
 
@@ -215,7 +215,7 @@ public:
 		which is typically @c std::numeric_limits<std::size_t>::max().
 	*/
 	std::size_t
-	get_max_size() const noexcept {
+	max_size() const noexcept {
 		return m_max_size;
 	}
 
@@ -223,7 +223,7 @@ public:
 		Get growth rate.
 	*/
 	std::size_t
-	get_growth_rate() const noexcept {
+	growth_rate() const noexcept {
 		return m_growth_rate;
 	}
 
@@ -252,7 +252,7 @@ public:
 		current mode is output.
 	*/
 	std::size_t
-	get_remaining() const noexcept {
+	remaining() const noexcept {
 		if (Sequence::input == m_seq) {
 			return m_seq_size - (this->gptr() - this->eback());
 		}
@@ -270,7 +270,7 @@ public:
 		update the sequence size.
 	*/
 	std::size_t
-	get_position() const noexcept {
+	position() const noexcept {
 		switch (m_seq) {
 		case Sequence::input:
 			return this->gptr() - this->eback();
@@ -297,12 +297,12 @@ public:
 		than the (nonzero) maximum size, this operation will fail.
 
 		@post @code
-			get_sequence() == Sequence::output &&
-			get_sequence_size() == 0u &&
-			get_buffer().size()
+			sequence() == Sequence::output &&
+			sequence_size() == 0u &&
+			buffer().size()
 			== (capacity == 0u)
 				? capacity
-				: get_growth_rate()
+				: growth_rate()
 		@endcode
 
 		@returns @c true on success.
@@ -330,11 +330,11 @@ public:
 		input mode.
 
 		@post @code
-			get_sequence_size() == size
+			sequence_size() == size
 		@endcode
 
 		@throws std::invalid_argument
-		If <code>size > get_sequence_size()</code>.
+		If <code>size > sequence_size()</code>.
 
 		@param size Size of the input sequence.
 	*/
@@ -343,7 +343,7 @@ public:
 		std::size_t const size
 	) {
 		if (Sequence::output == m_seq) {
-			if (get_sequence_size() < size) {
+			if (sequence_size() < size) {
 				throw std::invalid_argument(
 					"commit size is larger than output sequence"
 				);
@@ -372,11 +372,11 @@ public:
 		library directly, but should not otherwise be used.
 
 		@post @code
-			get_sequence_size() == size
+			sequence_size() == size
 		@endcode
 
 		@throws std::invalid_argument
-		If <code>size > get_buffer().size()</code>.
+		If <code>size > buffer().size()</code>.
 
 		@param size Size of the input sequence.
 		@param retain_input_position Whether to retain the current
@@ -399,19 +399,19 @@ public:
 		Discard data from front of buffer.
 
 		@note The result sequence size is @code
-			get_sequence_size() - size
+			sequence_size() - size
 		@endcode
 
 		@par
 		@note If either @a size is @c 0 or the sequence is empty, this
-		has no effect. If @c size==get_sequence_size(), the sequence
+		has no effect. If @c size==sequence_size(), the sequence
 		will be empty.
 
-		@post @c get_position()==0u (subsequently, put/get position
+		@post @c position()==0u (subsequently, put/get position
 		according to mode is also @c 0u).
 
 		@throws std::invalid_argument
-		If <code>size > get_sequence_size()</code>.
+		If <code>size > sequence_size()</code>.
 
 		@returns The new sequence size.
 		@param size Number of characters to discard.
@@ -513,7 +513,7 @@ private:
 	) {
 		std::size_t pos = 0;
 		if (Sequence::input == m_seq && retain_input_position) {
-			pos = get_position();
+			pos = position();
 			if (size < pos) {
 				pos = size;
 			}

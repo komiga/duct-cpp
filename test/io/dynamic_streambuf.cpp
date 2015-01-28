@@ -48,15 +48,15 @@ inspect(
 ) {
 	std::cout
 		<< name << ":\n"
-		<< "sequence     : " << buf.get_sequence() << '\n'
-		<< "sequence_size: " << buf.get_sequence_size() << '\n'
+		<< "sequence     : " << buf.sequence() << '\n'
+		<< "sequence_size: " << buf.sequence_size() << '\n'
 
-		<< "max_size   : " << buf.get_max_size() << '\n'
-		<< "buffer size: " << buf.get_buffer().size() << '\n'
+		<< "max_size   : " << buf.max_size() << '\n'
+		<< "buffer size: " << buf.buffer().size() << '\n'
 		<< "data       : \""
 			<< std::string{
-				buf.get_buffer().data(),
-				buf.get_buffer().data() + buf.get_sequence_size()
+				buf.buffer().data(),
+				buf.buffer().data() + buf.sequence_size()
 			}
 		<< "\"\n"
 	;
@@ -67,30 +67,30 @@ main() {
 	// invariants
 	{
 		dynamic_streambuf buf{0u};
-		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
-		DUCT_ASSERTE(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::output == buf.sequence());
+		DUCT_ASSERTE(0u == buf.sequence_size());
 
 		inspect(buf, "invariants -> initial");
 
 		buf.commit();
-		DUCT_ASSERTE(Sequence::input == buf.get_sequence());
-		DUCT_ASSERTE(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::input == buf.sequence());
+		DUCT_ASSERTE(0u == buf.sequence_size());
 
 		buf.reset(10u);
-		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
-		DUCT_ASSERTE(0u == buf.get_sequence_size());
-		DUCT_ASSERTE(10u == buf.get_buffer().size());
+		DUCT_ASSERTE(Sequence::output == buf.sequence());
+		DUCT_ASSERTE(0u == buf.sequence_size());
+		DUCT_ASSERTE(10u == buf.buffer().size());
 
 		{
 			std::ostream os{&buf};
 			os << 'a';
 			DUCT_ASSERTE(os.good());
-			DUCT_ASSERTE(1u == buf.get_sequence_size());
+			DUCT_ASSERTE(1u == buf.sequence_size());
 		}
 
 		buf.commit();
-		DUCT_ASSERTE(Sequence::input == buf.get_sequence());
-		DUCT_ASSERTE(1u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::input == buf.sequence());
+		DUCT_ASSERTE(1u == buf.sequence_size());
 
 		{
 			std::istream is{&buf};
@@ -106,8 +106,8 @@ main() {
 		}
 
 		buf.reset(10u);
-		DUCT_ASSERTE(Sequence::output == buf.get_sequence());
-		DUCT_ASSERTE(0u == buf.get_sequence_size());
+		DUCT_ASSERTE(Sequence::output == buf.sequence());
+		DUCT_ASSERTE(0u == buf.sequence_size());
 
 		inspect(buf, "invariants -> final");
 	}
@@ -126,8 +126,8 @@ main() {
 		{
 			std::ostream os{&buf};
 			os.write("abcd", 4u);
-			DUCT_ASSERTE(4u == buf.get_sequence_size());
-			DUCT_ASSERTE(4u == buf.get_buffer().size());
+			DUCT_ASSERTE(4u == buf.sequence_size());
+			DUCT_ASSERTE(4u == buf.buffer().size());
 
 			inspect(buf, "seek & overflow -> after write");
 
@@ -172,12 +172,12 @@ main() {
 			inspect(buf, "seek & overflow -> after seeks");
 
 			// overflow from seek
-			DUCT_ASSERTE(5u == buf.get_sequence_size());
+			DUCT_ASSERTE(5u == buf.sequence_size());
 
 			//   4 (size after write)
 			// + 1 (overflow from seek)
 			// + 1 (growth rate)
-			DUCT_ASSERTE(6u == buf.get_buffer().size());
+			DUCT_ASSERTE(6u == buf.buffer().size());
 		}
 
 		{

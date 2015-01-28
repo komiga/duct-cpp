@@ -122,8 +122,8 @@ parse_cmd(
 	cmd.morph(VarType::identifier, true);
 	cmd.reset();
 	if (has_cmd) {
-		cmd.get_children().reserve(opt.size() - cmd_pos);
-		cmd.set_name(opt.at(cmd_pos).get_as_str());
+		cmd.children().reserve(opt.size() - cmd_pos);
+		cmd.set_name(opt.at(cmd_pos).as_str());
 		for (
 			auto it = opt.begin() + cmd_pos + 1u;
 			opt.end() != it;
@@ -131,7 +131,7 @@ parse_cmd(
 		) {
 			cmd.emplace_back(std::move(*it));
 		}
-		opt.get_children().resize(cmd_pos);
+		opt.children().resize(cmd_pos);
 	} else {
 		cmd.set_name({});
 	}

@@ -17,12 +17,12 @@ print_var(
 	tabulate(tab_count);
 	std::cout
 		<< '(' << std::left << std::setw(10)
-		<< duct::var_type_name(var.get_type())
+		<< duct::var_type_name(var.type())
 		<< ") '"
-		<< var.get_name()
+		<< var.name()
 		<< "' = "
 	;
-	switch (var.get_type()) {
+	switch (var.type()) {
 	case duct::VarType::array:
 	case duct::VarType::node:
 	case duct::VarType::identifier: {
@@ -49,9 +49,9 @@ print_var(
 		break;
 	}
 	case duct::VarType::string:
-		std::cout << '"' << var.get_string_ref() << '"'; break;
+		std::cout << '"' << var.string_ref() << '"'; break;
 	default:
-		std::cout << var.get_as_str(); break;
+		std::cout << var.as_str(); break;
 	}
 	if (newline) {
 		std::cout << '\n';

@@ -107,7 +107,7 @@ public:
 		Get error code.
 	*/
 	error_code_type
-	get_code() const noexcept {
+	code() const noexcept {
 		return m_code;
 	}
 
@@ -115,7 +115,7 @@ public:
 		Get error message.
 	*/
 	message_string_type const&
-	get_message() const noexcept {
+	message() const noexcept {
 		return m_message;
 	}
 /// @}

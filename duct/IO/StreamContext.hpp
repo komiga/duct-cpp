@@ -142,7 +142,7 @@ public:
 		@returns The current encoding.
 	*/
 	Encoding
-	get_encoding() const noexcept {
+	encoding() const noexcept {
 		return m_encoding;
 	}
 
@@ -164,7 +164,7 @@ public:
 		@returns The current endian.
 	*/
 	Endian
-	get_endian() const noexcept {
+	endian() const noexcept {
 		return m_endian;
 	}
 /// @}

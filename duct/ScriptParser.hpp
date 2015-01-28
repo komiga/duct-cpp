@@ -224,7 +224,7 @@ private:
 	in_scope(
 		VarMask const mask
 	) noexcept {
-		return get_current_collection().is_type_of(mask);
+		return current_collection().is_type_of(mask);
 	}
 
 	bool
@@ -235,7 +235,7 @@ private:
 	}
 
 	Var&
-	get_current_collection() noexcept;
+	current_collection() noexcept;
 
 	void
 	push(

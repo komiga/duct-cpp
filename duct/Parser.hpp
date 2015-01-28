@@ -81,7 +81,7 @@ public:
 		@returns The current line position.
 	*/
 	signed
-	get_line() const noexcept {
+	line() const noexcept {
 		return m_line;
 	}
 
@@ -91,7 +91,7 @@ public:
 		@returns The current column position.
 	*/
 	signed
-	get_column() const noexcept {
+	column() const noexcept {
 		return m_column;
 	}
 
@@ -101,13 +101,13 @@ public:
 		@returns The current token.
 	*/
 	Token&
-	get_token() noexcept {
+	token() noexcept {
 		return m_token;
 	}
 
-	/** @copydoc get_token() */
+	/** @copydoc token() */
 	Token const&
-	get_token() const noexcept {
+	token() const noexcept {
 		return m_token;
 	}
 
@@ -117,7 +117,7 @@ public:
 		@returns The current input stream.
 	*/
 	std::istream*
-	get_stream() noexcept {
+	stream() noexcept {
 		return m_stream;
 	}
 
@@ -127,13 +127,13 @@ public:
 		@returns The current stream context.
 	*/
 	IO::StreamContext&
-	get_stream_context() noexcept {
+	stream_context() noexcept {
 		return m_stream_ctx;
 	}
 
-	/** @copydoc get_stream_context() */
+	/** @copydoc stream_context() */
 	IO::StreamContext const&
-	get_stream_context() const noexcept {
+	stream_context() const noexcept {
 		return m_stream_ctx;
 	}
 /// @}

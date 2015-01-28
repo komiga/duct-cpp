@@ -30,7 +30,7 @@ public:
 	}
 
 	duct::Encoding
-	get_encoding() const noexcept {
+	encoding() const noexcept {
 		return m_encoding;
 	}
 

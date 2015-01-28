@@ -59,11 +59,11 @@ get_token_name(
 	if (token.is_null()) {
 		return "NULL_TOKEN";
 	} else if (
-		1 <= token.get_type() &&
+		1 <= token.type() &&
 		signed_cast(std::extent<decltype(s_names)>::value)
-		>= token.get_type()
+		>= token.type()
 	) {
-		return s_names[token.get_type() - 1];
+		return s_names[token.type() - 1];
 	} else {
 		return "TOK_UNKNOWN";
 	}
@@ -120,15 +120,15 @@ ScriptParserException::ScriptParserException(
 	std::vsnprintf(formatted_message, 256, fmt, args);
 	va_end(args);
 	if (m_parser && !m_token) {
-		m_token = &(m_parser->get_token());
+		m_token = &(m_parser->token());
 	}
 	if (m_token) {
-		start_line = m_token->get_line();
-		start_column = m_token->get_column();
+		start_line = m_token->line();
+		start_column = m_token->column();
 	}
 	if (m_parser) {
-		end_line = m_parser->get_line();
-		end_column = m_parser->get_column();
+		end_line = m_parser->line();
+		end_column = m_parser->column();
 	}
 	if (start_line == end_line && start_column == end_column) {
 		std::snprintf(m_message, 512,
@@ -202,7 +202,7 @@ ScriptParser::process(
 			DUCT_SP_THROWF_NO_INFO_(
 				"Unclosed collection at EOF: %lu deep in %s scope",
 				static_cast<unsigned long>(m_stack.size()),
-				var_type_name(m_stack.back()->get_type())
+				var_type_name(m_stack.back()->type())
 			);
 		}
 		reset();
@@ -237,14 +237,14 @@ ScriptParser::discern_token() {
 	case CHAR_DECIMALPOINT:
 		m_token.set_type(TOK_FLOATING);
 		// Add the decimal
-		m_token.get_buffer().push_back(m_curchar);
+		m_token.buffer().push_back(m_curchar);
 		break;
 
 	case CHAR_PLUS:
 	case CHAR_DASH:
 		m_token.set_type(TOK_INTEGER);
 		// Add sign
-		m_token.get_buffer().push_back(m_curchar);
+		m_token.buffer().push_back(m_curchar);
 		break;
 
 	// Literals
@@ -296,8 +296,8 @@ ScriptParser::discern_token() {
 void
 ScriptParser::read_token() {
 	//DUCT_DEBUGCF("token-type:%s line:%d, col:%d\n",
-	//	get_token_name(m_token), m_token.get_line(), m_token.get_column());
-	switch (m_token.get_type()) {
+	//	get_token_name(m_token), m_token.line(), m_token.column());
+	switch (m_token.type()) {
 	case TOK_STRING_QUOTED:
 		read_tok_string_quoted();
 		next_char();
@@ -376,15 +376,15 @@ ScriptParser::read_token() {
 	}
 	// Special case: when number and floating-point tokens only contain
 	// signs or periods
-	switch (m_token.get_type()) {
+	switch (m_token.type()) {
 	case TOK_INTEGER:
-		if (m_token.get_buffer().compare(s_set_sign)) {
+		if (m_token.buffer().compare(s_set_sign)) {
 			m_token.set_type(TOK_STRING);
 		}
 		break;
 	case TOK_FLOATING:
-		if (m_token.get_buffer().compare(s_set_sign) ||
-			m_token.get_buffer().compare(CHAR_DECIMALPOINT)
+		if (m_token.buffer().compare(s_set_sign) ||
+			m_token.buffer().compare(CHAR_DECIMALPOINT)
 		) {
 			m_token.set_type(TOK_STRING);
 		}
@@ -397,7 +397,7 @@ ScriptParser::read_token() {
 
 void
 ScriptParser::handle_token() {
-	switch (m_token.get_type()) {
+	switch (m_token.type()) {
 	// Value or name
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
@@ -537,7 +537,7 @@ ScriptParser::handle_token() {
 		} else if (!in_scope(VarType::array)) {
 			DUCT_SP_THROWF_(
 				"Unexpected close-bracket in %s scope",
-				var_type_name(get_current_collection().get_type())
+				var_type_name(current_collection().type())
 			);
 		} else if (m_states.test(State::equals)) {
 			DUCT_SP_THROW_(
@@ -593,9 +593,9 @@ ScriptParser::read_tok_integer() {
 			// Single terminators
 			break;
 		} else if (s_set_numeral.contains(m_curchar)) {
-			m_token.get_buffer().push_back(m_curchar);
+			m_token.buffer().push_back(m_curchar);
 		} else if (CHAR_DECIMALPOINT == m_curchar) {
-			m_token.get_buffer().push_back(m_curchar);
+			m_token.buffer().push_back(m_curchar);
 			m_token.set_type(TOK_FLOATING);
 			next_char();
 			read_tok_floating();
@@ -627,7 +627,7 @@ ScriptParser::read_tok_floating() {
 			// Single terminators
 			break;
 		} else if (s_set_numeral.contains(m_curchar)) {
-			m_token.get_buffer().push_back(m_curchar);
+			m_token.buffer().push_back(m_curchar);
 		} else {
 			m_token.set_type(TOK_STRING);
 			read_tok_string();
@@ -665,7 +665,7 @@ ScriptParser::read_tok_literal(
 			read_tok_string();
 			return;
 		} else { // Haven't overrun and char matches current
-			m_token.get_buffer().push_back(m_curchar);
+			m_token.buffer().push_back(m_curchar);
 			++index;
 		}
 		next_char();
@@ -686,7 +686,7 @@ ScriptParser::read_tok_string() {
 				DUCT_SP_THROWF_("Unexpected escape sequence: '%c' (0x%X)",
 					m_curchar, m_curchar);
 			} else {
-				m_token.get_buffer().push_back(cp);
+				m_token.buffer().push_back(cp);
 			}
 		} else if (
 			// Single terminators
@@ -697,7 +697,7 @@ ScriptParser::read_tok_string() {
 		) {
 			break;
 		} else {
-			m_token.get_buffer().push_back(m_curchar);
+			m_token.buffer().push_back(m_curchar);
 		}
 		next_char();
 	}
@@ -719,17 +719,17 @@ ScriptParser::read_tok_string_quoted() {
 				DUCT_SP_THROWF_("Unexpected escape sequence: '%c' (0x%X)",
 					m_curchar, m_curchar);
 			} else {
-				m_token.get_buffer().push_back(cp);
+				m_token.buffer().push_back(cp);
 			}
 		} else {
 			if (!eol_reached) {
-				m_token.get_buffer().push_back(m_curchar);
+				m_token.buffer().push_back(m_curchar);
 			}
 			if (CHAR_NEWLINE == m_curchar) {
 				eol_reached = true;
 			} else if (eol_reached && !s_set_whitespace.contains(m_curchar)) {
 				eol_reached = false;
-				m_token.get_buffer().push_back(m_curchar);
+				m_token.buffer().push_back(m_curchar);
 			}
 		}
 		next_char();
@@ -762,7 +762,7 @@ ScriptParser::at_root() const noexcept {
 }
 
 Var&
-ScriptParser::get_current_collection() noexcept {
+ScriptParser::current_collection() noexcept {
 	DUCT_DEBUG_ASSERT(
 		0 < m_stack.size(),
 		"Something has gone horribly wrong: stack is empty!"
@@ -792,7 +792,7 @@ ScriptParser::push(
 	);
 	//DUCT_DEBUGF("at %lu, pushing %s",
 	//	static_cast<unsigned long>(m_stack.size()),
-	//	var_type_name(collection.get_type())
+	//	var_type_name(collection.type())
 	//);
 	if (0 < m_stack.size()) {
 		DUCT_DEBUG_ASSERT(
@@ -856,7 +856,7 @@ ScriptParser::make_collection(
 			"Something has gone horribly wrong:"
 			" cannot make a nameless identifier"
 		);
-		get_current_collection().emplace_back(type);
+		current_collection().emplace_back(type);
 		m_states.remove(State::comma | State::open_array);
 	} else { // Named collection
 		DUCT_DEBUG_ASSERT(
@@ -865,8 +865,8 @@ ScriptParser::make_collection(
 			"Something has gone horribly wrong:"
 			" cannot have equality sign when making an identifier"
 		);
-		get_current_collection().emplace_back(
-			m_token_ident.get_buffer()
+		current_collection().emplace_back(
+			m_token_ident.buffer()
 				.to_string<detail::var_config::name_type>(),
 			type
 		);
@@ -874,7 +874,7 @@ ScriptParser::make_collection(
 		m_token_ident.reset(NULL_TOKEN, true);
 	}
 	if (push_collection) {
-		push(get_current_collection().back());
+		push(current_collection().back());
 	}
 }
 
@@ -897,22 +897,22 @@ ScriptParser::make_value() {
 		" should not have State::comma here"
 	);
 
-	auto& coll = get_current_collection();
-	switch (m_token.get_type()) {
+	auto& coll = current_collection();
+	switch (m_token.type()) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
 		coll.emplace_back(
-			m_token.get_buffer().to_string<detail::var_config::string_type>()
+			m_token.buffer().to_string<detail::var_config::string_type>()
 		); break;
 
 	case TOK_INTEGER:
 		coll.emplace_back(
-			m_token.get_buffer().to_arithmetic<detail::var_config::int_type>()
+			m_token.buffer().to_arithmetic<detail::var_config::integer_type>()
 		); break;
 
 	case TOK_FLOATING:
 		coll.emplace_back(
-			m_token.get_buffer().to_arithmetic<detail::var_config::float_type>()
+			m_token.buffer().to_arithmetic<detail::var_config::decimal_type>()
 		); break;
 
 	case TOK_LITERAL_TRUE:
@@ -928,7 +928,7 @@ ScriptParser::make_value() {
 		break;
 	}
 	coll.back().set_name(
-		m_token_ident.get_buffer().to_string<detail::var_config::name_type>()
+		m_token_ident.buffer().to_string<detail::var_config::name_type>()
 	);
 	m_states.remove(State::equals);
 	m_token_ident.reset(NULL_TOKEN, true);
@@ -956,24 +956,24 @@ ScriptParser::make_nameless_value(
 		: m_token_ident
 	;
 	if (NULL_TOKEN == override_type) {
-		override_type = token.get_type();
+		override_type = token.type();
 	}
-	auto& coll = get_current_collection();
+	auto& coll = current_collection();
 	switch (override_type) {
 	case TOK_STRING:
 	case TOK_STRING_QUOTED:
 		coll.emplace_back(
-			token.get_buffer().to_string<detail::var_config::string_type>()
+			token.buffer().to_string<detail::var_config::string_type>()
 		); break;
 
 	case TOK_INTEGER:
 		coll.emplace_back(
-			token.get_buffer().to_arithmetic<detail::var_config::int_type>()
+			token.buffer().to_arithmetic<detail::var_config::integer_type>()
 		); break;
 
 	case TOK_FLOATING:
 		coll.emplace_back(
-			token.get_buffer().to_arithmetic<detail::var_config::float_type>()
+			token.buffer().to_arithmetic<detail::var_config::decimal_type>()
 		); break;
 
 	case TOK_LITERAL_TRUE:

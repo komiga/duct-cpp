@@ -141,13 +141,13 @@ public:
 		@returns The multicast stream vector.
 	*/
 	multicast_vector_type&
-	get_streams() noexcept {
+	streams() noexcept {
 		return m_streams;
 	}
 
-	/** @copydoc basic_multistreambuf::get_streams() noexcept */
+	/** @copydoc basic_multistreambuf::streams() noexcept */
 	multicast_vector_type const&
-	get_streams() const noexcept {
+	streams() const noexcept {
 		return m_streams;
 	}
 /// @}
@@ -305,13 +305,13 @@ public:
 		@returns Multicast stream vector.
 	*/
 	multicast_vector_type&
-	get_streams() noexcept {
+	streams() noexcept {
 		return m_streams;
 	}
 
-	/** @copydoc basic_omultistream::get_streams() noexcept */
+	/** @copydoc basic_omultistream::streams() noexcept */
 	multicast_vector_type const&
-	get_streams() const noexcept {
+	streams() const noexcept {
 		return m_streams;
 	}
 

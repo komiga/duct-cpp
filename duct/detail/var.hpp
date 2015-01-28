@@ -28,7 +28,7 @@ namespace detail {
 		@ingroup config
 
 		Whether to use 64-bit and double-precision for
-		VarType::integer and VarType::floatp, respectively.
+		VarType::integer and VarType::decimal, respectively.
 
 		@note Defaults to 0.
 
@@ -56,20 +56,20 @@ public:
 		@c int32_t by default; @c int64_t
 		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
-	using int_type = std::int32_t;
+	using integer_type = std::int32_t;
 	/**
-		typename for @c VarType::floatp.
+		typename for @c VarType::decimal.
 		@c float by default; @c double
 		with #DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES.
 	*/
-	using float_type = float;
+	using decimal_type = float;
 #else
-	using int_type = std::int64_t;
-	using float_type = double;
+	using integer_type = std::int64_t;
+	using decimal_type = double;
 #endif
 
 	/** typename for @c VarType::boolean. */
-	using bool_type = bool;
+	using boolean_type = bool;
 };
 
 /**
@@ -122,9 +122,9 @@ public:
 	{ static constexpr VarType value = V; } /**/
 
 DUCT_DETAIL_TRAITS_(VarType::string, var_config::string_type);
-DUCT_DETAIL_TRAITS_(VarType::integer, var_config::int_type);
-DUCT_DETAIL_TRAITS_(VarType::floatp, var_config::float_type);
-DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
+DUCT_DETAIL_TRAITS_(VarType::integer, var_config::integer_type);
+DUCT_DETAIL_TRAITS_(VarType::decimal, var_config::decimal_type);
+DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::boolean_type);
 
 #undef DUCT_DETAIL_TRAITS_
 
@@ -140,7 +140,7 @@ DUCT_DETAIL_TRAITS_(VarType::boolean, var_config::bool_type);
 #if (0 != DUCT_CONFIG_VAR_LARGE_NUMERIC_TYPES)
 	// Define smaller variants, for convenience
 	DUCT_DETAIL_TRAITS_(VarType::integer, std::int32_t);
-	DUCT_DETAIL_TRAITS_(VarType::floatp, float);
+	DUCT_DETAIL_TRAITS_(VarType::decimal, float);
 #endif
 
 #undef DUCT_DETAIL_TRAITS_

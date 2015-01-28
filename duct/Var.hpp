@@ -58,9 +58,9 @@ private:
 	// not allow a ctor to be `=default` when a union member is
 	// aggregate-intialized.
 	union {
-		detail::var_config::int_type m_intv;
-		detail::var_config::float_type m_floatv;
-		detail::var_config::bool_type m_boolv;
+		detail::var_config::integer_type m_integer;
+		detail::var_config::decimal_type m_decimal;
+		detail::var_config::boolean_type m_boolean;
 	};
 
 public:
@@ -175,11 +175,11 @@ public:
 	*/
 	Var(
 		detail::var_config::name_type name,
-		detail::var_config::int_type const value
+		detail::var_config::integer_type const value
 	)
 		: m_type(VarType::integer)
 		, m_name(std::move(name))
-		, m_intv(value)
+		, m_integer(value)
 	{}
 
 	/**
@@ -189,37 +189,37 @@ public:
 	*/
 	explicit
 	Var(
-		detail::var_config::int_type const value
+		detail::var_config::integer_type const value
 	)
 		: m_type(VarType::integer)
-		, m_intv(value)
+		, m_integer(value)
 	{}
 
 	/**
-		Construct named @c VarType::floatp with value.
+		Construct named @c VarType::decimal with value.
 
 		@param name Name.
 		@param value Value.
 	*/
 	Var(
 		detail::var_config::name_type name,
-		detail::var_config::float_type const value
+		detail::var_config::decimal_type const value
 	)
-		: m_type(VarType::floatp)
+		: m_type(VarType::decimal)
 		, m_name(std::move(name))
-		, m_floatv(value)
+		, m_decimal(value)
 	{}
 	/**
-		Construct nameless @c VarType::floatp with value.
+		Construct nameless @c VarType::decimal with value.
 
 		@param value Value.
 	*/
 	explicit
 	Var(
-		detail::var_config::float_type const value
+		detail::var_config::decimal_type const value
 	)
-		: m_type(VarType::floatp)
-		, m_floatv(value)
+		: m_type(VarType::decimal)
+		, m_decimal(value)
 	{}
 
 	/**
@@ -230,11 +230,11 @@ public:
 	*/
 	Var(
 		detail::var_config::name_type name,
-		detail::var_config::bool_type const value
+		detail::var_config::boolean_type const value
 	)
 		: m_type(VarType::boolean)
 		, m_name(std::move(name))
-		, m_boolv(value)
+		, m_boolean(value)
 	{}
 
 	/**
@@ -244,10 +244,10 @@ public:
 	*/
 	explicit
 	Var(
-		detail::var_config::bool_type const value
+		detail::var_config::boolean_type const value
 	)
 		: m_type(VarType::boolean)
-		, m_boolv(value)
+		, m_boolean(value)
 	{}
 
 	/** Copy constructor. */
@@ -285,9 +285,9 @@ public:
 		m_name = other.m_name;
 		switch (other.m_type) {
 		case VarType::string: m_strv = other.m_strv; break;
-		case VarType::integer: m_intv = other.m_intv; break;
-		case VarType::floatp: m_floatv = other.m_floatv; break;
-		case VarType::boolean: m_boolv = other.m_boolv; break;
+		case VarType::integer: m_integer = other.m_integer; break;
+		case VarType::decimal: m_decimal = other.m_decimal; break;
+		case VarType::boolean: m_boolean = other.m_boolean; break;
 
 		case VarType::array:
 		case VarType::node:
@@ -315,7 +315,7 @@ public:
 		@sa morph(T const)
 	*/
 	VarType
-	get_type() const noexcept {
+	type() const noexcept {
 		return m_type;
 	}
 
@@ -339,14 +339,14 @@ public:
 		@returns The current name.
 	*/
 	detail::var_config::name_type const&
-	get_name() const noexcept {
+	name() const noexcept {
 		return m_name;
 	}
 
 	/**
 		Test type.
 
-		@returns <code>get_type() == type</code>.
+		@returns <code>type() == type</code>.
 		@param type Type to test against.
 	*/
 	bool
@@ -405,9 +405,9 @@ public:
 	reset() noexcept {
 		switch (m_type) {
 		case VarType::string: m_strv.clear(); break;
-		case VarType::integer: m_intv = 0; break;
-		case VarType::floatp: m_floatv = 0.0f; break;
-		case VarType::boolean: m_boolv = false; break;
+		case VarType::integer: m_integer = 0; break;
+		case VarType::decimal: m_decimal = 0.0f; break;
+		case VarType::boolean: m_boolean = false; break;
 		case VarType::array:
 		case VarType::node:
 		case VarType::identifier:
@@ -608,16 +608,16 @@ public:
 		switch (m_type | other.m_type) {
 		case VarType::null: return 0;
 		case VarType::string: return m_strv.compare(other.m_strv);
-		case VarType::integer: return m_intv - other.m_intv;
-		case VarType::floatp:
+		case VarType::integer: return m_integer - other.m_integer;
+		case VarType::decimal:
 			return
-				  (m_floatv > other.m_floatv)
+				  (m_decimal > other.m_decimal)
 					?  1
-				: (m_floatv < other.m_floatv)
+				: (m_decimal < other.m_decimal)
 					? -1
 				:  0
 			;
-		case VarType::boolean: return m_boolv - other.m_boolv;
+		case VarType::boolean: return m_boolean - other.m_boolean;
 		case VarType::array:
 		case VarType::node:
 		case VarType::identifier: {
@@ -652,8 +652,8 @@ public:
 	@name Value set/get
 
 	@warning All <em>value</em> get/set functions (except
-	for @c get_as_str() — it has a different rule) are type-strict;
-	an assertion will fail if @c get_type() does not equal:
+	for @c as_str() — it has a different rule) are type-strict;
+	an assertion will fail if @c type() does not equal:
 
 	-# the type of assignment; or
 	-# the type of retrieval.
@@ -693,19 +693,19 @@ public:
 		@returns The current string value.
 	*/
 	detail::var_config::string_type
-	get_string() const {
+	string() const {
 		DUCT_V_get_value_();
 	}
 
-	/** @copydoc get_string() */
+	/** @copydoc string() */
 	detail::var_config::string_type&
-	get_string_ref() noexcept {
+	string_ref() noexcept {
 		DUCT_V_get_value_();
 	}
 
-	/** @copydoc get_string() */
+	/** @copydoc string() */
 	detail::var_config::string_type const&
-	get_string_ref() const noexcept {
+	string_ref() const noexcept {
 		DUCT_V_get_value_();
 	}
 
@@ -713,13 +713,13 @@ public:
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VarType::integer
-	#define DUCT_V_FIELD_ m_intv
+	#define DUCT_V_FIELD_ m_integer
 	/** @endcond */
 
 	/** @copydoc Var::assign(detail::var_config::string_type) */
 	Var&
 	assign(
-		detail::var_config::int_type const value
+		detail::var_config::integer_type const value
 	) noexcept {
 		DUCT_V_set_value_();
 	}
@@ -729,28 +729,28 @@ public:
 
 		@returns The current integer value.
 	*/
-	detail::var_config::int_type
-	get_int() const noexcept {
+	detail::var_config::integer_type
+	integer() const noexcept {
 		DUCT_V_get_value_();
 	}
 
-	/** @copydoc get_int() */
-	detail::var_config::int_type&
-	get_int_ref() noexcept {
+	/** @copydoc integer() */
+	detail::var_config::integer_type&
+	integer_ref() noexcept {
 		DUCT_V_get_value_();
 	}
 
 	/** @cond */
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
-	#define DUCT_V_TYPE_ VarType::floatp
-	#define DUCT_V_FIELD_ m_floatv
+	#define DUCT_V_TYPE_ VarType::decimal
+	#define DUCT_V_FIELD_ m_decimal
 	/** @endcond */
 
 	/** @copydoc Var::assign(detail::var_config::string_type) */
 	Var&
 	assign(
-		detail::var_config::float_type const value
+		detail::var_config::decimal_type const value
 	) noexcept {
 		DUCT_V_set_value_();
 	}
@@ -760,14 +760,14 @@ public:
 
 		@returns The current floating-point value.
 	*/
-	detail::var_config::float_type
-	get_float() const noexcept {
+	detail::var_config::decimal_type
+	decimal() const noexcept {
 		DUCT_V_get_value_();
 	}
 
-	/** @copydoc get_float() */
-	detail::var_config::float_type&
-	get_float_ref() noexcept {
+	/** @copydoc decimal() */
+	detail::var_config::decimal_type&
+	decimal_ref() noexcept {
 		DUCT_V_get_value_();
 	}
 
@@ -775,13 +775,13 @@ public:
 	#undef DUCT_V_TYPE_
 	#undef DUCT_V_FIELD_
 	#define DUCT_V_TYPE_ VarType::boolean
-	#define DUCT_V_FIELD_ m_boolv
+	#define DUCT_V_FIELD_ m_boolean
 	/** @endcond */
 
 	/** @copydoc Var::assign(detail::var_config::string_type) */
 	Var&
 	assign(
-		detail::var_config::bool_type const value
+		detail::var_config::boolean_type const value
 	) noexcept {
 		DUCT_V_set_value_();
 	}
@@ -791,14 +791,14 @@ public:
 
 		@returns The current boolean value.
 	*/
-	detail::var_config::bool_type
-	get_bool() const noexcept {
+	detail::var_config::boolean_type
+	boolean() const noexcept {
 		DUCT_V_get_value_();
 	}
 
-	/** @copydoc get_bool() */
-	detail::var_config::bool_type&
-	get_bool_ref() noexcept  {
+	/** @copydoc boolean() */
+	detail::var_config::boolean_type&
+	boolean_ref() noexcept  {
 		DUCT_V_get_value_();
 	}
 
@@ -813,11 +813,11 @@ public:
 		Get value as string.
 
 		@returns The current value as a string.
-		@sa get_as_str(StringT&) const
+		@sa as_str(StringT&) const
 	*/
 	detail::var_config::string_type
-	get_as_str() const {
-		return get_as_str<detail::var_config::string_type>();
+	as_str() const {
+		return as_str<detail::var_config::string_type>();
 	}
 
 	/**
@@ -825,13 +825,13 @@ public:
 
 		@returns The current value as a string.
 		@tparam StringT String type to convert to.
-		@sa get_as_str(StringT&) const
+		@sa as_str(StringT&) const
 	*/
 	template<class StringT>
 	StringT
-	get_as_str() const {
+	as_str() const {
 		StringT str;
-		get_as_str(str);
+		as_str(str);
 		return str;
 	}
 
@@ -852,19 +852,19 @@ public:
 	*/
 	template<class StringT>
 	void
-	get_as_str(
+	as_str(
 		StringT& out_str
 	) const {
 		DUCT_ASSERTE(enum_cast(m_type) & enum_cast(VarMask::value_nullable));
 		switch (m_type) {
 		case VarType::null: out_str = "null"; break;
 		case VarType::string: StringUtils::convert(out_str, m_strv); break;
-		case VarType::boolean: out_str = (m_boolv) ? "true" : "false"; break;
+		case VarType::boolean: out_str = (m_boolean) ? "true" : "false"; break;
 		default: {
 			aux::stringstream stream;
 			switch (m_type) {
-			case VarType::integer: stream << m_intv; break;
-			case VarType::floatp: stream << std::showpoint << m_floatv; break;
+			case VarType::integer: stream << m_integer; break;
+			case VarType::decimal: stream << std::showpoint << m_decimal; break;
 			default: return;
 			}
 			u8string temp;
@@ -972,14 +972,14 @@ public:
 		@returns The current child collection.
 	*/
 	vector_type&
-	get_children() noexcept {
+	children() noexcept {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children;
 	}
 
-	/** @copydoc get_children() */
+	/** @copydoc children() */
 	vector_type const&
-	get_children() const noexcept {
+	children() const noexcept {
 		DUCT_ASSERTE(is_type_of(VarMask::collection));
 		return m_children;
 	}

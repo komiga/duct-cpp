@@ -100,7 +100,7 @@ public:
 		@returns The current type.
 	*/
 	signed
-	get_type() const noexcept {
+	type() const noexcept {
 		return m_type;
 	}
 
@@ -137,7 +137,7 @@ public:
 		@returns The current line position.
 	*/
 	signed
-	get_line() const noexcept {
+	line() const noexcept {
 		return m_line;
 	}
 
@@ -159,7 +159,7 @@ public:
 		@returns The current column position.
 	*/
 	signed
-	get_column() const noexcept {
+	column() const noexcept {
 		return m_column;
 	}
 
@@ -169,20 +169,20 @@ public:
 		@returns The token's character buffer.
 	*/
 	CharBuf&
-	get_buffer() noexcept {
+	buffer() noexcept {
 		return m_buffer;
 	}
 
-	/** @copydoc get_buffer() */
+	/** @copydoc buffer() */
 	CharBuf const&
-	get_buffer() const noexcept {
+	buffer() const noexcept {
 		return m_buffer;
 	}
 
 	/**
 		Test the token's type.
 
-		@returns @c true if @c get_type()==type.
+		@returns @c true if @c type()==type.
 		@param type Type to test against.
 	*/
 	bool

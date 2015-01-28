@@ -26,14 +26,14 @@ ScriptWriter::write(
 	unsigned const tab_level
 ) const {
 	if (dest.good()) {
-		if (VarType::node != source.get_type() || !treat_as_root) {
+		if (VarType::node != source.type() || !treat_as_root) {
 			m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
 		}
-		switch (source.get_type()) {
+		switch (source.type()) {
 		case VarType::null:
 		case VarType::string:
 		case VarType::integer:
-		case VarType::floatp:
+		case VarType::decimal:
 		case VarType::boolean:
 			return write_value(dest, source, true);
 		case VarType::array:
@@ -115,22 +115,22 @@ ScriptWriter::write_value(
 	bool const with_name
 ) const {
 	if (with_name) {
-		write_string(dest, var.get_name(), true);
+		write_string(dest, var.name(), true);
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
 	}
-	switch (var.get_type()) {
+	switch (var.type()) {
 	case VarType::string:
-		write_string(dest, var.get_string_ref(), false);
+		write_string(dest, var.string_ref(), false);
 		break;
 
 	case VarType::null:
 	case VarType::integer:
-	case VarType::floatp:
+	case VarType::decimal:
 	case VarType::boolean: {
 		// All non-VarType::string values are representable in single
 		// UTF-8 code units. Also, the target encoding is most likely
 		// going to be UTF-8, so this is optimal.
-		auto const vstr = var.get_as_str<u8string>();
+		auto const vstr = var.as_str<u8string>();
 		m_stream_ctx.write_string(dest, vstr);
 		break;
 	}
@@ -145,13 +145,13 @@ ScriptWriter::write_array(
 	Var const& var,
 	bool const with_name
 ) const {
-	if (with_name && !var.get_name().empty()) {
-		write_string(dest, var.get_name(), true);
+	if (with_name && !var.name().empty()) {
+		write_string(dest, var.name(), true);
 		m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
 	}
 	m_stream_ctx.write_char(dest, CHAR_OPENBRACKET);
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
-		switch (it->get_type()) {
+		switch (it->type()) {
 		case VarType::identifier:
 		case VarType::node:
 			// TODO: Throw exception
@@ -187,8 +187,8 @@ ScriptWriter::write_node(
 ) const {
 	if (!treat_as_root) {
 		//m_stream_ctx.write_char(dest, CHAR_TAB, tab_level);
-		if (!var.get_name().empty()) {
-			write_string(dest, var.get_name(), true);
+		if (!var.name().empty()) {
+			write_string(dest, var.name(), true);
 			m_stream_ctx.write_char(dest, CHAR_EQUALSIGN);
 		}
 		m_stream_ctx.write_char(dest, CHAR_OPENBRACE);
@@ -220,25 +220,25 @@ ScriptWriter::write_identifier(
 	std::ostream& dest,
 	Var const& var
 ) const {
-	write_string(dest, var.get_name(), true);
+	write_string(dest, var.name(), true);
 	if (0u < var.size()) {
 		m_stream_ctx.write_char(dest, ' ');
 	}
 	for (auto it = var.cbegin(); var.cend() != it; ++it) {
-		switch (it->get_type()) {
+		switch (it->type()) {
 		case VarType::identifier:
 		case VarType::node:
 			// TODO: Throw exception
 			return false;
 
 		case VarType::array:
-			if (!write_array(dest, *it, !it->get_name().empty())) {
+			if (!write_array(dest, *it, !it->name().empty())) {
 				return false;
 			}
 			break;
 
 		default:
-			if (!write_value(dest, *it, !it->get_name().empty())) {
+			if (!write_value(dest, *it, !it->name().empty())) {
 				return false;
 			}
 			break;

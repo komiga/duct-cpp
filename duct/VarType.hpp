@@ -34,7 +34,7 @@ enum class VarType : unsigned {
 	/** Value type: Integer. */
 	integer		= bit(2),
 	/** Value type: Float. */
-	floatp		= bit(3),
+	decimal		= bit(3),
 	/** Value type: Boolean. */
 	boolean		= bit(4),
 	/** Collection type: Array. */
@@ -72,7 +72,7 @@ enum class VarMask : unsigned {
 	*/
 	numeric
 		= enum_cast(VarType::integer)
-		| enum_cast(VarType::floatp)
+		| enum_cast(VarType::decimal)
 	,
 
 	/**
@@ -81,7 +81,7 @@ enum class VarMask : unsigned {
 	value
 		= enum_cast(VarType::string)
 		| enum_cast(VarType::integer)
-		| enum_cast(VarType::floatp)
+		| enum_cast(VarType::decimal)
 		| enum_cast(VarType::boolean)
 	,
 
@@ -141,7 +141,7 @@ var_type_name(
 	case VarType::null		: return "null";
 	case VarType::string	: return "string";
 	case VarType::integer	: return "integer";
-	case VarType::floatp	: return "floatp";
+	case VarType::decimal	: return "decimal";
 	case VarType::boolean	: return "boolean";
 	case VarType::array		: return "array";
 	case VarType::node		: return "node";

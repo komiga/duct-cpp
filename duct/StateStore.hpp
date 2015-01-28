@@ -128,7 +128,7 @@ public:
 		@returns Value.
 	*/
 	constexpr value_type
-	get_value() const noexcept {
+	value() const noexcept {
 		return m_value;
 	}
 
@@ -138,7 +138,7 @@ public:
 		@param mask Mask.
 	*/
 	constexpr state_type
-	get_states(
+	states(
 		state_type const mask
 	) const noexcept {
 		return static_cast<state_type>(
