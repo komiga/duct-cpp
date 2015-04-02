@@ -93,12 +93,12 @@ end
 
 -- categories
 
-include("args")
-include("general")
-include("gr")
-include("io")
-include("text")
-include("utils")
-include("var")
+precore.import("args")
+precore.import("general")
+precore.import("gr")
+precore.import("io")
+precore.import("text")
+precore.import("utils")
+precore.import("var")
 
 precore.action_clean("out")
