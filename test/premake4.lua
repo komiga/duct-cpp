@@ -1,43 +1,11 @@
 
-dofile("./precore_import.lua")
+dofile("precore_import.lua")
 
 local S, G, P = precore.helpers()
 
-precore.make_config("duct.test-strict", nil, {
-{project = function()
-	configuration {}
-		flags {
-			"FatalWarnings"
-		}
-
-	configuration {"linux"}
-		buildoptions {
-			"-pedantic",
-			"-pedantic-errors",
-			"-Wextra",
-
-			"-Wuninitialized",
-			"-Winit-self",
-
-			"-Wmissing-field-initializers",
-			"-Wredundant-decls",
-
-			"-Wfloat-equal",
-			"-Wold-style-cast",
-
-			"-Wnon-virtual-dtor",
-			"-Woverloaded-virtual",
-
-			"-Wunused",
-			"-Wundef",
-		}
-end}})
-
 precore.init(
 	{
-		-- Don't have a top-level premake script, so just forcing
-		-- project root to top-level
-		ROOT = path.getabsolute("..")
+		ROOT = path.getabsolute(".."),
 	},
 	{
 		"precore.clang-opts",
@@ -46,43 +14,31 @@ precore.init(
 	}
 )
 
-precore.make_solution(
-	"tests",
-	{"debug", "release"},
-	{"x64", "x32"},
-	nil,
-	{
-		"precore.generic",
-	}
-)
+precore.import("..")
 
 function make_test(group, name, srcglob, configs)
+	configs = configs or {}
+	table.insert(configs, 1, "duct.strict")
+	table.insert(configs, 2, "duct.dep")
+
 	precore.make_project(
 		group .. "_" .. name,
 		"C++", "ConsoleApp",
 		"./", "out/",
 		nil, configs
 	)
-
-	if configs == nil then
-		precore.apply("duct.test-strict")
-	end
-
-	if srcglob == nil then
+	if not srcglob then
 		srcglob = name .. ".cpp"
 	end
 
+	configuration {"linux"}
+		targetsuffix(".elf")
+
 	configuration {}
 		targetname(name)
-		includedirs {
-			S"${ROOT}"
-		}
 		files {
 			srcglob
 		}
-
-	configuration {"linux"}
-		targetsuffix(".elf")
 end
 
 function make_tests(group, tests)
@@ -91,7 +47,15 @@ function make_tests(group, tests)
 	end
 end
 
--- categories
+precore.make_solution(
+	"test",
+	{"debug", "release"},
+	{"x64", "x32"},
+	nil,
+	{
+		"precore.generic",
+	}
+)
 
 precore.import("args")
 precore.import("general")
