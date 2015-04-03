@@ -1,20 +1,5 @@
 
-dofile("precore_import.lua")
-
 local S, G, P = precore.helpers()
-
-precore.init(
-	{
-		ROOT = path.getabsolute(".."),
-	},
-	{
-		"precore.clang-opts",
-		"precore.c++11-core",
-		"precore.env-common",
-	}
-)
-
-precore.import("..")
 
 function make_test(group, name, srcglob, configs)
 	configs = configs or {}
@@ -64,5 +49,3 @@ precore.import("io")
 precore.import("text")
 precore.import("utils")
 precore.import("var")
-
-precore.action_clean("out")
