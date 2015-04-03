@@ -1,7 +1,7 @@
 
 dofile("precore_import.lua")
 
-local S, G, P = precore.helpers()
+local _, G, P = precore.helpers()
 
 precore.init(
 	nil,
