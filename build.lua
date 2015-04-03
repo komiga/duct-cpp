@@ -5,9 +5,7 @@ precore.make_config_scoped("duct.env", {
 	once = true,
 }, {
 {global = function()
-	precore.env_global({
-		DUCT_ROOT = os.getcwd(),
-	}, true)
+	precore.define_group("DUCT", os.getcwd())
 end}})
 
 precore.make_config("duct.strict", nil, {
