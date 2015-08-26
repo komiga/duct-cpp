@@ -42,7 +42,7 @@ precore.make_config("duct.dep", nil, {
 {project = function()
 	configuration {}
 		includedirs {
-			S"${DUCT_ROOT}/",
+			G"${DUCT_ROOT}/",
 		}
 end}})
 
