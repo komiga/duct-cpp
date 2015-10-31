@@ -21,8 +21,8 @@ Being a header library, duct++ is not compiled directly. However, all features
 support Clang 3.3+ with libc++ (SVN head). GCC with libstdc++ is only partially
 supported (as of 4.7.3) due to issues in ISO compliance (see *Defects* below).
 
-The tests can be compiled using plash's standard project protocol:
-http://komiga.com/pp-cpp
+The tests can be compiled using
+my [standard project protocol](http://komiga.com/pp-cpp).
 
 ## Defects
 
@@ -36,7 +36,7 @@ The following headers require corrections in libstdc++ (4.7.3):
 duct++ carries the MIT license, meaning you can do whatever you want to with it.
 
 ```
-Copyright (c) 2010-2015 plash <plash@komiga.com>
+Copyright (c) 2010-2015 Coranna Howard <me@komiga.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
